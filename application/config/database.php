@@ -76,14 +76,16 @@ $query_builder = TRUE;
 $db['default'] = array(
 	'dsn'	=> '',
 	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
 	
 	// local
+	// 'username' => 'root',
+	// 'password' => '',
 	// 'database' => 'compro',
 
 	// online
-	'database' => 'compro',
+	'username' => 'pria5558_primapaper',
+	'password' => 'primapaper2020',
+	'database' => 'pria5558_ppi',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
