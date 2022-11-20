@@ -93,6 +93,12 @@ class Laporan extends CI_Controller {
         $this->load->view('footer');
     }
 
+    function QC(){
+        $this->load->view('header');
+        $this->load->view('Laporan/v_qc');
+        $this->load->view('footer');
+    }
+
     function Laporan(){
         $tgl1 = $_GET['tgl1'];
         $tgl2 = $_GET['tgl2'];
@@ -5232,13 +5238,13 @@ class Laporan extends CI_Controller {
 			GROUP BY nm_ker,g_label");
 			$html .='<td style="padding:5px;font-weight:bold" colspan="'.$getGsm->num_rows().'">'.$lbl->nm_ker.'</td>';
 		}
-		foreach($getLabel->result() as $lbl){ // STOK BERTUAN
-			$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-			WHERE nm_ker='$lbl->nm_ker'
-			AND status='0' AND id_pl='0'
-			GROUP BY nm_ker,g_label");
-			$html .='<td style="padding:5px;font-weight:bold" colspan="'.$getGsm->num_rows().'">STOK BERTUAN</td>';
-		}
+		// foreach($getLabel->result() as $lbl){ // STOK BERTUAN
+		// 	$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
+		// 	WHERE nm_ker='$lbl->nm_ker'
+		// 	AND status='0' AND id_pl='0'
+		// 	GROUP BY nm_ker,g_label");
+		// 	$html .='<td style="padding:5px;font-weight:bold" colspan="'.$getGsm->num_rows().'">STOK BERTUAN</td>';
+		// }
 		$html .='</tr>';
 		
 		$html .='<tr>';
@@ -5251,15 +5257,15 @@ class Laporan extends CI_Controller {
 				$html .='<td style="padding:5px;font-weight:bold">'.$gsm->g_label.'</td>';
 			}
 		}
-		foreach($getLabel->result() as $lbl){
-			$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-			WHERE nm_ker='$lbl->nm_ker'
-			AND status='0' AND id_pl='0'
-			GROUP BY nm_ker,g_label");
-			foreach($getGsm->result() as $gsm){
-				$html .='<td style="padding:5px;font-weight:bold">'.$gsm->g_label.'</td>';
-			}
-		}
+		// foreach($getLabel->result() as $lbl){
+		// 	$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
+		// 	WHERE nm_ker='$lbl->nm_ker'
+		// 	AND status='0' AND id_pl='0'
+		// 	GROUP BY nm_ker,g_label");
+		// 	foreach($getGsm->result() as $gsm){
+		// 		$html .='<td style="padding:5px;font-weight:bold">'.$gsm->g_label.'</td>';
+		// 	}
+		// }
 		$html .='</tr>';
 
 		$getWidth = $this->db->query("SELECT width FROM m_timbangan
@@ -5284,6 +5290,15 @@ class Laporan extends CI_Controller {
 					WHERE nm_ker='$gsm->nm_ker' AND g_label='$gsm->g_label' AND width='$width->width'
 					AND STATUS='0' AND id_pl='0'
 					GROUP BY nm_ker,g_label,width");
+                    // if($gsm->nm_ker->row() == 'MH' || $gsm->nm_ker->row() == 'ML' || $gsm->nm_ker->row() == 'MN'){
+                    //     $gbGsm = '#ffc';
+                    // }else if($gsm->nm_ker->row() == 'BK' || $gsm->nm_ker->row() == 'BL'){
+                    //     $gbGsm = '#ccc';
+                    // }else if($gsm->nm_ker->row() == 'WP'){
+                    //     $gbGsm = '#cfc';
+                    // }else{
+                    //     $gbGsm = '#fff';
+                    // }
                     if($getWidth->num_rows() == 0){
                         $html .='<td style="padding:5px;background:#ccf">0</td>';
                     }else{

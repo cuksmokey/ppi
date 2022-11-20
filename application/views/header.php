@@ -159,6 +159,12 @@
 						</a>
 					</li>
                     <li>
+						<a href="<?php echo base_url('Laporan/QC') ?>">
+							<i class="material-icons">list</i>
+							<span>Q C</span>
+						</a>
+					</li>
+                    <li>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">equalizer</i>
                             <span>Laporan</span>
