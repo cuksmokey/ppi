@@ -12,7 +12,20 @@
 					</div>
 
 					<div class="body">
-						TSET
+						<button onclick="opsi('roll')">PER ROLL</button>
+						<button onclick="opsi('tgl')">PER TANGGAL</button><br/><br/>
+
+						<div class="per_roll">
+							<input type="text" name="proll" id="proll" style="border:1px solid #ccc;padding:5px;border-radius:5px">
+						</div>
+						<div class="per_tgl">
+							<input type="date" name="tgl1" id="tgl1" value="<?=date('Y-m-d')?>" style="padding:3px;border:1px solid #ccc;border-radius:5px">
+							s/d
+							<input type="date" name="tgl2" id="tgl2" value="<?=date('Y-m-d')?>" style="padding:3px;border:1px solid #ccc;border-radius:5px">
+							<button style="background:#f44336;color:#fff;padding:4px 6px;border:0;border-radius:3px">CARI</button>
+						</div>
+
+						<div class="isi"></div>
 					</div>
 				</div>
 			</div>
@@ -32,10 +45,23 @@
 </div> -->
 
 <script>
-	// $(document).ready(function(){
-	// 	$(".box-data").hide();
-	// 	$(".loading").hide();
-	// });
+	$(document).ready(function(){
+		$(".per_roll").hide();
+		$(".per_tgl").hide();
+		// load_data();
+	});
+
+	function opsi(opsi){
+		if(opsi == 'roll'){
+			$(".per_roll").show();
+			$(".per_tgl").hide();
+		}else{
+			$(".per_roll").hide();
+			$(".per_tgl").show();
+		}
+	}
+
+	// $(".per_tgl").keydown
 
 	// function NumberFormat(num) {
 	// 	return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
