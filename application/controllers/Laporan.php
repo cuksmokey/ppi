@@ -5412,4 +5412,17 @@ class Laporan extends CI_Controller {
 		// 	'html1' => $html,
 		// ));
 	}
+
+    function QCCariRoll(){
+        $roll = $_POST['roll'];
+
+        $html ='';
+        $html .='<table style="margin:0;padding:0;font-size:12px;color:#000;vertical-align:middle;border-collapse:collapse" border="1">';
+        $html .='<tr>
+            <td>'.$roll.'</td>
+        </tr>';
+        $html .='</table>';
+
+        echo $html;
+    }
 }

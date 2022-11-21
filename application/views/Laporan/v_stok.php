@@ -1,3 +1,19 @@
+<style>
+	.tmbl-stok {
+		background: #f44336;
+		padding: 5px 7px;
+		color: #fff;
+		font-weight: bold;
+		border: 0;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	.tmbl-stok:hover {
+		background: #c40316;
+	}
+</style>
+
 <section class="content">
 	<div class="container-fluid">
 		<div class="row clearfix">
@@ -6,18 +22,18 @@
 					<div class="header">
 						<h2>
 							<ol class="breadcrumb">
-								<li class="">STOK GUDANG</li>
+								<li style="font-weight:bold">STOK GUDANG</li>
 							</ol>
 						</h2>
 					</div>
 
 					<div class="body">
-						<button onclick="load_data('all')">SEMUA</button>
-						<button onclick="load_data('mh')">MEDIUM</button>
-						<button onclick="load_data('bk')">B - KRAFT</button>
-						<button onclick="load_data('mhbk')">MEDIUM - BK</button>
-						<button onclick="load_data('nonspek')">MEDIUM NON SPEK</button>
-						<button onclick="load_data('wp')">W R P</button>
+						<!-- <button onclick="load_data('all')">SEMUA</button> -->
+						<button class="tmbl-stok" onclick="load_data('mh')">MEDIUM</button>
+						<button class="tmbl-stok" onclick="load_data('bk')">B - KRAFT</button>
+						<button class="tmbl-stok" onclick="load_data('mhbk')">MEDIUM - B-KRAFT</button>
+						<button class="tmbl-stok" onclick="load_data('nonspek')">MEDIUM NON SPEK</button>
+						<button class="tmbl-stok" onclick="load_data('wp')">W R P</button>
 						<br/><br/>
 						
 						<div class="loading"></div>
@@ -54,9 +70,22 @@
 	}
 
 	function load_data(jenis){
-		$(".loading").show().html(`Memuat data ${jenis}. Tunggu Sebentar...`);
+		// mh, bk, mhbk, nonspek, wp
+		if(jenis == 'mh'){
+			Njenis = 'MEDIUM';
+		}else if(jenis == 'bk'){
+			Njenis = 'B - KRAFT';
+		}else if(jenis == 'mhbk'){
+			Njenis = 'MEDIUM - B-KRAFT';
+		}else if(jenis == 'nonspek'){
+			Njenis = 'MEDIUM NON SPEK';
+		}else if(jenis == 'wp'){
+			Njenis = 'WP';
+		}else{
+			Njenis = '...';
+		}
+		$(".loading").show().html(`Memuat data ${Njenis}. Tunggu Sebentar . . .`);
 		$(".box-data").html('');
-		// tgl_ctk = $("#tgl_ctk").val();
 		$.ajax({
 			url: '<?php echo base_url('Laporan/NewStokGudang'); ?>',
 			type: "POST",

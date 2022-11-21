@@ -1,3 +1,19 @@
+<style>
+	.tmbl-opsi {
+		background: #f44336;
+		padding: 5px 7px;
+		color: #fff;
+		font-weight: bold;
+		border: 0;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	.tmbl-opsi:hover {
+		background: #c40316;
+	}
+</style>
+
 <section class="content">
 	<div class="container-fluid">
 		<div class="row clearfix">
@@ -6,23 +22,24 @@
 					<div class="header">
 						<h2>
 							<ol class="breadcrumb">
-								<li class="">Q C</li>
+								<li style="font-weight:bold">Q C</li>
 							</ol>
 						</h2>
 					</div>
 
 					<div class="body">
-						<button onclick="opsi('roll')">PER ROLL</button>
-						<button onclick="opsi('tgl')">PER TANGGAL</button><br/><br/>
+						<button class="tmbl-opsi" onclick="opsi('roll')">PER ROLL</button>
+						<button class="tmbl-opsi" onclick="opsi('tgl')">PER TANGGAL</button><br/><br/>
 
 						<div class="per_roll">
 							<input type="text" name="proll" id="proll" style="border:1px solid #ccc;padding:5px;border-radius:5px">
 						</div>
+
 						<div class="per_tgl">
-							<input type="date" name="tgl1" id="tgl1" value="<?=date('Y-m-d')?>" style="padding:3px;border:1px solid #ccc;border-radius:5px">
+							<input type="date" name="tgl1" id="tgl1" style="margin-right:3px;padding:3px 5px;border:1px solid #ccc;border-radius:5px">
 							s/d
-							<input type="date" name="tgl2" id="tgl2" value="<?=date('Y-m-d')?>" style="padding:3px;border:1px solid #ccc;border-radius:5px">
-							<button style="background:#f44336;color:#fff;padding:4px 6px;border:0;border-radius:3px">CARI</button>
+							<input type="date" name="tgl2" id="tgl2" style="margin-left:3px;padding:3px 5px;border:1px solid #ccc;border-radius:5px">
+							<button onclick="cariPerTgl()" style="background:#f44336;color:#fff;font-weight:bold;padding:4px 8px;border:0;border-radius:5px">CARI</button>
 						</div>
 
 						<div class="isi"></div>
@@ -61,7 +78,20 @@
 		}
 	}
 
-	// $(".per_tgl").keydown
+	$("#proll").keyup(function() {
+		let roll = $("#proll").val();
+		$.ajax({
+			url: '<?php echo base_url('Laporan/QCCariRoll'); ?>',
+			type: "POST",
+			data: ({
+				roll: roll,
+			}),
+			success: function(response){
+				$(".isi").html(response);
+				// $(".box-data").show().html(response);
+			}
+		});
+	});
 
 	// function NumberFormat(num) {
 	// 	return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
