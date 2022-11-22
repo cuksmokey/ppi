@@ -5215,7 +5215,7 @@ class Laporan extends CI_Controller {
 		}else if($jenis == 'bk'){
 			$where = "AND (nm_ker='bk' OR nm_ker='bl')";
 		}else if($jenis == 'mhbk'){
-			$where = "AND nm_ker!='wp' AND nm_ker!='mn'";
+			$where = "AND nm_ker!='wp' AND nm_ker!='mn' AND nm_ker!='mh color'";
 		}else if($jenis == 'nonspek'){
 			$where = "AND nm_ker='mn'";
 		}else if($jenis == 'wp'){
@@ -5223,9 +5223,11 @@ class Laporan extends CI_Controller {
 		}else{
 			$where = "";
 		}
+
+		$Btgl = "AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
 		
 		$getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
-		WHERE status='0' AND id_pl='0' $where 
+		WHERE status='0' AND id_pl='0' $where $Btgl
 		GROUP BY nm_ker");
 
 		$html .='<tr>
@@ -5233,43 +5235,27 @@ class Laporan extends CI_Controller {
 		<td style="padding:5px;font-weight:bold" rowspan="2">Ukuran</td>';
 		foreach($getLabel->result() as $lbl){
 			$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-			WHERE nm_ker='$lbl->nm_ker'
+			WHERE nm_ker='$lbl->nm_ker' $Btgl
 			AND status='0' AND id_pl='0'
 			GROUP BY nm_ker,g_label");
 			$html .='<td style="padding:5px;font-weight:bold" colspan="'.$getGsm->num_rows().'">'.$lbl->nm_ker.'</td>';
 		}
-		// foreach($getLabel->result() as $lbl){ // STOK BERTUAN
-		// 	$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-		// 	WHERE nm_ker='$lbl->nm_ker'
-		// 	AND status='0' AND id_pl='0'
-		// 	GROUP BY nm_ker,g_label");
-		// 	$html .='<td style="padding:5px;font-weight:bold" colspan="'.$getGsm->num_rows().'">STOK BERTUAN</td>';
-		// }
 		$html .='</tr>';
 		
 		$html .='<tr>';
 		foreach($getLabel->result() as $lbl){
 			$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-			WHERE nm_ker='$lbl->nm_ker'
+			WHERE nm_ker='$lbl->nm_ker' $Btgl
 			AND status='0' AND id_pl='0'
 			GROUP BY nm_ker,g_label");
 			foreach($getGsm->result() as $gsm){
 				$html .='<td style="padding:5px;font-weight:bold">'.$gsm->g_label.'</td>';
 			}
 		}
-		// foreach($getLabel->result() as $lbl){
-		// 	$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-		// 	WHERE nm_ker='$lbl->nm_ker'
-		// 	AND status='0' AND id_pl='0'
-		// 	GROUP BY nm_ker,g_label");
-		// 	foreach($getGsm->result() as $gsm){
-		// 		$html .='<td style="padding:5px;font-weight:bold">'.$gsm->g_label.'</td>';
-		// 	}
-		// }
 		$html .='</tr>';
 
 		$getWidth = $this->db->query("SELECT width FROM m_timbangan
-		WHERE status='0' AND id_pl='0' $where
+		WHERE status='0' AND id_pl='0' $where $Btgl
 		AND width BETWEEN '155' AND '210' # TESTING
 		GROUP BY width");
 		$i = 0;
@@ -5278,29 +5264,29 @@ class Laporan extends CI_Controller {
 			$html .='<tr><td>'.$i.'</td><td>'.number_format($width->width).'</td>';
 
 			$getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
-			WHERE status='0' AND id_pl='0' $where 
+			WHERE status='0' AND id_pl='0' $where $Btgl
 			GROUP BY nm_ker");
 			foreach($getLabel->result() as $lbl){
 				$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-				WHERE nm_ker='$lbl->nm_ker'
+				WHERE nm_ker='$lbl->nm_ker' $Btgl
 				AND status='0' AND id_pl='0'
 				GROUP BY nm_ker,g_label");
 				foreach($getGsm->result() as $gsm){
 					$getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
-					WHERE nm_ker='$gsm->nm_ker' AND g_label='$gsm->g_label' AND width='$width->width'
+					WHERE nm_ker='$gsm->nm_ker' AND g_label='$gsm->g_label' AND width='$width->width' $Btgl
 					AND STATUS='0' AND id_pl='0'
 					GROUP BY nm_ker,g_label,width");
-                    // if($gsm->nm_ker->row() == 'MH' || $gsm->nm_ker->row() == 'ML' || $gsm->nm_ker->row() == 'MN'){
-                    //     $gbGsm = '#ffc';
-                    // }else if($gsm->nm_ker->row() == 'BK' || $gsm->nm_ker->row() == 'BL'){
-                    //     $gbGsm = '#ccc';
-                    // }else if($gsm->nm_ker->row() == 'WP'){
-                    //     $gbGsm = '#cfc';
-                    // }else{
-                    //     $gbGsm = '#fff';
-                    // }
+                    if($gsm->nm_ker == 'MH' || $gsm->nm_ker == 'ML' || $gsm->nm_ker == 'MN'){
+                        $gbGsm = '#ffc';
+                    }else if($gsm->nm_ker == 'BK' || $gsm->nm_ker == 'BL'){
+                        $gbGsm = '#ccc';
+                    }else if($gsm->nm_ker == 'WP'){
+                        $gbGsm = '#cfc';
+                    }else{
+                        $gbGsm = '#fff';
+                    }
                     if($getWidth->num_rows() == 0){
-                        $html .='<td style="padding:5px;background:#ccf">0</td>';
+                        $html .='<td style="padding:5px;background:'.$gbGsm.'">0</td>';
                     }else{
                         $html .='<td style="padding:5px">
 						<button style="background:#fff;margin:0;padding:0;border:0" onclick="cek_stok('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".')">'.$getWidth->row()->jml.'</button></td>';
@@ -5417,11 +5403,57 @@ class Laporan extends CI_Controller {
         $roll = $_POST['roll'];
 
         $html ='';
-        $html .='<table style="margin:0;padding:0;font-size:12px;color:#000;vertical-align:middle;border-collapse:collapse" border="1">';
-        $html .='<tr>
-            <td>'.$roll.'</td>
-        </tr>';
-        $html .='</table>';
+        $html .='<table style="margin:0;padding:0;font-size:12px;color:#000;vertical-align:center;border-collapse:collapse">';
+		$getRoll = $this->db->query("SELECT*FROM m_timbangan
+		WHERE roll LIKE '%$roll%'
+		ORDER BY id");
+		$i = 0;
+		if($roll == '' || $getRoll->num_rows() == 0){
+			$html .='<tr>
+				<td style="font-weight:bold;text-align:center">DATA TIDAK DITEMUKAN...</td>
+			</tr>';
+		}else{
+			$html .='<tr>
+				<td style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">TANGGAL</td>
+				<td style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">ROLL</td>
+				<td style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">JENIS</td>
+				<td style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">GSM</td>
+				<td style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">UK</td>
+				<td style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">CM</td>
+				<td style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">BERAT</td>
+				<td style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">J</td>
+				<td style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">KETERANGAN</td>
+				<td style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">STATUS</td>
+			</tr>';
+			foreach($getRoll->result() as $roll){
+				$i++;
+				
+				if($roll->status == 0 && $roll->id_pl == 0){
+					$rollStatus = 'STOK';
+				}else if($roll->status == 2 && $roll->id_pl == 0){
+					$rollStatus = 'PPI';
+				}else if($roll->status == 3 && $roll->id_pl == 0){
+					$rollStatus = 'BUFFER';
+				}else if($roll->status == 1 && $roll->id_pl != 0){
+					$rollStatus = 'TERJUAL';
+				}else{
+					$rollStatus = '-';
+				}
+				$html .='<tr>
+					<td style="padding:0 3px;border:1px solid #aaa"><input class="ttggll" type="date" value="'.$roll->tgl.'" style="width:85px"></td>
+					<td style="padding:0 3px;border:1px solid #aaa"><input class="ipt-txt" type="text" value="'.$roll->roll.'" style="width:105px" maxlength="14"></td>
+					<td style="padding:0 3px;border:1px solid #aaa"><input class="ipt-txt" type="text" value="'.$roll->nm_ker.'" style="width:50px;text-align:center"></td>
+					<td style="padding:0 3px;border:1px solid #aaa"><input class="ipt-txt" type="text" value="'.$roll->g_label.'" style="width:50px;text-align:center"></td>
+					<td style="padding:0 3px;border:1px solid #aaa"><input class="ipt-txt" type="text" value="'.round($roll->width,2).'" style="width:50px;text-align:center"></td>
+					<td style="padding:0 3px;border:1px solid #aaa"><input class="ipt-txt" type="text" value="'.$roll->diameter.'" style="width:50px;text-align:center"></td>
+					<td style="padding:0 3px;border:1px solid #aaa"><input class="ipt-txt" type="text" value="'.$roll->weight.'" style="width:50px;text-align:center"></td>
+					<td style="padding:0 3px;border:1px solid #aaa"><input class="ipt-txt" type="text" value="'.$roll->joint.'" style="width:30px;text-align:center"></td>
+					<td style="padding:0 3px;border:1px solid #aaa"><textarea class="ipt-txt" id="ket" style="resize:none;width:180px;height:30px">'.$roll->ket.'</textarea></td>
+					<td>'.$rollStatus.'</td>
+				</tr>';
+			}
+		}
+		$html .='</table>';
 
         echo $html;
     }

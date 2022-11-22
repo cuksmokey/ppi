@@ -12,6 +12,19 @@
 	.tmbl-opsi:hover {
 		background: #c40316;
 	}
+
+	.tmbl-cari {
+		background:#f44336;
+		color:#fff;
+		font-weight:bold;
+		padding:4px 8px;
+		border:0;
+		border-radius:5px
+	}
+
+	.ttggll, .ipt-txt {
+		margin:0;padding:0;border:0
+	}
 </style>
 
 <section class="content">
@@ -32,17 +45,19 @@
 						<button class="tmbl-opsi" onclick="opsi('tgl')">PER TANGGAL</button><br/><br/>
 
 						<div class="per_roll">
-							<input type="text" name="proll" id="proll" style="border:1px solid #ccc;padding:5px;border-radius:5px">
+							<input type="text" name="proll" id="proll" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off">
+							<button class="tmbl-cari" onclick="cariPer('rroll')">CARI</button>
 						</div>
 
 						<div class="per_tgl">
 							<input type="date" name="tgl1" id="tgl1" style="margin-right:3px;padding:3px 5px;border:1px solid #ccc;border-radius:5px">
 							s/d
 							<input type="date" name="tgl2" id="tgl2" style="margin-left:3px;padding:3px 5px;border:1px solid #ccc;border-radius:5px">
-							<button onclick="cariPerTgl()" style="background:#f44336;color:#fff;font-weight:bold;padding:4px 8px;border:0;border-radius:5px">CARI</button>
-						</div>
+							<button class="tmbl-cari" onclick="cariPer('ttgl')">CARI</button>
+						</div><br/>
 
 						<div class="isi"></div>
+						<!-- <input type="text" id="" value=""> -->
 					</div>
 				</div>
 			</div>
@@ -70,16 +85,25 @@
 
 	function opsi(opsi){
 		if(opsi == 'roll'){
+			$("#proll").val('');
 			$(".per_roll").show();
 			$(".per_tgl").hide();
+			$(".isi").html('').hide();
 		}else{
 			$(".per_roll").hide();
 			$(".per_tgl").show();
+			$(".isi").html('').hide();
 		}
 	}
 
-	$("#proll").keyup(function() {
+	// $("#proll").keyup(function() {
+	function cariPer(opsi){
 		let roll = $("#proll").val();
+		// if(roll == ''){
+		// 	$(".isi").show().html('');
+		// }else{
+			$(".isi").show().html('Mencari Data . . .');
+		// }
 		$.ajax({
 			url: '<?php echo base_url('Laporan/QCCariRoll'); ?>',
 			type: "POST",
@@ -87,31 +111,19 @@
 				roll: roll,
 			}),
 			success: function(response){
-				$(".isi").html(response);
+				if(response){
+					$(".isi").html(response);
+				}else{
+					$(".isi").html('Data Tidak ditemukan...');
+				}
 				// $(".box-data").show().html(response);
 			}
 		});
-	});
+	};
+	// });
 
 	// function NumberFormat(num) {
 	// 	return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-	// }
-
-	// function load_data(jenis){
-	// 	$(".loading").show().html(`Memuat data ${jenis}. Tunggu Sebentar...`);
-	// 	$(".box-data").html('');
-	// 	// tgl_ctk = $("#tgl_ctk").val();
-	// 	$.ajax({
-	// 		url: '<?php echo base_url('Laporan/NewStokGudang'); ?>',
-	// 		type: "POST",
-	// 		data: ({
-	// 			jenis: jenis,
-	// 		}),
-	// 		success: function(response){
-	// 			$(".loading").html('').hide();
-	// 			$(".box-data").show().html(response);
-	// 		}
-	// 	});
 	// }
 
 </script>
