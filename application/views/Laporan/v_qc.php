@@ -13,6 +13,10 @@
 		background: #c40316;
 	}
 
+	.tmbl-cek-roll {
+		background:transparent;margin:0;padding:0;border:0
+	}
+
 	.tmbl-cari {
 		background:#f44336;
 		color:#fff;
@@ -23,8 +27,41 @@
 	}
 
 	.ttggll, .ipt-txt {
-		margin:0;padding:0;border:0
+		background:transparent;margin:0;padding:0;border:0
 	}
+	
+	.cek-status-stok {
+		background-color: #fff;
+	}
+	.cek-status-stok:hover {
+		background-color: #eee;
+	}
+
+	.cek-status-buffer {
+		background-color: #fee;
+	}
+	.cek-status-buffer:hover {
+		background-color: #edd;
+	}
+
+	.cek-status-terjual {
+		background-color: #dfd;
+	}
+	.cek-status-terjual:hover {
+		background-color: #cec;
+	}
+
+	.opt_status {
+		background:none;border:0;
+	}
+
+	/* tr .cek-status-terjual:hover {
+		background-color: #cfc;
+	} */
+
+	/* tr:hover td {
+		background-color: #eee;
+	} */
 </style>
 
 <section class="content">
@@ -57,7 +94,7 @@
 						</div><br/>
 
 						<div class="isi"></div>
-						<!-- <input type="text" id="" value=""> -->
+						
 					</div>
 				</div>
 			</div>
@@ -121,6 +158,10 @@
 		});
 	};
 	// });
+
+	function cek_roll(){
+		alert('test');
+	}
 
 	// function NumberFormat(num) {
 	// 	return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
