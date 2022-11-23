@@ -55,13 +55,9 @@
 		background:none;border:0;
 	}
 
-	/* tr .cek-status-terjual:hover {
-		background-color: #cfc;
-	} */
-
-	/* tr:hover td {
-		background-color: #eee;
-	} */
+	textarea {
+		outline: none;
+	}
 </style>
 
 <section class="content">
@@ -82,7 +78,10 @@
 						<button class="tmbl-opsi" onclick="opsi('tgl')">PER TANGGAL</button><br/><br/>
 
 						<div class="per_roll">
-							<input type="text" name="proll" id="proll" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off">
+							<input type="text" name="jnsroll" id="jnsroll" maxlength="8" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="JENIS">
+							<input type="text" name="gsmroll" id="gsmroll" onkeypress="return hanyaAngka(event)" maxlength="3" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="GSM">
+							<input type="text" name="ukroll" id="ukroll" onkeypress="return hanyaAngka(event)" maxlength="3" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="UKURAN">
+							<input type="text" name="proll" id="proll" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="NO. ROLL">
 							<button class="tmbl-cari" onclick="cariPer('rroll')">CARI</button>
 						</div>
 
@@ -100,52 +99,75 @@
 			</div>
 </section>
 
-<!-- <div class="modal fade bd-example-modal-lg" id="modal-stok-list" tabindex="-1" role="dialog">
+<div class="modal fade bd-example-modal-lg" id="modal-qc-list" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header"></div>
 			<div class="modal-body">
-				<div class="isi-stok-list"></div>
-				<div class="isi-stok-tuan"></div>
+				<div class="isi-qc-terjual"></div>
 			</div>
 			<div class="modal-footer"></div>
 		</div>
 	</div>
-</div> -->
+</div>
 
 <script>
 	$(document).ready(function(){
 		$(".per_roll").hide();
 		$(".per_tgl").hide();
-		// load_data();
+		kosong();
 	});
+
+	function kosong(){
+		$("#jnsroll").val("");
+		$("#gsmroll").val("");
+		$("#ukroll").val("");
+		$("#proll").val("");
+		$("#tgl1").val("");
+		$("#tgl2").val("");
+	}
+
+	function hanyaAngka(evt) {
+		var charCode = (evt.which) ? evt.which : event.keyCode
+		if (charCode > 31 && (charCode < 48 || charCode > 57))
+			return false;
+		return true;
+	}
 
 	function opsi(opsi){
 		if(opsi == 'roll'){
-			$("#proll").val('');
+			kosong();
 			$(".per_roll").show();
 			$(".per_tgl").hide();
 			$(".isi").html('').hide();
 		}else{
+			kosong();
 			$(".per_roll").hide();
 			$(".per_tgl").show();
 			$(".isi").html('').hide();
 		}
 	}
 
-	// $("#proll").keyup(function() {
 	function cariPer(opsi){
-		let roll = $("#proll").val();
-		// if(roll == ''){
-		// 	$(".isi").show().html('');
-		// }else{
-			$(".isi").show().html('Mencari Data . . .');
-		// }
+		var jnsroll = $("#jnsroll").val();
+		var gsmroll = $("#gsmroll").val();
+		var ukroll = $("#ukroll").val();
+		var roll = $("#proll").val();
+		var tgl1 = $("#tgl1").val();
+		var tgl2 = $("#tgl2").val();
+		// alert(jnsroll+' '+gsmroll+' '+ukroll+' '+roll+' '+tgl1+' '+tgl2+' '+opsi);
+		$(".isi").show().html('Mencari Data . . .');
 		$.ajax({
 			url: '<?php echo base_url('Laporan/QCCariRoll'); ?>',
 			type: "POST",
 			data: ({
+				jnsroll: jnsroll,
+				gsmroll: gsmroll,
+				ukroll: ukroll,
 				roll: roll,
+				tgl1: tgl1,
+				tgl2: tgl2,
+				opsi: opsi,
 			}),
 			success: function(response){
 				if(response){
@@ -153,14 +175,23 @@
 				}else{
 					$(".isi").html('Data Tidak ditemukan...');
 				}
-				// $(".box-data").show().html(response);
 			}
 		});
 	};
-	// });
 
-	function cek_roll(){
-		alert('test');
+	function cek_roll(id){
+		$(".isi-qc-terjual").html('Tunggu Sebentar . . .');
+		$("#modal-qc-list").modal("show");
+		$.ajax({
+			url: '<?php echo base_url('Laporan/QCRollTerjual') ?>',
+			type: "POST",
+			data: ({
+				id: id
+			}),
+			success: function(response) {
+				$(".isi-qc-terjual").html(response);
+			}
+		});
 	}
 
 	// function NumberFormat(num) {

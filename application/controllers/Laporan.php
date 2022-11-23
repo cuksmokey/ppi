@@ -5400,18 +5400,31 @@ class Laporan extends CI_Controller {
 	}
 
     function QCCariRoll(){
+        $jnsroll = $_POST['jnsroll'];
+        $gsmroll = $_POST['gsmroll'];
+        $ukroll = $_POST['ukroll'];
         $roll = $_POST['roll'];
-
+        $tgl1 = $_POST['tgl1'];
+        $tgl2 = $_POST['tgl2'];
+        $opsi = $_POST['opsi'];
         $html ='';
+
+        if($opsi == 'rroll'){
+            $where = "nm_ker LIKE '%$jnsroll%' AND g_label LIKE '%$gsmroll%' AND width LIKE '%$ukroll%' AND roll LIKE '%$roll%'";
+        }else{
+            $where = "tgl BETWEEN '$tgl1' AND '$tgl2'";
+        }
         $html .='<table style="margin:0;padding:0;font-size:12px;color:#000;vertical-align:center;border-collapse:collapse">';
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan
-		WHERE roll LIKE '%$roll%'
-		ORDER BY id");
+		WHERE $where
+		ORDER BY pm,id");
 		$i = 0;
-		if($roll == '' || $getRoll->num_rows() == 0){
-			$html .='<tr>
-				<td style="font-weight:bold;text-align:center">DATA TIDAK DITEMUKAN...</td>
-			</tr>';
+		if($opsi == 'rroll' && ($jnsroll == '' || $gsmroll == '' || $ukroll == '') && $roll == ''){
+            $html .='<tr><td style="font-weight:bold;text-align:center">LENGKAPI DATA JENIS, GSM, UKURAN...</td></tr>';
+		}else if($opsi == 'ttgl' && ($tgl1 == '' || $tgl2 == '')){
+            $html .='<tr><td style="font-weight:bold;text-align:center">MASUKKAN TANGGAL...</td></tr>';
+		}else if($getRoll->num_rows() == 0){
+            $html .='<tr><td style="font-weight:bold;text-align:center">DATA TIDAK DITEMUKAN...</td></tr>';
 		}else{
 			$html .='<tr>
 				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">TANGGAL</th>
@@ -5430,55 +5443,46 @@ class Laporan extends CI_Controller {
 			</tr>';
 			foreach($getRoll->result() as $roll){
 				$i++;
-				
 				if($roll->status == 0 && $roll->id_pl == 0){ // STOK
-					$rollStatus = 0;
                     $bgStt = 'cek-status-stok';
 					$diss = '';
 					$oBtn = '';
 					$cBtn = '';
+                    $opt = '<option value="0">STOK</option>
+					<option value="2">PPI</option>
+					<option value="3">BUFFER</option>';
 				}else if($roll->status == 2 && $roll->id_pl == 0){ // PPI
-					$rollStatus = 2;
                     $bgStt = 'cek-status-stok';
 					$diss = '';
 					$oBtn = '';
 					$cBtn = '';
+                    $opt = '<option value="2">PPI</option>
+					<option value="0">STOK</option>
+					<option value="3">BUFFER</option>';
 				}else if($roll->status == 3 && $roll->id_pl == 0){ // BUFFER
-					$rollStatus = 3;
                     $bgStt = 'cek-status-buffer';
 					$diss = '';
 					$oBtn = '';
 					$cBtn = '';
+                    $opt = '<option value="3">BUFFER</option>
+					<option value="0">STOK</option>
+					<option value="2">PPI</option>';
 				}else if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){ // PENJUALAN
-					$rollStatus = 1;
                     $bgStt = 'cek-status-terjual';
 					$diss = 'disabled';
-					$oBtn = '<button class="tmbl-cek-roll" onclick="cek_roll()">';
+					// $oBtn = `<button class="tmbl-cek-roll" onclick="cek_roll(''$roll->id'')">`;
+					$oBtn = '<button class="tmbl-cek-roll" onclick="cek_roll('."'".$roll->id."'".')">';
 					$cBtn = '</button>';
+                    $opt = '';
 				}else{ // TIDAK TERDETEKSI
-					$rollStatus = '';
-                    $bgStt = '';
+                    $bgStt = 'cek-status-stok';
 					$diss = '';
 					$oBtn = '';
 					$cBtn = '';
-				}
-
-				if($rollStatus == 0){
-					$opt = '<option value="0">STOK</option>
+                    $opt = '<option value="">-</option>
+                    <option value="0">STOK</option>
 					<option value="2">PPI</option>
 					<option value="3">BUFFER</option>';
-				}else if($rollStatus == 2){
-					$opt = '<option value="2">PPI</option>
-					<option value="0">STOK</option>
-					<option value="3">BUFFER</option>';
-				}else if($rollStatus == 3){
-					$opt = '<option value="3">BUFFER</option>
-					<option value="0">STOK</option>
-					<option value="2">PPI</option>';
-				}else if($rollStatus == 1){
-					$opt = '<option value="">TERJUAL</option>';
-				}else{
-					$opt = '<option value="">-</option>';
 				}
 
 				$html .='<tr class="'.$bgStt.'">
@@ -5493,16 +5497,92 @@ class Laporan extends CI_Controller {
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->diameter.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->weight.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->joint.'" '.$diss.' style="width:30px;text-align:center">'.$cBtn.'</td>
-					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<textarea class="ipt-txt" id="ket" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>
-					<td>
-						<select name="" id="opt_status" class="opt_status">
-							'.$opt.'
-						</select>
-					</td>
-				</tr>';
+					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<textarea class="ipt-txt" id="ket" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
+                    if($opt == ''){
+                        $html .='<td style="border:1px solid #aaa;text-align:center">'.$oBtn.'TERJUAL'.$cBtn.'</td>';
+                    }else{
+                        $html .='<td style="border:1px solid #aaa;text-align:center"><select name="" id="opt_status" class="opt_status"  '.$diss.'>
+                            '.$opt.'
+                        </select></td>';
+                    }
+                $html .='</tr>';
 			}
 		}
 		$html .='</table>';
+
+        echo $html;
+    }
+
+    function QCRollTerjual(){
+        $id = $_POST['id'];
+        $html='';
+        
+        $getId = $this->db->query("SELECT p.tgl AS tgl_pl,p.no_surat,p.no_po,p.nama,p.nm_perusahaan,p.alamat_perusahaan,r.* FROM m_timbangan r
+        INNER JOIN pl p ON r.id_pl=p.id
+        WHERE r.id='$id'");
+        $roll = $getId->row();
+        $html.='<table style="margin:0;font-size:12px;color:#000;border-collapse:collapse">
+            <tr>
+                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">TANGGAL</td>
+                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">ROLL</td>
+                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">BW</td>
+                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">RCT</td>
+                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">BI</td>
+                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">JENIS</td>
+                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">GSM</td>
+                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">WIDTH</td>
+                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">DIAMETER</td>
+                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">WEIGHT</td>
+                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">JOINT</td>
+                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">KETERANGAN</td>
+            </tr>
+            <tr>
+                <td style="padding:5px;border:1px solid #aaa">'.$roll->tgl.'</td>
+                <td style="padding:5px;border:1px solid #aaa">'.$roll->roll.'</td>
+                <td style="padding:5px;border:1px solid #aaa">'.$roll->g_ac.'</td>
+                <td style="padding:5px;border:1px solid #aaa">'.$roll->rct.'</td>
+                <td style="padding:5px;border:1px solid #aaa">'.$roll->bi.'</td>
+                <td style="padding:5px;border:1px solid #aaa">'.$roll->nm_ker.'</td>
+                <td style="padding:5px;border:1px solid #aaa">'.$roll->g_label.'</td>
+                <td style="padding:5px;border:1px solid #aaa">'.$roll->width.'</td>
+                <td style="padding:5px;border:1px solid #aaa">'.$roll->diameter.'</td>
+                <td style="padding:5px;border:1px solid #aaa">'.$roll->weight.'</td>
+                <td style="padding:5px;border:1px solid #aaa">'.$roll->joint.'</td>
+                <td style="padding:5px;border:1px solid #aaa">'.$roll->ket.'</td>
+            </tr>
+        </table><br/>';
+        $html.='<table style="margin:0;font-size:12px;color:#000;border-collapse:collapse">
+            <tr>
+                <td style="padding:8px 5px;font-weight:bold">TANGGAL KIRIM</td>
+                <td>:</td>
+                <td style="padding:8px 5px">'.$this->m_fungsi->tanggal_format_indonesia($roll->tgl_pl).'</td>
+            </tr>
+            <tr>
+                <td style="padding:8px 5px;font-weight:bold">NO. SURAT JALAN</td>
+                <td>:</td>
+                <td style="padding:8px 5px">'.trim($roll->no_surat).'</td>
+            </tr>
+            <tr>
+                <td style="padding:8px 5px;font-weight:bold">NO. PO</td>
+                <td>:</td>
+                <td style="padding:8px 5px">'.$roll->no_po.'</td>
+            </tr>
+            <tr>
+                <td style="padding:8px 5px;font-weight:bold">NAMA</td>
+                <td>:</td>
+                <td style="padding:8px 5px">'.$roll->nama.'</td>
+            </tr>
+            <tr>
+                <td style="padding:8px 5px;font-weight:bold">NAMA PERUSAHAAN</td>
+                <td>:</td>
+                <td style="padding:8px 5px">'.$roll->nm_perusahaan.'</td>
+            </tr>
+            <tr>
+                <td style="padding:8px 5px;font-weight:bold">ALAMAT PERUSAHAAN</td>
+                <td>:</td>
+                <td style="padding:8px 5px">'.$roll->alamat_perusahaan.'</td>
+            </tr>
+        </table>';
 
         echo $html;
     }
