@@ -5418,7 +5418,7 @@ class Laporan extends CI_Controller {
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan
 		WHERE $where
 		ORDER BY pm,id");
-		$i = 0;
+		// $i = 0;
 		if($opsi == 'rroll' && ($jnsroll == '' || $gsmroll == '' || $ukroll == '') && $roll == ''){
             $html .='<tr><td style="font-weight:bold;text-align:center">LENGKAPI DATA JENIS, GSM, UKURAN...</td></tr>';
 		}else if($opsi == 'ttgl' && ($tgl1 == '' || $tgl2 == '')){
@@ -5442,12 +5442,13 @@ class Laporan extends CI_Controller {
 				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">STATUS</th>
 			</tr>';
 			foreach($getRoll->result() as $roll){
-				$i++;
+				// $i++;
 				if($roll->status == 0 && $roll->id_pl == 0){ // STOK
                     $bgStt = 'cek-status-stok';
 					$diss = '';
 					$oBtn = '';
 					$cBtn = '';
+					$spt = 0;
                     $opt = '<option value="0">STOK</option>
 					<option value="2">PPI</option>
 					<option value="3">BUFFER</option>';
@@ -5456,6 +5457,7 @@ class Laporan extends CI_Controller {
 					$diss = '';
 					$oBtn = '';
 					$cBtn = '';
+					$spt = 2;
                     $opt = '<option value="2">PPI</option>
 					<option value="0">STOK</option>
 					<option value="3">BUFFER</option>';
@@ -5464,6 +5466,7 @@ class Laporan extends CI_Controller {
 					$diss = '';
 					$oBtn = '';
 					$cBtn = '';
+					$spt = 3;
                     $opt = '<option value="3">BUFFER</option>
 					<option value="0">STOK</option>
 					<option value="2">PPI</option>';
@@ -5479,31 +5482,34 @@ class Laporan extends CI_Controller {
 					$diss = '';
 					$oBtn = '';
 					$cBtn = '';
-                    $opt = '<option value="">-</option>
+					$spt = 1;
+                    $opt = '<option value="1">-</option>
                     <option value="0">STOK</option>
 					<option value="2">PPI</option>
 					<option value="3">BUFFER</option>';
 				}
 
+				$i = $roll->id;
 				$html .='<tr class="'.$bgStt.'">
-					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<input class="ttggll" type="date" value="'.$roll->tgl.'" '.$diss.' style="width:85px">'.$cBtn.'</td>
-					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->roll.'" '.$diss.' style="width:105px" maxlength="14">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->g_ac.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->rct.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->bi.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->nm_ker.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->g_label.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.round($roll->width,2).'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->diameter.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->weight.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->joint.'" '.$diss.' style="width:30px;text-align:center">'.$cBtn.'</td>
-					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<textarea class="ipt-txt" id="ket" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
+					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<input class="ttggll" type="date" id="etgl-'.$i.'" value="'.$roll->tgl.'" '.$diss.' style="width:85px">'.$cBtn.'</td>
+					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->roll.'" disabled style="width:105px" maxlength="14">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_ac-'.$i.'" value="'.$roll->g_ac.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="erct-'.$i.'" value="'.$roll->rct.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="enm_ker-'.$i.'" value="'.$roll->nm_ker.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_label-'.$i.'" value="'.$roll->g_label.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ewidth-'.$i.'" value="'.round($roll->width,2).'" '.$diss.'  style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ediameter-'.$i.'" value="'.$roll->diameter.'" '.$diss.' maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eweight-'.$i.'" value="'.$roll->weight.'" '.$diss.' onkeypress="return hanyaAngka(event)" maxlength="5" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ejoint-'.$i.'" value="'.$roll->joint.'" '.$diss.' onkeypress="return hanyaAngka(event)" maxlength="3" style="width:30px;text-align:center">'.$cBtn.'</td>
+					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
                     if($opt == ''){
                         $html .='<td style="border:1px solid #aaa;text-align:center">'.$oBtn.'TERJUAL'.$cBtn.'</td>';
                     }else{
-                        $html .='<td style="border:1px solid #aaa;text-align:center"><select name="" id="opt_status" class="opt_status"  '.$diss.'>
+                        $html .='<td style="border:1px solid #aaa;text-align:center"><select name="" id="opt_status-'.$i.'" class="opt_status"  '.$diss.'>
                             '.$opt.'
                         </select></td>';
+						$html .='<td class="edit-roll" style="padding:3px"><button class="" style="background:#fff;border:0;padding:3px 5px" onclick="editRoll('."'".$i."'".')">EDIT</button></td>';
                     }
                 $html .='</tr>';
 			}

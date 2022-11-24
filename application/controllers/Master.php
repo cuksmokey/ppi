@@ -1107,6 +1107,11 @@ class Master extends CI_Controller
 		}
 	}
 
+	function editQCRoll(){
+		$this->m_master->updateQCRoll();
+		echo json_encode(array('data' => true));
+	}
+
 	function print_timbangan()
 	{
 		$id = $_GET['id'];

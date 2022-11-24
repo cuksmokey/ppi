@@ -9,7 +9,7 @@
 		cursor: pointer;
 	}
 
-	.tmbl-opsi:hover {
+	.tmbl-opsi:hover, .tmbl-cari:hover {
 		background: #c40316;
 	}
 
@@ -36,12 +36,18 @@
 	.cek-status-stok:hover {
 		background-color: #eee;
 	}
+	.cek-status-stok:hover .edit-roll {
+		background-color: #eee;
+	}
 
 	.cek-status-buffer {
 		background-color: #fee;
 	}
 	.cek-status-buffer:hover {
 		background-color: #edd;
+	}
+	.cek-status-buffer:hover .edit-roll {
+		background:#edd;
 	}
 
 	.cek-status-terjual {
@@ -55,6 +61,10 @@
 		background:none;border:0;
 	}
 
+	.edit-roll {
+		background:#fff
+	}
+	
 	textarea {
 		outline: none;
 	}
@@ -134,6 +144,14 @@
 		return true;
 	}
 
+	function aK(evt) {
+		var charCode = (evt.which) ? evt.which : event.keyCode
+		// alert(charCode);
+		if (charCode > 31 && (charCode < 46 || charCode > 57))
+			return false;
+		return true;
+	}
+
 	function opsi(opsi){
 		if(opsi == 'roll'){
 			kosong();
@@ -187,6 +205,45 @@
 			type: "POST",
 			data: ({
 				id: id
+			}),
+			success: function(response) {
+				$(".isi-qc-terjual").html(response);
+			}
+		});
+	}
+
+	function editRoll(i){
+		tgl = $("#etgl-"+i).val();
+		g_ac = $("#eg_ac-"+i).val();
+		rct = $("#erct-"+i).val();
+		bi = $("#ebi-"+i).val();
+		nm_ker = $("#enm_ker-"+i).val();
+		g_label = $("#eg_label-"+i).val();
+		width = $("#ewidth-"+i).val();
+		diameter = $("#ediameter-"+i).val();
+		weight = $("#eweight-"+i).val();
+		joint = $("#ejoint-"+i).val();
+		ket = $("#eket-"+i).val();
+		status = $("#opt_status-"+i).val();
+		alert(tgl+' - '+g_ac+' - '+rct+' - '+bi+' - '+nm_ker+' - '+g_label+' - '+width+' - '+diameter+' - '+weight+' - '+joint+' - '+ket+' - '+status);
+
+		$.ajax({
+			url: '<?php echo base_url('Laporan/editQCRoll') ?>',
+			type: "POST",
+			data: ({
+				id : i,
+				tgl : tgl,
+				g_ac : g_ac,
+				rct : rct,
+				bi : bi,
+				nm_ker : nm_ker,
+				g_label : g_label,
+				width : width,
+				diameter : diameter,
+				weight : weight,
+				joint : joint,
+				ket : ket,
+				status : status,
 			}),
 			success: function(response) {
 				$(".isi-qc-terjual").html(response);
