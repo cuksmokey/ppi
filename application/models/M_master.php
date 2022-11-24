@@ -184,6 +184,10 @@ class M_master extends CI_Model{
         return $this->db->query($query);
     }
 
+    function getRollStlhEdit(){
+        return $this->db->query("");
+    }
+
     function insert_timbangan(){
         $data = array(
 			'roll' => $_POST['id'],
@@ -199,6 +203,8 @@ class M_master extends CI_Model{
 			'bi' => $_POST['bi'],
 			'status' => $_POST['cstatus'],
 			'ket' => $_POST['ket'],
+			'created_at' => date("Y-m-d H:i:s"),
+			'created_by' => $this->session->userdata('username'),
 			'pm' => $_POST['kodepm']
 		);
 
@@ -251,6 +257,8 @@ class M_master extends CI_Model{
         $this->db->set('rct', $_POST['rct']);
         $this->db->set('bi', $_POST['bi']);
         $this->db->set('status', $_POST['cstatus']);
+        $this->db->set('packing_at', date("Y-m-d H:i:s"));
+        $this->db->set('packing_by', $this->session->userdata('username'));
         $this->db->where('roll', $_POST['id']);
         $result = $this->db->update('m_timbangan');
 		
@@ -675,6 +683,8 @@ class M_master extends CI_Model{
         $this->db->set('joint', $_POST['joint']);
         $this->db->set('ket', $_POST['ket']);
         $this->db->set('status', $_POST['status']);
+        $this->db->set('packing_at', date("Y-m-d H:i:s"));
+        $this->db->set('packing_by', $this->session->userdata('username'));
         $this->db->where('id', $_POST['id']);
         $result = $this->db->update('m_timbangan');
 		

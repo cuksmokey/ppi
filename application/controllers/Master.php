@@ -1108,8 +1108,27 @@ class Master extends CI_Controller
 	}
 
 	function editQCRoll(){
+		$id = $_POST['id'];
+
 		$this->m_master->updateQCRoll();
-		echo json_encode(array('data' => true));
+		$idNewRoll =  $this->m_master->get_data_one("m_timbangan", "id", $id)->row();
+		echo json_encode(
+			array(
+				'data' => true,
+				'tgl' => $idNewRoll->tgl,
+				'g_ac' => $idNewRoll->g_ac,
+				'rct' => $idNewRoll->rct,
+				'bi' => $idNewRoll->bi,
+				'nm_ker' => $idNewRoll->nm_ker,
+				'g_label' => $idNewRoll->g_label,
+				'width' => $idNewRoll->width,
+				'diameter' => $idNewRoll->diameter,
+				'weight' => $idNewRoll->weight,
+				'joint' => $idNewRoll->joint,
+				'ket' => $idNewRoll->ket,
+				'status' => $idNewRoll->status,
+			)
+		);
 	}
 
 	function print_timbangan()

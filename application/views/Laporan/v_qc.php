@@ -217,18 +217,17 @@
 		g_ac = $("#eg_ac-"+i).val();
 		rct = $("#erct-"+i).val();
 		bi = $("#ebi-"+i).val();
-		nm_ker = $("#enm_ker-"+i).val();
+		nm_ker = $("#enm_ker-"+i).val().toUpperCase();
 		g_label = $("#eg_label-"+i).val();
 		width = $("#ewidth-"+i).val();
 		diameter = $("#ediameter-"+i).val();
 		weight = $("#eweight-"+i).val();
 		joint = $("#ejoint-"+i).val();
-		ket = $("#eket-"+i).val();
+		ket = $("#eket-"+i).val().toUpperCase();
 		status = $("#opt_status-"+i).val();
-		alert(tgl+' - '+g_ac+' - '+rct+' - '+bi+' - '+nm_ker+' - '+g_label+' - '+width+' - '+diameter+' - '+weight+' - '+joint+' - '+ket+' - '+status);
-
+		// alert(tgl+' - '+g_ac+' - '+rct+' - '+bi+' - '+nm_ker+' - '+g_label+' - '+width+' - '+diameter+' - '+weight+' - '+joint+' - '+ket+' - '+status+' - '+pilihan);
 		$.ajax({
-			url: '<?php echo base_url('Laporan/editQCRoll') ?>',
+			url: '<?php echo base_url('Master/editQCRoll') ?>',
 			type: "POST",
 			data: ({
 				id : i,
@@ -245,8 +244,21 @@
 				ket : ket,
 				status : status,
 			}),
-			success: function(response) {
-				$(".isi-qc-terjual").html(response);
+			success: function(data) {
+				json = JSON.parse(data);
+				showNotification("alert-success", "BERHASIL!!!", "top", "center", "", "");
+				$("#etgl-"+i).val(json.tgl).animateCss('fadeInRight');
+				$("#eg_ac-"+i).val(json.g_ac).animateCss('fadeInRight');
+				$("#erct-"+i).val(json.rct).animateCss('fadeInRight');
+				$("#ebi-"+i).val(json.bi).animateCss('fadeInRight');
+				$("#enm_ker-"+i).val(json.nm_ker).animateCss('fadeInRight');
+				$("#eg_label-"+i).val(json.g_label).animateCss('fadeInRight');
+				$("#ewidth-"+i).val(json.width).animateCss('fadeInRight');
+				$("#ediameter-"+i).val(json.diameter).animateCss('fadeInRight');
+				$("#eweight-"+i).val(json.weight).animateCss('fadeInRight');
+				$("#ejoint-"+i).val(json.joint).animateCss('fadeInRight');
+				$("#eket-"+i).val(json.ket).animateCss('fadeInRight');
+				$("#opt_status-"+i).val(json.status).animateCss('fadeInRight');
 			}
 		});
 	}

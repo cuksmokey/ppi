@@ -5496,12 +5496,12 @@ class Laporan extends CI_Controller {
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_ac-'.$i.'" value="'.$roll->g_ac.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="erct-'.$i.'" value="'.$roll->rct.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="enm_ker-'.$i.'" value="'.$roll->nm_ker.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_label-'.$i.'" value="'.$roll->g_label.'" '.$diss.' style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ewidth-'.$i.'" value="'.round($roll->width,2).'" '.$diss.'  style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ediameter-'.$i.'" value="'.$roll->diameter.'" '.$diss.' maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eweight-'.$i.'" value="'.$roll->weight.'" '.$diss.' onkeypress="return hanyaAngka(event)" maxlength="5" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ejoint-'.$i.'" value="'.$roll->joint.'" '.$diss.' onkeypress="return hanyaAngka(event)" maxlength="3" style="width:30px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="enm_ker-'.$i.'" value="'.$roll->nm_ker.'" '.$diss.' maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_label-'.$i.'" value="'.$roll->g_label.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ewidth-'.$i.'" value="'.round($roll->width,2).'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ediameter-'.$i.'" value="'.$roll->diameter.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eweight-'.$i.'" value="'.$roll->weight.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" onkeypress="return hanyaAngka(event)" maxlength="5" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ejoint-'.$i.'" value="'.$roll->joint.'" '.$diss.' onkeypress="return aK(event)" maxlength="2" onkeypress="return hanyaAngka(event)" maxlength="3" style="width:30px;text-align:center">'.$cBtn.'</td>
 					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
                     if($opt == ''){
                         $html .='<td style="border:1px solid #aaa;text-align:center">'.$oBtn.'TERJUAL'.$cBtn.'</td>';
@@ -5527,34 +5527,34 @@ class Laporan extends CI_Controller {
         INNER JOIN pl p ON r.id_pl=p.id
         WHERE r.id='$id'");
         $roll = $getId->row();
-        $html.='<table style="margin:0;font-size:12px;color:#000;border-collapse:collapse">
+        $html.='<table style="margin:0;font-size:12px;color:#000;text-align:center;border-collapse:collapse">
             <tr>
-                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">TANGGAL</td>
-                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">ROLL</td>
-                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">BW</td>
-                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">RCT</td>
-                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">BI</td>
-                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">JENIS</td>
-                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">GSM</td>
-                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">WIDTH</td>
-                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">DIAMETER</td>
-                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">WEIGHT</td>
-                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">JOINT</td>
-                <td style="padding:5px;border:1px solid #aaa;font-weight:bold">KETERANGAN</td>
+                <td style="padding:5px 10px;font-weight:bold">TANGGAL</td>
+                <td style="padding:5px 10px;font-weight:bold">ROLL</td>
+                <td style="padding:5px 10px;font-weight:bold">BW</td>
+                <td style="padding:5px 10px;font-weight:bold">RCT</td>
+                <td style="padding:5px 10px;font-weight:bold">BI</td>
+                <td style="padding:5px 10px;font-weight:bold">JENIS</td>
+                <td style="padding:5px 10px;font-weight:bold">GSM</td>
+                <td style="padding:5px 10px;font-weight:bold">UKURAN</td>
+                <td style="padding:5px 10px;font-weight:bold">DIAMETER</td>
+                <td style="padding:5px 10px;font-weight:bold">BERAT</td>
+                <td style="padding:5px 10px;font-weight:bold">JOINT</td>
+                <td style="padding:5px 10px;font-weight:bold">KETERANGAN</td>
             </tr>
             <tr>
-                <td style="padding:5px;border:1px solid #aaa">'.$roll->tgl.'</td>
-                <td style="padding:5px;border:1px solid #aaa">'.$roll->roll.'</td>
-                <td style="padding:5px;border:1px solid #aaa">'.$roll->g_ac.'</td>
-                <td style="padding:5px;border:1px solid #aaa">'.$roll->rct.'</td>
-                <td style="padding:5px;border:1px solid #aaa">'.$roll->bi.'</td>
-                <td style="padding:5px;border:1px solid #aaa">'.$roll->nm_ker.'</td>
-                <td style="padding:5px;border:1px solid #aaa">'.$roll->g_label.'</td>
-                <td style="padding:5px;border:1px solid #aaa">'.$roll->width.'</td>
-                <td style="padding:5px;border:1px solid #aaa">'.$roll->diameter.'</td>
-                <td style="padding:5px;border:1px solid #aaa">'.$roll->weight.'</td>
-                <td style="padding:5px;border:1px solid #aaa">'.$roll->joint.'</td>
-                <td style="padding:5px;border:1px solid #aaa">'.$roll->ket.'</td>
+                <td style="padding:5px 10px">'.$roll->tgl.'</td>
+                <td style="padding:5px 10px">'.$roll->roll.'</td>
+                <td style="padding:5px 10px">'.$roll->g_ac.'</td>
+                <td style="padding:5px 10px">'.$roll->rct.'</td>
+                <td style="padding:5px 10px">'.$roll->bi.'</td>
+                <td style="padding:5px 10px">'.$roll->nm_ker.'</td>
+                <td style="padding:5px 10px">'.$roll->g_label.'</td>
+                <td style="padding:5px 10px">'.$roll->width.'</td>
+                <td style="padding:5px 10px">'.$roll->diameter.'</td>
+                <td style="padding:5px 10px">'.$roll->weight.'</td>
+                <td style="padding:5px 10px">'.$roll->joint.'</td>
+                <td style="padding:5px 10px;text-align:left">'.$roll->ket.'</td>
             </tr>
         </table><br/>';
         $html.='<table style="margin:0;font-size:12px;color:#000;border-collapse:collapse">
