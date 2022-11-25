@@ -5205,6 +5205,7 @@ class Laporan extends CI_Controller {
 
 	function NewStokGudang() {
 		$jenis = $_POST['jenis'];
+		$otorisasi = $_POST['otorisasi'];
 
 		$html = "";
 		$html .='<style>#i{mso-number-format:\@}</style>';
@@ -5224,10 +5225,16 @@ class Laporan extends CI_Controller {
 			$where = "";
 		}
 
+		if($jenis == 'buffer'){
+			$statusIdPl = "status='3' AND id_pl='0'";
+		}else{
+			$statusIdPl = "status='0' AND id_pl='0'";
+		}
+
 		$Btgl = "AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
 		
 		$getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
-		WHERE status='0' AND id_pl='0' $where $Btgl
+		WHERE $statusIdPl $where $Btgl
 		GROUP BY nm_ker");
 
 		$html .='<tr>
@@ -5236,7 +5243,7 @@ class Laporan extends CI_Controller {
 		foreach($getLabel->result() as $lbl){
 			$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
 			WHERE nm_ker='$lbl->nm_ker' $Btgl
-			AND status='0' AND id_pl='0'
+			AND $statusIdPl
 			GROUP BY nm_ker,g_label");
 			$html .='<td style="padding:5px;font-weight:bold" colspan="'.$getGsm->num_rows().'">'.$lbl->nm_ker.'</td>';
 		}
@@ -5246,7 +5253,7 @@ class Laporan extends CI_Controller {
 		foreach($getLabel->result() as $lbl){
 			$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
 			WHERE nm_ker='$lbl->nm_ker' $Btgl
-			AND status='0' AND id_pl='0'
+			AND $statusIdPl
 			GROUP BY nm_ker,g_label");
 			foreach($getGsm->result() as $gsm){
 				$html .='<td style="padding:5px;font-weight:bold">'.$gsm->g_label.'</td>';
@@ -5255,33 +5262,38 @@ class Laporan extends CI_Controller {
 		$html .='</tr>';
 
 		$getWidth = $this->db->query("SELECT width FROM m_timbangan
-		WHERE status='0' AND id_pl='0' $where $Btgl
-		AND width BETWEEN '155' AND '210' # TESTING
+		WHERE $statusIdPl $where $Btgl
+		-- AND width BETWEEN '155' AND '210' # TESTING STOK
+		AND width BETWEEN '90' AND '100' # TESTING BUFFER
 		GROUP BY width");
 		$i = 0;
 		foreach($getWidth->result() as $width){
 			$i++;
-			$html .='<tr><td>'.$i.'</td><td>'.number_format($width->width).'</td>';
+			$html .='<tr><td>'.$i.'</td><td>'.round($width->width,2).'</td>';
 
 			$getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
-			WHERE status='0' AND id_pl='0' $where $Btgl
+			WHERE $statusIdPl $where $Btgl
 			GROUP BY nm_ker");
 			foreach($getLabel->result() as $lbl){
 				$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
 				WHERE nm_ker='$lbl->nm_ker' $Btgl
-				AND status='0' AND id_pl='0'
+				AND $statusIdPl
 				GROUP BY nm_ker,g_label");
 				foreach($getGsm->result() as $gsm){
 					$getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
 					WHERE nm_ker='$gsm->nm_ker' AND g_label='$gsm->g_label' AND width='$width->width' $Btgl
-					AND STATUS='0' AND id_pl='0'
+					AND $statusIdPl
 					GROUP BY nm_ker,g_label,width");
-                    if($gsm->nm_ker == 'MH' || $gsm->nm_ker == 'ML' || $gsm->nm_ker == 'MN'){
+                    if($gsm->nm_ker == 'MH' || $gsm->nm_ker == 'MI' || $gsm->nm_ker == 'ML'){
                         $gbGsm = '#ffc';
+                    }else if($gsm->nm_ker == 'MN'){
+                        $gbGsm = '#fcc';
                     }else if($gsm->nm_ker == 'BK' || $gsm->nm_ker == 'BL'){
                         $gbGsm = '#ccc';
                     }else if($gsm->nm_ker == 'WP'){
                         $gbGsm = '#cfc';
+                    }else if($gsm->nm_ker == 'MH COLOR'){
+                        $gbGsm = '#ccf';
                     }else{
                         $gbGsm = '#fff';
                     }
@@ -5289,7 +5301,7 @@ class Laporan extends CI_Controller {
                         $html .='<td style="padding:5px;background:'.$gbGsm.'">0</td>';
                     }else{
                         $html .='<td style="padding:5px">
-						<button style="background:#fff;margin:0;padding:0;border:0" onclick="cek_stok('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".')">'.$getWidth->row()->jml.'</button></td>';
+						<button style="background:#fff;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".')">'.$getWidth->row()->jml.'</button></td>';
                     }
 				}
 			}
@@ -5407,13 +5419,24 @@ class Laporan extends CI_Controller {
         $tgl1 = $_POST['tgl1'];
         $tgl2 = $_POST['tgl2'];
         $opsi = $_POST['opsi'];
+        $otori = $_POST['otori'];
+        $stat = $_POST['stat'];
         $html ='';
 
-        if($opsi == 'rroll'){
-            $where = "nm_ker LIKE '%$jnsroll%' AND g_label LIKE '%$gsmroll%' AND width LIKE '%$ukroll%' AND roll LIKE '%$roll%'";
-        }else{
-            $where = "tgl BETWEEN '$tgl1' AND '$tgl2'";
-        }
+		if($otori == 'fg'){
+			if($stat == 'stok'){
+				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='0' AND id_pl='0'";
+			}else{
+				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='3' AND id_pl='0'";
+			}
+		}else{
+			if($opsi == 'rroll'){
+				$where = "nm_ker LIKE '%$jnsroll%' AND g_label LIKE '%$gsmroll%' AND width LIKE '%$ukroll%' AND roll LIKE '%$roll%'";
+			}else{
+				$where = "tgl BETWEEN '$tgl1' AND '$tgl2'";
+			}
+		}
+
         $html .='<table style="margin:0;padding:0;font-size:12px;color:#000;vertical-align:center;border-collapse:collapse">';
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan
 		WHERE $where
@@ -5445,28 +5468,37 @@ class Laporan extends CI_Controller {
 				// $i++;
 				if($roll->status == 0 && $roll->id_pl == 0){ // STOK
                     $bgStt = 'cek-status-stok';
-					$diss = '';
+					if($otori == 'fg'){
+						$diss = 'disabled';
+					}else{
+						$diss = '';
+					}
 					$oBtn = '';
 					$cBtn = '';
-					$spt = 0;
                     $opt = '<option value="0">STOK</option>
 					<option value="2">PPI</option>
 					<option value="3">BUFFER</option>';
 				}else if($roll->status == 2 && $roll->id_pl == 0){ // PPI
                     $bgStt = 'cek-status-stok';
-					$diss = '';
+					if($otori == 'fg'){
+						$diss = 'disabled';
+					}else{
+						$diss = '';
+					}
 					$oBtn = '';
 					$cBtn = '';
-					$spt = 2;
                     $opt = '<option value="2">PPI</option>
 					<option value="0">STOK</option>
 					<option value="3">BUFFER</option>';
 				}else if($roll->status == 3 && $roll->id_pl == 0){ // BUFFER
                     $bgStt = 'cek-status-buffer';
-					$diss = '';
+					if($otori == 'fg'){
+						$diss = 'disabled';
+					}else{
+						$diss = '';
+					}
 					$oBtn = '';
 					$cBtn = '';
-					$spt = 3;
                     $opt = '<option value="3">BUFFER</option>
 					<option value="0">STOK</option>
 					<option value="2">PPI</option>';
@@ -5479,10 +5511,13 @@ class Laporan extends CI_Controller {
                     $opt = '';
 				}else{ // TIDAK TERDETEKSI
                     $bgStt = 'cek-status-stok';
-					$diss = '';
+					if($otori == 'fg'){
+						$diss = 'disabled';
+					}else{
+						$diss = '';
+					}
 					$oBtn = '';
 					$cBtn = '';
-					$spt = 1;
                     $opt = '<option value="1">-</option>
                     <option value="0">STOK</option>
 					<option value="2">PPI</option>

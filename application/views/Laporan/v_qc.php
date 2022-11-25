@@ -186,6 +186,8 @@
 				tgl1: tgl1,
 				tgl2: tgl2,
 				opsi: opsi,
+				otori: 'qc',
+				stat: '',
 			}),
 			success: function(response){
 				if(response){

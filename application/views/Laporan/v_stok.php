@@ -1,4 +1,74 @@
 <style>
+	.tmbl-opsi {
+		background: #f44336;
+		padding: 5px 7px;
+		color: #fff;
+		font-weight: bold;
+		border: 0;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	.tmbl-opsi:hover, .tmbl-cari:hover {
+		background: #c40316;
+	}
+
+	.tmbl-cek-roll {
+		background:transparent;margin:0;padding:0;border:0
+	}
+
+	.tmbl-cari {
+		background:#f44336;
+		color:#fff;
+		font-weight:bold;
+		padding:4px 8px;
+		border:0;
+		border-radius:5px
+	}
+
+	.ttggll, .ipt-txt {
+		background:transparent;margin:0;padding:0;border:0
+	}
+	
+	.cek-status-stok {
+		background-color: #fff;
+	}
+	.cek-status-stok:hover {
+		background-color: #eee;
+	}
+	.cek-status-stok:hover .edit-roll {
+		background-color: #eee;
+	}
+
+	.cek-status-buffer {
+		background-color: #fee;
+	}
+	.cek-status-buffer:hover {
+		background-color: #edd;
+	}
+	.cek-status-buffer:hover .edit-roll {
+		background:#edd;
+	}
+
+	.cek-status-terjual {
+		background-color: #dfd;
+	}
+	.cek-status-terjual:hover {
+		background-color: #cec;
+	}
+
+	.opt_status {
+		background:none;border:0;
+	}
+
+	.edit-roll {
+		background:#fff
+	}
+	
+	textarea {
+		outline: none;
+	}
+
 	.tmbl-stok {
 		background: #f44336;
 		padding: 5px 7px;
@@ -12,7 +82,34 @@
 	.tmbl-stok:hover {
 		background: #c40316;
 	}
+
+	.tmbl-buffer {
+		background: #555;
+		padding: 5px 7px;
+		color: #e9e9e9;
+		font-weight: bold;
+		border: 0;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	.tmbl-buffer:hover {
+		background: #000;
+	}
 </style>
+
+<?php
+	// SuperAdmin, Admin, QC, FG, User
+	if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin"){
+		$otorisasi = 'all';
+	}else if($this->session->userdata('level') == "QC"){
+		$otorisasi = 'qc';
+	}else if($this->session->userdata('level') == "FG"){
+		$otorisasi = 'fg';
+	}else{
+		$otorisasi = 'user';
+	}
+?>
 
 <section class="content">
 	<div class="container-fluid">
@@ -28,16 +125,21 @@
 					</div>
 
 					<div class="body">
-						<!-- <button onclick="load_data('all')">SEMUA</button> -->
-						<button class="tmbl-stok" onclick="load_data('mh')">MEDIUM</button>
-						<button class="tmbl-stok" onclick="load_data('bk')">B - KRAFT</button>
-						<button class="tmbl-stok" onclick="load_data('mhbk')">MEDIUM - B-KRAFT</button>
-						<button class="tmbl-stok" onclick="load_data('nonspek')">MEDIUM NON SPEK</button>
-						<button class="tmbl-stok" onclick="load_data('wp')">W R P</button>
+						<input type="hidden" id="otorisasi" value="<?= $otorisasi ?>">
+						<input type="hidden" id="stat" value="">
+						<button class="tmbl-stok" onclick="load_data('mh','stok')">MEDIUM</button>
+						<button class="tmbl-stok" onclick="load_data('bk','stok')">B - KRAFT</button>
+						<button class="tmbl-stok" onclick="load_data('mhbk','stok')">MEDIUM - B-KRAFT</button>
+						<button class="tmbl-stok" onclick="load_data('nonspek','stok')">MEDIUM NON SPEK</button>
+						<button class="tmbl-stok" onclick="load_data('wp','stok')">W R P</button>
+						<div style="display:block;padding:2px"></div>
+						<button class="tmbl-buffer" onclick="load_data('buffer','buffer')">BUFFER</button>
 						<br/><br/>
 						
 						<div class="loading"></div>
 						<div class="box-data"></div>
+
+						<div class="tmpl-roll"></div>
 					</div>
 				</div>
 			</div>
@@ -61,15 +163,18 @@
 
 <script>
 	$(document).ready(function(){
-		$(".box-data").hide();
-		$(".loading").hide();
+		$(".box-data").html('').hide();
+		$(".loading").html('').hide();
+		$(".tmpl-roll").html('').hide();
 	});
 
 	function NumberFormat(num) {
 		return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
 	}
 
-	function load_data(jenis){
+	function load_data(jenis,stat){
+		$(".tmpl-roll").html('');
+		otorisasi = $("#otorisasi").val();
 		// mh, bk, mhbk, nonspek, wp
 		if(jenis == 'mh'){
 			Njenis = 'MEDIUM';
@@ -81,30 +186,46 @@
 			Njenis = 'MEDIUM NON SPEK';
 		}else if(jenis == 'wp'){
 			Njenis = 'WP';
+		}else if(jenis == 'buffer'){
+			Njenis = 'BUFFER';
 		}else{
-			Njenis = '...';
+			Njenis = '';
 		}
-		$(".loading").show().html(`Memuat data ${Njenis}. Tunggu Sebentar . . .`);
+		$(".loading").show().html(`Memuat data ROLL ${Njenis}. Tunggu Sebentar . . .`);
 		$(".box-data").html('');
 		$.ajax({
 			url: '<?php echo base_url('Laporan/NewStokGudang'); ?>',
 			type: "POST",
 			data: ({
 				jenis: jenis,
+				otorisasi: otorisasi,
 			}),
 			success: function(response){
 				$(".loading").html('').hide();
 				$(".box-data").show().html(response);
+				$("#stat").val(stat);
 			}
 		});
 	}
 
-	function cek_stok(nm_ker,g_label,width){
+	function cek(nm_ker,g_label,width,otori){
+		// stat = $("#stat").val();
+		// alert(nm_ker+' '+g_label+' '+width+' '+otori,' '+stat)
+		if(otori == "all"){
+			cekPenjualan(nm_ker,g_label,width);
+			cekRoll(nm_ker,g_label,width);
+		}else if(otori == "qc" || otori == "fg"){
+			cekRoll(nm_ker,g_label,width,otori);
+		}else{
+			'';
+		}
+	}
+
+	function cekPenjualan(nm_ker,g_label,width){
 		$(".isi-stok-tuan").html('');
 		$("#modal-stok-list").modal("show");
 		$(".isi-stok-list").html('Tunggu Sebentar . . .');
 		$(".modal-header").html(`<h3>CEK UKURAN ${nm_ker} ${g_label} - ${NumberFormat(width)}</h3>`);
-		// alert(nm_ker+' '+g_label+' '+width)
 		$.ajax({
 			url: '<?php echo base_url('Laporan/StokCekPO'); ?>',
 			type: "POST",
@@ -113,18 +234,39 @@
 				g_label: g_label,
 				width: width,
 			}),
-			// dataType: "json",
 			success: function(response){
-				// response = JSON.parse(data);
 				$(".isi-stok-list").html('');
 				$(".isi-stok-list").html(response);
-				// stok_bertuan();
 			}
 		});
 	}
 
-	// function stok_bertuan(){
-	// 	// $(".isi-stok-tuan").html('Bertuan');
-	// }
+	function cekRoll(nm_ker,g_label,width,otori){
+		stat = $("#stat").val();
+		$(".tmpl-roll").show().html('<br/><br/>Mencari Data . . .');
+		$.ajax({
+			url: '<?php echo base_url('Laporan/QCCariRoll'); ?>',
+			type: "POST",
+			data: ({
+				jnsroll: nm_ker,
+				gsmroll: g_label,
+				ukroll: width,
+				roll: '',
+				tgl1: '',
+				tgl2: '',
+				opsi: '',
+				otori: otori,
+				stat: stat,
+			}),
+			success: function(response){
+				if(response){
+					// $(".isi").html(response);
+					$(".tmpl-roll").show().html('<br/><br/>'+response);
+				}else{
+					$(".tmpl-roll").html('Data Tidak ditemukan...');
+				}
+			}
+		});
+	}
 
 </script>
