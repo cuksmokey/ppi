@@ -670,19 +670,25 @@ class M_master extends CI_Model{
         return $result;
     }
 
-	function updateQCRoll(){
-		$this->db->set('tgl', $_POST['tgl']);
-        $this->db->set('g_ac', $_POST['g_ac']);
-        $this->db->set('rct', $_POST['rct']);
-        $this->db->set('bi', $_POST['bi']);
-        $this->db->set('nm_ker', $_POST['nm_ker']);
-        $this->db->set('g_label', $_POST['g_label']);
-        $this->db->set('width', $_POST['width']);
-        $this->db->set('diameter', $_POST['diameter']);
-        $this->db->set('weight', $_POST['weight']);
-        $this->db->set('joint', $_POST['joint']);
-        $this->db->set('ket', $_POST['ket']);
-        $this->db->set('status', $_POST['status']);
+	function updateQCRoll(){ //
+        if($_POST['edit'] == 'ListStokGudang'){
+            $this->db->set('ket', $_POST['ket']);
+            $this->db->set('status', $_POST['status']);
+        }else{
+            $this->db->set('tgl', $_POST['tgl']);
+            $this->db->set('g_ac', $_POST['g_ac']);
+            $this->db->set('rct', $_POST['rct']);
+            $this->db->set('bi', $_POST['bi']);
+            $this->db->set('nm_ker', $_POST['nm_ker']);
+            $this->db->set('g_label', $_POST['g_label']);
+            $this->db->set('width', $_POST['width']);
+            $this->db->set('diameter', $_POST['diameter']);
+            $this->db->set('weight', $_POST['weight']);
+            $this->db->set('joint', $_POST['joint']);
+            $this->db->set('ket', $_POST['ket']);
+            $this->db->set('status', $_POST['status']);
+        }
+        
         $this->db->set('packing_at', date("Y-m-d H:i:s"));
         $this->db->set('packing_by', $this->session->userdata('username'));
         $this->db->where('id', $_POST['id']);

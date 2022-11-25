@@ -93,7 +93,7 @@ class Laporan extends CI_Controller {
         $this->load->view('footer');
     }
 
-    function QC(){
+    function List_Roll(){
         $this->load->view('header');
         $this->load->view('Laporan/v_qc');
         $this->load->view('footer');
@@ -5206,26 +5206,27 @@ class Laporan extends CI_Controller {
 	function NewStokGudang() {
 		$jenis = $_POST['jenis'];
 		$otorisasi = $_POST['otorisasi'];
+		$stat = $_POST['stat'];
 
 		$html = "";
 		$html .='<style>#i{mso-number-format:\@}</style>';
 		$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;text-align:center;vertical-align:middle;border-collapse:collapse" border="1">';
 
-		if($jenis == 'mh'){
+		if($jenis == 'mh' || $jenis == 'rmh'){
 			$where = "AND (nm_ker='mh' OR nm_ker='mi')";
-		}else if($jenis == 'bk'){
+		}else if($jenis == 'bk' || $jenis == 'rbk'){
 			$where = "AND (nm_ker='bk' OR nm_ker='bl')";
-		}else if($jenis == 'mhbk'){
+		}else if($jenis == 'mhbk' || $jenis == 'rmhbk'){
 			$where = "AND nm_ker!='wp' AND nm_ker!='mn' AND nm_ker!='mh color'";
-		}else if($jenis == 'nonspek'){
+		}else if($jenis == 'nonspek' || $jenis == 'rnonspek'){
 			$where = "AND nm_ker='mn'";
-		}else if($jenis == 'wp'){
+		}else if($jenis == 'wp' || $jenis == 'rwp'){
 			$where = "AND nm_ker='wp'";
 		}else{
 			$where = "";
 		}
 
-		if($jenis == 'buffer'){
+		if($stat == 'buffer'){
 			$statusIdPl = "status='3' AND id_pl='0'";
 		}else{
 			$statusIdPl = "status='0' AND id_pl='0'";
@@ -5423,7 +5424,7 @@ class Laporan extends CI_Controller {
         $stat = $_POST['stat'];
         $html ='';
 
-		if($otori == 'fg'){
+		if($opsi == 'cekRollStok'){
 			if($stat == 'stok'){
 				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='0' AND id_pl='0'";
 			}else{
@@ -5468,7 +5469,7 @@ class Laporan extends CI_Controller {
 				// $i++;
 				if($roll->status == 0 && $roll->id_pl == 0){ // STOK
                     $bgStt = 'cek-status-stok';
-					if($otori == 'fg'){
+					if($opsi == 'cekRollStok'){
 						$diss = 'disabled';
 					}else{
 						$diss = '';
@@ -5477,10 +5478,11 @@ class Laporan extends CI_Controller {
 					$cBtn = '';
                     $opt = '<option value="0">STOK</option>
 					<option value="2">PPI</option>
-					<option value="3">BUFFER</option>';
+					<option value="3">BUFFER</option>
+                    <option value="1">-</option>';
 				}else if($roll->status == 2 && $roll->id_pl == 0){ // PPI
                     $bgStt = 'cek-status-stok';
-					if($otori == 'fg'){
+					if($opsi == 'cekRollStok'){
 						$diss = 'disabled';
 					}else{
 						$diss = '';
@@ -5489,10 +5491,11 @@ class Laporan extends CI_Controller {
 					$cBtn = '';
                     $opt = '<option value="2">PPI</option>
 					<option value="0">STOK</option>
-					<option value="3">BUFFER</option>';
+					<option value="3">BUFFER</option>
+                    <option value="1">-</option>';
 				}else if($roll->status == 3 && $roll->id_pl == 0){ // BUFFER
                     $bgStt = 'cek-status-buffer';
-					if($otori == 'fg'){
+					if($opsi == 'cekRollStok'){
 						$diss = 'disabled';
 					}else{
 						$diss = '';
@@ -5501,7 +5504,8 @@ class Laporan extends CI_Controller {
 					$cBtn = '';
                     $opt = '<option value="3">BUFFER</option>
 					<option value="0">STOK</option>
-					<option value="2">PPI</option>';
+					<option value="2">PPI</option>
+                    <option value="1">-</option>';
 				}else if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){ // PENJUALAN
                     $bgStt = 'cek-status-terjual';
 					$diss = 'disabled';
@@ -5511,7 +5515,7 @@ class Laporan extends CI_Controller {
                     $opt = '';
 				}else{ // TIDAK TERDETEKSI
                     $bgStt = 'cek-status-stok';
-					if($otori == 'fg'){
+					if($opsi == 'cekRollStok'){
 						$diss = 'disabled';
 					}else{
 						$diss = '';
@@ -5523,6 +5527,12 @@ class Laporan extends CI_Controller {
 					<option value="2">PPI</option>
 					<option value="3">BUFFER</option>';
 				}
+
+                if($otori == 'user'){ // khusus ket dan status
+                    $fgdiss = 'disabled';
+                }else{
+                    $fgdiss = '';
+                }
 
 				$i = $roll->id;
 				$html .='<tr class="'.$bgStt.'">
@@ -5537,14 +5547,18 @@ class Laporan extends CI_Controller {
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ediameter-'.$i.'" value="'.$roll->diameter.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eweight-'.$i.'" value="'.$roll->weight.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" onkeypress="return hanyaAngka(event)" maxlength="5" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ejoint-'.$i.'" value="'.$roll->joint.'" '.$diss.' onkeypress="return aK(event)" maxlength="2" onkeypress="return hanyaAngka(event)" maxlength="3" style="width:30px;text-align:center">'.$cBtn.'</td>
-					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
+					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$fgdiss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
                     if($opt == ''){
                         $html .='<td style="border:1px solid #aaa;text-align:center">'.$oBtn.'TERJUAL'.$cBtn.'</td>';
                     }else{
-                        $html .='<td style="border:1px solid #aaa;text-align:center"><select name="" id="opt_status-'.$i.'" class="opt_status"  '.$diss.'>
+                        $html .='<td style="border:1px solid #aaa;text-align:center"><select name="" id="opt_status-'.$i.'" class="opt_status"  '.$fgdiss.'>
                             '.$opt.'
                         </select></td>';
-						$html .='<td class="edit-roll" style="padding:3px"><button class="" style="background:#fff;border:0;padding:3px 5px" onclick="editRoll('."'".$i."'".')">EDIT</button></td>';
+                        if($otori == 'user'){
+                            $html .='';
+                        }else{
+                            $html .='<td class="edit-roll" style="padding:3px"><button class="" style="background:#fff;border:0;padding:3px 5px" onclick="editRoll('."'".$i."'".')">EDIT</button></td>';
+                        }
                     }
                 $html .='</tr>';
 			}

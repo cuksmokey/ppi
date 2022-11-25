@@ -78,7 +78,6 @@
             </div>
             <div class="collapse navbar-collapse" id="navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    
                     <!-- Notifications -->
                     <!-- <li class="dropdown"> -->
                     <!-- <li class="pull-right"><a href="javascript:void(0);" class="js-right-sidebar" data-close="true"><i class="material-icons">more_vert</i></a></li> -->
@@ -101,7 +100,6 @@
                     <div class="btn-group user-helper-dropdown">
                         <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Logout</i>
                         <ul class="dropdown-menu pull-right">
-                            
                             <li><a href="<?php echo base_url('Login/logout') ?>">Logout</a></li>
                         </ul>
                     </div>
@@ -112,13 +110,14 @@
             <div class="menu">
                 <ul class="list">
                     <li class="header">MAIN NAVIGATION</li>
+                    <?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
                     <li>
                         <a href="<?php echo base_url() ?>">
                             <i class="material-icons">home</i>
                             <span>Dashboard</span>
                         </a>
                     </li>
-                    
+                    <?php } ?>
                     <li>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">book</i>
@@ -128,7 +127,7 @@
                             <li>
                                 <a href="<?php echo base_url('Master/Timbangan') ?>">Timbangan</a>
                             </li>
-                            <?php if($this->session->userdata('level') == "SuperAdmin") { ?>
+                            <?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
                                 <li>
                                     <a href="<?php echo base_url('Master/Perusahaan') ?>">Perusahaan</a>
                                 </li>
@@ -138,7 +137,7 @@
                             <?php } ?>
                         </ul>
                     </li>
-                    <?php if($this->session->userdata('level') == "SuperAdmin") { ?>
+                    <?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
                         <li>
                             <a href="<?php echo base_url('Master/Packing_list') ?>">
                                 <i class="material-icons">list</i>
@@ -152,18 +151,18 @@
                             </a>
                         </li>
                     <?php } ?>
-					<li>
-						<a href="<?php echo base_url('Laporan/Stok_Gudang') ?>">
-							<i class="material-icons">list</i>
-							<span>Stok Gudang</span>
-						</a>
-					</li>
                     <li>
-						<a href="<?php echo base_url('Laporan/QC') ?>">
-							<i class="material-icons">list</i>
-							<span>Q C</span>
-						</a>
-					</li>
+                        <a href="<?php echo base_url('Laporan/Stok_Gudang') ?>">
+                            <i class="material-icons">list</i>
+                            <span>Stok Gudang</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?php echo base_url('Laporan/List_Roll') ?>">
+                            <i class="material-icons">list</i>
+                            <span>List Roll</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">equalizer</i>
@@ -173,48 +172,45 @@
                             <li>
                                 <a href="<?php echo base_url('Laporan/Timbangan') ?>">TIMBANGAN</a>
                             </li>
-                            <li>
-                                <a href="<?php echo base_url('Laporan/PenjualanHarian') ?>">PENJUALAN HARIAN</a>
-                            </li>
-                            <li>
-                                <a href="<?php echo base_url('Laporan/PenjualanRekap') ?>">PENJUALAN REKAP</a>
-                            </li>
-                            <li>
-                                <a href="<?php echo base_url('Laporan/PenjualanTahunan') ?>">PENJUALAN TAHUNAN</a>
-                            </li>
-							<li>
-                                <a href="<?php echo base_url('Laporan/LaporanInvoice') ?>">INVOICE</a>
-                            </li>
-							<li>
-                                <a href="<?php echo base_url('Laporan/POCorrugated') ?>">PO CORRUGATED</a>
-                            </li>
-                            
-                            <?php if($this->session->userdata('level') == "SuperAdmin") { ?>
-                                
+                            <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin") { ?>
                                 <li>
+                                    <a href="<?php echo base_url('Laporan/PenjualanHarian') ?>">PENJUALAN HARIAN</a>
+                                </li>
+                                <li>
+                                    <a href="<?php echo base_url('Laporan/PenjualanRekap') ?>">PENJUALAN REKAP</a>
+                                </li>
+                                <li>
+                                    <a href="<?php echo base_url('Laporan/PenjualanTahunan') ?>">PENJUALAN TAHUNAN</a>
+                                </li>
+                                <li>
+                                    <a href="<?php echo base_url('Laporan/LaporanInvoice') ?>">INVOICE</a>
+                                </li>
+                                <!-- <li>
+                                    <a href="<?php echo base_url('Laporan/POCorrugated') ?>">PO CORRUGATED</a>
+                                </li> -->
+                                <!-- <li>
                                     <a href="<?php echo base_url('Laporan/csv') ?>">CSV</a>
-                                </li>
-                                <li>
+                                </li> -->
+                                <!-- <li>
                                     <a href="<?php echo base_url('Laporan/print_label_pl') ?>">LABEL PACKING LIST</a>
-                                </li>
-                                <li>
+                                </li> -->
+                                <!-- <li>
                                     <a href="<?php echo base_url('Laporan/print_sj') ?>">SURAT JALAN + PACKING LIST</a>
-                                </li>
-                                <li>
+                                </li> -->
+                                <!-- <li>
                                     <a href="<?php echo base_url('Laporan/update_stok_gudang') ?>">UPDATE STOK GUDANG</a>
-                                </li>
-                                <li>
+                                </li> -->
+                                <!-- <li>
                                     <a href="<?php echo base_url('Laporan/update_po') ?>">UPDATE PO</a>
-                                </li>
+                                </li> -->
                             <?php } ?>
                         </ul>
                     </li>
-                    
                 </ul>
             </div>
             <!-- if($this->session->userdata('username') == "develop") -->
             <!-- #Menu -->
-             <!-- Footer -->
+            <!-- Footer -->
             <div class="legal">
                 <div class="copyright">
                     P P I
@@ -314,12 +310,10 @@
                     </ul>
                 </div>
             </div>
-        </aside> -->
-        <!-- #END# Right Sidebar -->
+            </aside> -->
+            <!-- #END# Right Sidebar -->
     </section>
-    
+
     <!-- Jquery Core Js -->
     <script src="<?php echo base_url(); ?>assets/plugins/jquery/jquery.min.js"></script>
     <!-- <script src="<?php echo base_url(); ?>assets/js/jquery.priceformat.js"></script> -->
-    
-           

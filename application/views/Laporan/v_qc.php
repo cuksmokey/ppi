@@ -70,6 +70,21 @@
 	}
 </style>
 
+<?php
+	// SuperAdmin, Admin, QC, FG, User
+	if($this->session->userdata('level') == "SuperAdmin"){
+		$otorisasi = 'all';
+	}else if($this->session->userdata('level') == "Admin"){
+		$otorisasi = 'admin';
+	}else if($this->session->userdata('level') == "QC"){
+		$otorisasi = 'qc';
+	}else if($this->session->userdata('level') == "FG"){
+		$otorisasi = 'fg';
+	}else{
+		$otorisasi = 'user';
+	}
+?>
+
 <section class="content">
 	<div class="container-fluid">
 		<div class="row clearfix">
@@ -78,12 +93,13 @@
 					<div class="header">
 						<h2>
 							<ol class="breadcrumb">
-								<li style="font-weight:bold">Q C</li>
+								<li style="font-weight:bold">LIST ROLL</li>
 							</ol>
 						</h2>
 					</div>
 
 					<div class="body">
+						<input type="hidden" id="otorisasi" value="<?= $otorisasi ?>">
 						<button class="tmbl-opsi" onclick="opsi('roll')">PER ROLL</button>
 						<button class="tmbl-opsi" onclick="opsi('tgl')">PER TANGGAL</button><br/><br/>
 
@@ -167,12 +183,13 @@
 	}
 
 	function cariPer(opsi){
-		var jnsroll = $("#jnsroll").val();
-		var gsmroll = $("#gsmroll").val();
-		var ukroll = $("#ukroll").val();
-		var roll = $("#proll").val();
-		var tgl1 = $("#tgl1").val();
-		var tgl2 = $("#tgl2").val();
+		otorisasi = $("#otorisasi").val();
+		jnsroll = $("#jnsroll").val();
+		gsmroll = $("#gsmroll").val();
+		ukroll = $("#ukroll").val();
+		roll = $("#proll").val();
+		tgl1 = $("#tgl1").val();
+		tgl2 = $("#tgl2").val();
 		// alert(jnsroll+' '+gsmroll+' '+ukroll+' '+roll+' '+tgl1+' '+tgl2+' '+opsi);
 		$(".isi").show().html('Mencari Data . . .');
 		$.ajax({
@@ -186,7 +203,7 @@
 				tgl1: tgl1,
 				tgl2: tgl2,
 				opsi: opsi,
-				otori: 'qc',
+				otori: otorisasi,
 				stat: '',
 			}),
 			success: function(response){
@@ -214,7 +231,8 @@
 		});
 	}
 
-	function editRoll(i){
+	function editRoll(i){ //
+		otorisasi = $("#otorisasi").val();
 		tgl = $("#etgl-"+i).val();
 		g_ac = $("#eg_ac-"+i).val();
 		rct = $("#erct-"+i).val();
@@ -245,6 +263,7 @@
 				joint : joint,
 				ket : ket,
 				status : status,
+				edit: 'LapQC',
 			}),
 			success: function(data) {
 				json = JSON.parse(data);
