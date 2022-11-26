@@ -262,7 +262,7 @@
 
 	function cekRoll(nm_ker,g_label,width,otori){
 		stat = $("#stat").val();
-		$(".tmpl-roll").show().html('<br/><br/>Mencari Data . . .');
+		$(".tmpl-roll").show().html('<br/>Mencari Data . . .');
 		$.ajax({
 			url: '<?php echo base_url('Laporan/QCCariRoll'); ?>',
 			type: "POST",
@@ -280,7 +280,7 @@
 			success: function(response){
 				if(response){
 					// $(".isi").html(response);
-					$(".tmpl-roll").show().html('<br/><br/>'+response);
+					$(".tmpl-roll").show().html('<br/>TAMPIL DATA '+nm_ker+' - '+g_label+' - '+width+' :<br/><br/>'+response);
 				}else{
 					$(".tmpl-roll").html('Data Tidak ditemukan...');
 				}

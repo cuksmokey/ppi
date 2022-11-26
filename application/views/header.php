@@ -151,6 +151,12 @@
                             </a>
                         </li>
                     <?php } ?>
+					<li>
+                        <a href="<?php echo base_url('Laporan/Stok_Gudang') ?>">
+                            <i class="material-icons">list</i>
+                            <span>Cek Produksi</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="<?php echo base_url('Laporan/Stok_Gudang') ?>">
                             <i class="material-icons">list</i>

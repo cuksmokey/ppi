@@ -5469,7 +5469,7 @@ class Laporan extends CI_Controller {
 				// $i++;
 				if($roll->status == 0 && $roll->id_pl == 0){ // STOK
                     $bgStt = 'cek-status-stok';
-					if($opsi == 'cekRollStok'){
+					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
 						$diss = 'disabled';
 					}else{
 						$diss = '';
@@ -5482,7 +5482,7 @@ class Laporan extends CI_Controller {
                     <option value="1">-</option>';
 				}else if($roll->status == 2 && $roll->id_pl == 0){ // PPI
                     $bgStt = 'cek-status-stok';
-					if($opsi == 'cekRollStok'){
+					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
 						$diss = 'disabled';
 					}else{
 						$diss = '';
@@ -5495,7 +5495,7 @@ class Laporan extends CI_Controller {
                     <option value="1">-</option>';
 				}else if($roll->status == 3 && $roll->id_pl == 0){ // BUFFER
                     $bgStt = 'cek-status-buffer';
-					if($opsi == 'cekRollStok'){
+					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
 						$diss = 'disabled';
 					}else{
 						$diss = '';
@@ -5515,7 +5515,7 @@ class Laporan extends CI_Controller {
                     $opt = '';
 				}else{ // TIDAK TERDETEKSI
                     $bgStt = 'cek-status-stok';
-					if($opsi == 'cekRollStok'){
+					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
 						$diss = 'disabled';
 					}else{
 						$diss = '';
