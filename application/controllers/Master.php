@@ -19,7 +19,13 @@ class Master extends CI_Controller
 	public function index()
 	{
 		$this->load->view('header');
-		$this->load->view('home');
+		if($this->session->userdata('level') == "SuperAdmin"){
+			$this->load->view('home');
+		}else if($this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG"){
+			$this->load->view('Laporan/v_stok');
+		}else{
+			$this->load->view('Master/v_timbangan');
+		}
 		$this->load->view('footer');
 	}
 

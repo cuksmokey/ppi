@@ -96,6 +96,14 @@
 	.tmbl-buffer:hover {
 		background: #000;
 	}
+
+	.inpt-txt-kosong {
+		background:none;margin:0 0 0 10px;padding:0;border:0;font-weight:bold
+	}
+
+	.clear{
+		display:block;padding:2px
+	}
 </style>
 
 <?php
@@ -121,7 +129,7 @@
 					<div class="header">
 						<h2>
 							<ol class="breadcrumb">
-								<li style="font-weight:bold">STOK GUDANG</li>
+								<li style="font-weight:bold">STOK GUDANG + PRODUKSI</li>
 							</ol>
 						</h2>
 					</div>
@@ -129,27 +137,57 @@
 					<div class="body">
 						<input type="hidden" id="otorisasi" value="<?= $otorisasi ?>">
 						<input type="hidden" id="stat" value="">
-						<button disabled>STOK : </button>
-						<button class="tmbl-stok" onclick="load_data('mh','stok')">MEDIUM</button>
-						<button class="tmbl-stok" onclick="load_data('bk','stok')">B - KRAFT</button>
-						<button class="tmbl-stok" onclick="load_data('mhbk','stok')">MEDIUM - B-KRAFT</button>
-						<button class="tmbl-stok" onclick="load_data('nonspek','stok')">MEDIUM NON SPEK</button>
-						<button class="tmbl-stok" onclick="load_data('wp','stok')">W P</button>
-						<button class="tmbl-stok" onclick="load_data('all','stok')">SEMUA</button>
-						<div style="display:block;padding:2px"></div>
-						<button disabled>BUFFER : </button>
-						<button class="tmbl-buffer" onclick="load_data('rmh','buffer')">MEDIUM</button>
-						<button class="tmbl-buffer" onclick="load_data('rbk','buffer')">B - KRAFT</button>
-						<button class="tmbl-buffer" onclick="load_data('rmhbk','buffer')">MEDIUM - B-KRAFT</button>
-						<button class="tmbl-buffer" onclick="load_data('rnonspek','buffer')">MEDIUM NON SPEK</button>
-						<button class="tmbl-buffer" onclick="load_data('rwp','buffer')">W P</button>
-						<button class="tmbl-buffer" onclick="load_data('rall','buffer')">SEMUA</button>
-						<br/><br/>
-						
-						<div class="loading"></div>
-						<div class="box-data"></div>
 
-						<div class="tmpl-roll"></div>
+						<button onclick="plh_menu('stok')">STOK GUDANG</button>
+						<button onclick="plh_menu('produksi')">PRODUKSI</button>
+
+						<div class="menu-stok" style="padding-top:10px">
+							<button disabled>STOK : </button>
+							<button class="tmbl-stok" onclick="load_data('mh','stok')">MEDIUM</button>
+							<button class="tmbl-stok" onclick="load_data('bk','stok')">B - KRAFT</button>
+							<button class="tmbl-stok" onclick="load_data('mhbk','stok')">MEDIUM - B-KRAFT</button>
+							<button class="tmbl-stok" onclick="load_data('nonspek','stok')">MEDIUM NON SPEK</button>
+							<button class="tmbl-stok" onclick="load_data('wp','stok')">W P</button>
+							<button class="tmbl-stok" onclick="load_data('all','stok')">SEMUA</button>
+							<div class="clear"></div>
+
+							<button disabled>BUFFER : </button>
+							<button class="tmbl-buffer" onclick="load_data('rmh','buffer')">MEDIUM</button>
+							<button class="tmbl-buffer" onclick="load_data('rbk','buffer')">B - KRAFT</button>
+							<button class="tmbl-buffer" onclick="load_data('rmhbk','buffer')">MEDIUM - B-KRAFT</button>
+							<button class="tmbl-buffer" onclick="load_data('rnonspek','buffer')">MEDIUM NON SPEK</button>
+							<button class="tmbl-buffer" onclick="load_data('rwp','buffer')">W P</button>
+							<button class="tmbl-buffer" onclick="load_data('rall','buffer')">SEMUA</button>
+						</div>
+						
+						<div class="menu-produksi" style="padding-top:10px">
+							<button disabled>PILIH : </button>
+							<button class="tmbl-stok" onclick="p_pm(1)">PM 1</button>
+							<button class="tmbl-stok" onclick="p_pm(2)">PM 2</button>
+							<button class="tmbl-stok" onclick="p_pm(12)">PM 1-2</button>
+							<input type="text" name="p-pm" id="p-pm" class="inpt-txt-kosong" disabled>
+							<input type="hidden" id="p-pm-v" value="">
+							<div class="clear"></div>
+
+							<button disabled>PILIH : </button>
+							<button class="tmbl-stok" onclick="p_jenis('mh')">MEDIUM</button>
+							<button class="tmbl-stok" onclick="p_jenis('bk')">B - KRAFT</button>
+							<button class="tmbl-stok" onclick="p_jenis('mhbk')">MEDIUM - B-KRAFT</button>
+							<button class="tmbl-stok" onclick="p_jenis('nonspek')">MEDIUM NON SPEK</button>
+							<button class="tmbl-stok" onclick="p_jenis('wp')">W P</button>
+							<button class="tmbl-stok" onclick="p_jenis('all')">SEMUA</button>
+							<input type="text" name="p-jenis" id="p-jenis" class="inpt-txt-kosong" disabled>
+							<input type="hidden" id="p-jenis-v" value="">
+							<div class="clear"></div>
+
+							<button disabled>PILIH : </button>
+							<input type="date" name="tgl" id="tgl" style="padding:3px 5px;border:1px solid #ccc;border-radius:5px">
+							<button class="tmbl-stok" onclick="load_data('tgl','produksi')">CARI</button>
+						</div>
+
+						<div class="box-data" style="padding-top:10px"></div>
+
+						<div class="tmpl-roll" style="padding-top:10px"></div>
 					</div>
 				</div>
 			</div>
@@ -174,26 +212,96 @@
 <script>
 	$(document).ready(function(){
 		$(".box-data").html('').hide();
-		$(".loading").html('').hide();
 		$(".tmpl-roll").html('').hide();
+		$(".menu-stok").hide();
+		$(".menu-produksi").hide();
+		$("#p-pm").val('');
+		$("#p-pm-v").val('');
+		$("#p-jenis").val('');
+		$("#p-jenis-v").val('');
+		$("#tgl").val('');
 	});
 
+	function plh_menu(plh){
+		$(".box-data").html('').hide();
+		$(".tmpl-roll").html('').hide();
+		$("#p-pm").val('');
+		$("#p-pm-v").val('');
+		$("#p-jenis").val('');
+		$("#p-jenis-v").val('');
+		$("#tgl").val('');
+		if(plh == 'stok'){
+			$(".menu-stok").show();
+			$(".menu-produksi").hide();
+		}else{
+			$(".menu-stok").hide();
+			$(".menu-produksi").show();
+		}
+	}
+
+	function p_pm(pm){
+		if(pm == 12){
+			tpm = '1-2';
+		}else{
+			tpm = pm;
+		}
+		$("#p-pm").val('PM '+tpm);
+		$("#p-pm-v").val(pm);
+	}
+
+	function p_jenis(jenis){
+		if(jenis == 'mh'){
+			tjns = 'MEDIUM';
+		}else if(jenis == 'bk'){
+			tjns = 'B - KRAFT';
+		}else if(jenis == 'mhbk'){
+			tjns = 'MEDIUM - B-KRAFT';
+		}else if(jenis == 'nonspek'){
+			tjns = 'MEDIUM NON SPEK';
+		}else if(jenis == 'wp'){
+			tjns = 'WP';
+		}else{
+			tjns = 'SEMUA';
+		}
+		$("#p-jenis").val(tjns);
+		$("#p-jenis-v").val(jenis);
+	}
+
 	function load_data(jenis,stat){
+		$(".box-data").html('');
 		$(".tmpl-roll").html('');
 		otorisasi = $("#otorisasi").val();
-		// mh, bk, mhbk, nonspek, wp
-		if(jenis == 'mh'){
+		tgl = $("#tgl").val();
+		vpm = $("#p-pm-v").val();
+		vjenis = $("#p-jenis-v").val();
+
+		if(stat == 'produksi'){
+			if (vpm == '') {
+				showNotification("alert-danger", "PILIH PM", "bottom", "center", "", "");
+				return;
+			}
+			if (vjenis == '') {
+				showNotification("alert-danger", "PILIH JENIS", "bottom", "center", "", "");
+				return;
+			}
+			if (tgl == '') {
+				showNotification("alert-danger", "PILIH TANGGAL", "bottom", "center", "", "");
+				return;
+			}
+		}
+		
+		if(jenis == 'mh' || vjenis == 'mh'){
 			Njenis = 'MEDIUM';
-		}else if(jenis == 'bk'){
+		}else if(jenis == 'bk' || vjenis == 'bk'){
 			Njenis = 'B - KRAFT';
-		}else if(jenis == 'mhbk'){
+		}else if(jenis == 'mhbk' || vjenis == 'mhbk'){
 			Njenis = 'MEDIUM - B-KRAFT';
-		}else if(jenis == 'nonspek'){
+		}else if(jenis == 'nonspek' || vjenis == 'nonspek'){
 			Njenis = 'MEDIUM NON SPEK';
-		}else if(jenis == 'wp'){
+		}else if(jenis == 'wp' || vjenis == 'wp'){
 			Njenis = 'WP';
-		}else if(jenis == 'all'){
-			Njenis = 'SEMUA STOK';
+		}else if(jenis == 'all' || vjenis == 'all'){
+			Njenis = 'SEMUA';
 		}else if(jenis == 'rmh'){
 			Njenis = 'BUFFER MEDIUM';
 		}else if(jenis == 'rbk'){
@@ -205,12 +313,23 @@
 		}else if(jenis == 'rwp'){
 			Njenis = 'BUFFER WP';
 		}else if(jenis == 'rall'){
-			Njenis = 'SEMUA STOK BUFFER';
+			Njenis = 'SEMUA BUFFER';
 		}else{
 			Njenis = '';
 		}
-		$(".loading").show().html(`Memuat data ROLL <b>${Njenis}</b>. Tunggu Sebentar . . .`);
-		$(".box-data").html('');
+
+		if(stat == 'produksi'){
+			if(vpm == 12){
+				xpm = '1-2';
+			}else{
+				xpm = vpm;
+			}
+			tJns = `PRODUKSI <b>${Njenis}</b>. DARI PM <b>${xpm}</b>. TANGGAL <b>${tgl}</b>`;
+		}else{
+			tJns = `<b>${Njenis}</b>`;
+		}
+
+		$(".box-data").show().html(`Memuat data ROLL ${tJns}. Tunggu Sebentar . . .`);
 		$.ajax({
 			url: '<?php echo base_url('Laporan/NewStokGudang'); ?>',
 			type: "POST",
@@ -218,9 +337,11 @@
 				jenis: jenis,
 				otorisasi: otorisasi,
 				stat: stat,
+				tgl: tgl,
+				pm: vpm,
+				vjenis: vjenis,
 			}),
 			success: function(response){
-				$(".loading").html('').hide();
 				$(".box-data").show().html(response);
 				$("#stat").val(stat);
 			}
@@ -262,7 +383,9 @@
 
 	function cekRoll(nm_ker,g_label,width,otori){
 		stat = $("#stat").val();
-		$(".tmpl-roll").show().html('<br/>Mencari Data . . .');
+		tgl = $("#tgl").val();
+		pm = $("#p-pm-v").val();
+		$(".tmpl-roll").show().html('Mencari Data . . .');
 		$.ajax({
 			url: '<?php echo base_url('Laporan/QCCariRoll'); ?>',
 			type: "POST",
@@ -276,11 +399,12 @@
 				opsi: 'cekRollStok',
 				otori: otori,
 				stat: stat,
+				vtgl: tgl,
+				pm: pm,
 			}),
 			success: function(response){
 				if(response){
-					// $(".isi").html(response);
-					$(".tmpl-roll").show().html('<br/>TAMPIL DATA '+nm_ker+' - '+g_label+' - '+width+' :<br/><br/>'+response);
+					$(".tmpl-roll").show().html('TAMPIL DATA <b>'+nm_ker+' '+g_label+'</b> - <b>'+width+'</b> :<div class="clear"></div>'+response);
 				}else{
 					$(".tmpl-roll").html('Data Tidak ditemukan...');
 				}

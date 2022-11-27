@@ -1,4 +1,4 @@
-PENAMBAHAN LEVEL DI DATABASE TABLE USER LEVEL "QC , FG"
+PENAMBAHAN LEVEL DI DATABASE TABLE USER LEVEL "QC , FG, Rewind1, Rewind2"
 user > user
 developer > developer
 admin > 123

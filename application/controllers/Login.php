@@ -34,31 +34,26 @@ class login extends CI_Controller{
 				$data_session['password'] = $dt->password;
 				$data_session['nm_user'] = $dt->nm_user;
 				$data_session['level'] = $dt->level;
-				
 
 				$this->session->set_userdata($data_session);
 			}
-			
 
 			$this->session->set_flashdata('msg', '<div class="alert alert-success">
- <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-  <strong>Login Berhasil!</strong> Selamat Bekerja
-</div>');
+				<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+				<strong>Login Berhasil!</strong> Selamat Bekerja
+			</div>');
 
 			redirect(base_url("Master"));
 
 		}else{
 
 			$this->session->set_flashdata('msg', '<div class="alert alert-danger">
-			 <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-			  Salah Username atau Password!
+			<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+				Salah Username atau Password!
 			</div>');
 
-		redirect(base_url('login'));
-		
-			
+		redirect(base_url('login'));	
 		}
-		
 	}
 
 	function aksi_login_member(){

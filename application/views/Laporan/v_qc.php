@@ -106,7 +106,7 @@
 						<div class="per_roll">
 							<input type="text" name="jnsroll" id="jnsroll" maxlength="8" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="JENIS">
 							<input type="text" name="gsmroll" id="gsmroll" onkeypress="return hanyaAngka(event)" maxlength="3" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="GSM">
-							<input type="text" name="ukroll" id="ukroll" onkeypress="return hanyaAngka(event)" maxlength="3" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="UKURAN">
+							<input type="text" name="ukroll" id="ukroll" onkeypress="return aK(event)" maxlength="5" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="UKURAN">
 							<input type="text" name="proll" id="proll" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="NO. ROLL">
 							<button class="tmbl-cari" onclick="cariPer('rroll')">CARI</button>
 						</div>
@@ -153,6 +153,19 @@
 		$("#tgl2").val("");
 	}
 
+	$("#jnsroll").on({
+		// keydown: function(e) {
+		// 	if (e.which === 32)
+		// 		return false;
+		// },
+		keyup: function() {
+			this.value = this.value.toUpperCase();
+		},
+		// change: function() {
+		// 	this.value = this.value.replace(/\s/g, "");
+		// }
+	});
+
 	function hanyaAngka(evt) {
 		var charCode = (evt.which) ? evt.which : event.keyCode
 		if (charCode > 31 && (charCode < 48 || charCode > 57))
@@ -182,7 +195,7 @@
 		}
 	}
 
-	function cariPer(opsi){
+	function cariPer(opsi){ //
 		otorisasi = $("#otorisasi").val();
 		jnsroll = $("#jnsroll").val();
 		gsmroll = $("#gsmroll").val();
@@ -202,9 +215,11 @@
 				roll: roll,
 				tgl1: tgl1,
 				tgl2: tgl2,
-				opsi: opsi,
+				opsi: opsi, // ROLL, TGL
 				otori: otorisasi,
 				stat: '',
+				vtgl: '',
+				pm: '',
 			}),
 			success: function(response){
 				if(response){
@@ -246,6 +261,10 @@
 		ket = $("#eket-"+i).val().toUpperCase();
 		status = $("#opt_status-"+i).val();
 		// alert(tgl+' - '+g_ac+' - '+rct+' - '+bi+' - '+nm_ker+' - '+g_label+' - '+width+' - '+diameter+' - '+weight+' - '+joint+' - '+ket+' - '+status+' - '+pilihan);
+		if (nm_ker == '' || g_label == '' || width == '' || diameter == '' || weight == '' || joint == '') {
+			showNotification("alert-danger", "DATA JENIS, GSM, UKURAN, DIAMETER, BERAT, JOINT, TIDAK BOLEH KOSONG!!!", "bottom", "center", "", "");
+			return;
+		}
 		$.ajax({
 			url: '<?php echo base_url('Master/editQCRoll') ?>',
 			type: "POST",

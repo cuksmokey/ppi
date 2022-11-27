@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>SI Timbangan</title>
+    <title>P P I</title>
     <!-- Favicon-->
     <link rel="icon" href="<?php echo base_url(); ?>assets/logo.ico" type="image/x-icon">
 
@@ -97,12 +97,6 @@
                 <div class="info-container">
                     <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $this->session->userdata('username'); ?></div>
                     <div class="email"><?php echo $this->session->userdata('nm_user'); ?></div>
-                    <div class="btn-group user-helper-dropdown">
-                        <i class="material-icons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Logout</i>
-                        <ul class="dropdown-menu pull-right">
-                            <li><a href="<?php echo base_url('Login/logout') ?>">Logout</a></li>
-                        </ul>
-                    </div>
                 </div>
             </div>
             <!-- #User Info -->
@@ -113,20 +107,22 @@
                     <?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
                     <li>
                         <a href="<?php echo base_url() ?>">
-                            <i class="material-icons">home</i>
+                            <!-- <i class="material-icons">home</i> -->
                             <span>Dashboard</span>
                         </a>
                     </li>
                     <?php } ?>
                     <li>
                         <a href="javascript:void(0);" class="menu-toggle">
-                            <i class="material-icons">book</i>
+                            <!-- <i class="material-icons">book</i> -->
                             <span>Master</span>
                         </a>
                         <ul class="ml-menu">
+                        <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2") { ?>
                             <li>
                                 <a href="<?php echo base_url('Master/Timbangan') ?>">Timbangan</a>
                             </li>
+                        <?php } ?>
                             <?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
                                 <li>
                                     <a href="<?php echo base_url('Master/Perusahaan') ?>">Perusahaan</a>
@@ -140,44 +136,42 @@
                     <?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
                         <li>
                             <a href="<?php echo base_url('Master/Packing_list') ?>">
-                                <i class="material-icons">list</i>
+                                <!-- <i class="material-icons">list</i> -->
                                 <span>Packing List</span>
                             </a>
                         </li>
                         <li>
                             <a href="<?php echo base_url('Master/Invoice') ?>">
-                                <i class="material-icons">list</i>
+                                <!-- <i class="material-icons">list</i> -->
                                 <span>Invoice</span>
                             </a>
                         </li>
                     <?php } ?>
-					<li>
-                        <a href="<?php echo base_url('Laporan/Stok_Gudang') ?>">
-                            <i class="material-icons">list</i>
-                            <span>Cek Produksi</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo base_url('Laporan/Stok_Gudang') ?>">
-                            <i class="material-icons">list</i>
-                            <span>Stok Gudang</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?php echo base_url('Laporan/List_Roll') ?>">
-                            <i class="material-icons">list</i>
-                            <span>List Roll</span>
-                        </a>
-                    </li>
+                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC") { ?>
+                        <li>
+                            <a href="<?php echo base_url('Laporan/Stok_Gudang') ?>">
+                                <!-- <i class="material-icons">list</i> -->
+                                <span>Stok Gudang + Produksi</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?php echo base_url('Laporan/List_Roll') ?>">
+                                <!-- <i class="material-icons">list</i> -->
+                                <span>List Roll</span>
+                            </a>
+                        </li>
+                    <?php } ?>
                     <li>
                         <a href="javascript:void(0);" class="menu-toggle">
-                            <i class="material-icons">equalizer</i>
+                            <!-- <i class="material-icons">equalizer</i> -->
                             <span>Laporan</span>
                         </a>
                         <ul class="ml-menu">
-                            <li>
-                                <a href="<?php echo base_url('Laporan/Timbangan') ?>">TIMBANGAN</a>
-                            </li>
+                            <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC") { ?>
+                                <li>
+                                    <a href="<?php echo base_url('Laporan/Timbangan') ?>">TIMBANGAN</a>
+                                </li>
+                            <?php } ?>
                             <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin") { ?>
                                 <li>
                                     <a href="<?php echo base_url('Laporan/PenjualanHarian') ?>">PENJUALAN HARIAN</a>
@@ -211,6 +205,12 @@
                                 </li> -->
                             <?php } ?>
                         </ul>
+                    </li>
+                    <li>
+                        <a href="<?php echo base_url('Login/logout') ?>">
+                            <!-- <i class="material-icons">logout</i> -->
+                            <span>Logout</span>
+                        </a>
                     </li>
                 </ul>
             </div>

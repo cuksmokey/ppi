@@ -5207,109 +5207,132 @@ class Laporan extends CI_Controller {
 		$jenis = $_POST['jenis'];
 		$otorisasi = $_POST['otorisasi'];
 		$stat = $_POST['stat'];
+		$tgl = $_POST['tgl'];
+		$vpm = $_POST['pm'];
+		$vjenis = $_POST['vjenis'];
 
 		$html = "";
 		$html .='<style>#i{mso-number-format:\@}</style>';
 		$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;text-align:center;vertical-align:middle;border-collapse:collapse" border="1">';
 
-		if($jenis == 'mh' || $jenis == 'rmh'){
-			$where = "AND (nm_ker='mh' OR nm_ker='mi')";
-		}else if($jenis == 'bk' || $jenis == 'rbk'){
-			$where = "AND (nm_ker='bk' OR nm_ker='bl')";
-		}else if($jenis == 'mhbk' || $jenis == 'rmhbk'){
-			$where = "AND nm_ker!='wp' AND nm_ker!='mn' AND nm_ker!='mh color'";
-		}else if($jenis == 'nonspek' || $jenis == 'rnonspek'){
-			$where = "AND nm_ker='mn'";
-		}else if($jenis == 'wp' || $jenis == 'rwp'){
-			$where = "AND nm_ker='wp'";
-		}else{
-			$where = "";
-		}
-
+        if($stat == 'produksi'){
+            if($vpm == 1){
+                $pm = "AND pm='1'";
+            }else if($vpm == 2){
+                $pm = "AND (pm='2' OR pm IS NULL)";
+            }else{
+                $pm = "";
+            }
+        }else{
+            $pm = "";
+        }
+        
+        if($jenis == 'mh' || $jenis == 'rmh' || $vjenis == 'mh'){
+            $where = "AND (nm_ker='mh' OR nm_ker='mi') $pm";
+        }else if($jenis == 'bk' || $jenis == 'rbk' || $vjenis == 'bk'){
+            $where = "AND (nm_ker='bk' OR nm_ker='bl') $pm";
+        }else if($jenis == 'mhbk' || $jenis == 'rmhbk' || $vjenis == 'mhbk'){
+            $where = "AND nm_ker!='wp' AND nm_ker!='mn' AND nm_ker!='mh color' $pm";
+        }else if($jenis == 'nonspek' || $jenis == 'rnonspek' || $vjenis == 'nonspek'){
+            $where = "AND nm_ker='mn' $pm";
+        }else if($jenis == 'wp' || $jenis == 'rwp' || $vjenis == 'wp'){
+            $where = "AND nm_ker='wp' $pm";
+        }else{
+            $where = "AND (nm_ker='mh' OR nm_ker='mi' OR nm_ker='bk' OR nm_ker='bl' OR nm_ker='mn' OR nm_ker='wp')";
+        }
+        
 		if($stat == 'buffer'){
-			$statusIdPl = "status='3' AND id_pl='0'";
+			$statusIdPl = "AND status='3' AND id_pl='0'";
+		}else if($stat == 'stok'){
+			$statusIdPl = "AND status='0' AND id_pl='0'";
 		}else{
-			$statusIdPl = "status='0' AND id_pl='0'";
+			$statusIdPl = "";
 		}
 
-		$Btgl = "AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
-		
-		$getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
-		WHERE $statusIdPl $where $Btgl
-		GROUP BY nm_ker");
+        // GET PRODUKSI
+        $getProduksi = $this->db->query("SELECT nm_ker,g_label,width FROM m_timbangan
+        WHERE tgl='$tgl' $where $statusIdPl
+        GROUP BY nm_ker,g_label,width");
+        
+        if($getProduksi->num_rows() == 0 && $stat == 'produksi'){
+            $html .='<div style="font-weight:bold">TIDAK ADA PRODUKSI</div>';
+        }else{
+            if($stat == 'produksi'){
+                $Btgl = "tgl='$tgl'";
+            }else{
+                $Btgl = "tgl BETWEEN '2020-04-01' AND '9999-01-01'";
+            }
+            $getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
+            WHERE $Btgl $statusIdPl $where
+            GROUP BY nm_ker");
 
-		$html .='<tr>
-		<td style="padding:5px;font-weight:bold" rowspan="2">No.</td>
-		<td style="padding:5px;font-weight:bold" rowspan="2">Ukuran</td>';
-		foreach($getLabel->result() as $lbl){
-			$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-			WHERE nm_ker='$lbl->nm_ker' $Btgl
-			AND $statusIdPl
-			GROUP BY nm_ker,g_label");
-			$html .='<td style="padding:5px;font-weight:bold" colspan="'.$getGsm->num_rows().'">'.$lbl->nm_ker.'</td>';
-		}
-		$html .='</tr>';
-		
-		$html .='<tr>';
-		foreach($getLabel->result() as $lbl){
-			$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-			WHERE nm_ker='$lbl->nm_ker' $Btgl
-			AND $statusIdPl
-			GROUP BY nm_ker,g_label");
-			foreach($getGsm->result() as $gsm){
-				$html .='<td style="padding:5px;font-weight:bold">'.$gsm->g_label.'</td>';
-			}
-		}
-		$html .='</tr>';
+            $html .='<tr>
+            <td style="padding:5px;font-weight:bold" rowspan="2">No.</td>
+            <td style="padding:5px;font-weight:bold" rowspan="2">Ukuran</td>';
+            foreach($getLabel->result() as $lbl){
+                $getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
+                WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl
+                GROUP BY nm_ker,g_label");
+                $html .='<td style="padding:5px;font-weight:bold" colspan="'.$getGsm->num_rows().'">'.$lbl->nm_ker.'</td>';
+            }
+            $html .='</tr>';
+            
+            $html .='<tr>';
+            foreach($getLabel->result() as $lbl){
+                $getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
+                WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl
+                GROUP BY nm_ker,g_label");
+                foreach($getGsm->result() as $gsm){
+                    $html .='<td style="padding:5px;font-weight:bold">'.$gsm->g_label.'</td>';
+                }
+            }
+            $html .='</tr>';
 
-		$getWidth = $this->db->query("SELECT width FROM m_timbangan
-		WHERE $statusIdPl $where $Btgl
-		-- AND width BETWEEN '155' AND '210' # TESTING STOK
-		AND width BETWEEN '90' AND '100' # TESTING BUFFER
-		GROUP BY width");
-		$i = 0;
-		foreach($getWidth->result() as $width){
-			$i++;
-			$html .='<tr><td>'.$i.'</td><td>'.round($width->width,2).'</td>';
+            $getWidth = $this->db->query("SELECT width FROM m_timbangan
+            WHERE $Btgl $statusIdPl $where
+            -- AND width BETWEEN '155' AND '210' # TESTING STOK
+            -- AND width BETWEEN '160' AND '215' # TESTING BUFFER
+            GROUP BY width");
+            $i = 0;
+            foreach($getWidth->result() as $width){
+                $i++;
+                $html .='<tr><td>'.$i.'</td><td>'.round($width->width,2).'</td>';
 
-			$getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
-			WHERE $statusIdPl $where $Btgl
-			GROUP BY nm_ker");
-			foreach($getLabel->result() as $lbl){
-				$getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-				WHERE nm_ker='$lbl->nm_ker' $Btgl
-				AND $statusIdPl
-				GROUP BY nm_ker,g_label");
-				foreach($getGsm->result() as $gsm){
-					$getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
-					WHERE nm_ker='$gsm->nm_ker' AND g_label='$gsm->g_label' AND width='$width->width' $Btgl
-					AND $statusIdPl
-					GROUP BY nm_ker,g_label,width");
-                    if($gsm->nm_ker == 'MH' || $gsm->nm_ker == 'MI' || $gsm->nm_ker == 'ML'){
-                        $gbGsm = '#ffc';
-                    }else if($gsm->nm_ker == 'MN'){
-                        $gbGsm = '#fcc';
-                    }else if($gsm->nm_ker == 'BK' || $gsm->nm_ker == 'BL'){
-                        $gbGsm = '#ccc';
-                    }else if($gsm->nm_ker == 'WP'){
-                        $gbGsm = '#cfc';
-                    }else if($gsm->nm_ker == 'MH COLOR'){
-                        $gbGsm = '#ccf';
-                    }else{
-                        $gbGsm = '#fff';
+                $getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
+                WHERE $Btgl $statusIdPl $where
+                GROUP BY nm_ker");
+                foreach($getLabel->result() as $lbl){
+                    $getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
+                    WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl
+                    GROUP BY nm_ker,g_label");
+                    foreach($getGsm->result() as $gsm){
+                        $getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
+                        WHERE $Btgl AND nm_ker='$gsm->nm_ker' AND g_label='$gsm->g_label' AND width='$width->width' $statusIdPl
+                        GROUP BY nm_ker,g_label,width");
+                        if($gsm->nm_ker == 'MH' || $gsm->nm_ker == 'MI' || $gsm->nm_ker == 'ML'){
+                            $gbGsm = '#ffc';
+                        }else if($gsm->nm_ker == 'MN'){
+                            $gbGsm = '#fcc';
+                        }else if($gsm->nm_ker == 'BK' || $gsm->nm_ker == 'BL'){
+                            $gbGsm = '#ccc';
+                        }else if($gsm->nm_ker == 'WP'){
+                            $gbGsm = '#cfc';
+                        }else if($gsm->nm_ker == 'MH COLOR'){
+                            $gbGsm = '#ccf';
+                        }else{
+                            $gbGsm = '#fff';
+                        }
+                        if($getWidth->num_rows() == 0){
+                            $html .='<td style="padding:5px;background:'.$gbGsm.'">0</td>';
+                        }else{
+                            $html .='<td style="padding:5px">
+                            <button style="background:#fff;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".')">'.$getWidth->row()->jml.'</button></td>';
+                        }
                     }
-                    if($getWidth->num_rows() == 0){
-                        $html .='<td style="padding:5px;background:'.$gbGsm.'">0</td>';
-                    }else{
-                        $html .='<td style="padding:5px">
-						<button style="background:#fff;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".')">'.$getWidth->row()->jml.'</button></td>';
-                    }
-				}
-			}
-		}
-		$html .='</tr>';
-
-		// $html .='</tr>';
+                }
+            }
+            $html .='</tr>';
+        }
 		$html .='</table>';
 
 		echo $html;
@@ -5422,15 +5445,26 @@ class Laporan extends CI_Controller {
         $opsi = $_POST['opsi'];
         $otori = $_POST['otori'];
         $stat = $_POST['stat'];
+        $vtgl = $_POST['vtgl'];
+        $pm = $_POST['pm'];
         $html ='';
 
 		if($opsi == 'cekRollStok'){
 			if($stat == 'stok'){
 				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='0' AND id_pl='0'";
-			}else{
+			}else if($stat == 'buffer'){
 				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='3' AND id_pl='0'";
+			}else{ // PRODUKSI
+                if($pm == 1){
+                    $tpm = "AND pm='1' AND tgl='$vtgl'";
+                }else if($pm == 2){
+                    $tpm = "AND (pm='2' OR pm IS NULL) AND tgl='$vtgl'";
+                }else{
+                    $tpm = "AND tgl='$vtgl'";
+                }
+				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' $tpm";
 			}
-		}else{
+		}else{ // STOK GUDANG
 			if($opsi == 'rroll'){
 				$where = "nm_ker LIKE '%$jnsroll%' AND g_label LIKE '%$gsmroll%' AND width LIKE '%$ukroll%' AND roll LIKE '%$roll%'";
 			}else{
@@ -5442,7 +5476,6 @@ class Laporan extends CI_Controller {
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan
 		WHERE $where
 		ORDER BY pm,id");
-		// $i = 0;
 		if($opsi == 'rroll' && ($jnsroll == '' || $gsmroll == '' || $ukroll == '') && $roll == ''){
             $html .='<tr><td style="font-weight:bold;text-align:center">LENGKAPI DATA JENIS, GSM, UKURAN...</td></tr>';
 		}else if($opsi == 'ttgl' && ($tgl1 == '' || $tgl2 == '')){
@@ -5466,7 +5499,6 @@ class Laporan extends CI_Controller {
 				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">STATUS</th>
 			</tr>';
 			foreach($getRoll->result() as $roll){
-				// $i++;
 				if($roll->status == 0 && $roll->id_pl == 0){ // STOK
                     $bgStt = 'cek-status-stok';
 					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
@@ -5476,10 +5508,6 @@ class Laporan extends CI_Controller {
 					}
 					$oBtn = '';
 					$cBtn = '';
-                    $opt = '<option value="0">STOK</option>
-					<option value="2">PPI</option>
-					<option value="3">BUFFER</option>
-                    <option value="1">-</option>';
 				}else if($roll->status == 2 && $roll->id_pl == 0){ // PPI
                     $bgStt = 'cek-status-stok';
 					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
@@ -5489,10 +5517,6 @@ class Laporan extends CI_Controller {
 					}
 					$oBtn = '';
 					$cBtn = '';
-                    $opt = '<option value="2">PPI</option>
-					<option value="0">STOK</option>
-					<option value="3">BUFFER</option>
-                    <option value="1">-</option>';
 				}else if($roll->status == 3 && $roll->id_pl == 0){ // BUFFER
                     $bgStt = 'cek-status-buffer';
 					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
@@ -5502,17 +5526,11 @@ class Laporan extends CI_Controller {
 					}
 					$oBtn = '';
 					$cBtn = '';
-                    $opt = '<option value="3">BUFFER</option>
-					<option value="0">STOK</option>
-					<option value="2">PPI</option>
-                    <option value="1">-</option>';
 				}else if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){ // PENJUALAN
                     $bgStt = 'cek-status-terjual';
 					$diss = 'disabled';
-					// $oBtn = `<button class="tmbl-cek-roll" onclick="cek_roll(''$roll->id'')">`;
 					$oBtn = '<button class="tmbl-cek-roll" onclick="cek_roll('."'".$roll->id."'".')">';
 					$cBtn = '</button>';
-                    $opt = '';
 				}else{ // TIDAK TERDETEKSI
                     $bgStt = 'cek-status-stok';
 					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
@@ -5522,38 +5540,73 @@ class Laporan extends CI_Controller {
 					}
 					$oBtn = '';
 					$cBtn = '';
-                    $opt = '<option value="1">-</option>
-                    <option value="0">STOK</option>
-					<option value="2">PPI</option>
-					<option value="3">BUFFER</option>';
 				}
-
-                if($otori == 'user'){ // khusus ket dan status
-                    $fgdiss = 'disabled';
-                }else{
-                    $fgdiss = '';
-                }
 
 				$i = $roll->id;
 				$html .='<tr class="'.$bgStt.'">
 					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<input class="ttggll" type="date" id="etgl-'.$i.'" value="'.$roll->tgl.'" '.$diss.' style="width:85px">'.$cBtn.'</td>
-					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->roll.'" disabled style="width:105px" maxlength="14">'.$cBtn.'</td>
+					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->roll.'" disabled style="width:100px" maxlength="14">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_ac-'.$i.'" value="'.$roll->g_ac.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="erct-'.$i.'" value="'.$roll->rct.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="enm_ker-'.$i.'" value="'.$roll->nm_ker.'" '.$diss.' maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_label-'.$i.'" value="'.$roll->g_label.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>';
+                
+                // PLH JENIS KERTAS
+                if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
+                    // $optKer = '<input class="ipt-txt" type="text" id="enm_ker-'.$i.'" value="'.$roll->nm_ker.'" '.$diss.' style="width:50px;text-align:center">';
+                    $optKer = $oBtn.''.$roll->nm_ker.''.$cBtn;
+                }else{
+                    $optKer = '<select name="" id="enm_ker-'.$i.'" class="opt_status" '.$diss.'>
+                        <option value="'.$roll->nm_ker.'">'.$roll->nm_ker.'</option>
+                        <option value="">-</option>
+                        <option value="MH">MH</option>
+                        <option value="MN">MN</option>
+                        <option value="BK">BK</option>
+                        <option value="WP">WP</option>
+                        <option value="MH COLOR">MH COLOR</option>
+                    </select>';
+                }
+                $html .= '<td style="border:1px solid #aaa;text-align:center">'.$oBtn.''.$optKer.''.$cBtn.'</td>';
+                
+                // khusus ket dan status
+                if($otori == 'user' || ($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
+                    $fgdiss = 'disabled';
+                }else{
+                    $fgdiss = '';
+                }
+                $html .='<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_label-'.$i.'" value="'.$roll->g_label.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ewidth-'.$i.'" value="'.round($roll->width,2).'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ediameter-'.$i.'" value="'.$roll->diameter.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eweight-'.$i.'" value="'.$roll->weight.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" onkeypress="return hanyaAngka(event)" maxlength="5" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ejoint-'.$i.'" value="'.$roll->joint.'" '.$diss.' onkeypress="return aK(event)" maxlength="2" onkeypress="return hanyaAngka(event)" maxlength="3" style="width:30px;text-align:center">'.$cBtn.'</td>
 					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$fgdiss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
-                    if($opt == ''){
+
+                    // PILIH STATUS
+                    if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
                         $html .='<td style="border:1px solid #aaa;text-align:center">'.$oBtn.'TERJUAL'.$cBtn.'</td>';
                     }else{
-                        $html .='<td style="border:1px solid #aaa;text-align:center"><select name="" id="opt_status-'.$i.'" class="opt_status"  '.$fgdiss.'>
-                            '.$opt.'
-                        </select></td>';
+                        if($roll->status == 0 && $roll->id_pl == 0){
+                            $oStt = 0;
+                            $pStt = 'STOK';
+                        }else if($roll->status == 2 && $roll->id_pl == 0){
+                            $oStt = 2;
+                            $pStt = 'PPI';
+                        }else if($roll->status == 3 && $roll->id_pl == 0){
+                            $oStt = 3;
+                            $pStt = 'BUFFER';
+                        }else{
+                            $oStt = 1;
+                            $pStt = '-';
+                        }
+                        $opt = '<select name="" id="opt_status-'.$i.'" class="opt_status" '.$fgdiss.'>
+                            <option value="'.$oStt.'">'.$pStt.'</option>
+                            <option value="1">-</option>
+                            <option value="0">STOK</option>
+                            <option value="2">PPI</option>
+                            <option value="3">BUFFER</option>
+                        </select>';
+                        $html .='<td style="border:1px solid #aaa;text-align:center">'.$opt.'</td>';
+                        
+                        // TOMBOL EDIT
                         if($otori == 'user'){
                             $html .='';
                         }else{
