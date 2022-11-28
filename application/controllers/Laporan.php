@@ -379,9 +379,7 @@ class Laporan extends CI_Controller {
         $ctk = $_GET['ctk'];
         $html = '';
 
-
 		# # # # # # # # # K O P # # # # # # # # # #
-
 
         // AMBIL DATA KOP
         $data_kop = $this->db->query("
@@ -419,7 +417,7 @@ class Laporan extends CI_Controller {
             $pxlist = '15px';
         }
 
-        if($ctk == 99){
+        if($ctk == 99){ // printer epson
             $bKop = 'border-left:1px solid #f8f8f8;';
             $heh = '<th style="border-left:1px solid #f8f8f8;height:150px"></th>';
         }else{
@@ -434,7 +432,7 @@ class Laporan extends CI_Controller {
                 <th style="width:75% !important;height:'.$px.'"></th>
             </tr>
             <tr>
-                <td style="border:0;background:url(http://localhost/SI_timbangan_v2/assets/images/logo_ppi_inv.png)center no-repeat" rowspan="4"></td>
+                <td style="border:0;background:url('.base_url().'assets/images/logo_ppi_inv.png)center no-repeat" rowspan="4"></td>
                 <td style="border:0;font-size:32px;padding:20px 0 0">PT. PRIMA PAPER INDONESIA</td>
             </tr>
             <tr>
@@ -458,14 +456,13 @@ class Laporan extends CI_Controller {
         </table>';
 
         $kop_gak_pakai = '<table cellspacing="0" style="font-size:18px;color:#000;border-collapse:collapse;vertical-align:top;width:100%;text-align:center;font-weight:bold;font-family:Arial !important">
-                <tr>
-                    '.$heh.'
-                </tr>
-                <tr>
-                    <td style="border-top:2px solid #000;padding:10px 0 5px;text-decoration:underline">SURAT JALAN</td>
-                </tr>
-            </table>';
-
+            <tr>
+                '.$heh.'
+            </tr>
+            <tr>
+                <td style="border-top:2px solid #000;padding:10px 0 5px;text-decoration:underline">SURAT JALAN</td>
+            </tr>
+        </table>';
 
         // KONDISI KOP PADA SURAT JALAN > PPN ATAU NON-PPN
         if($data_kop->no_pkb == '160/21/WP' || $data_kop->no_pkb == '006/22/MH.' || $data_kop->nama == 'IBU. LANI' || $data_kop->pt == 'EDY NURWIDODO' || $data_kop->no_pkb == '001/22/SM' || $data_kop->nama == 'BP. IMAM'){
@@ -481,7 +478,6 @@ class Laporan extends CI_Controller {
         }
 
 		# # # # # # # # # D E T A I L # # # # # # # # # #
-
 
         $data_pl = $this->db->query("
         SELECT DISTINCT * FROM pl WHERE no_pkb='$jenis'
@@ -558,9 +554,7 @@ class Laporan extends CI_Controller {
 
         $html .= '</table>';
 
-
 		# # # # # # # # # I S I # # # # # # # # # #
-
 
         $html .= '<table cellspacing="0" style="font-size:11px !important;color:#000;border-collapse:collapse;text-align:center;width:100%;font-family:Arial !important">
         <tr>
@@ -581,7 +575,7 @@ class Laporan extends CI_Controller {
         </tr>';
 
         // AMBIL DATA
-        $data_detail = $this->db->query("SELECT g_label,a.nm_ker AS ker,width,COUNT(*) AS qty,SUM(weight) AS berat,b.no_po as po,b.id_perusahaan,b.item_desc FROM m_timbangan a
+        $data_detail = $this->db->query("SELECT g_label,a.nm_ker AS ker,width,COUNT(*) AS qty,SUM(weight) AS berat,SUM(seset) AS seset,b.no_po as po,b.id_perusahaan,b.item_desc FROM m_timbangan a
         INNER JOIN pl b ON a.id_pl=b.id
         WHERE b.no_pkb='$jenis'
         -- GROUP BY g_label,width,po
@@ -602,8 +596,7 @@ class Laporan extends CI_Controller {
                 <td style="border:1px solid #000;padding:5px 0">'.$data->g_label.' GSM</td>';
             
             // PILIH JENIS KERTAS
-            if(($data->ker == 'MH' || $data->ker == 'MI') && $data->item_desc == 'MF'){
-                // MEDIUM FLUTING
+            if(($data->ker == 'MH' || $data->ker == 'MI') && $data->item_desc == 'MF'){ // MEDIUM FLUTING
                 $html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM FLUTING ROLL, LB '.round($data->width,2).'</td>';
             }else if($data->ker == 'MH' || $data->ker == 'MI'){
                 $html .= '<td style="border:1px solid #000;padding:5px 0">KERTAS MEDIUM ROLL, LB '.round($data->width,2).'</td>';
@@ -615,9 +608,7 @@ class Laporan extends CI_Controller {
                 $html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM COLOR ROLL, LB '.round($data->width,2).'</td>';
             }else if($data->ker == 'MEDIUM LINER'){
                 $html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM LINER ROLL, LB '.round($data->width,2).'</td>';
-            // }else if($data->ker == 'MN' && ($data->po == '013/KB/RSA-IX/22' || $data->po == 'PO.SBB-AGJ/04-300922/2022')){
-            }else if($data->ker == 'MN' && $data->item_desc == 'ML'){
-                // RSA, AGJ-SURYA BUANA MEDIUM NON SPEK
+            }else if($data->ker == 'MN' && $data->item_desc == 'ML'){ // RSA, AGJ-SURYA BUANA MEDIUM NON SPEK
                 $html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM LINER ROLL, LB '.round($data->width,2).'</td>';
             }else if($data->ker == 'MN'){
                 $html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM NON SPEK ROLL, LB '.round($data->width,2).'</td>';
@@ -625,13 +616,19 @@ class Laporan extends CI_Controller {
                 $html .= '<td style="border:1px solid #000;padding:5px 0">LB '.round($data->width,2).'</td>';
             }
 
+            // SESET
+            if($data->seset == 0 || $data->seset == null){
+                $berat = $data->berat;
+            }else{
+                $berat = $data->berat - $data->seset;
+            }
             $html .= '<td style="border:1px solid #000;padding:5px 0">'.number_format($data->qty).' ROLL</td>
-                <td style="border:1px solid #000;padding:5px 0">'.number_format($data->berat).' KG</td>
+                <td style="border:1px solid #000;padding:5px 0">'.number_format($berat).' KG</td>
             </tr>';
         
             $no++;
             $tot_qty += $data->qty;
-            $tot_berat += $data->berat;
+            $tot_berat += $berat;
         }
 
         // TAMBAH KOTAK KOSONG
@@ -669,9 +666,7 @@ class Laporan extends CI_Controller {
 
         $html .= '</table>';
 
-
 		# # # # # # # # # T T D # # # # # # # # # #      
-
 
         if($count_kop >= '16'){
             $px_ttd = '10px';
@@ -766,9 +761,7 @@ class Laporan extends CI_Controller {
             $this->m_fungsi->_mpdf('',$html,10,10,$akeh,'P');
         }else{
 
-
             ////////////////////////////////// CETAK PACKING LIST ////////////////////////////////////////////
-
             
             $html = '';
 
@@ -870,7 +863,7 @@ class Laporan extends CI_Controller {
 
                 // CEK QC PACKING LIST
                 if($ctk == 2){
-                    $kop_detail = $this->db->query("SELECT id_pl,nm_ker,COUNT(*) AS jml_roll,SUM(weight) AS berat FROM m_timbangan WHERE id_pl='$id_pl' GROUP BY nm_ker ORDER BY nm_ker DESC");
+                    $kop_detail = $this->db->query("SELECT id_pl,nm_ker,COUNT(*) AS jml_roll,SUM(weight) AS berat,SUM(seset) AS seset FROM m_timbangan WHERE id_pl='$id_pl' GROUP BY nm_ker ORDER BY nm_ker DESC");
 
                     // if($kop_detail->row()->nm_ker == 'WP' || $kop_detail->row()->nm_ker == 'MN'){
                     if($kop_detail->row()->nm_ker == 'WP'){
@@ -986,22 +979,37 @@ class Laporan extends CI_Controller {
 								$bgCrGsm = '#fff';
 							}
 
+                            // SESET ISI LIST
+                            if($r->seset == 0 || $r->seset == null){
+                                $tBerat = $r->weight;
+                                $sesetKet = '';
+                            }else{
+                                $tBerat = $r->weight - $r->seset;
+                                $sesetKet = '- '.$r->seset.'KG. '.$r->weight.'. ';
+                            }
+
                             $html .= '<tr>
-                            <td style="border:1px solid #000">'.$no.'</td>
-                            <td style="border:1px solid #000;letter-spacing:0.5px" colspan="2">'.$r->roll.'</td>
-                            <td style="border:1px solid #000">'.$c_g_ac.'</td>
-                            '.$cek.'
-                            <td style="border:1px solid #000;background-color:'.$bgCrGsm.'">'.$r->g_label.'</td>
-                            <td style="border:1px solid #000">'.round($r->width,2).'</td>
-                            <td style="border:1px solid #000">'.$r->weight.'</td>
-                            <td style="border:1px solid #000">'.$r->joint.'</td>
-                            <td style="border:1px solid #000;text-align:left;font-size:10px">'.strtoupper($r->ket).''.$pKet.'</td>
+                                <td style="border:1px solid #000">'.$no.'</td>
+                                <td style="border:1px solid #000;letter-spacing:0.5px" colspan="2">'.$r->roll.'</td>
+                                <td style="border:1px solid #000">'.$c_g_ac.'</td>
+                                '.$cek.'
+                                <td style="border:1px solid #000;background-color:'.$bgCrGsm.'">'.$r->g_label.'</td>
+                                <td style="border:1px solid #000">'.round($r->width,2).'</td>
+                                <td style="border:1px solid #000">'.$tBerat.'</td>
+                                <td style="border:1px solid #000">'.$r->joint.'</td>
+                                <td style="border:1px solid #000;text-align:left;font-size:10px">'.$sesetKet.''.strtoupper($r->ket).''.$pKet.'</td>
                             </tr>';
                             $no++;
                         }
 
+                        // SESET SATU PL
+                        if($kd->seset == 0 || $kd->seset == null){
+                            $sumBerat = $kd->berat;
+                        }else{
+                            $sumBerat = $kd->berat - $kd->seset;
+                        }
                         $totalRoll += $kd->jml_roll;
-                        $totalBerat += $kd->berat;
+                        $totalBerat += $sumBerat;
                     }
 
                     $html .='<tr>
@@ -1031,7 +1039,7 @@ class Laporan extends CI_Controller {
                             }
                     $html .='</td></tr>';
 
-                    $data_detail = $this->db->query("SELECT * FROM m_timbangan WHERE id_pl = '$id_pl' ORDER BY nm_ker DESC,g_label ASC,width ASC,tgl ASC,roll ASC");
+                    // $data_detail = $this->db->query("SELECT * FROM m_timbangan WHERE id_pl = '$id_pl' ORDER BY nm_ker DESC,g_label ASC,width ASC,tgl ASC,roll ASC");
 
                 }else{
 
@@ -1066,19 +1074,10 @@ class Laporan extends CI_Controller {
 
                     $data_detail = $this->db->query("SELECT * FROM m_timbangan WHERE id_pl = '$id_pl' ORDER BY nm_ker ASC,g_label ASC,width ASC,roll ASC");
 
-                    $no = 1;
+                    $no = 0;
+					$fxSumBerat = 0;
                     foreach ($data_detail->result() as $r) {
-                        // if($ctk == 3){
-                        //     $exp = explode(' ',$r->ket);
-                        //     if($exp[0] == "-"){
-                        //         $kkeett = $exp[0].' '.$exp[1].' '.$exp[2];
-                        //     }else{
-                        //         $kkeett = "";
-                        //     }
-                        // }else{
-                        //     $kkeett = "";
-                        // }
-
+                        $no++;
                         if($ctk == 3){
                             if($r->nm_ker == 'MH' || $r->nm_ker == 'MI'){
                                 $ketKet = 'MH';
@@ -1100,34 +1099,41 @@ class Laporan extends CI_Controller {
 							$uk2 = substr($r->roll,6, 15);
 						}
 
+                        // SESET
+                        if($r->seset == 0 || $r->seset == null){
+                            $bWeight = $r->weight;
+                        }else{
+                            $bWeight = $r->weight - $r->seset;
+                        }
                         $html .= '<tr>
                             <td style="border:1px solid #000">'.$no.'</td>
                             <td style="border:1px solid #000">'.$uk1.'</td>
                             <td style="border:1px solid #000">'.$uk2.'</td>
                             <td style="border:1px solid #000">'.$r->g_label.'</td>
                             <td style="border:1px solid #000">'.round($r->width,2).'</td>
-                            <td style="border:1px solid #000">'.$r->weight.'</td>
+                            <td style="border:1px solid #000">'.$bWeight.'</td>
                             <td style="border:1px solid #000">'.$r->joint.'</td>
                             <td style="border:1px solid #000;text-align:left">'.$ketKet.'</td>
                         </tr>';
-                        $no++;
+
+                        $fxSumBerat += $bWeight;
                     }
 
-                    $total_pl = $this->db->query("SELECT DISTINCT COUNT(*) AS totpl,width,SUM(weight) AS tot FROM m_timbangan WHERE id_pl = '$id_pl' ORDER BY roll")->row();
+                    // $total_pl = $this->db->query("SELECT DISTINCT COUNT(*) AS totpl,width,SUM(weight) AS tot,SUM(seset) AS seset FROM m_timbangan WHERE id_pl = '$id_pl' ORDER BY roll")->row();
                     // atas 
                     $count_pl = $qrTotPL->num_rows();
-
+                    $total_pl = $qrTotPL->row();
                     if($count_pl == '1'){
                         $html .='
                         <tr>
-                            <td style="border:1px solid #000" colspan="4" ><b>'.($total_pl->totpl).' ROLL (@ LB '.round( $total_pl->width,2).' )</b></td>';    
+                            <td style="border:1px solid #000" colspan="4" ><b>'.($total_pl->roll).' ROLL (@ LB '.round( $total_pl->width,2).' )</b></td>';    
                     }else if($count_pl <> '1'){
                         $html .='<tr>
                             <td style="padding:0;border:1px solid #000;font-weight:bold" colspan="4" >-</td>';
                     }
 
                     $html .='<td style="border:1px solid #000"><b>Total</b></td>
-                            <td style="border:1px solid #000"><b>'.number_format($total_pl->tot).'</b></td>
+                            <td style="border:1px solid #000"><b>'.number_format($fxSumBerat).'</b></td>
                             <td style="border:1px solid #000" colspan="2"></td>
                         </tr>';
 
