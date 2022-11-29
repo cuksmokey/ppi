@@ -1202,23 +1202,18 @@ class Laporan extends CI_Controller {
         if ($data_detail->num_rows() > 0) {
         foreach ($data_detail->result() as $data ) {
 
+			if($data->seset == 0 || $data->seset == null){
+					$lWeight = $data->weight;
+				}else{
+					$lWeight = $data->weight - $data->seset;
+				}
             if($ctk == 0 || $ctk == 2 || $ctk == 'A4' || $ctk == 'F4'){
-
-                $pp = "Epson";
-
-                if($pp == "Epson"){
-                    // $ppx = "0 0 0 5px";
-                    $ppx = "0";
-                }else{
-                    $ppx = "0 0 0 35px";
-                }
-
                 if($data->weight == 0){
                     $html .= '';
                 }else if($data->weight <> 0){
                     // 35PX
                     $html .= '
-                    <div style="margin:'.$ppx.';color:#000">
+                    <div style="margin:0;color:#000">
                     <center> 
                         <h1 style="color:#000"> '.$data_perusahaan->nama.' </h1>  '.$data_perusahaan->daerah.' , Email : '.$data_perusahaan->email.'
                     </center>
@@ -1226,13 +1221,8 @@ class Laporan extends CI_Controller {
                     <hr>';
 
                     // 35PX
-					if($data->seset == 0 || $data->seset == null){
-						$lWeight = $data->weight;
-					}else{
-						$lWeight = $data->weight - $data->seset;
-					}
                     $html .= '<br><br><br>
-                            <table width="100%" cellspacing="0" cellpadding="5" style="font-size:52px;color:#000;margin:'.$ppx.'">
+                            <table width="100%" cellspacing="0" cellpadding="5" style="font-size:52px;color:#000;margin:0">
                                 <tr>
                                     <td style="border:1px solid #000" align="left" width="50%">QUALITY</td>
                                     <td style="border:1px solid #000" align="center">'.$data->nm_ker.'</td>
@@ -1290,7 +1280,7 @@ class Laporan extends CI_Controller {
                                 </tr>
                                 <tr>
                                     <td align="left">WEIGHT</td>
-                                    <td align="center">'.$data->weight.' KG</td>
+                                    <td align="center">'.$lWeight.' KG</td>
                                 </tr>
                                 <tr>
                                     <td align="left">JOINT</td>
@@ -5295,8 +5285,10 @@ class Laporan extends CI_Controller {
             $where = "AND nm_ker='mn' $pm";
         }else if($jenis == 'wp' || $jenis == 'rwp' || $vjenis == 'wp'){
             $where = "AND nm_ker='wp' $pm";
+        }else if($jenis == 'rmhc'){
+            $where = "AND nm_ker='mh color' $pm";
         }else{
-            $where = "AND (nm_ker='mh' OR nm_ker='mi' OR nm_ker='bk' OR nm_ker='bl' OR nm_ker='mn' OR nm_ker='wp')";
+            $where = "AND (nm_ker='mh' OR nm_ker='mi' OR nm_ker='bk' OR nm_ker='bl' OR nm_ker='mn' OR nm_ker='wp' OR nm_ker='mh color')";
         }
         
 		if($stat == 'buffer'){
@@ -5348,7 +5340,7 @@ class Laporan extends CI_Controller {
 
             $getWidth = $this->db->query("SELECT width FROM m_timbangan
             WHERE $Btgl $statusIdPl $where
-            -- AND width BETWEEN '155' AND '210' # TESTING STOK
+            AND width BETWEEN '155' AND '210' # TESTING STOK
             -- AND width BETWEEN '160' AND '215' # TESTING BUFFER
             GROUP BY width");
             $i = 0;

@@ -157,6 +157,7 @@
 							<button class="tmbl-buffer" onclick="load_data('rmhbk','buffer')">MEDIUM - B-KRAFT</button>
 							<button class="tmbl-buffer" onclick="load_data('rnonspek','buffer')">MEDIUM NON SPEK</button>
 							<button class="tmbl-buffer" onclick="load_data('rwp','buffer')">W P</button>
+							<button class="tmbl-buffer" onclick="load_data('rmhc','buffer')">MH COLOR</button>
 							<button class="tmbl-buffer" onclick="load_data('rall','buffer')">SEMUA</button>
 						</div>
 						
@@ -312,6 +313,8 @@
 			Njenis = 'BUFFER MEDIUM NON SPEK';
 		}else if(jenis == 'rwp'){
 			Njenis = 'BUFFER WP';
+		}else if(jenis == 'rmhc'){
+			Njenis = 'MH COLOR';
 		}else if(jenis == 'rall'){
 			Njenis = 'SEMUA BUFFER';
 		}else{
