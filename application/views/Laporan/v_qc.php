@@ -219,6 +219,7 @@
 				otori: otorisasi,
 				stat: '',
 				vtgl: '',
+				vtgl2: '',
 				pm: '',
 			}),
 			success: function(response){

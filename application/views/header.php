@@ -147,6 +147,14 @@
                             </a>
                         </li>
                     <?php } ?>
+                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin") { ?>
+                        <li>
+                            <a href="<?php echo base_url('Laporan/Penjualan_PO') ?>">
+                                <!-- <i class="material-icons">list</i> -->
+                                <span>Penjualan PO</span>
+                            </a>
+                        </li>
+                    <?php } ?>
                     <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC") { ?>
                         <li>
                             <a href="<?php echo base_url('Laporan/Stok_Gudang') ?>">

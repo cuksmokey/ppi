@@ -86,7 +86,7 @@
 	.tmbl-buffer {
 		background: #555;
 		padding: 5px 7px;
-		color: #e9e9e9;
+		color: #fff;
 		font-weight: bold;
 		border: 0;
 		border-radius: 5px;
@@ -103,6 +103,10 @@
 
 	.clear{
 		display:block;padding:2px
+	}
+
+	.new-stok-gg:hover {
+		background: rgba(238, 238, 238, 0.5);
 	}
 </style>
 
@@ -183,6 +187,8 @@
 
 							<button disabled>PILIH : </button>
 							<input type="date" name="tgl" id="tgl" style="padding:3px 5px;border:1px solid #ccc;border-radius:5px">
+							s/d
+							<input type="date" name="tgl2" id="tgl2" style="padding:3px 5px;border:1px solid #ccc;border-radius:5px">
 							<button class="tmbl-stok" onclick="load_data('tgl','produksi')">CARI</button>
 						</div>
 
@@ -216,21 +222,23 @@
 		$(".tmpl-roll").html('').hide();
 		$(".menu-stok").hide();
 		$(".menu-produksi").hide();
-		$("#p-pm").val('');
-		$("#p-pm-v").val('');
-		$("#p-jenis").val('');
-		$("#p-jenis-v").val('');
-		$("#tgl").val('');
+		kosong();
 	});
 
-	function plh_menu(plh){
-		$(".box-data").html('').hide();
-		$(".tmpl-roll").html('').hide();
+	function kosong(){
 		$("#p-pm").val('');
 		$("#p-pm-v").val('');
 		$("#p-jenis").val('');
 		$("#p-jenis-v").val('');
 		$("#tgl").val('');
+		$("#tgl2").val('');
+	}
+
+	function plh_menu(plh){
+		$(".tmbl-stok").prop("disabled", false).removeAttr( "style");
+		$(".tmbl-buffer").prop("disabled", false).removeAttr( "style");
+		$(".box-data").html('').hide();
+		$(".tmpl-roll").html('').hide();
 		if(plh == 'stok'){
 			$(".menu-stok").show();
 			$(".menu-produksi").hide();
@@ -273,6 +281,7 @@
 		$(".tmpl-roll").html('');
 		otorisasi = $("#otorisasi").val();
 		tgl = $("#tgl").val();
+		tgl2 = $("#tgl2").val();
 		vpm = $("#p-pm-v").val();
 		vjenis = $("#p-jenis-v").val();
 
@@ -286,7 +295,11 @@
 				return;
 			}
 			if (tgl == '') {
-				showNotification("alert-danger", "PILIH TANGGAL", "bottom", "center", "", "");
+				showNotification("alert-danger", "PILIH TANGGAL AWAL", "bottom", "center", "", "");
+				return;
+			}
+			if (tgl2 == '') {
+				showNotification("alert-danger", "PILIH TANGGAL AKHIR", "bottom", "center", "", "");
 				return;
 			}
 		}
@@ -327,11 +340,18 @@
 			}else{
 				xpm = vpm;
 			}
-			tJns = `PRODUKSI <b>${Njenis}</b>. DARI PM <b>${xpm}</b>. TANGGAL <b>${tgl}</b>`;
+			if(tgl == tgl2){
+				tmplTgl = tgl;
+			}else{
+				tmplTgl = tgl+' s/d '+tgl2;
+			}
+			tJns = `PRODUKSI <b>${Njenis}</b>. DARI PM <b>${xpm}</b>. TANGGAL <b>${tmplTgl}</b>`;
 		}else{
 			tJns = `<b>${Njenis}</b>`;
 		}
 
+		$(".tmbl-stok").prop("disabled", true).attr('style', 'background:#ccc');
+		$(".tmbl-buffer").prop("disabled", true).attr('style', 'background:#ccc');
 		$(".box-data").show().html(`Memuat data ROLL ${tJns}. Tunggu Sebentar . . .`);
 		$.ajax({
 			url: '<?php echo base_url('Laporan/NewStokGudang'); ?>',
@@ -341,10 +361,13 @@
 				otorisasi: otorisasi,
 				stat: stat,
 				tgl: tgl,
+				tgl2: tgl2,
 				pm: vpm,
 				vjenis: vjenis,
 			}),
 			success: function(response){
+				$(".tmbl-stok").prop("disabled", false).removeAttr( "style");
+				$(".tmbl-buffer").prop("disabled", false).removeAttr( "style");
 				$(".box-data").show().html(response);
 				$("#stat").val(stat);
 			}
@@ -387,6 +410,7 @@
 	function cekRoll(nm_ker,g_label,width,otori){
 		stat = $("#stat").val();
 		tgl = $("#tgl").val();
+		vtgl2 = $("#tgl2").val();
 		pm = $("#p-pm-v").val();
 		$(".tmpl-roll").show().html('Mencari Data . . .');
 		$.ajax({
@@ -403,6 +427,7 @@
 				otori: otori,
 				stat: stat,
 				vtgl: tgl,
+				vtgl2: tgl2,
 				pm: pm,
 			}),
 			success: function(response){

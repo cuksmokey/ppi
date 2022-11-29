@@ -87,6 +87,12 @@ class Laporan extends CI_Controller {
         $this->load->view('footer');
     }
 
+    function Penjualan_PO(){
+        $this->load->view('header');
+        $this->load->view('Laporan/v_penjualan_po');
+        $this->load->view('footer');
+    }
+
 	function Stok_Gudang(){
         $this->load->view('header');
         $this->load->view('Laporan/v_stok');
@@ -5256,6 +5262,7 @@ class Laporan extends CI_Controller {
 		$otorisasi = $_POST['otorisasi'];
 		$stat = $_POST['stat'];
 		$tgl = $_POST['tgl'];
+		$tgl2 = $_POST['tgl2'];
 		$vpm = $_POST['pm'];
 		$vjenis = $_POST['vjenis'];
 
@@ -5299,16 +5306,22 @@ class Laporan extends CI_Controller {
 			$statusIdPl = "";
 		}
 
+        if($tgl == $tgl2){
+            $tTgl = "tgl='$tgl'";
+        }else{
+            $tTgl = "tgl BETWEEN '$tgl' AND '$tgl2'";
+        }
+
         // GET PRODUKSI
         $getProduksi = $this->db->query("SELECT nm_ker,g_label,width FROM m_timbangan
-        WHERE tgl='$tgl' $where $statusIdPl
+        WHERE $tTgl $where $statusIdPl
         GROUP BY nm_ker,g_label,width");
         
         if($getProduksi->num_rows() == 0 && $stat == 'produksi'){
             $html .='<div style="font-weight:bold">TIDAK ADA PRODUKSI</div>';
         }else{
             if($stat == 'produksi'){
-                $Btgl = "tgl='$tgl'";
+                $Btgl = $tTgl;
             }else{
                 $Btgl = "tgl BETWEEN '2020-04-01' AND '9999-01-01'";
             }
@@ -5340,13 +5353,13 @@ class Laporan extends CI_Controller {
 
             $getWidth = $this->db->query("SELECT width FROM m_timbangan
             WHERE $Btgl $statusIdPl $where
-            AND width BETWEEN '155' AND '210' # TESTING STOK
+            -- AND width BETWEEN '155' AND '210' # TESTING STOK
             -- AND width BETWEEN '160' AND '215' # TESTING BUFFER
             GROUP BY width");
             $i = 0;
             foreach($getWidth->result() as $width){
                 $i++;
-                $html .='<tr><td>'.$i.'</td><td>'.round($width->width,2).'</td>';
+                $html .='<tr class="new-stok-gg"><td style="font-weight:bold">'.$i.'</td><td style="font-weight:bold">'.round($width->width,2).'</td>';
 
                 $getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
                 WHERE $Btgl $statusIdPl $where
@@ -5376,7 +5389,7 @@ class Laporan extends CI_Controller {
                             $html .='<td style="padding:5px;background:'.$gbGsm.'">0</td>';
                         }else{
                             $html .='<td style="padding:5px">
-                            <button style="background:#fff;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".')">'.$getWidth->row()->jml.'</button></td>';
+                            <button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".')">'.$getWidth->row()->jml.'</button></td>';
                         }
                     }
                 }
@@ -5496,6 +5509,7 @@ class Laporan extends CI_Controller {
         $otori = $_POST['otori'];
         $stat = $_POST['stat'];
         $vtgl = $_POST['vtgl'];
+        $vtgl2 = $_POST['vtgl2'];
         $pm = $_POST['pm'];
         $html ='';
 
@@ -5506,11 +5520,11 @@ class Laporan extends CI_Controller {
 				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='3' AND id_pl='0'";
 			}else{ // PRODUKSI
                 if($pm == 1){
-                    $tpm = "AND pm='1' AND tgl='$vtgl'";
+                    $tpm = "AND pm='1' AND tgl BETWEEN '$vtgl' AND '$vtgl2'";
                 }else if($pm == 2){
-                    $tpm = "AND (pm='2' OR pm IS NULL) AND tgl='$vtgl'";
+                    $tpm = "AND (pm='2' OR pm IS NULL) AND tgl BETWEEN '$vtgl' AND '$vtgl2'";
                 }else{
-                    $tpm = "AND tgl='$vtgl'";
+                    $tpm = "AND tgl BETWEEN '$vtgl' AND '$vtgl2'";
                 }
 				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' $tpm";
 			}
