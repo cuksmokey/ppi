@@ -157,6 +157,12 @@
                     <?php } ?>
                     <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC") { ?>
                         <li>
+                            <a href="<?php echo base_url('Laporan/Pengiriman_Roll') ?>">
+                                <!-- <i class="material-icons">list</i> -->
+                                <span>Pengiriman</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="<?php echo base_url('Laporan/Stok_Gudang') ?>">
                                 <!-- <i class="material-icons">list</i> -->
                                 <span>Stok Gudang + Produksi</span>

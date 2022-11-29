@@ -1,6 +1,9 @@
-PENAMBAHAN LEVEL DI DATABASE TABLE USER LEVEL "QC , FG, Rewind1, Rewind2"
+PENAMBAHAN LEVEL DI TABLE USER LEVEL "QC , FG, Rewind1, Rewind2"
 user > user
 developer > developer
 admin > 123
 
 ADD KOLOM "seset" int 11 pada tabel m_timbangan
+
+ADD KOLOM "qc" varchar[6] isi "proses, cek, ok" setelah kolom "status" pada tabel pl
+ADD KOLOM "opl" int[2] buat order pengiriman setelah "qc" pada table pl
