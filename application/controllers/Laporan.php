@@ -1182,7 +1182,7 @@ class Laporan extends CI_Controller {
         if($ctk == 'A4' || $ctk == 'a4' || $ctk == 'F4' || $ctk == 'f4'){
             $data_detail = $this->db->query("SELECT * FROM m_timbangan a
             INNER JOIN pl b ON a.id_pl=b.id
-            WHERE b.no_pkb='$all' AND (ket LIKE '-%' OR ket LIKE ' %')
+            WHERE b.no_pkb='$all' AND (ket LIKE '-%' OR ket LIKE ' %' OR seset > '0')
             ORDER BY a.nm_ker DESC,a.g_label ASC,a.width ASC,a.roll ASC");
         }else if($jenis != 0 && $all == 0){
             $data_detail = $this->db->query("SELECT * FROM m_timbangan WHERE id_pl='$jenis' ORDER BY nm_ker ASC,g_label ASC,width ASC,roll ASC");
@@ -1226,8 +1226,13 @@ class Laporan extends CI_Controller {
                     <hr>';
 
                     // 35PX
+					if($data->seset == 0 || $data->seset == null){
+						$lWeight = $data->weight;
+					}else{
+						$lWeight = $data->weight - $data->seset;
+					}
                     $html .= '<br><br><br>
-                             <table width="100%" cellspacing="0" cellpadding="5" style="font-size:52px;color:#000;margin:'.$ppx.'">
+                            <table width="100%" cellspacing="0" cellpadding="5" style="font-size:52px;color:#000;margin:'.$ppx.'">
                                 <tr>
                                     <td style="border:1px solid #000" align="left" width="50%">QUALITY</td>
                                     <td style="border:1px solid #000" align="center">'.$data->nm_ker.'</td>
@@ -1246,7 +1251,7 @@ class Laporan extends CI_Controller {
                                 </tr>
                                 <tr>
                                     <td style="border:1px solid #000" align="left">WEIGHT</td>
-                                    <td style="border:1px solid #000" align="center">'.$data->weight.' KG</td>
+                                    <td style="border:1px solid #000" align="center">'.$lWeight.' KG</td>
                                 </tr>
                                 <tr>
                                     <td style="border:1px solid #000" align="left">JOINT</td>
@@ -2587,7 +2592,7 @@ class Laporan extends CI_Controller {
             // $where
             // GROUP BY b.tgl,b.no_pkb
             // ORDER BY b.tgl ASC,a.nm_ker ASC,b.no_pkb ASC");
-            $getIsiPerBulan = $this->db->query("SELECT DISTINCT b.tgl,a.nm_ker,b.nama,b.id_perusahaan AS id_pt,b.nm_perusahaan,COUNT(*) AS jumlah,SUM(a.weight) AS berat,b.no_pkb,b.no_po FROM m_timbangan a
+            $getIsiPerBulan = $this->db->query("SELECT DISTINCT b.tgl,a.nm_ker,b.nama,b.id_perusahaan AS id_pt,b.nm_perusahaan,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset,b.no_pkb,b.no_po FROM m_timbangan a
 			INNER JOIN pl b ON a.id_pl=b.id
 			WHERE b.tgl BETWEEN '$tgl1' AND '$tgl2'
 			AND b.nm_perusahaan!='LAMINASI PPI' AND b.nm_perusahaan!='CORRUGATED PPI' $where     
@@ -2671,9 +2676,15 @@ class Laporan extends CI_Controller {
 					}
 					$html .= '</td>';
 				
+					// seset
+					if($isi->seset == 0 || $isi->seset == null){
+						$ttBerat = $isi->berat;
+					}else{
+						$ttBerat = $isi->berat - $isi->seset;
+					}
 					$html .='
 						<td class="str" style="border:1px solid #000;vertical-align:middle;padding:5px 0;text-align:center">'.number_format($isi->jumlah).'</td>
-						<td class="str" style="border:1px solid #000;vertical-align:middle;padding:5px 0;text-align:center">'.number_format($isi->berat).'</td>
+						<td class="str" style="border:1px solid #000;vertical-align:middle;padding:5px 0;text-align:center">'.number_format($ttBerat).'</td>
 					</tr>';
 					
                 // $html .= '</td>
@@ -2784,7 +2795,16 @@ class Laporan extends CI_Controller {
         WHERE d.tgl=b.tgl AND c.nm_ker='BK') AS jmlBK,
         (SELECT SUM(c.weight) FROM m_timbangan c
         INNER JOIN pl d ON c.id_pl=d.id
-        WHERE d.tgl=b.tgl AND c.nm_ker='WP') AS jmlWP
+        WHERE d.tgl=b.tgl AND c.nm_ker='WP') AS jmlWP,
+        (SELECT SUM(c.seset) FROM m_timbangan c
+        INNER JOIN pl d ON c.id_pl=d.id
+        WHERE d.tgl=b.tgl AND c.nm_ker LIKE '%M%') AS sesetMH,
+        (SELECT SUM(c.seset) FROM m_timbangan c
+        INNER JOIN pl d ON c.id_pl=d.id
+        WHERE d.tgl=b.tgl AND c.nm_ker='BK') AS sesetBK,
+        (SELECT SUM(c.seset) FROM m_timbangan c
+        INNER JOIN pl d ON c.id_pl=d.id
+        WHERE d.tgl=b.tgl AND c.nm_ker='WP') AS sesetWP
         -- (SELECT SUM(c.weight) FROM m_timbangan c
         -- INNER JOIN pl d ON c.id_pl=d.id
         -- WHERE d.tgl=b.tgl) AS jmlTOT
@@ -2803,12 +2823,28 @@ class Laporan extends CI_Controller {
         $totJmlTot = 0;
         foreach($getIsiRekap->result() as $r){
             $i++;
-            $totot = $r->jmlMH+$r->jmlBK+$r->jmlWP;
+
+            if($r->sesetMH == 0 || $r->sesetMH == null){
+                $jmlSetMH = 0;
+            }else{
+                $jmlSetMH = $r->sesetMH;
+            }
+            if($r->sesetBK == 0 || $r->sesetBK == null){
+                $jmlSetBK = 0;
+            }else{
+                $jmlSetBK = $r->sesetBK;
+            }
+            if($r->sesetWP == 0 || $r->sesetWP == null){
+                $jmlSetWP = 0;
+            }else{
+                $jmlSetWP = $r->sesetWP;
+            }
+            $totot = ($r->jmlMH - $jmlSetMH) + ($r->jmlBK - $jmlSetBK) + ($r->jmlWP - $jmlSetWP);
 
             // TOTAL
-            $totJmlMH += $r->jmlMH;
-            $totJmlWP += $r->jmlWP;
-            $totJmlBK += $r->jmlBK;
+            $totJmlMH += $r->jmlMH - $jmlSetMH;
+            $totJmlWP += $r->jmlWP - $jmlSetWP;
+            $totJmlBK += $r->jmlBK - $jmlSetBK;
             $totJmlTot += $totot;
 
             // MINGGU
@@ -2829,9 +2865,9 @@ class Laporan extends CI_Controller {
             $html .= '<tr>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center">'.$i.'</td>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center">'.$this->m_fungsi->tanggal_format_indonesia($r->tgl).'</td>
-                <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($r->jmlMH).'</td>
-                <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($r->jmlWP).'</td>
-                <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($r->jmlBK).'</td>
+                <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($r->jmlMH - $jmlSetMH).'</td>
+                <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($r->jmlWP - $jmlSetWP).'</td>
+                <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($r->jmlBK - $jmlSetBK).'</td>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($totot).'</td>
             </tr>';
             // </tr>'.$hariMinggu;
@@ -2951,32 +2987,48 @@ class Laporan extends CI_Controller {
 
             // CARI JUMLAH ROLL DAN BERAT
             // MH
-            $getIsiCountBeratMH = $this->db->query("SELECT COUNT(*) AS countt,SUM(a.weight) AS beratt FROM m_timbangan a
+            $getIsiCountBeratMH = $this->db->query("SELECT COUNT(*) AS countt,SUM(a.weight) AS beratt,SUM(a.seset) AS sesett FROM m_timbangan a
             INNER JOIN pl b ON a.id_pl=b.id
             WHERE b.tgl LIKE '%$r->ambil_bulan%' AND a.nm_ker LIKE '%M%'")->row();
             // WRP
-            $getIsiCountBeratWP = $this->db->query("SELECT COUNT(*) AS countt,SUM(a.weight) AS beratt FROM m_timbangan a
+            $getIsiCountBeratWP = $this->db->query("SELECT COUNT(*) AS countt,SUM(a.weight) AS beratt,SUM(a.seset) AS sesett FROM m_timbangan a
             INNER JOIN pl b ON a.id_pl=b.id
             WHERE b.tgl LIKE '%$r->ambil_bulan%' AND a.nm_ker='WP'")->row();
             // BK
-            $getIsiCountBeratBK = $this->db->query("SELECT COUNT(*) AS countt,SUM(a.weight) AS beratt FROM m_timbangan a
+            $getIsiCountBeratBK = $this->db->query("SELECT COUNT(*) AS countt,SUM(a.weight) AS beratt,SUM(a.seset) AS sesett FROM m_timbangan a
             INNER JOIN pl b ON a.id_pl=b.id
             WHERE b.tgl LIKE '%$r->ambil_bulan%' AND a.nm_ker='BK'")->row();
             // TOTAL JML ROLL, TONASE PER BULAN
+            // SESET
+            if($getIsiCountBeratMH->sesett == 0 || $getIsiCountBeratMH->sesett == null){
+				$jmlSetMH = 0;
+            }else{
+				$jmlSetMH = $getIsiCountBeratMH->sesett;
+			}
+			if($getIsiCountBeratWP->sesett == 0 || $getIsiCountBeratWP->sesett == null){
+				$jmlSetWP = 0;
+            }else{
+				$jmlSetWP = $getIsiCountBeratWP->sesett;
+			}
+			if($getIsiCountBeratBK->sesett == 0 || $getIsiCountBeratBK->sesett == null){
+				$jmlSetBK = 0;
+            }else{
+				$jmlSetBK = $getIsiCountBeratBK->sesett;
+			}
             $totBlnRoll = $getIsiCountBeratMH->countt + $getIsiCountBeratWP->countt + $getIsiCountBeratBK->countt;
-            $totBlnTonase = $getIsiCountBeratMH->beratt + $getIsiCountBeratWP->beratt + $getIsiCountBeratBK->beratt;
+            $totBlnTonase = ($getIsiCountBeratMH->beratt - $jmlSetMH) + ($getIsiCountBeratWP->beratt - $jmlSetWP) + ($getIsiCountBeratBK->beratt - $jmlSetBK);
 
             $html .= '<tr>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center;text-transform:uppercase">'.substr($this->m_fungsi->fgGetBulan($r->ambil_bulan),0, 3).'</td>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($getIsiRitaseMH).'</td>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($getIsiCountBeratMH->countt).'</td>
-                <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($getIsiCountBeratMH->beratt).'</td>
+                <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($getIsiCountBeratMH->beratt - $jmlSetMH).'</td>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($getIsiRitaseWP).'</td>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($getIsiCountBeratWP->countt).'</td>
-                <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($getIsiCountBeratWP->beratt).'</td>
+                <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($getIsiCountBeratWP->beratt - $jmlSetWP).'</td>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($getIsiRitaseBK).'</td>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($getIsiCountBeratBK->countt).'</td>
-                <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($getIsiCountBeratBK->beratt).'</td>
+                <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($getIsiCountBeratBK->beratt - $jmlSetBK).'</td>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($totBlnRitase).'</td>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($totBlnRoll).'</td>
                 <td style="border:1px solid #000;padding:5px 0;text-align:center">'.number_format($totBlnTonase).'</td>
@@ -2989,14 +3041,14 @@ class Laporan extends CI_Controller {
             $allIsiThnrollMH += $getIsiCountBeratMH->countt;
             $allIsiThnrollWP += $getIsiCountBeratWP->countt;
             $allIsiThnrollBK += $getIsiCountBeratBK->countt;
-            $allIsiThnjmlMH += $getIsiCountBeratMH->beratt;
-            $allIsiThnjmlWP += $getIsiCountBeratWP->beratt;
-            $allIsiThnjmlBK += $getIsiCountBeratBK->beratt;
+            $allIsiThnjmlMH += $getIsiCountBeratMH->beratt - $jmlSetMH;
+            $allIsiThnjmlWP += $getIsiCountBeratWP->beratt - $jmlSetWP;
+            $allIsiThnjmlBK += $getIsiCountBeratBK->beratt - $jmlSetBK;
 
             // PER HITUNGAN TOTAL KESELURAN PER TAHUN
             $totAllRitase += $getIsiRitaseMH + $getIsiRitaseWP + $getIsiRitaseBK;
-            $totAllRoll += $getIsiCountBeratMH->countt + $getIsiCountBeratWP->countt + $getIsiCountBeratBK->countt;
-            $totAllTonase += $getIsiCountBeratMH->beratt + $getIsiCountBeratWP->beratt + $getIsiCountBeratBK->beratt;
+            $totAllRoll += $totBlnRoll;
+            $totAllTonase += $totBlnTonase;
         }
 
         // T O T A L S E M U A
