@@ -1423,7 +1423,7 @@ class Master extends CI_Controller
 	function pList(){
 		$tgl = $_POST['tgl'];
 		$html ='';
-		$html .='<table style="margin:0;padding:0;border-collapse:collapse;color:#000;font-size:12px" border="1">';
+		// $html .='<table style="margin:0;padding:0;border-collapse:collapse;color:#000;font-size:12px" border="1">';
 
 		$getCust = $this->db->query("SELECT*FROM pl
 		WHERE qc='proses' AND tgl='$tgl'
@@ -1431,58 +1431,63 @@ class Master extends CI_Controller
 		if($getCust->num_rows() == 0){
 			$html .='<div style="font-weight:bold">DATA PROSES INPUT TIDAK DITEMUKAN</div>';
 		}else{
-			$html .='<tr>
-				<td style="padding:5px;font-weight:bold">No.</td>
-				<td style="padding:5px;font-weight:bold">Customer</td>
-				<td style="padding:5px;font-weight:bold">Keterangan</td>
-			</tr>';
+			// $html .='<table class="list-table">
+			// 	<tr>
+			// 		<td style="padding:5px;font-weight:bold">No.</td>
+			// 		<td style="padding:5px;font-weight:bold">Customer</td>
+			// 		<td style="padding:5px;font-weight:bold">Keterangan</td>
+			// 	</tr>
+			// </table>';
 			$i = 0;
 			foreach($getCust->result() as $cust){
 				$i++;
-				$html .='<tr>
-					<td style="padding:5px;text-align:center">'.$i.'</td>
-					<td style="padding:5px">'.$cust->nm_perusahaan.'</td>
-					<td style="padding:5px;text-align:center"><button disabled>PROSES</button></td>
-				</tr>';
+				$html .='<table class="list-table">
+					<tr>
+						<td style="padding:5px;text-align:center">'.$i.'</td>
+						<td style="padding:5px">'.$cust->nm_perusahaan.'</td>
+						<td style="padding:5px;text-align:center"><button onclick="btnCekQc('."'".$cust->opl."'".','."'".$i."'".')">CEK QC</button></td>
+					</tr>
+				</table>';
+
+				$html .='<div class="id-cek t-plist-cek-'.$i.'"></div>';
 			}
 		}
-		$html .='</table>';
+		// $html .='</table>';
 
 		echo $html;
 	}
 
-	function pListCekQc(){
-		$tgl = $_POST['tgl'];
-		$html = '';
-
-		$html .='<table style="margin:0;padding:0;color:#000;font-size:12px;border-collapse:collapse" border="1">';
-
-		$getCekQc = $this->db->query("SELECT*FROM pl
-		WHERE qc='cek' AND tgl='$tgl'
-		GROUP BY opl");
-		if($getCekQc->num_rows() == 0){
-			$html .='<div stye="font-weight:bold">DATA CEK QC TIDAK DITEMUKAN</div>';
-		}else{
-			$html .='<tr>
-				<td style="padding:5px;font-weight:bold">No.</td>
-				<td style="padding:5px;font-weight:bold">Customer</td>
-				<td style="padding:5px;font-weight:bold">Keterangan</td>
-			</tr>';
-			$i = 0;
-			foreach($getCekQc->result() as $cekqc){
-				$i++;
-				$html .='<tr>
-					<td style="padding:5px;text-align:center">'.$i.'</td>
-					<td style="padding:5px">'.$cekqc->nm_perusahaan.'</td>
-					<td style="padding:5px;text-align:center"><button onclick="btnCekQc('."'".$cekqc->opl."'".','."'".$i."'".')">CEK QC</button></td>
-				</tr>';
+	// function pListCekQc(){
+	// 	$tgl = $_POST['tgl'];
+	// 	$html = '';
+	// 	$getCekQc = $this->db->query("SELECT*FROM pl
+	// 	WHERE qc='cek' AND tgl='$tgl'
+	// 	GROUP BY opl");
+	// 	if($getCekQc->num_rows() == 0){
+	// 		$html .='<div stye="font-weight:bold">DATA CEK QC TIDAK DITEMUKAN</div>';
+	// 	}else{
+	// 		$html .='<table class="list-table">';
+	// 		$html .='<tr>
+	// 			<td style="padding:5px;font-weight:bold">No.</td>
+	// 			<td style="padding:5px;font-weight:bold">Customer</td>
+	// 			<td style="padding:5px;font-weight:bold">Keterangan</td>
+	// 		</tr></table>';
+	// 		$i = 0;
+	// 		foreach($getCekQc->result() as $cekqc){
+	// 			$i++;
+	// 			$html .='<table class="list-table">';
+	// 			$html .='<tr>
+	// 				<td style="padding:5px;text-align:center">'.$i.'</td>
+	// 				<td style="padding:5px">'.$cekqc->nm_perusahaan.'</td>
+	// 				<td style="padding:5px;text-align:center"><button onclick="btnCekQc('."'".$cekqc->opl."'".','."'".$i."'".')">CEK QC</button></td>
+	// 			</tr>';
 				
-				$html .='<tr class="id-cek t-plist-cek-'.$i.'"></tr>';
-			}
-		}
+	// 			$html .='</table>';
 
-		$html .='</table>';
-
-		echo $html;
-	}
+	// 			$html .='<div class="id-cek t-plist-cek-'.$i.'"></div>';
+	// 		}
+	// 	}
+		
+	// 	echo $html;
+	// }
 }

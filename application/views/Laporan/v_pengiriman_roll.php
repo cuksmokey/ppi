@@ -1,6 +1,14 @@
 <style>
+	.list-table {
+		margin:0;padding:0;color:#000;font-size:12px;border-collapse:collapse
+	}
+
 	.list-pl, .list-pl-cek {
 		padding-top:10px
+	}
+
+	.list-pl-d {
+		color:#000
 	}
 </style>
 
@@ -80,28 +88,9 @@
 			success: function(response){
 				if(response){
 					$(".list-pl").show().html(response);
-					cekQC();
-				}else{
-					$(".list-pl").show().html('DATA TIDAK DITEMUKAN');
-				}
-			}
-		});
-	}
-
-	function cekQC(){
-		tgl = $("#ngirim-tgl").val();
-		$.ajax({
-			url: '<?php echo base_url('Master/pListCekQc'); ?>',
-			type: "POST",
-			data: ({
-				tgl: tgl
-			}),
-			success: function(response){
-				if(response){
-					$(".list-pl-cek").show().html(response);
 					// cekQC();
 				}else{
-					$(".list-pl-cek").show().html('DATA TIDAK DITEMUKAN');
+					$(".list-pl").show().html('DATA TIDAK DITEMUKAN');
 				}
 			}
 		});
@@ -110,7 +99,12 @@
 	function btnCekQc(opl,i){
 		// alert(opl+' '+i);
 		$(".id-cek").html('');
-		$(".t-plist-cek-" + i).html(`<td style="padding:5px" colspan="3">TEST ${i}</td>`);
+		$(".t-plist-cek-" + i).html(`<table class="list-table">
+			<tr>
+				<td style="padding:5px;font-weight:bold">No.</td>
+				<td style="padding:5px;font-weight:bold">Customer</td>
+			</tr>
+		</table>`);
 	}
 
 </script>
