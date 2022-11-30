@@ -981,7 +981,7 @@ class Laporan extends CI_Controller {
 
 							if(($r->nm_ker == 'MH' || $r->nm_ker == 'MN') && ($r->g_label == 105 || $r->g_label == 110)){
 								$bgCrGsm = '#eef';
-							}else if($r->nm_ker == 'MH' && $r->g_label == 125){
+							}else if($r->nm_ker == 'MH' && ($r->g_label == 120 || $r->g_label == 125)){
 								$bgCrGsm = '#ffe';
 							}else if(($r->nm_ker == 'MH' || $r->nm_ker == 'MN') && $r->g_label == 150){
 								$bgCrGsm = '#fee';
@@ -1037,7 +1037,7 @@ class Laporan extends CI_Controller {
                             foreach($qrTotPL->result() as $abc){
 								if(($abc->nm_ker == 'MH' || $abc->nm_ker == 'MN') && ($abc->g_label == 105 || $abc->g_label == 110)){
 									$bcg2 = '#eef';
-								}else if($abc->nm_ker == 'MH' && $abc->g_label == 125){
+								}else if($abc->nm_ker == 'MH' && ($abc->g_label == 120 || $abc->g_label == 125)){
 									$bcg2 = '#ffe';
 								}else if(($abc->nm_ker == 'MH' || $abc->nm_ker == 'MN') && $abc->g_label == 150){
 									$bcg2 = '#fee';

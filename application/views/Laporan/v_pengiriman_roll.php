@@ -7,8 +7,43 @@
 		padding-top:10px
 	}
 
-	.list-pl-d {
-		color:#000
+	.txt-area-i {
+		background:transparent;margin:0;padding:0;border:0;resize:none;width:100%;height:20px
+	}
+
+	.list-p-biru {
+		background: #ccf
+	}
+	.list-p-biru:hover {
+		background: #dde
+	}
+
+	.list-p-kuning {
+		background: #ffc
+	}
+	.list-p-kuning:hover {
+		background: #eed
+	}
+
+	.list-p-merah {
+		background: #fcc
+	}
+	.list-p-merah:hover {
+		background: #edd
+	}
+
+	.list-p-hijau {
+		background: #cfc
+	}
+	.list-p-hijau:hover {
+		background: #ded
+	}
+
+	.list-p-putih {
+		background: #fff
+	}
+	.list-p-putih:hover {
+		background: #eee
 	}
 </style>
 
@@ -88,7 +123,6 @@
 			success: function(response){
 				if(response){
 					$(".list-pl").show().html(response);
-					// cekQC();
 				}else{
 					$(".list-pl").show().html('DATA TIDAK DITEMUKAN');
 				}
@@ -96,15 +130,98 @@
 		});
 	}
 
-	function btnCekQc(opl,i){
-		// alert(opl+' '+i);
+	function btnRencana(opl,tgl_pl,i){
+		$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/destroyCartInputRoll') ?>");
+		// alert(opl+' '+tgl_pl+' '+i);
 		$(".id-cek").html('');
-		$(".t-plist-cek-" + i).html(`<table class="list-table">
-			<tr>
-				<td style="padding:5px;font-weight:bold">No.</td>
-				<td style="padding:5px;font-weight:bold">Customer</td>
-			</tr>
-		</table>`);
+		$.ajax({
+			url: '<?php echo base_url('Master/pListRencana')?>',
+			type: "POST",
+			data: ({
+				opl: opl,
+				tgl_pl: tgl_pl,
+				i: i
+			}),
+			success: function(response) {
+				if(response){
+					$(".t-plist-rencana-" + i).html(response);
+				}else{
+					$(".t-plist-rencana-" + i).html('TIDAK ADA DATA');
+				}
+			}
+		});
+	}
+
+	function btnInputRoll(i,nm_ker,g_label,width,roll=''){
+		$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/destroyCartInputRoll') ?>");
+		// alert(i+' - '+nm_ker+' - '+g_label+' - '+width);
+		$(".t-plist-input-" + i).html('Memuat Data...');
+		$.ajax({
+			url: '<?php echo base_url('Master/pListInputRoll')?>',
+			type: "POST",
+			data: ({
+				i: i, 
+				nm_ker: nm_ker, 
+				g_label: g_label, 
+				width: width, 
+				roll: roll, 
+			}),
+			success: function(response){
+				if(response){
+					$(".t-plist-input-" + i).html(response);
+					$('#roll').val(roll);
+				}else{
+					$(".t-plist-input-" + i).html('TIDAK ADA DATA');
+				}
+			}
+		});
+	}
+
+	// function cartInputRoll(id,roll,nm_ker,g_label,diameter,width,weight,joint,ket,i){
+	function cartInputRoll(id,roll,i){
+		$.ajax({
+			url: '<?php echo base_url('Master/pListCartInputRoll')?>',
+			type: "POST",
+			data: ({
+				id: id,
+				roll: roll,
+				// nm_ker: nm_ker,
+				// g_label: g_label,
+				// diameter: diameter,
+				// width: width,
+				// weight: weight,
+				// joint: joint,
+				// ket: ket,
+				i: i,
+			}),
+			success: function(response){
+				if(response){
+					$(".t-plist-hasil-input-" + i).html(response);
+				}else{
+					$(".t-plist-hasil-input-" + i).html('NOTHING');
+				}
+			}
+		});
+	}
+
+	function hapusCartInputRoll(rowid,i){
+		// alert(rowid+' - '+i);
+		$.ajax({
+			url: '<?php echo base_url('Master/hapusCartInputRoll')?>',
+			type: "POST",
+			data: ({
+				rowid: rowid
+			}),
+			success: function(response){
+				$(".t-plist-hasil-input-" + i).html(response);
+			}
+		});
+	}
+
+	function cariRoll(i,nm_ker,g_label,width,cari){
+		xroll = $('#roll').val();
+		alert(i+' - '+nm_ker+' - '+g_label+' - '+width+' - '+xroll+' - '+cari);
+		// btnInputRoll(i,nm_ker,g_label,width,xroll);
 	}
 
 </script>

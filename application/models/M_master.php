@@ -234,7 +234,7 @@ class M_master extends CI_Model{
         $no_surat = $_POST['no_surat'];
         $id = $this->db->query("SELECT id FROM pl WHERE no_surat = '$no_surat'")->row('id');
 
-        foreach ($this->cart->contents() as $items) {
+        foreach ($this->cart->contents() as $items) { //
             $this->db->set('status', "1");
             $this->db->set('id_pl', $id);
 

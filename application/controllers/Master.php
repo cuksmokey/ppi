@@ -1423,13 +1423,12 @@ class Master extends CI_Controller
 	function pList(){
 		$tgl = $_POST['tgl'];
 		$html ='';
-		// $html .='<table style="margin:0;padding:0;border-collapse:collapse;color:#000;font-size:12px" border="1">';
 
 		$getCust = $this->db->query("SELECT*FROM pl
 		WHERE qc='proses' AND tgl='$tgl'
 		GROUP BY opl");
 		if($getCust->num_rows() == 0){
-			$html .='<div style="font-weight:bold">DATA PROSES INPUT TIDAK DITEMUKAN</div>';
+			$html .='';
 		}else{
 			// $html .='<table class="list-table">
 			// 	<tr>
@@ -1443,51 +1442,197 @@ class Master extends CI_Controller
 				$i++;
 				$html .='<table class="list-table">
 					<tr>
+						<td style="padding:5px 0;text-align:center"><button onclick="btnRencana('."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">PROSES</button></td>
 						<td style="padding:5px;text-align:center">'.$i.'</td>
 						<td style="padding:5px">'.$cust->nm_perusahaan.'</td>
-						<td style="padding:5px;text-align:center"><button onclick="btnCekQc('."'".$cust->opl."'".','."'".$i."'".')">CEK QC</button></td>
 					</tr>
 				</table>';
 
-				$html .='<div class="id-cek t-plist-cek-'.$i.'"></div>';
+				$html .='<div class="id-cek t-plist-rencana-'.$i.'"></div>';
+				$html .='<div class="id-cek t-plist-input-'.$i.'"></div>';
+				$html .='<div class="id-cek t-plist-hasil-input-'.$i.'"></div>';
 			}
 		}
-		// $html .='</table>';
+		echo $html;
+	}
+
+	function pListRencana(){
+		$opl = $_POST['opl'];		
+		$tgl_pl = $_POST['tgl_pl'];
+		$i = $_POST['i'];
+		$html = '';
+
+		$getUkRencKirim = $this->db->query("SELECT p.tgl_pl,p.opl,nm_ker,g_label,width,jml_roll FROM pl p
+		INNER JOIN m_rencana_kirim r ON p.tgl_pl=r.tgl AND p.opl=r.order_pl
+		WHERE p.tgl_pl='$tgl_pl' AND p.opl='$opl'
+		GROUP BY p.tgl_pl,p.opl,nm_ker,g_label");
+		if($getUkRencKirim->num_rows() == 0){
+			$html .= '';
+		}else{
+			$html .='<table class="list-table" style="font-weight:bold;text-align:center" border="1">
+				<tr>
+					<td style="padding:5px">JENIS</td>
+					<td style="padding:5px">UKURAN</td>
+					<td style="padding:5px">JUMLAH</td>
+				</tr>';
+			foreach($getUkRencKirim->result() as $ukRenc){
+				if(($ukRenc->nm_ker == 'MH' || $ukRenc->nm_ker == 'MN') && ($ukRenc->g_label == 105 || $ukRenc->g_label == 110)){
+					$bgtr = 'list-p-biru';
+				}else if($ukRenc->nm_ker == 'MH' && ($ukRenc->g_label == 120 || $ukRenc->g_label == 125)){
+					$bgtr = 'list-p-kuning';
+				}else if(($ukRenc->nm_ker == 'MH' || $ukRenc->nm_ker == 'MN') && $ukRenc->g_label == 150){
+					$bgtr = 'list-p-merah';
+				}else if($ukRenc->nm_ker == 'WP'){
+					$bgtr = 'list-p-hijau';
+				}else{
+					$bgtr = 'list-p-putih';
+				}
+				$getUk = $this->db->query("SELECT*FROM m_rencana_kirim
+				WHERE nm_ker='$ukRenc->nm_ker' AND g_label='$ukRenc->g_label' AND order_pl='$ukRenc->opl'
+				GROUP BY nm_ker,g_label,width,order_pl");
+				$rowsp = $getUk->num_rows() + 1;
+				$html .='<tr class="'.$bgtr.'">
+					<td style="padding:5px" rowspan="'.$rowsp.'">'.$ukRenc->nm_ker.' '.$ukRenc->g_label.'</td></tr>';
+
+				foreach($getUk->result() as $uk){
+					$html .='<tr class="'.$bgtr.'">
+						<td style="padding:5px">'.round($uk->width,2).'</td>
+						<td style="padding:5px"><button onclick="btnInputRoll('."'".$i."'".','."'".$uk->nm_ker."'".','."'".$uk->g_label."'".','."'".$uk->width."'".')" style="background:0;border:0">'.$uk->jml_roll.'</button></td>
+					</tr>';
+				}
+			}
+			$html .='</table>';
+		}
+		echo $html;
+	}
+
+	function pListInputRoll(){
+		$i = $_POST['i'];
+		$nm_ker = $_POST['nm_ker'];
+		$g_label = $_POST['g_label'];
+		$width = $_POST['width'];
+		$roll = $_POST['roll'];
+		$html='';
+
+		$key = 1;
+		$html .='<button style="font-weight:bold" disabled>'.$nm_ker.''.$g_label.' - '.round($width,2).' :</button>
+		<input type="text" name="roll" id="roll" maxlength="14" style="border:1px solid #ccc;padding:2px;border-radius:5px" autocomplete="off" placeholder="ROLL">
+		<button onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".','."'".$i."'".')">Cari</button>
+		<input type="hidden" id="up-i" value="'.$i.'">
+		<input type="hidden" id="up-nm_ker" value="'.$nm_ker.'">
+		<input type="hidden" id="up-g_label" value="'.$g_label.'">
+		<input type="hidden" id="up-width" value="'.$width.'">';
+		
+		$getRoll = $this->db->query("SELECT*FROM m_timbangan
+		WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width' AND roll LIKE '%$roll%'
+		AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
+		AND (STATUS=0 OR STATUS=2 OR STATUS=3) AND id_pl='0'
+		ORDER BY pm,roll");
+		if($getRoll->num_rows() == 0){
+			$html .='DATA TIDAK DITEMUKAN';
+		}else{
+			$ii = 0;
+			$html .='<table class="list-table" style="text-align:center;width:100%" border="1">
+			<tr>
+				<td style="padding:5px;font-weight:bold">No.</td>
+				<td style="padding:5px;font-weight:bold">Roll</td>
+				<td style="padding:5px;font-weight:bold">BW</td>
+				<td style="padding:5px;font-weight:bold">RCT</td>
+				<td style="padding:5px;font-weight:bold">BI</td>
+				<td style="padding:5px;font-weight:bold">Jenis</td>
+				<td style="padding:5px;font-weight:bold">GSM</td>
+				<td style="padding:5px;font-weight:bold">C M</td>
+				<td style="padding:5px;font-weight:bold">Ukuran</td>
+				<td style="padding:5px;font-weight:bold">Berat</td>
+				<td style="padding:5px;font-weight:bold">Joint</td>
+				<td style="padding:5px;font-weight:bold">Keterangan</td>
+				<td style="padding:5px;font-weight:bold">Aksi</td>
+			</tr>';
+			foreach($getRoll->result() as $r){
+				$ii++;
+				$html .='<tr>
+					<td style="padding:5px">'.$ii.'</td>
+					<td style="padding:5px;text-align:left">'.$r->roll.'</td>
+					<td style="padding:5px">'.$r->g_ac.'</td>
+					<td style="padding:5px">'.$r->rct.'</td>
+					<td style="padding:5px">'.$r->bi.'</td>
+					<td style="padding:5px">'.$r->nm_ker.'</td>
+					<td style="padding:5px">'.$r->g_label.'</td>
+					<td style="padding:5px">'.$r->diameter.'</td>
+					<td style="padding:5px">'.round($r->width,2).'</td>
+					<td style="padding:5px">'.$r->weight.'</td>
+					<td style="padding:5px">'.$r->joint.'</td>
+					<td style="padding:5px"><textarea class="txt-area-i" disabled>'.$r->ket.'</textarea></td>
+					<td style="padding:5px"><button onclick="cartInputRoll('."'".$r->id."'".','."'".$r->roll."'".','."'".$i."'".')">ADD</button></td>
+				</tr>';
+				// <td style="padding:5px"><button onclick="cartInputRoll('."'".$r->id."'".','."'".$r->roll."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->diameter."'".','."'".$r->width."'".','."'".$r->weight."'".','."'".$r->joint."'".','."'".$r->ket."'".','."'".$i."'".')">ADD</button></td>
+			}
+		}
+
+
+		$html .='</table>';
 
 		echo $html;
 	}
 
-	// function pListCekQc(){
-	// 	$tgl = $_POST['tgl'];
-	// 	$html = '';
-	// 	$getCekQc = $this->db->query("SELECT*FROM pl
-	// 	WHERE qc='cek' AND tgl='$tgl'
-	// 	GROUP BY opl");
-	// 	if($getCekQc->num_rows() == 0){
-	// 		$html .='<div stye="font-weight:bold">DATA CEK QC TIDAK DITEMUKAN</div>';
-	// 	}else{
-	// 		$html .='<table class="list-table">';
-	// 		$html .='<tr>
-	// 			<td style="padding:5px;font-weight:bold">No.</td>
-	// 			<td style="padding:5px;font-weight:bold">Customer</td>
-	// 			<td style="padding:5px;font-weight:bold">Keterangan</td>
-	// 		</tr></table>';
-	// 		$i = 0;
-	// 		foreach($getCekQc->result() as $cekqc){
-	// 			$i++;
-	// 			$html .='<table class="list-table">';
-	// 			$html .='<tr>
-	// 				<td style="padding:5px;text-align:center">'.$i.'</td>
-	// 				<td style="padding:5px">'.$cekqc->nm_perusahaan.'</td>
-	// 				<td style="padding:5px;text-align:center"><button onclick="btnCekQc('."'".$cekqc->opl."'".','."'".$i."'".')">CEK QC</button></td>
-	// 			</tr>';
-				
-	// 			$html .='</table>';
+	function pListCartInputRoll(){
+		$data = array(
+			'id' => $_POST['id'],
+			'name' => $_POST['id'],
+			'price' => 0,
+			'qty' => $_POST['id'],
+			'options' => array(
+				'roll' => $_POST['roll'],
+				// 'nm_ker' => $_POST['nm_ker'],
+				// 'g_label' => $_POST['g_label'],
+				// 'diameter' => $_POST['diameter'],
+				// 'width' => $_POST['width'],
+				// 'weight' => $_POST['weight'],
+				// 'joint' => $_POST['joint'],
+				// 'ket' => $_POST['ket'],
+				'i' => $_POST['i'],
+			),
+		);
+		$this->cart->insert($data);
+		echo $this->showCartInputRoll();
+	}
 
-	// 			$html .='<div class="id-cek t-plist-cek-'.$i.'"></div>';
-	// 		}
-	// 	}
-		
-	// 	echo $html;
-	// }
+	function showCartInputRoll() { //Fungsi untuk menampilkan Cart
+		$html = '';
+
+		$html .='<table class="list-table" style="font-weight:bold;text-align:center" border="1">
+		<tr>
+			<td style="padding:5px">No.</td>
+			<td style="padding:5px">Roll</td>
+			<td style="padding:5px">Aksi</td>
+		</tr>';
+		$i = 0;
+		foreach($this->cart->contents() as $items){
+			$i++;
+			$html .='<tr>
+				<td style="padding:5px">'.$i.'</td>
+				<td style="padding:5px">'.$items['options']['roll'].'</td>
+				<td style="padding:5px"><button onclick="hapusCartInputRoll('."'".$items['rowid']."'".','."'".$items['options']['i']."'".')">Batal</button></td>
+			</tr>';
+		}
+		$html .='</table>';
+
+		return $html;
+	}
+
+	function hapusCartInputRoll() {
+		$data = array(
+			// 'rowid' => $this->input->post('row_id'),
+			'rowid' => $_POST['rowid'],
+			'qty' => 0,
+		);
+		$this->cart->update($data);
+		echo $this->showCartInputRoll();
+	}
+
+	function destroyCartInputRoll()
+	{
+		$this->cart->destroy();
+		echo $this->showCartInputRoll();
+	}
 }
