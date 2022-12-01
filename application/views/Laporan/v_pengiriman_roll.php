@@ -45,6 +45,34 @@
 	.list-p-putih:hover {
 		background: #eee
 	}
+
+	.status-stok {
+		background-color: #fff;
+	}
+	.status-stok:hover {
+		background-color: #eee;
+	}
+	/* .cek-status-stok:hover .edit-roll {
+		background-color: #eee;
+	} */
+
+	.status-buffer {
+		background-color: #fee;
+	}
+	.status-buffer:hover {
+		background-color: #edd;
+	}
+	/* .cek-status-buffer:hover .edit-roll {
+		background:#edd;
+	} */
+
+	.notfon {
+		color:#000;padding:5px 0 0
+	}
+
+	.btn-cari-inp-roll {
+		padding:5px 8px;font-weight:bold
+	}
 </style>
 
 <?php
@@ -76,6 +104,12 @@
 					</div>
 
 					<div class="body">
+						<input type="hidden" id="v-id-pl" value="">
+						<input type="hidden" id="v-opl" value="">
+						<input type="hidden" id="v-tgl-pl" value="">
+						<input type="hidden" id="v-ii" value="">
+						<!-- <input type="text" id="v-id-pl" value=""> -->
+
 						<button disabled="disabled">PILIH :</button>
 						<input type="date" name="ngirim-tgl" id="ngirim-tgl" value="<?= date('Y-m-d')?>">
 						<button onclick="load_data()">CARI</button>
@@ -105,15 +139,21 @@
 	$(document).ready(function(){
 		plh_tgl = $('#ngirim-tgl').val();
 		$('.list-pl').html('').hide();
-		// kosong();
+		kosong();
 		load_data(plh_tgl);
 	});
 
-	// function kosong(){
-	// }
+	function kosong(){ // reset id_pl
+		$("#v-id-pl").val('');
+		$("#v-opl").val('');
+		$("#v-tgl-pl").val('');
+		$("#v-ii").val('');
+	}
 
 	function load_data(tgl){
+		kosong();
 		tgl = $("#ngirim-tgl").val();
+		$(".list-pl").show().html('<div class="notfon">SEDANG MEMUAT . . .</div>');
 		$.ajax({
 			url: '<?php echo base_url('Master/pList'); ?>',
 			type: "POST",
@@ -124,13 +164,18 @@
 				if(response){
 					$(".list-pl").show().html(response);
 				}else{
-					$(".list-pl").show().html('DATA TIDAK DITEMUKAN');
+					$(".list-pl").show().html('<div class="notfon">DATA TIDAK DITEMUKAN</div>');
 				}
 			}
 		});
 	}
 
-	function btnRencana(opl,tgl_pl,i){
+	function btnRencana(id_pl,opl,tgl_pl,i){ // KLIK PROSES
+		kosong();
+		$("#v-id-pl").val(id_pl);
+		$("#v-opl").val(opl);
+		$("#v-tgl-pl").val(tgl_pl);
+		$("#v-ii").val(i);
 		$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/destroyCartInputRoll') ?>");
 		// alert(opl+' '+tgl_pl+' '+i);
 		$(".id-cek").html('');
@@ -145,17 +190,40 @@
 			success: function(response) {
 				if(response){
 					$(".t-plist-rencana-" + i).html(response);
+					hasilInputSementara(id_pl,i);
 				}else{
-					$(".t-plist-rencana-" + i).html('TIDAK ADA DATA');
+					$(".t-plist-rencana-" + i).html('<div style="notfon">BELUM ADA RENCANA KIRIMAN</div>');
 				}
 			}
 		});
 	}
 
-	function btnInputRoll(i,nm_ker,g_label,width,roll=''){
-		$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/destroyCartInputRoll') ?>");
-		// alert(i+' - '+nm_ker+' - '+g_label+' - '+width);
-		$(".t-plist-input-" + i).html('Memuat Data...');
+	function hasilInputSementara(id_pl,i) {
+		// alert(id_pl)
+		$(".t-plist-input-sementara-" + i).html('<div class="notfon">MEMUAT DATA</div>');
+		$.ajax({
+			url: '<?php echo base_url('Master/pListInputSementara')?>',
+			type: "POST",
+			data: ({
+				id_pl: id_pl,
+			}),
+			success: function(response){
+				if(response){
+					$(".t-plist-input-sementara-" + i).html(response);
+				}else{
+					$(".t-plist-input-sementara-" + i).html('');
+				}
+			}
+		});
+	}
+
+	function btnInputRoll(i,nm_ker,g_label,width,roll='',cari=''){ // KLIK JUMLAH PADA RENCARA KIRIMAN
+		// alert(i+' - '+id_pl+' - '+nm_ker+' - '+g_label+' - '+width+' - '+roll+' - '+cari);
+		v_id_pl = $("#v-id-pl").val();
+		if(cari == ''){
+			$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/destroyCartInputRoll') ?>");
+		}
+		$(".t-plist-input-" + i).html('<div class="notfon">MEMUAT DATA . . .</div>');
 		$.ajax({
 			url: '<?php echo base_url('Master/pListInputRoll')?>',
 			type: "POST",
@@ -178,7 +246,9 @@
 	}
 
 	// function cartInputRoll(id,roll,nm_ker,g_label,diameter,width,weight,joint,ket,i){
-	function cartInputRoll(id,roll,i){
+	function cartInputRoll(id,roll,status,i){
+		id_pl = $("#v-id-pl").val();
+		// alert(id_pl);
 		$.ajax({
 			url: '<?php echo base_url('Master/pListCartInputRoll')?>',
 			type: "POST",
@@ -192,11 +262,15 @@
 				// weight: weight,
 				// joint: joint,
 				// ket: ket,
+				status: status,
+				id_pl: id_pl,
 				i: i,
 			}),
 			success: function(response){
-				if(response){
-					$(".t-plist-hasil-input-" + i).html(response);
+				json = JSON.parse(response);
+				// console.log(json);
+				if(json.data){
+					$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/showCartInputRoll') ?>");
 				}else{
 					$(".t-plist-hasil-input-" + i).html('NOTHING');
 				}
@@ -213,15 +287,33 @@
 				rowid: rowid
 			}),
 			success: function(response){
-				$(".t-plist-hasil-input-" + i).html(response);
+				// $(".t-plist-hasil-input-" + i).html(response);
+				$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/showCartInputRoll') ?>");
 			}
 		});
 	}
 
-	function cariRoll(i,nm_ker,g_label,width,cari){
+	function cariRoll(i,nm_ker,g_label,width,xroll='',cari){
+		// alert(i+' - '+nm_ker+' - '+g_label+' - '+width+' - '+xroll+' - '+cari);
 		xroll = $('#roll').val();
-		alert(i+' - '+nm_ker+' - '+g_label+' - '+width+' - '+xroll+' - '+cari);
-		// btnInputRoll(i,nm_ker,g_label,width,xroll);
+		btnInputRoll(i,nm_ker,g_label,width,xroll,cari);
+	}
+
+	function simpanInputRoll(){
+		// alert('simpan');
+		v_id_pl = $("#v-id-pl").val();
+		v_opl = $("#v-opl").val();
+		v_tgl_pl = $("#v-tgl-pl").val();
+		v_ii = $("#v-ii").val();
+		// alert(v_opl+' - '+v_tgl_pl+' - '+v_ii);
+		$.ajax({
+			url: '<?php echo base_url('Master/simpanInputRoll')?>',
+			type: "POST",
+			success: function(response){
+				// data = JSON.parse(response);
+				btnRencana(v_id_pl,v_opl,v_tgl_pl,v_ii);
+			}
+		});
 	}
 
 </script>

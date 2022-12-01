@@ -152,7 +152,7 @@
                         <li>
                             <a href="<?php echo base_url('Laporan/Penjualan_PO') ?>">
                                 <!-- <i class="material-icons">list</i> -->
-                                <span>Penjualan PO</span>
+                                <span>Outstanding PO</span>
                             </a>
                         </li>
                     <?php } ?>

@@ -696,4 +696,19 @@ class M_master extends CI_Model{
 		
 		return $result;
 	}
+
+    function simpanInputRoll(){
+        foreach($this->cart->contents() as $data){
+            if($data['options']['status'] == 0){ // jika stok update
+                $this->db->set('status', '1');
+            }
+            $this->db->set('id_pl', $data['options']['id_pl']);
+            $this->db->set('packing_at', date("Y-m-d H:i:s"));
+            $this->db->set('packing_by', $this->session->userdata('username'));
+            $this->db->where('id', $data['id']);
+            
+            $result = $this->db->update('m_timbangan');
+        }
+        return $result;
+    }
 }

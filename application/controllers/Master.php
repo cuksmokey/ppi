@@ -1430,29 +1430,44 @@ class Master extends CI_Controller
 		if($getCust->num_rows() == 0){
 			$html .='';
 		}else{
-			// $html .='<table class="list-table">
-			// 	<tr>
-			// 		<td style="padding:5px;font-weight:bold">No.</td>
-			// 		<td style="padding:5px;font-weight:bold">Customer</td>
-			// 		<td style="padding:5px;font-weight:bold">Keterangan</td>
-			// 	</tr>
-			// </table>';
 			$i = 0;
 			foreach($getCust->result() as $cust){
 				$i++;
 				$html .='<table class="list-table">
 					<tr>
-						<td style="padding:5px 0;text-align:center"><button onclick="btnRencana('."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">PROSES</button></td>
+						<td style="padding:5px 0;text-align:center"><button onclick="btnRencana('."'".$cust->id."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">PROSES</button></td>
 						<td style="padding:5px;text-align:center">'.$i.'</td>
 						<td style="padding:5px">'.$cust->nm_perusahaan.'</td>
 					</tr>
 				</table>';
 
+				// SEMUA TAMPIL DISINI
 				$html .='<div class="id-cek t-plist-rencana-'.$i.'"></div>';
-				$html .='<div class="id-cek t-plist-input-'.$i.'"></div>';
+				$html .='<div class="id-cek t-plist-input-sementara-'.$i.'"></div>';
 				$html .='<div class="id-cek t-plist-hasil-input-'.$i.'"></div>';
+				$html .='<div class="id-cek t-plist-input-'.$i.'"></div>';
 			}
 		}
+		echo $html;
+	}
+
+	function pListInputSementara(){
+		$id_pl = $_POST['id_pl'];
+		$html ='';
+
+		$html .='<table class="list-table">';
+
+		$getKer = $this->db->query("SELECT nm_ker FROM m_timbangan
+		WHERE id_pl='$id_pl'
+		GROUP BY nm_ker");
+		foreach($getKer->result() as $ker){
+			$html .='<tr>
+				<td style="padding:5px">'.$ker->nm_ker.'</td>
+			</tr>';
+		}
+
+		$html .='</table>';
+
 		echo $html;
 	}
 
@@ -1462,7 +1477,7 @@ class Master extends CI_Controller
 		$i = $_POST['i'];
 		$html = '';
 
-		$getUkRencKirim = $this->db->query("SELECT p.tgl_pl,p.opl,nm_ker,g_label,width,jml_roll FROM pl p
+		$getUkRencKirim = $this->db->query("SELECT p.id,p.tgl_pl,p.opl,nm_ker,g_label,width,jml_roll FROM pl p
 		INNER JOIN m_rencana_kirim r ON p.tgl_pl=r.tgl AND p.opl=r.order_pl
 		WHERE p.tgl_pl='$tgl_pl' AND p.opl='$opl'
 		GROUP BY p.tgl_pl,p.opl,nm_ker,g_label");
@@ -1514,14 +1529,12 @@ class Master extends CI_Controller
 		$roll = $_POST['roll'];
 		$html='';
 
-		$key = 1;
-		$html .='<button style="font-weight:bold" disabled>'.$nm_ker.''.$g_label.' - '.round($width,2).' :</button>
-		<input type="text" name="roll" id="roll" maxlength="14" style="border:1px solid #ccc;padding:2px;border-radius:5px" autocomplete="off" placeholder="ROLL">
-		<button onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".','."'".$i."'".')">Cari</button>
-		<input type="hidden" id="up-i" value="'.$i.'">
-		<input type="hidden" id="up-nm_ker" value="'.$nm_ker.'">
-		<input type="hidden" id="up-g_label" value="'.$g_label.'">
-		<input type="hidden" id="up-width" value="'.$width.'">';
+		$key = 'cari';
+		$html .='<div style="padding:10px 0 0">
+			<button style="padding:5px;font-weight:bold" disabled>'.$nm_ker.''.$g_label.' - '.round($width,2).' :</button>
+			<input type="text" name="roll" id="roll" maxlength="14" style="border:1px solid #ccc;padding:7px;border-radius:5px" autocomplete="off" placeholder="ROLL">
+			<button class="btn-cari-inp-roll" onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".','."'".$key."'".')">CARI</button>
+		</div>';
 		
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan
 		WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width' AND roll LIKE '%$roll%'
@@ -1529,28 +1542,33 @@ class Master extends CI_Controller
 		AND (STATUS=0 OR STATUS=2 OR STATUS=3) AND id_pl='0'
 		ORDER BY pm,roll");
 		if($getRoll->num_rows() == 0){
-			$html .='DATA TIDAK DITEMUKAN';
+			$html .='<div class="notfon">DATA TIDAK DITEMUKAN</div>';
 		}else{
 			$ii = 0;
-			$html .='<table class="list-table" style="text-align:center;width:100%" border="1">
+			$html .='<div style="padding-top:10px"><table class="list-table" style="text-align:center;width:100%;border-color:#ccc" border="1">
 			<tr>
-				<td style="padding:5px;font-weight:bold">No.</td>
-				<td style="padding:5px;font-weight:bold">Roll</td>
-				<td style="padding:5px;font-weight:bold">BW</td>
-				<td style="padding:5px;font-weight:bold">RCT</td>
-				<td style="padding:5px;font-weight:bold">BI</td>
-				<td style="padding:5px;font-weight:bold">Jenis</td>
-				<td style="padding:5px;font-weight:bold">GSM</td>
-				<td style="padding:5px;font-weight:bold">C M</td>
-				<td style="padding:5px;font-weight:bold">Ukuran</td>
-				<td style="padding:5px;font-weight:bold">Berat</td>
-				<td style="padding:5px;font-weight:bold">Joint</td>
-				<td style="padding:5px;font-weight:bold">Keterangan</td>
-				<td style="padding:5px;font-weight:bold">Aksi</td>
+				<td style="padding:5px;font-weight:bold;width:5%">No.</td>
+				<td style="padding:5px;font-weight:bold;width:18%">Roll</td>
+				<td style="padding:5px;font-weight:bold;width:5%">BW</td>
+				<td style="padding:5px;font-weight:bold;width:5%">RCT</td>
+				<td style="padding:5px;font-weight:bold;width:5%">BI</td>
+				<td style="padding:5px;font-weight:bold;width:5%">Jenis</td>
+				<td style="padding:5px;font-weight:bold;width:5%">GSM</td>
+				<td style="padding:5px;font-weight:bold;width:5%">C M</td>
+				<td style="padding:5px;font-weight:bold;width:5%">Ukuran</td>
+				<td style="padding:5px;font-weight:bold;width:5%">Berat</td>
+				<td style="padding:5px;font-weight:bold;width:5%">Jnt</td>
+				<td style="padding:5px;font-weight:bold;width:27%">Keterangan</td>
+				<td style="padding:5px;font-weight:bold;width:5%">Aksi</td>
 			</tr>';
 			foreach($getRoll->result() as $r){
 				$ii++;
-				$html .='<tr>
+				if($r->status == 3){
+					$bgtr = 'status-buffer';
+				}else{
+					$bgtr = 'status-stok';
+				}
+				$html .='<tr class="'.$bgtr.'">
 					<td style="padding:5px">'.$ii.'</td>
 					<td style="padding:5px;text-align:left">'.$r->roll.'</td>
 					<td style="padding:5px">'.$r->g_ac.'</td>
@@ -1563,15 +1581,12 @@ class Master extends CI_Controller
 					<td style="padding:5px">'.$r->weight.'</td>
 					<td style="padding:5px">'.$r->joint.'</td>
 					<td style="padding:5px"><textarea class="txt-area-i" disabled>'.$r->ket.'</textarea></td>
-					<td style="padding:5px"><button onclick="cartInputRoll('."'".$r->id."'".','."'".$r->roll."'".','."'".$i."'".')">ADD</button></td>
+					<td style="padding:5px"><button onclick="cartInputRoll('."'".$r->id."'".','."'".$r->roll."'".','."'".$r->status."'".','."'".$i."'".')">ADD</button></td>
 				</tr>';
 				// <td style="padding:5px"><button onclick="cartInputRoll('."'".$r->id."'".','."'".$r->roll."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->diameter."'".','."'".$r->width."'".','."'".$r->weight."'".','."'".$r->joint."'".','."'".$r->ket."'".','."'".$i."'".')">ADD</button></td>
 			}
 		}
-
-
-		$html .='</table>';
-
+		$html .='</table></div>';
 		echo $html;
 	}
 
@@ -1590,22 +1605,28 @@ class Master extends CI_Controller
 				// 'weight' => $_POST['weight'],
 				// 'joint' => $_POST['joint'],
 				// 'ket' => $_POST['ket'],
+				'status' => $_POST['status'],
+				'id_pl' => $_POST['id_pl'],
 				'i' => $_POST['i'],
 			),
 		);
 		$this->cart->insert($data);
-		echo $this->showCartInputRoll();
+		echo json_encode(array('data' => true, 'isi' => $data));
+		// echo $this->showCartInputRoll();
 	}
 
 	function showCartInputRoll() { //Fungsi untuk menampilkan Cart
 		$html = '';
 
-		$html .='<table class="list-table" style="font-weight:bold;text-align:center" border="1">
-		<tr>
-			<td style="padding:5px">No.</td>
-			<td style="padding:5px">Roll</td>
-			<td style="padding:5px">Aksi</td>
-		</tr>';
+		if($this->cart->total_items() != 0){
+			$html .='<table class="list-table" style="font-weight:bold;text-align:center" border="1">
+			<tr>
+				<td style="padding:5px">No.</td>
+				<td style="padding:5px">Roll</td>
+				<td style="padding:5px">Aksi</td>
+			</tr>';
+		}
+
 		$i = 0;
 		foreach($this->cart->contents() as $items){
 			$i++;
@@ -1617,7 +1638,16 @@ class Master extends CI_Controller
 		}
 		$html .='</table>';
 
-		return $html;
+		if($this->cart->total_items() != 0){
+			$html .='<button onclick="simpanInputRoll()">SIMPAN</button>';
+		}
+		// return $html;
+		echo $html;
+	}
+
+	function simpanInputRoll(){
+		$this->m_master->simpanInputRoll();
+		echo json_encode(array('data' => true));
 	}
 
 	function hapusCartInputRoll() {
@@ -1627,12 +1657,11 @@ class Master extends CI_Controller
 			'qty' => 0,
 		);
 		$this->cart->update($data);
-		echo $this->showCartInputRoll();
+		// echo $this->showCartInputxRoll();
 	}
 
-	function destroyCartInputRoll()
-	{
+	function destroyCartInputRoll() {
 		$this->cart->destroy();
-		echo $this->showCartInputRoll();
+		// echo $this->showCartInputxRoll();
 	}
 }
