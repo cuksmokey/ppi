@@ -15,10 +15,11 @@ ADD COLUMN `seset` INT(11) DEFAULT 0 NULL AFTER `ket`;
 
 ADD KOLOM "qc" varchar[6] isi "proses, cek, ok" setelah kolom "status" pada tabel pl
 ADD KOLOM "opl" int[2] default "0" buat order pengiriman setelah "qc" pada table pl
+
 ALTER TABLE `db_ppi`.`pl`   
 ADD COLUMN `qc` VARCHAR(6) NULL AFTER `status`,
 ADD COLUMN `tgl_pl` DATE NULL AFTER `qc`,
-ADD COLUMN `opl` INT(11) DEFAULT 0 NULL AFTER `tgl_rencana_kirim`;
+ADD COLUMN `opl` INT(11) DEFAULT 0 NULL AFTER `tgl_pl`;
 
 ///////////////////////////////////
 

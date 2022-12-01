@@ -6,7 +6,8 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <title>P P I</title>
     <!-- Favicon-->
-    <link rel="icon" href="<?php echo base_url(); ?>assets/logo.ico" type="image/x-icon">
+    <!-- <link rel="icon" href="<?php echo base_url(); ?>assets/logo.ico" type="image/x-icon"> -->
+    <link rel="icon" href="<?php echo base_url(); ?>assets/logo_ppi.ico" type="image/x-icon">
 
     <!-- Google Fonts -->
     <link href="<?php echo base_url(); ?>assets/css/font.css" rel="stylesheet" type="text/css">
