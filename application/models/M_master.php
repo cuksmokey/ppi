@@ -158,11 +158,27 @@ class M_master extends CI_Model{
         return $result;
     }
 
+	function getMasterRoll(){
+		$tgl = date('Y-m-d');
+		if($this->session->userdata('level') == "Rewind1"){
+			$pm = "AND pm='1'";
+		}else if($this->session->userdata('level') == "Rewind2"){
+			$pm = "AND pm='2'";
+		}else{
+			$pm = '';
+		}
+		$query = "SELECT * FROM m_timbangan WHERE (status = '0' OR status = '2' OR status = '3') AND id_pl='0' $pm
+		-- AND tgl='$tgl'
+		";
+        return $this->db->query($query);
+	}
+
     function get_timbangan(){
         $tgl = date('Y-m-d');
 
         // $query = "SELECT * FROM m_timbangan WHERE status = '0' ORDER BY id DESC";
-		$query = "SELECT * FROM m_timbangan WHERE (status = '0' OR status = '2' OR status = '3') ORDER BY id DESC LIMIT 100";
+		// $query = "SELECT * FROM m_timbangan WHERE (status = '0' OR status = '2' OR status = '3') AND id_pl='0'  ORDER BY id DESC LIMIT 100";
+		$query = "SELECT * FROM m_timbangan WHERE (status = '0' OR status = '2' OR status = '3') AND id_pl='0' AND tgl='$tgl' ORDER BY id DESC";
         return $this->db->query($query);
     }
 
@@ -246,6 +262,9 @@ class M_master extends CI_Model{
     }
 
     function update_timbangan(){
+		// if($_POST['lnm_ker'] && $_POST['lg_label'] && $_POST['lwidth'] && $_POST['lweight'] && $_POST['ldiameter'] && $_POST['ljoint'] && $_POST['lket'] && $_POST['lstatus']){
+
+		// }
         $this->db->set('nm_ker', $_POST['nm_ker']);
         $this->db->set('g_ac', $_POST['g_ac']);
         $this->db->set('g_label', $_POST['g_label']);

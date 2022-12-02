@@ -185,29 +185,33 @@ class Master extends CI_Controller
 		$group = $this->input->post('group'); //buat invoice
 
 		if ($jenis == "Timbangan") {
-			$query = $this->m_master->get_timbangan()->result();
+			// $query = $this->m_master->get_timbangan()->result();
+			$query = $this->m_master->getMasterRoll();
 			$i = 1;
-			foreach ($query as $r) {
-				$id = "'$r->id'";
+			if($query->num_rows() == 0){
+				$data[] =  ["","","","","","","","","",""];
+			}else{
+				foreach ($query->result() as $r) {
+					$id = "'$r->id'";
 
-                    $print = base_url("Master/print_timbangan?id=").$r->roll;
-                    $print2 = base_url("Master/print_timbangan2?id=").$r->roll;
+						$print = base_url("Master/print_timbangan?id=").$r->roll;
+						$print2 = base_url("Master/print_timbangan2?id=").$r->roll;
 
-                    $row = array();
-                    $row[] = $r->roll;
-                    $row[] = $r->tgl;
-                    $row[] = $r->nm_ker;
-                    $row[] = $r->g_label;
-                    $row[] = $r->g_ac;
-                    $row[] = $r->width;
-                    $row[] = $r->diameter;
-                    $row[] = $r->weight;
-                    $row[] = $r->joint;
-                    $row[] = $r->ket;
-                    // $row[] = $r->ctk;
+						$row = array();
+						$row[] = $r->roll;
+						$row[] = $r->tgl;
+						$row[] = $r->nm_ker;
+						$row[] = $r->g_label;
+						// $row[] = $r->g_ac;
+						$row[] = $r->width;
+						$row[] = $r->diameter;
+						$row[] = $r->weight;
+						$row[] = $r->joint;
+						$row[] = $r->ket;
+						// $row[] = $r->ctk;
 
-                    $aksi ="";
-                    // if ($this->session->userdata('level') == "Admin") {
+						$aksi ="";
+						// if ($this->session->userdata('level') == "Admin") {
 						
                         // $aksi = '
                         // <button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange btn-circle waves-effect waves-circle waves-float">
@@ -227,35 +231,31 @@ class Master extends CI_Controller
 						// #FB483A - #fff hapus
 						// #fff - #333333 kcl
 						// #4CAF50 - besar
-                        $aksi = '
-                        <button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange">
-                            EDIT
-                        </button>
-						<button type="button" onclick="deleteData('.$id.','."".')" class="btn btn-danger">
-                            HAPUS
-                        </button>
-                        <a type="button" href="'.$print.'" target="blank" class="btn btn-default">
-                            L BESAR
-                        </a>
-                        <a type="button" href="'.$print2.'" target="blank" class="btn bg-green">
-                            L KECIL
-                        </a>';
-
-                        // if($r->ctk == 1){
-                        //     $aksi .='';
-                        // }else if($r->ctk == 0){
-
-                        // $aksi .='
-						// <a type="button" href="'.$print.'" target="blank" class="btn bg-blue btn-circle waves-effect waves-circle waves-float">
-						// 	<i class="material-icons">print</i>
-						// </a>';
-
-                        // }                        
+                        if($r->ctk == 1){
+                            $aksi .='<button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange">
+								EDIT
+							</button>';
+                        }else if($r->ctk == 0){
+							// <button type="button" onclick="deleteData('.$id.','."".')" class="btn btn-danger">
+							// 	HAPUS
+							// </button>
+							$aksi = '
+							<button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange">
+								EDIT
+							</button>
+							<a type="button" href="'.$print.'" target="blank" class="btn btn-default">
+								L BESAR
+							</a>
+							<a type="button" href="'.$print2.'" target="blank" class="btn bg-green">
+								L KECIL
+							</a>';
+                        }
                     // }
                     $row[] = $aksi;
                     $data[] = $row;
                     // $i++;
 				}
+			}
 
 			$output = array(
 				"data" => $data,
@@ -1140,51 +1140,49 @@ class Master extends CI_Controller
 	function print_timbangan()
 	{
 		$id = $_GET['id'];
-
 		$data = $this->db->query("SELECT * FROM m_timbangan WHERE roll = '$id'")->row();
 		$data_perusahaan = $this->db->query("SELECT * FROM perusahaan limit 1")->row();
-		// $query = $this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
-
 		$html = '';
-
-		$html .= '
-        <center> 
-            <h1> ' . $data_perusahaan->nama . ' </h1>  ' . $data_perusahaan->daerah . ' , Email : ' . $data_perusahaan->email . '
-        </center>
-        <hr>
-        
-        <br><br><br>
-                <table width="100%" border="1" cellspacing="0" cellpadding="5" style="font-size:52px">
-                    <tr>
-                        <td align="left" width="50%">QUALITY</td>
-                        <td align="center">' . $data->nm_ker . '</td>
-                    </tr>
-                    <tr>
-                        <td align="left">GRAMMAGE</td>
-                        <td align="center">' . $data->g_label . ' GSM</td>
-                    </tr>
-                    <tr>
-                        <td align="left">WIDTH</td>
-                        <td align="center">' . round($data->width, 2) . ' CM</td>
-                    </tr>
-                    <tr>
-                        <td align="left">DIAMETER</td>
-                        <td align="center">' . $data->diameter . ' CM</td>
-                    </tr>
-                    <tr>
-                        <td align="left">WEIGHT</td>
-                        <td align="center">' . $data->weight . ' KG</td>
-                    </tr>
-                    <tr>
-                        <td align="left">JOINT</td>
-                        <td align="center">' . $data->joint . '</td>
-                    </tr>
-                    <tr>
-                        <td align="left">ROLL NUMBER</td>
-                        <td align="center">' . $data->roll . '</td>
-                    </tr>
-                    <tr>
-                </table>';
+		
+		if($data->ctk == 0){
+			$this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
+			$html .= '<h1> ' . $data_perusahaan->nama . ' </h1>  ' . $data_perusahaan->daerah . ' , Email : ' . $data_perusahaan->email . '
+			<hr>
+			
+			<br><br><br>
+			<table style="margin:0;font-size:52px;width:100%" cellspacing="0" border="1">
+				<tr>
+					<td width="50%">QUALITY</td>
+					<td style="text-align:center">' . $data->nm_ker . '</td>
+				</tr>
+				<tr>
+					<td>GRAMMAGE</td>
+					<td style="text-align:center">' . $data->g_label . ' GSM</td>
+				</tr>
+				<tr>
+					<td>WIDTH</td>
+					<td style="text-align:center">' . round($data->width, 2) . ' CM</td>
+				</tr>
+				<tr>
+					<td>DIAMETER</td>
+					<td style="text-align:center">' . $data->diameter . ' CM</td>
+				</tr>
+				<tr>
+					<td>WEIGHT</td>
+					<td style="text-align:center">' . $data->weight . ' KG</td>
+				</tr>
+				<tr>
+					<td>JOINT</td>
+					<td style="text-align:center">' . $data->joint . '</td>
+				</tr>
+				<tr>
+					<td>ROLL NUMBER</td>
+					<td style="text-align:center">' . $data->roll . '</td>
+				</tr>
+			</table>';
+		}else{
+			$html.='<div style="text-align:center;font-weight:bold;font-size:40px">DATA ROLL '.$data->roll.' SUDAH PRINT LABEL. HARAP HUBUNGI QC</div>';
+		}
 
 		$this->m_fungsi->_mpdfCustom('', $html, 10, 10, 10, 'L');
 	}
@@ -1192,45 +1190,46 @@ class Master extends CI_Controller
 	function print_timbangan2()
 	{
 		$id = $_GET['id'];
-
 		$data = $this->db->query("SELECT * FROM m_timbangan WHERE roll = '$id'")->row();
-		// $query = $this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
-
 		$html = '';
-
-		$html .= '<br><br><br><br><br><br>
-                <table width="100%" border="1" cellspacing="0" cellpadding="5" style="font-size:37px">
-                    <tr>
-                        <td align="left">QUALITY</td>
-                        <td align="center">' . $data->nm_ker . '</td>
-                    </tr>
-                    <tr>
-                        <td align="left">GRAMMAGE</td>
-                        <td align="center">' . $data->g_label . ' GSM</td>
-                    </tr>
-                    <tr>
-                        <td align="left">WIDTH</td>
-                        <td align="center">' . $data->width . ' CM</td>
-                    </tr>
-                    <tr>
-                        <td align="left">DIAMETER</td>
-                        <td align="center">' . $data->diameter . ' CM</td>
-                    </tr>
-                    <tr>
-                        <td align="left">WEIGHT</td>
-                        <td align="center">' . $data->weight . ' KG</td>
-                    </tr>
-                    <tr>
-                        <td align="left">JOINT</td>
-                        <td align="center">' . $data->joint . '</td>
-                    </tr>
-                    <tr>
-                        <td align="left">ROLL NUMBER</td>
-                        <td align="center">' . $data->roll . '</td>
-                    </tr>
-                    <tr>
-                </table>';
-
+		
+		if($data->ctk == 0){
+			$this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
+			$html .= '<br><br><br><br><br><br>
+			<table cellspacing="0" cellpadding="5" style="font-size:37px;width:100%" border="1">
+				<tr>
+					<td>QUALITY</td>
+					<td style=""text-align:center>' . $data->nm_ker . '</td>
+				</tr>
+				<tr>
+					<td>GRAMMAGE</td>
+					<td style=""text-align:center>' . $data->g_label . ' GSM</td>
+				</tr>
+				<tr>
+					<td>WIDTH</td>
+					<td style=""text-align:center>' . $data->width . ' CM</td>
+				</tr>
+				<tr>
+					<td>DIAMETER</td>
+					<td style=""text-align:center>' . $data->diameter . ' CM</td>
+				</tr>
+				<tr>
+					<td>WEIGHT</td>
+					<td style=""text-align:center>' . $data->weight . ' KG</td>
+				</tr>
+				<tr>
+					<td>JOINT</td>
+					<td style=""text-align:center>' . $data->joint . '</td>
+				</tr>
+				<tr>
+					<td>ROLL NUMBER</td>
+					<td style=""text-align:center>' . $data->roll . '</td>
+				</tr>
+				<tr>
+			</table>';
+		}else{
+			$html.='<div style="text-align:center;font-weight:bold;font-size:40px">DATA ROLL '.$data->roll.' SUDAH PRINT LABEL. HARAP HUBUNGI QC</div>';
+		}
 
 		$this->m_fungsi->_mpdf('', $html, 10, 10, 10, 'P');
 	}

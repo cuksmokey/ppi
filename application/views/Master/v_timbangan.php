@@ -32,14 +32,14 @@
 							<table id="datatable11" class="table table-bordered table-striped table-hover dataTable ">
 								<thead>
 									<tr>
-										<th>Roll Number</th>
-										<th>Tanggal</th>
-										<th>Nama Ker</th>
-										<th>Gramage Label</th>
-										<th>Gramage (GSM)</th>
-										<th>Width (CM)</th>
-										<th>Diameter (CM)</th>
-										<th>Weight (KG)</th>
+										<th>ROLL</th>
+										<th>TANGGAL</th>
+										<th>JENIS</th>
+										<!-- <th>Gramage Label</th> -->
+										<th>GSM</th>
+										<th>Width</th>
+										<th>Diameter</th>
+										<th>Weight</th>
 										<th>Joint</th>
 										<th>Keterangan</th>
 										<th width="15%">Aksi</th>
@@ -79,9 +79,30 @@
 											</table>
 										</div>
 										<div class="new_roll">
+											<?php
+												if($this->session->userdata('level') == "Rewind1"){
+													$kodePm = '1';
+													$dkodepm = 'disabled';
+												}else if($this->session->userdata('level') == "Rewind2"){
+													$kodePm = '2';
+													$dkodepm = 'disabled';
+												}else{
+													$kodePm = '';
+													$dkodepm = '';
+												} 
+											?>
+											<input type="hidden" id="l-nm_ker" value="">
+											<input type="hidden" id="l-g_label" value="">
+											<input type="hidden" id="l-width" value="">
+											<input type="hidden" id="l-weight" value="">
+											<input type="hidden" id="l-diameter" value="">
+											<input type="hidden" id="l-joint" value="">
+											<input type="hidden" id="l-ket" value="">
+											<input type="hidden" id="l-status" value="">
+											<!-- onkeypress="return hanyaPm(event)" -->
 											<table>
 												<tr>
-													<td><input type="text" style="text-align:center" id="id1kode" class="angka form-control" maxlength="1" autocomplete="off" placeholder="PM" tabindex="1" onkeypress="return hanyaPm(event)"></td>
+													<td><input type="text" style="text-align:center" id="id1kode" class="form-control" maxlength="1" autocomplete="off" placeholder="PM" tabindex="1" value="<?php echo $kodePm; ?>" <?php echo $dkodepm; ?>></td>
 													<td style="padding: 0 5px">/</td>
 													<td><input type="text" style="text-align:center" id="id11" class="angka form-control" maxlength="5" autocomplete="off" placeholder="NOMOR ROLL" tabindex="2"></td>
 													<td style="padding: 0 5px">/</td>
@@ -346,11 +367,8 @@
 
 	function load_data() {
 		var table = $('#datatable11').DataTable();
-
 		table.destroy();
-
 		tabel = $('#datatable11').DataTable({
-
 			"processing": true,
 			"pageLength": true,
 			"paging": true,
@@ -367,7 +385,7 @@
 				"emptyTable": "Tidak ada data.."
 			},
 			"order": [
-				[2, "asc"]
+				[0, "desc"]
 			]
 		});
 	}
@@ -395,6 +413,16 @@
 		bi = $("#bi").val();
 		cstatus = $("#cek_status").val();
 		ket = $("textarea#ket").val();
+
+		// get data lama
+		lnm_ker = $("#l-nm_ker").val();
+		lg_label = $("#l-g_label").val();
+		lwidth = $("#l-width").val();
+		lweight = $("#l-weight").val();
+		ldiameter = $("#l-diameter").val();
+		ljoint = $("#l-joint").val();
+		lket = $("#l-ket").val();
+		lstatus = $("#l-status").val();
 
 		if (kodepm == '' || kodepm == null) {
 			if ($("#id1").val() == "" || $("#id2").val() == "" || $("#id3").val() == "" || $("#id4").val() == "") {
@@ -445,6 +473,14 @@
 				rct: rct,
 				bi: bi,
 				cstatus: cstatus,
+				lnm_ker: lnm_ker,
+				lg_label: lg_label,
+				lwidth: lwidth,
+				lweight: lweight,
+				ldiameter: ldiameter,
+				ljoint: ljoint,
+				lket: lket,
+				lstatus: lstatus,
 				jenis: "Timbangan"
 			}),
 			dataType: "json",
@@ -519,7 +555,8 @@
 					anka = textsetr.substr(0, 1);
 					ankod = textsetr.substr(1, 1);
 
-					$("#id1kode").val(a[0]).prop("disabled", true);
+					// $("#id1kode").val(a[0]).prop("disabled", true);
+					$("#id1kode").val(a[0]);
 					$("#id11").val(a[1]).prop("disabled", true);
 					$("#id22").val(athn).prop("disabled", true);
 					$("#id2bln").val(abln).prop("disabled", true);
@@ -538,6 +575,16 @@
 				$("#bi").val(json.bi);
 				$("#cek_status").val(json.status);
 				$("textarea#ket").val(json.ket);
+
+				// cocok data lama
+				$("#l-nm_ker").val(json.nm_ker);
+				$("#l-g_label").val(json.g_label);
+				$("#l-width").val(json.width);
+				$("#l-weight").val(json.weight);
+				$("#l-diameter").val(json.diameter);
+				$("#l-joint").val(json.joint);
+				$("#l-ket").val(json.ket);
+				$("#l-status").val(json.status);
 			})
 	}
 
@@ -602,7 +649,8 @@
 		$("#id22").val("").prop("disabled", false);
 		$("#id44").val("").prop("disabled", false);
 		$("#id2bln").val("").prop("disabled", false);
-		$("#id1kode").val("").prop("disabled", false);
+		// $("#id1kode").val("").prop("disabled", false);
+		// $("#id1kode").val("");
 		$("#id4kode").val("").prop("disabled", false);
 		$("#nm_ker").val("");
 		$("#g_ac").val("");
@@ -615,6 +663,16 @@
 		$("#bi").val("");
 		$("#cek_status").val("");
 		$("#ket").val("");
+
+		$("#l-nm_ker").val("");
+		$("#l-g_label").val("");
+		$("#l-width").val("");
+		$("#l-weight").val("");
+		$("#l-diameter").val("");
+		$("#l-joint").val("");
+		$("#l-ket").val("");
+		$("#l-status").val("");
+
 		getThnBlnRoll();
 
 		$("#txt-btn-simpan").html("Simpan");

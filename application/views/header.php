@@ -177,10 +177,12 @@
                         </li>
                     <?php } ?>
                     <li>
+						<?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin") {?>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <!-- <i class="material-icons">equalizer</i> -->
                             <span>Laporan</span>
                         </a>
+						<?php } ?>
                         <ul class="ml-menu">
                             <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC") { ?>
                                 <li>
