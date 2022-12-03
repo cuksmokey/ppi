@@ -5569,7 +5569,23 @@ class Laporan extends CI_Controller {
 				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">STATUS</th>
 			</tr>';
 			foreach($getRoll->result() as $roll){
-				if($roll->status == 0 && $roll->id_pl == 0){ // STOK
+                // TAMPILKAN EDIT
+                $getRollEdit = $this->db->query("SELECT*FROM m_roll_edit e
+                WHERE e.roll='$roll->roll'");
+                if($getRollEdit->num_rows() == 0){
+                    $oBre = '';
+					$cBre = '';
+                }else{
+                    if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
+                        $oBre = '';
+                        $cBre = '';
+                    }else{
+                        $oBre = '<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('."'".$roll->roll."'".')">';
+                        $cBre = '</button>';
+                    }
+                }
+
+				if(($roll->status == 0 && $roll->id_pl == 0) || ($roll->status == 2 && $roll->id_pl == 0)){ // STOK + PPI
                     $bgStt = 'cek-status-stok';
 					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
 						$diss = 'disabled';
@@ -5578,15 +5594,15 @@ class Laporan extends CI_Controller {
 					}
 					$oBtn = '';
 					$cBtn = '';
-				}else if($roll->status == 2 && $roll->id_pl == 0){ // PPI
-                    $bgStt = 'cek-status-stok';
-					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
-						$diss = 'disabled';
-					}else{
-						$diss = '';
-					}
-					$oBtn = '';
-					$cBtn = '';
+				// }else if($roll->status == 2 && $roll->id_pl == 0){ // PPI
+                //     $bgStt = 'cek-status-stok';
+				// 	if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
+				// 		$diss = 'disabled';
+				// 	}else{
+				// 		$diss = '';
+				// 	}
+				// 	$oBtn = '';
+				// 	$cBtn = '';
 				}else if($roll->status == 3 && $roll->id_pl == 0){ // BUFFER
                     $bgStt = 'cek-status-buffer';
 					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
@@ -5612,10 +5628,22 @@ class Laporan extends CI_Controller {
 					$cBtn = '';
 				}
 
-				$i = $roll->id;
+                $i = $roll->id;
+                // MENAMPUNG DATA LAMA
+                $html .='
+                <input type="hidden" id="lroll-'.$i.'" value="'.$roll->roll.'">
+                <input type="hidden" id="lnm_ker-'.$i.'" value="'.$roll->nm_ker.'">
+                <input type="hidden" id="lg_label-'.$i.'" value="'.$roll->g_label.'">
+                <input type="hidden" id="lwidth-'.$i.'" value="'.$roll->width.'">
+                <input type="hidden" id="lweight-'.$i.'" value="'.$roll->weight.'">
+                <input type="hidden" id="ldiameter-'.$i.'" value="'.$roll->diameter.'">
+                <input type="hidden" id="ljoint-'.$i.'" value="'.$roll->joint.'">
+                <input type="hidden" id="lket-'.$i.'" value="'.$roll->ket.'">
+                <input type="hidden" id="lstatus-'.$i.'" value="'.$roll->status.'">
+                ';
 				$html .='<tr class="'.$bgStt.'">
 					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<input class="ttggll" type="date" id="etgl-'.$i.'" value="'.$roll->tgl.'" '.$diss.' style="width:85px">'.$cBtn.'</td>
-					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" value="'.$roll->roll.'" disabled style="width:100px" maxlength="14">'.$cBtn.'</td>
+					<td style="padding:0 3px;border:1px solid #aaa">'.$oBre.''.$oBtn.'<input class="ipt-txt" type="text" id="eroll-'.$i.'" value="'.$roll->roll.'" disabled style="width:100px" maxlength="14">'.$cBtn.''.$cBre.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_ac-'.$i.'" value="'.$roll->g_ac.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="erct-'.$i.'" value="'.$roll->rct.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>';
@@ -5699,7 +5727,7 @@ class Laporan extends CI_Controller {
         INNER JOIN pl p ON r.id_pl=p.id
         WHERE r.id='$id'");
         $roll = $getId->row();
-        $html.='<table style="margin:0;font-size:12px;color:#000;text-align:center;border-collapse:collapse">
+        $html.='<table style="margin:0;font-size:12px;color:#000;text-align:center;border-color:#ccc;border-collapse:collapse">
             <tr>
                 <td style="padding:5px 10px;font-weight:bold">TANGGAL</td>
                 <td style="padding:5px 10px;font-weight:bold">ROLL</td>
@@ -5761,6 +5789,40 @@ class Laporan extends CI_Controller {
                 <td style="padding:8px 5px">'.$roll->alamat_perusahaan.'</td>
             </tr>
         </table>';
+
+        echo $html;
+    }
+
+    function QCShowEditRoll(){
+        $roll = $_POST['roll'];
+        $html ='';
+
+        $html .='<table style="margin:0;padding:0;font-size:12px;color:#000;border-collapse:collapse">
+        <tr>
+            <td style="font-weight:bold" colspan="12">HISTORY EDIT :</td>
+        </tr>';
+        $getData = $this->db->query("SELECT*FROM m_roll_edit
+        WHERE roll='$roll'");
+        $i = 0;
+        foreach($getData->result() as $ser){
+            $i++;
+            // roll            nm_ker  g_label  width   diameter  weight   joint  ket             seset  status
+            $html .='<tr>
+                <td style="padding:5px">'.$i.'</td>
+                <td style="padding:5px">'.$ser->roll.'</td>
+                <td style="padding:5px">'.$ser->nm_ker.'</td>
+                <td style="padding:5px">'.$ser->g_label.'</td>
+                <td style="padding:5px">'.$ser->width.'</td>
+                <td style="padding:5px">'.$ser->diameter.'</td>
+                <td style="padding:5px">'.$ser->weight.'</td>
+                <td style="padding:5px">'.$ser->joint.'</td>
+                <td style="padding:5px">'.$ser->ket.'</td>
+                <td style="padding:5px">'.$ser->status.'</td>
+                <td style="padding:5px">'.$ser->edited_at.'</td>
+                <td style="padding:5px">'.$ser->edited_by.'</td>
+            </tr>';
+        }
+        $html .='</table>';
 
         echo $html;
     }

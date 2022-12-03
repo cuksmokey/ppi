@@ -114,12 +114,14 @@
                     </li>
                     <?php } ?>
                     <li>
+                        <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2") { ?>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <!-- <i class="material-icons">book</i> -->
                             <span>Master</span>
                         </a>
+                        <?php } ?>
                         <ul class="ml-menu">
-                        <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2") { ?>
+                        <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2") { ?>
                             <li>
                                 <a href="<?php echo base_url('Master/Timbangan') ?>">Timbangan</a>
                             </li>

@@ -168,7 +168,9 @@ class M_master extends CI_Model{
 			$pm = '';
 		}
 		$query = "SELECT * FROM m_timbangan WHERE (status = '0' OR status = '2' OR status = '3') AND id_pl='0' $pm
-		-- AND tgl='$tgl'
+		-- AND tgl='$tgl' 
+		-- AND tgl BETWEEN '2022-11-25' AND '2022-11-28' 
+        -- LIMIT 5
 		";
         return $this->db->query($query);
 	}
@@ -219,8 +221,8 @@ class M_master extends CI_Model{
 			'bi' => $_POST['bi'],
 			'status' => $_POST['cstatus'],
 			'ket' => $_POST['ket'],
-			'created_at' => date("Y-m-d H:i:s"),
-			'created_by' => $this->session->userdata('username'),
+			// 'created_at' => date("Y-m-d H:i:s"),
+			// 'created_by' => $this->session->userdata('username'),
 			'pm' => $_POST['kodepm']
 		);
 
@@ -262,9 +264,6 @@ class M_master extends CI_Model{
     }
 
     function update_timbangan(){
-		// if($_POST['lnm_ker'] && $_POST['lg_label'] && $_POST['lwidth'] && $_POST['lweight'] && $_POST['ldiameter'] && $_POST['ljoint'] && $_POST['lket'] && $_POST['lstatus']){
-
-		// }
         $this->db->set('nm_ker', $_POST['nm_ker']);
         $this->db->set('g_ac', $_POST['g_ac']);
         $this->db->set('g_label', $_POST['g_label']);
@@ -279,7 +278,29 @@ class M_master extends CI_Model{
         $this->db->set('packing_at', date("Y-m-d H:i:s"));
         $this->db->set('packing_by', $this->session->userdata('username'));
         $this->db->where('roll', $_POST['id']);
-        $result = $this->db->update('m_timbangan');
+        // $result = $this->db->update('m_timbangan');
+
+        if(($_POST['lnm_ker'] == $_POST['nm_ker']) && ($_POST['lg_label'] == $_POST['g_label']) && ($_POST['lwidth'] == $_POST['width']) && ($_POST['lweight'] == $_POST['weight']) && ($_POST['ldiameter'] == $_POST['diameter']) && ($_POST['ljoint'] == $_POST['joint']) && ($_POST['lket'] == $_POST['ket']) && ($_POST['lstatus'] == $_POST['cstatus'])){
+            $result = $this->db->update('m_timbangan');
+		}else{
+            $result = $this->db->update('m_timbangan');
+
+            $data = array(
+                'roll' => $_POST['id'],
+                'nm_ker' => $_POST['lnm_ker'],
+                'g_label' => $_POST['lg_label'],
+                'width' => $_POST['lwidth'],
+                'diameter' => $_POST['ldiameter'],
+                'weight' => $_POST['lweight'],
+                'joint' => $_POST['ljoint'],
+                'status' => $_POST['lstatus'],
+                'ket' => $_POST['lket'],
+                'edited_at' => date("Y-m-d H:i:s"),
+                'edited_by' => $this->session->userdata('username'),
+            );
+
+            $result= $this->db->insert("m_roll_edit",$data);
+        }
 		
         return $result;
     }
@@ -689,7 +710,7 @@ class M_master extends CI_Model{
         return $result;
     }
 
-	function updateQCRoll(){ //
+	function updateQCRoll(){
         if($_POST['edit'] == 'ListStokGudang'){
             $this->db->set('ket', $_POST['ket']);
             $this->db->set('status', $_POST['status']);
@@ -708,10 +729,29 @@ class M_master extends CI_Model{
             $this->db->set('status', $_POST['status']);
         }
         
-        $this->db->set('packing_at', date("Y-m-d H:i:s"));
-        $this->db->set('packing_by', $this->session->userdata('username'));
+        // $this->db->set('packing_at', date("Y-m-d H:i:s"));
+        // $this->db->set('packing_by', $this->session->userdata('username'));
         $this->db->where('id', $_POST['id']);
         $result = $this->db->update('m_timbangan');
+
+        if(($_POST['lnm_ker'] == $_POST['nm_ker']) && ($_POST['lg_label'] == $_POST['g_label']) && ($_POST['lwidth'] == $_POST['width']) && ($_POST['lweight'] == $_POST['weight']) && ($_POST['ldiameter'] == $_POST['diameter']) && ($_POST['ljoint'] == $_POST['joint']) && ($_POST['lket'] == $_POST['ket']) && ($_POST['lstatus'] == $_POST['status'])){
+            $result = true;
+        }else{
+            $data = array(
+                'roll' => $_POST['lroll'],
+                'nm_ker' => $_POST['lnm_ker'],
+                'g_label' => $_POST['lg_label'],
+                'width' => $_POST['lwidth'],
+                'diameter' => $_POST['ldiameter'],
+                'weight' => $_POST['lweight'],
+                'joint' => $_POST['ljoint'],
+                'status' => $_POST['lstatus'],
+                'ket' => $_POST['lket'],
+                'edited_at' => date("Y-m-d H:i:s"),
+                'edited_by' => $this->session->userdata('username'),
+            );
+            $result= $this->db->insert("m_roll_edit",$data);
+        }
 		
 		return $result;
 	}

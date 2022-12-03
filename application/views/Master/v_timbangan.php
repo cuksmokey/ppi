@@ -37,12 +37,12 @@
 										<th>JENIS</th>
 										<!-- <th>Gramage Label</th> -->
 										<th>GSM</th>
-										<th>Width</th>
-										<th>Diameter</th>
-										<th>Weight</th>
-										<th>Joint</th>
-										<th>Keterangan</th>
-										<th width="15%">Aksi</th>
+										<th>WIDTH</th>
+										<th>DIAMETER</th>
+										<th>WEIGHT</th>
+										<th>JOINT</th>
+										<th>KETERANGAN</th>
+										<th width="15%">AKSI</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -56,15 +56,15 @@
 							<div id="judul"></div>
 							<table style="width:100%">
 								<tr>
-									<td style="width:13%"></td>
-									<td style="width:auto"></td>
-									<td style="width:auto"></td>
-									<td style="width:auto"></td>
+									<td style="padding:5px;width:13%"></td>
+									<td style="padding:5px;width:auto"></td>
+									<td style="padding:5px;width:20%"></td>
+									<td style="padding:5px;width:auto"></td>
 								</tr>
 								<tr>
-									<td>Roll Number</td>
-									<td style="padding:0 5px">:</td>
-									<td colspan="2">
+									<td style="padding:3px 0;font-weight:bold">ROLL NUMBER</td>
+									<td style="padding:3px 5px">:</td>
+									<td style="padding:3px 0" colspan="2">
 										<div class="old_roll">
 											<table>
 												<tr>
@@ -91,6 +91,7 @@
 													$dkodepm = '';
 												} 
 											?>
+											<input type="hidden" id="getid" value="">
 											<input type="hidden" id="l-nm_ker" value="">
 											<input type="hidden" id="l-g_label" value="">
 											<input type="hidden" id="l-width" value="">
@@ -99,10 +100,9 @@
 											<input type="hidden" id="l-joint" value="">
 											<input type="hidden" id="l-ket" value="">
 											<input type="hidden" id="l-status" value="">
-											<!-- onkeypress="return hanyaPm(event)" -->
 											<table>
 												<tr>
-													<td><input type="text" style="text-align:center" id="id1kode" class="form-control" maxlength="1" autocomplete="off" placeholder="PM" tabindex="1" value="<?php echo $kodePm; ?>" <?php echo $dkodepm; ?>></td>
+													<td><input type="text" style="text-align:center" id="id1kode" class="form-control" maxlength="1" autocomplete="off" placeholder="PM" tabindex="1" onkeypress="return hanyaPm(event)" value="<?php echo $kodePm; ?>" <?php echo $dkodepm; ?>></td>
 													<td style="padding: 0 5px">/</td>
 													<td><input type="text" style="text-align:center" id="id11" class="angka form-control" maxlength="5" autocomplete="off" placeholder="NOMOR ROLL" tabindex="2"></td>
 													<td style="padding: 0 5px">/</td>
@@ -117,89 +117,94 @@
 									</td>
 								</tr>
 								<tr>
-									<td>Tanggal</td>
-									<td style="padding:0 5px">:</td>
-									<td colspan="2">
-										<input type="date" id="tgl" value="<?php echo date('Y-m-d') ?>" class="form-control" style="width: 40%">
+									<td style="padding:3px 0;font-weight:bold">TANGGAL</td>
+									<td style="padding:3px 5px">:</td>
+									<td style="padding:3px 0">
+										<input type="date" id="tgl" value="" class="form-control">
 									</td>
 								</tr>
 								<tr>
-									<td>Nama Kertas</td>
-									<td style="padding:0 5px">:</td>
-									<td colspan="2">
-										<select id="nm_ker" class="form-control" style="width:40%">
-											<option value="">Pilih</option>
+									<td style="padding:3px 0;font-weight:bold">NAMA KERTAS</td>
+									<td style="padding:3px 5px">:</td>
+									<td style="padding:3px 0">
+										<select id="nm_ker" class="form-control">
+											<option value="">PILIH</option>
 											<option value="WP">WP</option>
 											<option value="MH">MH</option>
-											<option value="MI">MI</option>
-											<option value="TL">TL</option>
+											<!-- <option value="MI">MI</option> -->
+											<!-- <option value="TL">TL</option> -->
 											<option value="BK">BK</option>
-											<option value="BL">BL</option>
+											<!-- <option value="BL">BL</option> -->
 											<option value="MN">MN</option>
-											<option value="ML">ML</option>
+											<!-- <option value="ML">ML</option> -->
 											<option value="MH COLOR">MH COLOR</option>
 										</select>
 										<!-- <input type="text" class="form-control" id="nm_ker"> -->
 									</td>
 								</tr>
-								<tr>
+								<!-- <tr>
 									<td>Grammage Actual</td>
 									<td style="padding:0 5px">:</td>
 									<td><input type="text" class="form-control" id="g_ac" placeholder="0" autocomplete="off"></td>
 									<td><input type="text" disabled="true" class="form-control" value="GSM" style="width: 30%;border: none"></td>
-								</tr>
+								</tr> -->
 								<tr>
-									<td>Grammage Label</td>
-									<td style="padding:0 5px">:</td>
-									<td>
+									<td style="padding:3px 0;font-weight:bold">GRAMATURE</td>
+									<td style="padding:3px 5px">:</td>
+									<td style="padding:3px 0">
 										<select id="g_label" class="form-control">
-											<option value="">Pilih</option>
-											<option value="67">67</option>
+											<option value="">PILIH</option>
+											<!-- <option value="67">67</option> -->
 											<option value="68">68</option>
 											<option value="70">70</option>
 											<option value="105">105</option>
 											<option value="110">110</option>
 											<option value="125">125</option>
+											<option value="120">120</option>
 											<option value="140">140</option>
 											<option value="150">150</option>
 											<option value="200">200</option>
 										</select>
 									</td>
-									<td>
-										<input type="text" disabled="true" class="form-control" value="GSM" style="width: 30%;border: none">
+									<td style="padding:3px 5px">
+										GSM
+										<!-- <input type="text" disabled="true" class="form-control" value="GSM" style="width: 30%;border: none"> -->
 									</td>
 								</tr>
 								<tr>
-									<td>Width</td>
-									<td style="padding:0 5px">:</td>
-									<td>
-										<input type="text" class="form-control" placeholder="0" id="width" autocomplete="off">
+									<td style="padding:3px 0;font-weight:bold">UKURAN</td>
+									<td style="padding:3px 5px">:</td>
+									<td style="padding:3px 0">
+										<input type="text" class="angka form-control" placeholder="0" id="width" maxlength="5" autocomplete="off">
 									</td>
-									<td>
-										<input type="text" disabled="true" class=" form-control" value="CM" style="width: 30%;border: none">
-									</td>
-								</tr>
-								<tr>
-									<td>Weight</td>
-									<td style="padding:0 5px">:</td>
-									<td>
-										<input type="text" class="form-control" placeholder="0" id="weight" autocomplete="off">
-									</td>
-									<td>
-										<input type="text" disabled="true" class="form-control" value="KG" style="width: 30%;border: none">
+									<td style="padding:3px 5px">
+										CM
+										<!-- <input type="text" disabled="true" class=" form-control" value="CM" style="width: 30%;border: none"> -->
 									</td>
 								</tr>
 								<tr>
-									<td>Diamater</td>
-									<td style="padding:0 5px">:</td>
-									<td>
-										<input type="text" class="form-control" placeholder="0" id="diameter" autocomplete="off">
+									<td style="padding:3px 0;font-weight:bold">DIAMATER</td>
+									<td style="padding:3px 5px">:</td>
+									<td style="padding:3px 0">
+										<input type="text" class="angka form-control" placeholder="0" id="diameter" maxlength="5" autocomplete="off">
 									</td>
-									<td>
-										<input type="text" disabled="true" class="form-control" value="CM" style="width: 30%;border: none">
+									<td style="padding:3px 5px">
+										CM
+										<!-- <input type="text" disabled="true" class="form-control" value="CM" style="width: 30%;border: none"> -->
 									</td>
 								</tr>
 								<tr>
+									<td style="padding:3px 0;font-weight:bold">BERAT</td>
+									<td style="padding:3px 5px">:</td>
+									<td style="padding:3px 0">
+										<input type="text" class="angka form-control" placeholder="0" id="weight" maxlength="5" autocomplete="off">
+									</td>
+									<td style="padding:3px 5px">
+										KG
+										<!-- <input type="text" disabled="true" class="form-control" value="KG" style="width: 30%;border: none"> -->
+									</td>
+								</tr>
+								<!-- <tr>
 									<td>RCT</td>
 									<td style="padding:0 5px">:</td>
 									<td>
@@ -218,20 +223,20 @@
 									<td>
 										<input type="text" disabled="true" class="form-control" value="KPA.m2/G" style="width: 30%;border: none">
 									</td>
-								</tr>
+								</tr> -->
 								<tr>
-									<td>Joint</td>
-									<td style="padding:0 5px">:</td>
-									<td colspan="2">
-										<input type="text" class="form-control" placeholder="0" id="joint" autocomplete="off">
+									<td style="padding:3px 0;font-weight:bold">JOINT</td>
+									<td style="padding:3px 5px">:</td>
+									<td style="padding:3px 0">
+										<input type="text" class="angka form-control" placeholder="0" id="joint" maxlength="3" autocomplete="off">
 									</td>
 								</tr>
 								<tr>
-									<td>Status</td>
-									<td style="padding:0 5px">:</td>
-									<td>
+									<td style="padding:3px 0;font-weight:bold">STATUS</td>
+									<td style="padding:3px 5px">:</td>
+									<td style="padding:3px 0">
 										<select id="cek_status" class="form-control">
-											<option value="">Pilih</option>
+											<option value="">PILIH</option>
 											<option value="0">STOCK</option>
 											<option value="2">PPI</option>
 											<option value="3">BUFFER</option>
@@ -239,9 +244,9 @@
 									</td>
 								</tr>
 								<tr>
-									<td>Keterangan</td>
-									<td style="padding:0 5px">:</td>
-									<td colspan="2">
+									<td style="padding:3px 0;font-weight:bold">KETERANGAN</td>
+									<td style="padding:3px 5px">:</td>
+									<td style="padding:3px 0" colspan="2">
 										<textarea id="ket" cols="30" rows="5" class="form-control"></textarea>
 									</td>
 								</tr>
@@ -249,7 +254,6 @@
 									<td colspan="4" style="padding:5px"></td>
 								</tr>
 							</table>
-
 
 							<!-- <button type="button" class="btn-kembali btn btn-dark btn-sm waves-effect waves-circle waves-float"> -->
 							<button type="button" class="btn-kembali btn btn-dark btn-default btn-sm waves-effect">
@@ -268,7 +272,7 @@
 								<b><span>LABEL BESAR</span></b>
 							</a> 
 							<a type="button" id="btn-print-kcl" target="blank" class="btn btn-default btn-sm waves-effect waves-float pull-right" style="display: none">
-								<b><span>LABEL KECIL</span></b>
+								<b><span>LABEL KECIL</span></b> 
 							</a>
 						</div>
 					</div>
@@ -298,14 +302,14 @@
 		$(".old_roll").hide();
 		$(".new_roll").show();
 		$(".box-form").show();
-		$("#judul").html('<h3> Form Tambah Data</h3>');
-		$('.box-form').animateCss('fadeInDown');
+		$("#judul").html('<h3>FORM TAMBAH DATA</h3>');
+		// $('.box-form').animateCss('fadeInDown');
 	});
 
 	$(".btn-kembali").click(function() {
 		$(".box-form").hide();
 		$(".box-data").show();
-		$('.box-data').animateCss('fadeIn');
+		// $('.box-data').animateCss('fadeIn');
 		load_data();
 	});
 
@@ -403,14 +407,14 @@
 
 		tgl = $("#tgl").val();
 		nm_ker = $("#nm_ker").val();
-		g_ac = $("#g_ac").val();
+		// g_ac = $("#g_ac").val();
 		g_label = $("#g_label").val();
 		width = $("#width").val();
 		weight = $("#weight").val();
 		diameter = $("#diameter").val();
 		joint = $("#joint").val();
-		rct = $("#rct").val();
-		bi = $("#bi").val();
+		// rct = $("#rct").val();
+		// bi = $("#bi").val();
 		cstatus = $("#cek_status").val();
 		ket = $("textarea#ket").val();
 
@@ -423,6 +427,8 @@
 		ljoint = $("#l-joint").val();
 		lket = $("#l-ket").val();
 		lstatus = $("#l-status").val();
+		getid = $("#getid").val();
+		// alert(lnm_ker+' - '+lg_label+' - '+lwidth+' - '+lweight+' - '+ldiameter+' - '+ljoint+' - '+lket+' - '+lstatus+' - '+getid);
 
 		if (kodepm == '' || kodepm == null) {
 			if ($("#id1").val() == "" || $("#id2").val() == "" || $("#id3").val() == "" || $("#id4").val() == "") {
@@ -436,7 +442,7 @@
 			}
 		}
 
-		if (nm_ker == "" || g_ac == "" || g_label == "" || width == "" || diameter == "" || joint == "" || rct == "" || bi == "") {
+		if (nm_ker == "" || g_label == "" || width == "" || diameter == "" || joint == "") {
 			showNotification("alert-info", "HARAP LENGKAPI FORM", "bottom", "center", "", "");
 			return;
 		}
@@ -451,8 +457,6 @@
 				showNotification("alert-info", "HARAP PILIH STATUS ROLL", "bottom", "center", "", "");
 				return;
 			}
-		// alert(nr);
-		// cek_status
 
 		$("#btn-simpan").prop("disabled", true);
 		$.ajax({
@@ -463,15 +467,15 @@
 				kodepm: kodepm,
 				tgl: tgl,
 				nm_ker: nm_ker,
-				g_ac: g_ac,
+				g_ac: 0,
 				g_label: g_label,
 				width: width,
 				weight: weight,
 				diameter: diameter,
 				joint: joint,
 				ket: ket,
-				rct: rct,
-				bi: bi,
+				rct: 0,
+				bi: 0,
 				cstatus: cstatus,
 				lnm_ker: lnm_ker,
 				lg_label: lg_label,
@@ -481,22 +485,24 @@
 				ljoint: ljoint,
 				lket: lket,
 				lstatus: lstatus,
+				getid: getid,
 				jenis: "Timbangan"
 			}),
 			dataType: "json",
 			success: function(data) {
 				$("#btn-simpan").prop("disabled", false);
 				if (data.data == true) {
-					// reloadTable();
-					showNotification("alert-success", "Berhasil", "bottom", "center", "", "");
-					$("#btn-print").attr("href", "<?php echo base_url('Master/print_timbangan?id=')?>" + roll);
-					$("#btn-print").show();
-					$("#btn-print-kcl").attr("href", "<?php echo base_url('Master/print_timbangan2?id=')?>" + roll);
-					$("#btn-print-kcl").show();
+					showNotification("alert-success", "BERHASIL", "bottom", "center", "", "");
+					// $("#btn-print").attr("href", "<?php echo base_url('Master/print_timbangan?id=')?>" + roll);
+					// $("#btn-print").show();
+					// $("#btn-print-kcl").attr("href", "<?php echo base_url('Master/print_timbangan2?id=')?>" + roll);
+					// $("#btn-print-kcl").show();
 					status = 'update';
-					$("#txt-btn-simpan").html("Update");
+					$("#txt-btn-simpan").html("UPDATE");
+					// alert(data.getid);
+					tampil_edit(data.getid);
 				} else {
-					showNotification("alert-danger", "Roll Number Sudah Ada", "bottom", "center", "", "");
+					showNotification("alert-danger", data.msg, "bottom", "center", "", "");
 					status = 'insert';
 				}
 			}
@@ -504,14 +510,8 @@
 	}
 
 	function tampil_edit(id) {
-		$(".box-data").hide();
-		$(".box-form").show();
-		$(".new_roll").hide();
-		$(".old_roll").hide();
-		$('.box-form').animateCss('fadeInDown');
-		$("#judul").html('<h3> Form Edit Data</h3>');
-
-		status = "update";
+		$("#getid").val(id);
+		
 		$.ajax({
 				url: '<?php echo base_url('Master/get_edit'); ?>', // 1030
 				type: 'POST',
@@ -523,68 +523,85 @@
 			.done(function(data) {
 				json = JSON.parse(data);
 
-				$("#btn-print").attr("href", "<?php echo base_url('Master/print_timbangan?id=')  ?>" + json.roll);
-				$("#btn-print").show();
-				$("#btn-print-kcl").attr("href", "<?php echo base_url('Master/print_timbangan2?id=')  ?>" + json.roll);
-				$("#btn-print-kcl").show();
-
-				a = json.roll.split("/");
-
-				$("#id1").prop("disabled", true);
-				$("#id2").prop("disabled", true);
-				$("#id3").prop("disabled", true);
-				$("#id4").prop("disabled", true);
-
-				if (json.pm == '' || json.pm == null) {
-					$(".old_roll").show();
+				if(json.status != 0 && json.id_pl != 0){
+					swal("DATA SUDAH TERJUAL!!!", "", "error");
+					$(".box-data").show();
+					$(".box-form").hide();
+					load_data();
+				}else{
+					$(".box-data").hide();
+					$(".box-form").show();
 					$(".new_roll").hide();
-
-					$("#id1").val(a[0]);
-					$("#id2").val(a[1]);
-					$("#id3").val(a[2]);
-					$("#id4").val(a[3]);
-				} else {
 					$(".old_roll").hide();
-					$(".new_roll").show();
+					$("#judul").html('<h3>FORM EDIT DATA</h3>');
+					status = "update";
+					if(json.ctk == 0){	
+						$("#btn-print").attr("href", "<?php echo base_url('Master/print_timbangan?id=')  ?>" + json.roll);
+						$("#btn-print").show();
+						$("#btn-print-kcl").attr("href", "<?php echo base_url('Master/print_timbangan2?id=')  ?>" + json.roll);
+						$("#btn-print-kcl").show();
+					}
 
-					textthnbln = a[2].toString();
-					athn = textthnbln.substr(0, 2);
-					abln = textthnbln.substr(2, 1);
+					a = json.roll.split("/");
 
-					textsetr = a[3].toString();
-					anka = textsetr.substr(0, 1);
-					ankod = textsetr.substr(1, 1);
+					$("#id1").prop("disabled", true);
+					$("#id2").prop("disabled", true);
+					$("#id3").prop("disabled", true);
+					$("#id4").prop("disabled", true);
 
-					// $("#id1kode").val(a[0]).prop("disabled", true);
-					$("#id1kode").val(a[0]);
-					$("#id11").val(a[1]).prop("disabled", true);
-					$("#id22").val(athn).prop("disabled", true);
-					$("#id2bln").val(abln).prop("disabled", true);
-					$("#id44").val(anka).prop("disabled", true);
-					$("#id4kode").val(ankod).prop("disabled", true);
+					if (json.pm == '' || json.pm == null) {
+						$(".old_roll").show();
+						$(".new_roll").hide();
+
+						$("#id1").val(a[0]);
+						$("#id2").val(a[1]);
+						$("#id3").val(a[2]);
+						$("#id4").val(a[3]);
+					} else {
+						$(".old_roll").hide();
+						$(".new_roll").show();
+
+						textthnbln = a[2].toString();
+						athn = textthnbln.substr(0, 2);
+						abln = textthnbln.substr(2, 1);
+
+						textsetr = a[3].toString();
+						anka = textsetr.substr(0, 1);
+						ankod = textsetr.substr(1, 1);
+
+						// $("#id1kode").val(a[0]).prop("disabled", true);
+						$("#id1kode").val(a[0]);
+						$("#id11").val(a[1]).prop("disabled", true);
+						$("#id22").val(athn).prop("disabled", true);
+						$("#id2bln").val(abln).prop("disabled", true);
+						$("#id44").val(anka).prop("disabled", true);
+						$("#id4kode").val(ankod).prop("disabled", true);
+					}
+
+					$("#tgl").val(json.tgl);
+					$("#nm_ker").val(json.nm_ker);
+					$("#g_ac").val(json.g_ac);
+					$("#g_label").val(json.g_label);
+					$("#width").val(json.width);
+					$("#weight").val(json.weight);
+					$("#diameter").val(json.diameter);
+					$("#joint").val(json.joint);
+					$("#rct").val(json.rct);
+					$("#bi").val(json.bi);
+					$("#cek_status").val(json.status);
+					$("textarea#ket").val(json.ket);
+
+					// cocok data lama
+					$("#l-nm_ker").val(json.nm_ker);
+					$("#l-g_label").val(json.g_label);
+					$("#l-width").val(json.width);
+					$("#l-weight").val(json.weight);
+					$("#l-diameter").val(json.diameter);
+					$("#l-joint").val(json.joint);
+					$("#l-ket").val(json.ket);
+					$("#l-status").val(json.status);
 				}
 
-				$("#nm_ker").val(json.nm_ker);
-				$("#g_ac").val(json.g_ac);
-				$("#g_label").val(json.g_label);
-				$("#width").val(json.width);
-				$("#weight").val(json.weight);
-				$("#diameter").val(json.diameter);
-				$("#joint").val(json.joint);
-				$("#rct").val(json.rct);
-				$("#bi").val(json.bi);
-				$("#cek_status").val(json.status);
-				$("textarea#ket").val(json.ket);
-
-				// cocok data lama
-				$("#l-nm_ker").val(json.nm_ker);
-				$("#l-g_label").val(json.g_label);
-				$("#l-width").val(json.width);
-				$("#l-weight").val(json.weight);
-				$("#l-diameter").val(json.diameter);
-				$("#l-joint").val(json.joint);
-				$("#l-ket").val(json.ket);
-				$("#l-status").val(json.status);
 			})
 	}
 
@@ -626,7 +643,7 @@
 	}
 
 	function kosong() {
-		$("#judul").html('<h3> Form Tambah Data</h3>');
+		$("#judul").html('<h3>FORM TAMBAH DATA</h3>');
 		$("#btn-print").hide();
 		$("#btn-print-kcl").hide();
 		$(".old_roll").hide();
@@ -641,6 +658,7 @@
 		$("#id3").prop("disabled", false);
 		$("#id4").prop("disabled", false);
 
+		$("#tgl").val("");
 		$("#id1").val("");
 		$("#id2").val("");
 		$("#id3").val("");
@@ -664,6 +682,7 @@
 		$("#cek_status").val("");
 		$("#ket").val("");
 
+		$("#getid").val("");
 		$("#l-nm_ker").val("");
 		$("#l-g_label").val("");
 		$("#l-width").val("");
@@ -675,7 +694,7 @@
 
 		getThnBlnRoll();
 
-		$("#txt-btn-simpan").html("Simpan");
+		$("#txt-btn-simpan").html("SIMPAN");
 	}
 
 	function getThnBlnRoll() {

@@ -131,6 +131,7 @@
 			<div class="modal-header"></div>
 			<div class="modal-body">
 				<div class="isi-qc-terjual"></div>
+				<div class="isi-qc-edit"></div>
 			</div>
 			<div class="modal-footer"></div>
 		</div>
@@ -233,6 +234,7 @@
 	};
 
 	function cek_roll(id){
+		$(".isi-qc-edit").html('');
 		$(".isi-qc-terjual").html('Tunggu Sebentar . . .');
 		$("#modal-qc-list").modal("show");
 		$.ajax({
@@ -243,6 +245,22 @@
 			}),
 			success: function(response) {
 				$(".isi-qc-terjual").html(response);
+			}
+		});
+	}
+
+	function cekRollEdit(roll){
+		$(".isi-qc-terjual").html('');
+		$(".isi-qc-edit").html('Tunggu Sebentar . . .');
+		$("#modal-qc-list").modal("show");
+		$.ajax({
+			url: '<?php echo base_url('Laporan/QCShowEditRoll')?>',
+			type: "POST",
+			data: ({
+				roll: roll,
+			}),
+			success: function(response){
+				$(".isi-qc-edit").html(response);
 			}
 		});
 	}
@@ -261,7 +279,20 @@
 		joint = $("#ejoint-"+i).val();
 		ket = $("#eket-"+i).val().toUpperCase();
 		status = $("#opt_status-"+i).val();
-		// alert(tgl+' - '+g_ac+' - '+rct+' - '+bi+' - '+nm_ker+' - '+g_label+' - '+width+' - '+diameter+' - '+weight+' - '+joint+' - '+ket+' - '+status+' - '+pilihan);
+		alert(tgl+' - '+g_ac+' - '+rct+' - '+bi+' - '+nm_ker+' - '+g_label+' - '+width+' - '+diameter+' - '+weight+' - '+joint+' - '+ket+' - '+status);
+
+		// MENAMPUNG DATA LAMA
+		lroll = $("#lroll-"+i).val();
+		lnm_ker = $("#lnm_ker-"+i).val();
+		lg_label = $("#lg_label-"+i).val();
+		lwidth = $("#lwidth-"+i).val();
+		lweight = $("#lweight-"+i).val();
+		ldiameter = $("#ldiameter-"+i).val();
+		ljoint = $("#ljoint-"+i).val();
+		lket = $("#lket-"+i).val();
+		lstatus = $("#lstatus-"+i).val();
+		console.log(lroll,lnm_ker,lg_label,lwidth,lweight,ldiameter,ljoint,lket,lstatus);
+
 		if (nm_ker == '' || g_label == '' || width == '' || diameter == '' || weight == '' || joint == '') {
 			showNotification("alert-danger", "DATA JENIS, GSM, UKURAN, DIAMETER, BERAT, JOINT, TIDAK BOLEH KOSONG!!!", "bottom", "center", "", "");
 			return;
@@ -283,6 +314,15 @@
 				joint : joint,
 				ket : ket,
 				status : status,
+				lroll: lroll, // menampung data lama
+				lnm_ker: lnm_ker,
+				lg_label: lg_label,
+				lwidth: lwidth,
+				lweight: lweight,
+				ldiameter: ldiameter,
+				ljoint: ljoint,
+				lket: lket,
+				lstatus: lstatus,
 				edit: 'LapQC',
 			}),
 			success: function(data) {
@@ -300,6 +340,17 @@
 				$("#ejoint-"+i).val(json.joint).animateCss('fadeInRight');
 				$("#eket-"+i).val(json.ket).animateCss('fadeInRight');
 				$("#opt_status-"+i).val(json.status).animateCss('fadeInRight');
+
+				// MENAMPUNG DATA LAMA
+				$("#lroll-"+i).val(json.roll);
+				$("#lnm_ker-"+i).val(json.nm_ker);
+				$("#lg_label-"+i).val(json.g_label);
+				$("#lwidth-"+i).val(json.width);
+				$("#lweight-"+i).val(json.weight);
+				$("#ldiameter-"+i).val(json.diameter);
+				$("#ljoint-"+i).val(json.joint);
+				$("#lket-"+i).val(json.ket);
+				$("#lstatus-"+i).val(json.status);
 			}
 		});
 	}

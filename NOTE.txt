@@ -19,7 +19,7 @@ CREATE TABLE `db_ppi`.`m_roll_edit`(
   `weight` INT(11),
   `joint` INT(11),
   `ket` TEXT,
-  `seset` INT(11),
+  `seset` INT(11) DEFAULT 0,
   `status` INT(1),
   `edited_at` TIMESTAMP,
   `edited_by` VARCHAR(50),

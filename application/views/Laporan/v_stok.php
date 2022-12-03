@@ -440,11 +440,40 @@
 		});
 	}
 
+	function cekRollEdit(roll){
+		$(".isi-qc-terjual").html('');
+		$(".isi-qc-edit").html('Tunggu Sebentar . . .');
+		$("#modal-qc-list").modal("show");
+		$.ajax({
+			url: '<?php echo base_url('Laporan/QCShowEditRoll')?>',
+			type: "POST",
+			data: ({
+				roll: roll,
+			}),
+			success: function(response){
+				$(".isi-qc-edit").html(response);
+			}
+		});
+	}
+
 	function editRoll(i){ //
 		otorisasi = $("#otorisasi").val();
 		ket = $("#eket-"+i).val().toUpperCase();
 		status = $("#opt_status-"+i).val();
 		// alert(tgl+' - '+g_ac+' - '+rct+' - '+bi+' - '+nm_ker+' - '+g_label+' - '+width+' - '+diameter+' - '+weight+' - '+joint+' - '+ket+' - '+status+' - '+pilihan);
+
+		// MENAMPUNG DATA LAMA
+		lroll = $("#lroll-"+i).val();
+		lnm_ker = $("#lnm_ker-"+i).val();
+		lg_label = $("#lg_label-"+i).val();
+		lwidth = $("#lwidth-"+i).val();
+		lweight = $("#lweight-"+i).val();
+		ldiameter = $("#ldiameter-"+i).val();
+		ljoint = $("#ljoint-"+i).val();
+		lket = $("#lket-"+i).val();
+		lstatus = $("#lstatus-"+i).val();
+		console.log(lroll,lnm_ker,lg_label,lwidth,lweight,ldiameter,ljoint,lket,lstatus);
+
 		$.ajax({
 			url: '<?php echo base_url('Master/editQCRoll') ?>',
 			type: "POST",
@@ -452,6 +481,15 @@
 				id : i,
 				ket : ket,
 				status : status,
+				lroll: lroll,
+				lnm_ker: lnm_ker,
+				lg_label: lg_label,
+				lwidth: lwidth,
+				lweight: lweight,
+				ldiameter: ldiameter,
+				ljoint: ljoint,
+				lket: lket,
+				lstatus: lstatus,
 				edit: 'ListStokGudang',
 			}),
 			success: function(data) {
@@ -459,6 +497,21 @@
 				showNotification("alert-success", "BERHASIL!!!", "top", "center", "", "");
 				$("#eket-"+i).val(json.ket).animateCss('fadeInRight');
 				$("#opt_status-"+i).val(json.status).animateCss('fadeInRight');
+				// $("#eroll-"+i).html(`<td style="padding:0 3px;border:1px solid #aaa">
+				// 	<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('${json.roll}'">
+				// 	<input class="ipt-txt" type="text" id="eroll-${i}" value="'${json.roll}" disabled style="width:100px" maxlength="14"></button>
+				// </td>`);
+		
+				// MENAMPUNG DATA LAMA
+				$("#lroll-"+i).val(json.roll);
+				$("#lnm_ker-"+i).val(json.nm_ker);
+				$("#lg_label-"+i).val(json.g_label);
+				$("#lwidth-"+i).val(json.width);
+				$("#lweight-"+i).val(json.weight);
+				$("#ldiameter-"+i).val(json.diameter);
+				$("#ljoint-"+i).val(json.joint);
+				$("#lket-"+i).val(json.ket);
+				$("#lstatus-"+i).val(json.status);
 			}
 		});
 	}

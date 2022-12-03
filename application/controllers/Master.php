@@ -74,10 +74,11 @@ class Master extends CI_Controller
 			$id = $this->input->post('id');
                 $cek = $this->m_master->get_data_one("m_timbangan","roll",$id)->num_rows();
                 if ($cek > 0 ) {
-                    echo json_encode(array('data' =>  FALSE));
+					echo json_encode(array('data' => FALSE, 'msg' => 'ROLL NUMBER SUDAH ADA'));
                 }else{
-                    $this->m_master->insert_timbangan();
-                    echo json_encode(array('data' =>  TRUE));
+					$this->m_master->insert_timbangan();
+					$getId = $this->m_master->get_data_one("m_timbangan","roll",$id)->row();
+                    echo json_encode(array('data' => TRUE, 'getid' => $getId->id));
                 }
 		} else if ($jenis == "Perusahaan") {
 			$id      = $this->input->post('id');
@@ -807,8 +808,14 @@ class Master extends CI_Controller
 		$jenis = $_POST['jenis'];
 
 		if ($jenis == "Timbangan") {
-			$result = $this->m_master->update_timbangan();
-			echo json_encode(array('data' =>  TRUE));
+			$id = $this->input->post('getid');
+			$getid = $this->m_master->get_data_one("m_timbangan", "id" ,$id)->row();
+			if($getid->status == 0 || $getid->id_pl == 0){
+				$this->m_master->update_timbangan();
+				echo json_encode(array('data' => TRUE, 'getid' => $getid->id));
+			}else{
+				echo json_encode(array('data' => TRUE, 'msg' => 'DATA ROLL SUDAH TERJUAL'));
+			}
 		} else if ($jenis == "Perusahaan") {
 			$id      = $this->input->post('nm_perusahaan');
 			$id_lama      = $this->input->post('nm_perusahaan_lama');
@@ -1117,10 +1124,12 @@ class Master extends CI_Controller
 		$id = $_POST['id'];
 
 		$this->m_master->updateQCRoll();
-		$idNewRoll =  $this->m_master->get_data_one("m_timbangan", "id", $id)->row();
+		$idNewRoll = $this->m_master->get_data_one("m_timbangan", "id", $id)->row();
 		echo json_encode(
 			array(
 				'data' => true,
+				'id_roll' => $idNewRoll->id,
+				'roll' => $idNewRoll->roll,
 				'tgl' => $idNewRoll->tgl,
 				'g_ac' => $idNewRoll->g_ac,
 				'rct' => $idNewRoll->rct,
