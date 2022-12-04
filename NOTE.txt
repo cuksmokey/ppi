@@ -31,7 +31,9 @@ CREATE TABLE `db_ppi`.`m_roll_edit`(
 
 ADD KOLOM "seset" int 11 default "0" pada tabel m_timbangan
 ALTER TABLE `db_ppi`.`m_timbangan`
-ADD COLUMN `seset` INT(11) DEFAULT 0 NULL AFTER `ket`;
+ADD COLUMN `seset` INT(11) DEFAULT 0 NULL AFTER `ket`,
+ADD COLUMN `edited_at` TIMESTAMP NULL AFTER `packing_by`,
+ADD COLUMN `edited_by` VARCHAR(50) NULL AFTER `edited_at`;
 
 ///////////////////////////////////
 
@@ -56,3 +58,14 @@ CREATE TABLE `db_ppi`.`m_rencana_kirim`(
   `order_pl` INT(11),
   PRIMARY KEY (`id`)
 );
+
+//////////////////////////////////////
+TAMBAH kolom created dan edited di table user
+
+ALTER TABLE `db_ppi`.`user`   
+  ADD COLUMN `created_at` TIMESTAMP NULL AFTER `level`,
+  ADD COLUMN `created_by` VARCHAR(50) NULL AFTER `created_at`,
+  ADD COLUMN `edited_at` TIMESTAMP NULL AFTER `created_by`,
+  ADD COLUMN `edited_by` VARCHAR(50) NULL AFTER `edited_at`,
+  ADD COLUMN `last_login` TIMESTAMP NULL AFTER `edited_by`,
+  ADD COLUMN `logout` TIMESTAMP NULL AFTER `last_login`;

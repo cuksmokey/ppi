@@ -179,7 +179,7 @@
                         </li>
                     <?php } ?>
                     <li>
-						<?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin") {?>
+						<?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC") {?>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <!-- <i class="material-icons">equalizer</i> -->
                             <span>Laporan</span>
@@ -201,9 +201,9 @@
                                 <li>
                                     <a href="<?php echo base_url('Laporan/PenjualanTahunan') ?>">PENJUALAN TAHUNAN</a>
                                 </li>
-                                <li>
+                                <!-- <li>
                                     <a href="<?php echo base_url('Laporan/LaporanInvoice') ?>">INVOICE</a>
-                                </li>
+                                </li> -->
                                 <!-- <li>
                                     <a href="<?php echo base_url('Laporan/POCorrugated') ?>">PO CORRUGATED</a>
                                 </li> -->
@@ -225,6 +225,14 @@
                             <?php } ?>
                         </ul>
                     </li>
+                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC") { ?>
+                        <li>
+                            <a href="<?php echo base_url('Master/Administrator') ?>">
+                                <!-- <i class="material-icons">list</i> -->
+                                <span>Administrator</span>
+                            </a>
+                        </li>
+                    <?php } ?>
                     <li>
                         <a href="<?php echo base_url('Login/logout') ?>">
                             <!-- <i class="material-icons">logout</i> -->

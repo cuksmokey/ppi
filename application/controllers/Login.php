@@ -38,21 +38,23 @@ class login extends CI_Controller{
 				$this->session->set_userdata($data_session);
 			}
 
-			$this->session->set_flashdata('msg', '<div class="alert alert-success">
-				<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-				<strong>Login Berhasil!</strong> Selamat Bekerja
-			</div>');
+			// $this->session->userdata('level')
+			$ntgl = date("Y-m-d H:i:s");
+			$ktgl = '0000-00-00 00:00:00';
+			$this->db->query("UPDATE USER SET last_login='$ntgl',logout='$ktgl' WHERE username='$username'");
+
+			// $this->session->set_flashdata('msg', '<div class="alert alert-success">
+			// 	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+			// 	<strong>Login Berhasil!</strong> Selamat Bekerja
+			// </div>');
 
 			redirect(base_url("Master"));
-
 		}else{
-
 			$this->session->set_flashdata('msg', '<div class="alert alert-danger">
 			<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-				Salah Username atau Password!
+				USERNAME ATAU PASSWORD SALAH!
 			</div>');
-
-		redirect(base_url('login'));	
+			redirect(base_url('login'));	
 		}
 	}
 
@@ -96,6 +98,11 @@ class login extends CI_Controller{
 	}
 
 	function logout(){
+		$username = $this->session->userdata('username');
+		$ntgl = date("Y-m-d H:i:s");
+		// $ktgl = '0000-00-00 00:00:00';
+		$this->db->query("UPDATE USER SET last_login='$ntgl',logout='$ntgl' WHERE username='$username'");
+
 		$this->session->sess_destroy();
 		redirect(base_url('login'));
 	}

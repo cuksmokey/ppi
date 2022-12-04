@@ -1,6 +1,5 @@
 <section class="content">
 	<div class="container-fluid">
-
 		<!-- Exportable Table -->
 		<div class="row clearfix">
 			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -37,9 +36,9 @@
 										<th>JENIS</th>
 										<!-- <th>Gramage Label</th> -->
 										<th>GSM</th>
-										<th>WIDTH</th>
+										<th>UKURAN</th>
 										<th>DIAMETER</th>
-										<th>WEIGHT</th>
+										<th>BERAT</th>
 										<th>JOINT</th>
 										<th>KETERANGAN</th>
 										<th width="15%">AKSI</th>
@@ -268,10 +267,10 @@
 								<!-- <i class="material-icons">note_add</i> -->
 								<b><span>TAMBAH DATA</span></b>
 							</button>
-							<a type="button" id="btn-print" target="blank" class="btn btn-default btn-sm waves-effect waves-float pull-right" style="display: none">
+							<a type="button" id="btn-print" target="_blank" class="btn btn-default btn-sm waves-effect waves-float pull-right" style="display: none">
 								<b><span>LABEL BESAR</span></b>
 							</a> 
-							<a type="button" id="btn-print-kcl" target="blank" class="btn btn-default btn-sm waves-effect waves-float pull-right" style="display: none">
+							<a type="button" id="btn-print-kcl" target="_blank" class="btn btn-default btn-sm waves-effect waves-float pull-right" style="display: none">
 								<b><span>LABEL KECIL</span></b> 
 							</a>
 						</div>
@@ -280,6 +279,7 @@
 			</div>
 			<!-- #END# Exportable Table -->
 		</div>
+	</div>
 </section>
 
 <script>
@@ -523,12 +523,19 @@
 			.done(function(data) {
 				json = JSON.parse(data);
 
-				if(json.status != 0 && json.id_pl != 0){
-					swal("DATA SUDAH TERJUAL!!!", "", "error");
+				if(json.ctk == 1){
 					$(".box-data").show();
 					$(".box-form").hide();
+					swal("ROLL SUDAH DICETAK, TIDAL BISA EDIT DATA ROLL, HARAP HUB. QC", "", "error");
 					load_data();
-				}else{
+				}
+				// else if(json.status != 0 && json.id_pl != 0){
+				// 	$(".box-data").show();
+				// 	$(".box-form").hide();
+				// 	swal("DATA SUDAH TERJUAL!!!", "", "error");
+				// 	load_data();
+				// }
+				else{
 					$(".box-data").hide();
 					$(".box-form").show();
 					$(".new_roll").hide();
@@ -628,16 +635,16 @@
 						},
 						success: function(data) {
 							if (data == 1) {
-								swal("Berhasil", "", "success");
-								reloadTable();
-
+								swal("BERHASIL!", "", "success");
+								// reloadTable();
+								load_data();
 							} else {
-								swal("Data Sudah dilakukan transaksi", "", "error");
+								swal("ROLL SUDAH DICETAK, TIDAL BISA HAPUS DATA ROLL, HARAP HUB. QC", "", "error");
 							}
 						}
 					});
 				} else {
-					swal("", "Data Batal dihapus", "error");
+					swal("", "DATA BATAL DIHAPUS", "error");
 				}
 			});
 	}

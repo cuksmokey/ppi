@@ -65,6 +65,12 @@ class Master extends CI_Controller
 		$this->load->view('footer');
 	}
 
+	public function Administrator()
+	{
+		$this->load->view('header');
+		$this->load->view('Master/v_administrator');
+		$this->load->view('footer');
+	}
 
 	function Insert()
 	{
@@ -204,7 +210,7 @@ class Master extends CI_Controller
 						$row[] = $r->nm_ker;
 						$row[] = $r->g_label;
 						// $row[] = $r->g_ac;
-						$row[] = $r->width;
+						$row[] = round($r->width,2);
 						$row[] = $r->diameter;
 						$row[] = $r->weight;
 						$row[] = $r->joint;
@@ -233,21 +239,19 @@ class Master extends CI_Controller
 						// #fff - #333333 kcl
 						// #4CAF50 - besar
                         if($r->ctk == 1){
-                            $aksi .='<button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange">
-								EDIT
-							</button>';
+                            $aksi .='-';
                         }else if($r->ctk == 0){
-							// <button type="button" onclick="deleteData('.$id.','."".')" class="btn btn-danger">
-							// 	HAPUS
-							// </button>
 							$aksi = '
 							<button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange">
 								EDIT
 							</button>
-							<a type="button" href="'.$print.'" target="blank" class="btn btn-default">
+							<button type="button" onclick="deleteData('.$id.','."".')" class="btn btn-danger">
+								HAPUS
+							</button>
+							<a type="button" href="'.$print.'" target="_blank" class="btn btn-default">
 								L BESAR
 							</a>
-							<a type="button" href="'.$print2.'" target="blank" class="btn bg-green">
+							<a type="button" href="'.$print2.'" target="_blank" class="btn bg-green">
 								L KECIL
 							</a>';
                         }
@@ -989,8 +993,13 @@ class Master extends CI_Controller
 		$id      = $_POST['id'];
 
 		if ($jenis == "Timbangan") {
-			$return = $this->m_master->delete("m_timbangan", "id", $id);
-			echo "1";
+			$getId = $this->db->query("SELECT * FROM m_timbangan WHERE id='$id' AND ctk='1'");
+			if($getId->num_rows() == 0){
+				$this->m_master->delete("m_timbangan", "id", $id);
+				echo "1";
+			}else{
+				echo "gagal";
+			}
 		} else if ($jenis == "Perusahaan") {
 			$return = $this->m_master->delete("m_perusahaan", "id", $id);
 			echo "1";
@@ -1161,7 +1170,7 @@ class Master extends CI_Controller
 			<br><br><br>
 			<table style="margin:0;font-size:52px;width:100%" cellspacing="0" border="1">
 				<tr>
-					<td width="50%">QUALITY</td>
+					<td style="width:50%">QUALITY</td>
 					<td style="text-align:center">' . $data->nm_ker . '</td>
 				</tr>
 				<tr>
@@ -1189,11 +1198,11 @@ class Master extends CI_Controller
 					<td style="text-align:center">' . $data->roll . '</td>
 				</tr>
 			</table>';
+			$this->m_fungsi->_mpdfCustom('', $html, 10, 10, 10, 'L');
 		}else{
-			$html.='<div style="text-align:center;font-weight:bold;font-size:40px">DATA ROLL '.$data->roll.' SUDAH PRINT LABEL. HARAP HUBUNGI QC</div>';
+			// $html.='<div style="text-align:center;font-weight:bold;font-size:40px">DATA ROLL '.$data->roll.' SUDAH PRINT LABEL. HARAP HUBUNGI QC</div>';
+			redirect(base_url("Master"));
 		}
-
-		$this->m_fungsi->_mpdfCustom('', $html, 10, 10, 10, 'L');
 	}
 
 	function print_timbangan2()
@@ -1208,36 +1217,37 @@ class Master extends CI_Controller
 			<table cellspacing="0" cellpadding="5" style="font-size:37px;width:100%" border="1">
 				<tr>
 					<td>QUALITY</td>
-					<td style=""text-align:center>' . $data->nm_ker . '</td>
+					<td style="text-align:center">' . $data->nm_ker . '</td>
 				</tr>
 				<tr>
 					<td>GRAMMAGE</td>
-					<td style=""text-align:center>' . $data->g_label . ' GSM</td>
+					<td style="text-align:center">' . $data->g_label . ' GSM</td>
 				</tr>
 				<tr>
 					<td>WIDTH</td>
-					<td style=""text-align:center>' . $data->width . ' CM</td>
+					<td style="text-align:center">' . round($data->width,2) . ' CM</td>
 				</tr>
 				<tr>
 					<td>DIAMETER</td>
-					<td style=""text-align:center>' . $data->diameter . ' CM</td>
+					<td style="text-align:center">' . $data->diameter . ' CM</td>
 				</tr>
 				<tr>
 					<td>WEIGHT</td>
-					<td style=""text-align:center>' . $data->weight . ' KG</td>
+					<td style="text-align:center">' . $data->weight . ' KG</td>
 				</tr>
 				<tr>
 					<td>JOINT</td>
-					<td style=""text-align:center>' . $data->joint . '</td>
+					<td style="text-align:center">' . $data->joint . '</td>
 				</tr>
 				<tr>
 					<td>ROLL NUMBER</td>
-					<td style=""text-align:center>' . $data->roll . '</td>
+					<td style="text-align:center">' . $data->roll . '</td>
 				</tr>
 				<tr>
 			</table>';
 		}else{
-			$html.='<div style="text-align:center;font-weight:bold;font-size:40px">DATA ROLL '.$data->roll.' SUDAH PRINT LABEL. HARAP HUBUNGI QC</div>';
+			// $html.='<div style="text-align:center;font-weight:bold;font-size:40px">DATA ROLL '.$data->roll.' SUDAH PRINT LABEL. HARAP HUBUNGI QC</div>';
+			redirect(base_url("Master"));
 		}
 
 		$this->m_fungsi->_mpdf('', $html, 10, 10, 10, 'P');
@@ -1671,5 +1681,151 @@ class Master extends CI_Controller
 	function destroyCartInputRoll() {
 		$this->cart->destroy();
 		// echo $this->showCartInputxRoll();
+	}
+
+	function loadDataAdmin(){
+		$otorisasi = $_POST['otorisasi'];
+		$html ='';
+
+		$html .='<table style="width:100%;border-color:#ccc" border="1">
+		<tr>
+			<td style="width:5%;padding:5px;font-weight:bold;text-align:center;background:#eee">NO</td>
+			<td style="width:auto;padding:5px;font-weight:bold;background:#eee">USERNAME</td>
+			<td style="width:auto;padding:5px;font-weight:bold;background:#eee">NAMA USER</td>
+			<td style="width:auto;padding:5px;font-weight:bold;background:#eee">LEVEL</td>
+			<td style="width:auto;padding:5px;font-weight:bold;background:#eee">LOGIN TERAKHIR</td>
+			<td style="width:auto;padding:5px;font-weight:bold;background:#eee">AKSI</td>
+		</tr>';
+
+		#all admin qc fg user
+		if($otorisasi == 'all'){
+			$lvl = "";
+		}else if($otorisasi == 'admin'){
+			$lvl = "WHERE level='Admin'";
+		}else if($otorisasi == 'qc'){ // qc + rewind 1 + 2
+			$lvl = "WHERE (level='QC' OR level='Rewind1' OR level='Rewind2')";
+		}else if($otorisasi == 'fg'){
+			$lvl = "WHERE level='FG'";
+		}else{
+			$lvl = "WHERE level='User'";
+		}
+		$getData = $this->db->query("SELECT*FROM USER $lvl ORDER BY level");
+		$i = 0;
+		foreach($getData->result() as $r){
+			$i++;
+			$html .='<tr class="list-table">
+				<td style="padding:5px;text-align:center">'.$i.'</td>
+				<td style="padding:5px">'.$r->username.'</td>
+				<td style="padding:5px">'.$r->nm_user.'</td>
+				<td style="padding:5px">'.$r->level.'</td>
+				<td style="padding:5px">'.$r->last_login.'</td>';
+
+			// $username = $this->session->userdata('username');
+			if($r->username == 'developer'){
+				$html .='<td style="padding:5px">-</td>';
+			}else if($r->logout == '0000-00-00 00:00:00'){
+				$html .='<td style="padding:5px">-</td>';
+			}else{
+				if($this->session->userdata('level') == 'SuperAdmin'){
+					$btnHps = ' - <button onclick="hapusUser('."'".$r->id."'".','."'".$r->username."'".','."'".$r->nm_user."'".')" class="btn bg-red btn-sm waves-effect" style="font-weight:bold">HAPUS</button>';
+				}else{
+					$btnHps = '';
+				}
+				$html .='<td style="padding:5px">
+					<button onclick="editUser('."'".$r->id."'".')" class="btn bg-orange btn-sm waves-effect" style="font-weight:bold">EDIT</button>'.$btnHps.'
+				</td>';
+			}
+			$html .='</tr>';
+		}
+
+		$html .='</table>';
+
+		echo $html;
+	}
+
+	function simpanAdministrator(){
+		$username = trim($_POST['username']);
+		$lusername = trim($_POST['lusername']);
+		$nama_user = $_POST['nama_user'];
+		$password = trim($_POST['password']);
+		$status = $_POST['status'];
+		$cekUsername = $this->db->query("SELECT username FROM user WHERE username='$username'");
+
+		if(!preg_match("/^[a-zA-Z0-9]*$/",$username)){
+			echo json_encode(array('data' => false, 'msg' => 'USERNAME HANYA BOLEH ANGKA DAN HURUF!'));
+		}else if(!preg_match("/^[a-zA-Z ]*$/",$nama_user)){
+			echo json_encode(array('data' => false, 'msg' => 'USERNAME HANYA BOLEH HURUF!'));
+		}else if($cekUsername->num_rows() > 0 && $status == 'insert'){
+			echo json_encode(array('data' => false, 'msg' => 'USERNAME SUDAH ADA!'));
+		}
+		// else if($username != $lusername && $cekUsername->num_rows() > 0 && $status == 'update'){
+		// 	echo json_encode(array('data' => false, 'msg' => 'USERNAME SUDAH ADA!'));
+		// }
+		else if(!preg_match("/^[a-zA-Z0-9]*$/",$password)){
+			echo json_encode(array('data' => false, 'msg' => 'PASSWORD HANYA BOLEH ANGKA DAN HURUF!'));
+		}else{
+			$this->m_master->simpanAdministrator();
+			$fixuser = $this->db->query("SELECT * FROM user WHERE username='$username'");
+			if($status == 'insert'){
+				echo json_encode(array('data' => true, 'msg' => 'BERHASIL TAMBAH USER!', 'user' => $fixuser->row()));
+			}else{ // update
+				echo json_encode(array('data' => true, 'msg' => 'BERHASIL UPDATE USER!', 'user' => $fixuser->row()));
+			}
+		}
+	}
+
+	function loadSelectLevelAdministrator(){
+		$otorisasi = $_POST['otorisasi'];
+		$html = '';
+		#all admin qc fg user
+		if($otorisasi == 'all'){
+			$lvl = "";
+		}else if($otorisasi == 'admin'){
+			$lvl = "WHERE level='Admin'";
+		}else if($otorisasi == 'qc'){ // qc + rewind 1 + 2
+			$lvl = "WHERE (level='QC' OR level='Rewind1' OR level='Rewind2')";
+		}else if($otorisasi == 'fg'){
+			$lvl = "WHERE level='FG'";
+		}else{
+			$lvl = "WHERE level='User'";
+		}
+
+		$html .='<option value="">PILIH</option>';
+		if($lvl == ''){
+			$html .='
+				<option value="SuperAdmin">SuperAdmin</option>
+				<option value="Admin">Admin</option>
+				<option value="QC">QC</option>
+				<option value="FG">FG</option>
+				<option value="Rewind1">Rewind1</option>
+				<option value="Rewind2">Rewind2</option>
+			';
+		}else{
+			$getLevel = $this->db->query("SELECT level FROM USER $lvl GROUP BY level");
+			foreach($getLevel->result() as $lvl){
+				$html .='<option value="'.$lvl->level.'">'.$lvl->level.'</option>';
+			}
+		}
+		echo $html;
+	}
+
+	function editAdministrator(){
+		$id = $_POST['id'];
+		$getIdUser = $this->db->query("SELECT*FROM user WHERE id='$id'")->row();
+		echo json_encode(
+			array(
+				'id' => $getIdUser->id,
+				'username' => $getIdUser->username,
+				'nm_user' => $getIdUser->nm_user,
+				// 'password' => $getIdUser->password,
+				'level' => $getIdUser->level,
+			)
+		);
+	}
+
+	function hapusAdminstrator(){
+		$id = $_POST['id'];
+		$this->m_master->delete("user", "id", $id);
+		echo "1";
 	}
 }

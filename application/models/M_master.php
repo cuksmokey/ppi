@@ -168,7 +168,7 @@ class M_master extends CI_Model{
 			$pm = '';
 		}
 		$query = "SELECT * FROM m_timbangan WHERE (status = '0' OR status = '2' OR status = '3') AND id_pl='0' $pm
-		-- AND tgl='$tgl' 
+		AND tgl='$tgl' 
 		-- AND tgl BETWEEN '2022-11-25' AND '2022-11-28' 
         -- LIMIT 5
 		";
@@ -221,8 +221,8 @@ class M_master extends CI_Model{
 			'bi' => $_POST['bi'],
 			'status' => $_POST['cstatus'],
 			'ket' => $_POST['ket'],
-			// 'created_at' => date("Y-m-d H:i:s"),
-			// 'created_by' => $this->session->userdata('username'),
+			'created_at' => date("Y-m-d H:i:s"),
+			'created_by' => $this->session->userdata('username'),
 			'pm' => $_POST['kodepm']
 		);
 
@@ -265,18 +265,20 @@ class M_master extends CI_Model{
 
     function update_timbangan(){
         $this->db->set('nm_ker', $_POST['nm_ker']);
-        $this->db->set('g_ac', $_POST['g_ac']);
+        // $this->db->set('g_ac', $_POST['g_ac']);
         $this->db->set('g_label', $_POST['g_label']);
         $this->db->set('width', $_POST['width']);
         $this->db->set('weight', $_POST['weight']);
         $this->db->set('diameter', $_POST['diameter']);
         $this->db->set('joint', $_POST['joint']);
         $this->db->set('ket', $_POST['ket']);
-        $this->db->set('rct', $_POST['rct']);
-        $this->db->set('bi', $_POST['bi']);
+        // $this->db->set('rct', $_POST['rct']);
+        // $this->db->set('bi', $_POST['bi']);
         $this->db->set('status', $_POST['cstatus']);
-        $this->db->set('packing_at', date("Y-m-d H:i:s"));
-        $this->db->set('packing_by', $this->session->userdata('username'));
+        // $this->db->set('packing_at', date("Y-m-d H:i:s"));
+        // $this->db->set('packing_by', $this->session->userdata('username'));
+        $this->db->set('edited_at', date("Y-m-d H:i:s"));
+        $this->db->set('edited_by', $this->session->userdata('username'));
         $this->db->where('roll', $_POST['id']);
         // $result = $this->db->update('m_timbangan');
 
@@ -769,5 +771,30 @@ class M_master extends CI_Model{
             $result = $this->db->update('m_timbangan');
         }
         return $result;
+    }
+
+    function simpanAdministrator(){
+        $status = $_POST['status'];
+
+        if($status == 'insert'){ // insert
+            $data = array(
+                'username' => $_POST['username'],
+                'nm_user' => $_POST['nama_user'],
+                'password' => md5(trim($_POST['password'])),
+                'level' => $_POST['level'],
+                'created_at' => date("Y-m-d H:i:s"),
+                'created_by' => $this->session->userdata('username'),
+            );
+            $this->db->insert('user', $data);
+        }else{ // update
+            // $this->db->set('username', $_POST['username']);
+            $this->db->set('nm_user', $_POST['nama_user']);
+            $this->db->set('password', md5(trim($_POST['password'])));
+            $this->db->set('level', $_POST['level']);
+            $this->db->set('edited_at', date("Y-m-d H:i:s"));
+            $this->db->set('edited_by', $this->session->userdata('username'));
+            $this->db->where('id', $_POST['id']);
+            $this->db->update('user');
+        }
     }
 }
