@@ -502,6 +502,29 @@ class M_master extends CI_Model{
 		return $data;
     }
 
+    function loadPtPO($searchTerm=""){
+        // ASLI
+		$users = $this->db->query("SELECT p.* FROM m_perusahaan p
+        INNER JOIN pl l ON p.id=l.id_perusahaan
+        WHERE (p.pimpinan LIKE '%$searchTerm%' OR p.nm_perusahaan LIKE '%$searchTerm%' OR p.alamat LIKE '%$searchTerm%')
+        GROUP BY p.pimpinan,p.nm_perusahaan,l.id_perusahaan")->result_array();
+
+        $data = array();
+        foreach($users as $user){
+            // id pimpinan nm_perusahaan alamat no_telp
+            $txt = $user['pimpinan'].' - '.$user['nm_perusahaan'].' - '.$user['alamat'];
+            $data[] = array(
+                "id"=>$user['id'],
+                "text"=>$txt, 
+                "pimpinan"=>$user['pimpinan'],
+                "nm_perusahaan"=>$user['nm_perusahaan'],
+                "alamat"=>$user['alamat'],
+                "no_telp"=>$user['no_telp'],
+            );
+        }
+        return $data;
+    }
+
     function get_invoice(){
         $query = "SELECT * FROM invoice_header ORDER BY tgl,no_invoice";
         return $this->db->query($query);
@@ -769,6 +792,29 @@ class M_master extends CI_Model{
             $this->db->where('id', $data['id']);
             
             $result = $this->db->update('m_timbangan');
+        }
+        return $result;
+    }
+
+    function simpanCartPO($cekIdPo){
+        // $id = $_POST['id'];
+
+        foreach($this->cart->contents() as $data){
+            // id_po id_perusahaan tgl nm_ker g_label width tonase jml_roll no_po harga pajak
+            $data = array(
+                'id_po' => $cekIdPo,
+                'id_perusahaan' => $_POST['fid'],
+                'tgl' => $_POST['ftgl'],
+                'nm_ker' => $data['options']['fjenis'],
+                'g_label' => $data['options']['fgsm'],
+                'width' => $data['options']['fukuran'],
+                'tonase' => $data['options']['ftonase'],
+                'jml_roll' => $data['options']['fjmlroll'],
+                'no_po' => $_POST['fno_po'],
+                'harga' => $data['options']['fharga'],
+                'pajak' => $_POST['fpajak'],
+            );
+            $result = $this->db->insert('po_master',$data);
         }
         return $result;
     }

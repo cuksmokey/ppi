@@ -1,7 +1,3 @@
-<style>
-
-</style>
-
 <?php
 	// SuperAdmin, Admin, QC, FG, User
 	if($this->session->userdata('level') == "SuperAdmin"){
@@ -17,6 +13,12 @@
 	}
 ?>
 
+<style>
+	.ll {
+		padding-top:15px;
+	}
+</style>
+
 <section class="content">
 	<div class="container-fluid">
 		<div class="row clearfix">
@@ -31,7 +33,116 @@
 					</div>
 
 					<div class="body">
-						<select name="po-cust" id="po-cust"></select>
+						<button>ADD</button>
+
+						<div class="ll box-data">DATA LIST PO</div>
+						<div class="ll box-form" style="overflow:hidden">
+							DATA FORM PO
+							<table style="width:100%" border="">
+								<tr>
+									<td style="width:15%;padding:5px"></td>
+									<td style="width:1%;padding:5px"></td>
+									<td style="width:20%;padding:5px"></td>
+									<td style="width:34%;padding:5px"></td>
+									<td style="width:30%;padding:5px"></td>
+								</tr>
+								<tr>
+									<td style="padding:5px;font-weight:bold">TANGGAL</td>
+									<td style="padding:5px">:</td>
+									<td style="padding:5px">
+										<input type="date" name="ftgl" id="ftgl" class="form-control">
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px;font-weight:bold">PAJAK</td>
+									<td style="padding:5px">:</td>
+									<td style="padding:5px">
+										<input type="text" id="fpajak" class="form-control">
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px;font-weight:bold">KEPADA</td>
+									<td style="padding:5px">:</td>
+									<td style="padding:5px" colspan="2">
+										<!-- <input type="text" id="fkepada" class="form-control"> -->
+										<select class="form-control" id="fkepada" style="width:100%" autocomplete="off"></select>
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px;font-weight:bold">NAMA</td>
+									<td style="padding:5px">:</td>
+									<td style="padding:5px" colspan="2">
+										<input type="text" id="fnama" class="form-control" style="background:#e9e9e9" disabled>
+										<input type="hidden" id="fid" value="">
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px;font-weight:bold">ALAMAT</td>
+									<td style="padding:5px">:</td>
+									<td style="padding:5px" colspan="2">
+										<!-- <input type="text" id="flamat" class="form-control"> -->
+										<textarea name="falamat" id="falamat" rows="5" class="form-control" style="resize:none;background:#e9e9e9" disabled></textarea>
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px;font-weight:bold">NO. TELP</td>
+									<td style="padding:5px">:</td>
+									<td style="padding:5px" colspan="2">
+										<input type="text" id="ftelp" class="form-control" style="background:#e9e9e9" disabled>
+									</td>
+								</tr>
+							</table>
+
+							<table style="width:100%;margin-top:15px" border="1">
+								<tr>
+									<td style="width:15%;padding:5px"></td>
+									<td style="width:1%;padding:5px"></td>
+									<td style="width:auto;padding:5px"></td>
+									<td style="width:auto;padding:5px"></td>
+									<td style="width:auto;padding:5px"></td>
+									<td style="width:auto;padding:5px"></td>
+									<td style="width:auto;padding:5px"></td>
+									<td style="width:auto;padding:5px"></td>
+								</tr>
+								<tr>
+									<td style="padding:5px;font-weight:bold">NO. PO</td>
+									<td style="padding:5px">:</td>
+									<td style="padding:5px" colspan="6">
+										<input type="text" id="fno-po" colspan="6" class="form-control">
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px;font-weight:bold">ITEMS</td>
+									<td style="padding:5px">:</td>
+									<td style="padding:5px">
+										<input type="text" id="fjenis" class="form-control" style="text-align:center" maxlength="2" placeholder="JENIS" onkeypress="return hHuruf(event)">
+									</td>
+									<td style="padding:5px">
+										<input type="text" id="fgsm" class="form-control" style="text-align:center" maxlength="3" placeholder="GSM" onkeypress="return hAngka(event)">
+									</td>
+									<td style="padding:5px">
+										<input type="text" id="fukuran" class="form-control" style="text-align:center" maxlength="6" placeholder="UKURAN" onkeypress="return aKt(event)">
+									</td>
+									<td style="padding:5px">
+										<input type="text" id="ftonase" class="form-control" style="text-align:center" maxlength="8" placeholder="TONASE">
+									</td>
+									<td style="padding:5px">
+										<input type="text" id="fjmlroll" class="form-control" style="text-align:center" maxlength="3" placeholder="JML ROLL" onkeypress="return hAngka(event)">
+									</td>
+									<td style="padding:5px">
+										<input type="text" id="fharga" class="form-control" style="text-align:center" maxlength="8" placeholder="HARGA">
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px" colspan="7"></td>
+									<td style="padding:5px;text-align:center">
+										<button onclick="addCartPO()">ADD</button>
+									</td>
+								</tr>								
+							</table>
+
+							<div class="cart-po"></div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -53,10 +164,188 @@
 
 <script>
 	$(document).ready(function(){
-		// kosong();
+		$(".cart-po").load("<?php echo base_url('Master/dessCartPO') ?>");
+		kosong();
+		load_pt();
 	});
 
-	// function kosong(){
-	// }
+	// ftgl fpajak fkepada fnama falamat ftelp
+
+ 	// fjenis fgsm fukuran ftonase fjmlroll fharga
+	function kosong(){
+		$("#fno-po").val("");
+		$("#fid").val("");
+		$("#ftgl").val("");
+		$("#fpajak").val("");
+		$("#fkepada").val("");
+		$("#fnama").val("");
+		$("#falamat").val("");
+		$("#ftelp").val("");
+
+		$("#fjenis").val("");
+		$("#fgsm").val("");
+		$("#fukuran").val("");
+		$("#ftonase").val("");
+		$("#fjmlroll").val("");
+		$("#fharga").val("");
+	}
+
+	$("#fjenis").on({
+		keydown: function(e) {
+			if (e.which === 32)
+				return false;
+		},
+		keyup: function() {
+			this.value = this.value.toUpperCase();
+		},
+		change: function() {
+			this.value = this.value.replace(/\s/g, "");
+		}
+	});
+
+	let rftonase = document.getElementById('ftonase');
+	rftonase.addEventListener('keyup', function(e){
+		rftonase.value = formatRupiah(this.value);
+	});
+	let rfharga = document.getElementById('fharga');
+	rfharga.addEventListener('keyup', function(e){
+		rfharga.value = formatRupiah(this.value);
+	});
+	/* Fungsi formatRupiah */
+	function formatRupiah(angka, prefix){
+		let number_string = angka.replace(/[^,\d]/g, '').toString(),
+		split = number_string.split(','),
+		sisa = split[0].length % 3,
+		rupiah = split[0].substr(0, sisa),
+		ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+		if(ribuan){
+			separator = sisa ? '.' : '';
+			rupiah += separator + ribuan.join('.');
+		}
+		return rupiah = split[1] != undefined ? rupiah + '.' + split[1] : rupiah;
+	}
+
+	function aKt(evt) { // angkatitik
+		var charCode = (evt.which) ? evt.which : event.keyCode
+		// alert(charCode);
+		if (charCode > 31 && (charCode < 46 || charCode > 57))
+			return false;
+		return true;
+	}
+
+	function hAngka(evt) {
+		var charCode = (evt.which) ? evt.which : event.keyCode
+		if (charCode > 31 && (charCode < 48 || charCode > 57))
+			return false;
+		return true;
+	}
+
+	function hHuruf(evt) {
+		let charCode = (evt.which) ? evt.which : event.keyCode
+		if ((charCode < 65 || charCode > 90) && (charCode < 97 || charCode > 122) && charCode > 32) {
+			return false;
+		}
+		return true;
+	}
+
+	function load_pt() {
+		$('#fkepada').select2({
+			allowClear: true,
+			placeholder: '- - SELECT - -',
+			ajax: {
+				dataType: 'json',
+				url: '<?php echo base_url(); ?>/Master/loadPtPO',
+				delay: 800,
+				data: function(params) {
+					if (params.term == undefined) {
+						return {
+							search: ""
+						}
+					} else {
+						return {
+							search: params.term
+						}
+					}
+				},
+				processResults: function(data, page) {
+					return {
+						results: data
+					};
+				},
+			}
+		});
+	}
+	// TAMPIL DI KOLOM
+	$('#fkepada').on('change', function() {
+		data = $('#fkepada').select2('data');
+		$("#fid").val(data[0].id);
+		$("#fnama").val(data[0].pimpinan);
+		// $("#fnama").val(data[0].nm_perusahaan);
+		$("#falamat").val(data[0].alamat);
+		$("#ftelp").val(data[0].no_telp);
+	});
+
+	function addCartPO(){
+		fjenis = $("#fjenis").val();
+		fgsm = $("#fgsm").val();
+		fukuran = $("#fukuran").val();
+		ftonase = $("#ftonase").val().split('.').join('');
+		fjmlroll = $("#fjmlroll").val();
+		fharga = $("#fharga").val().split('.').join('');
+		alert(fjenis+' - '+fgsm+' - '+fukuran+' - '+ftonase+' - '+fjmlroll+' - '+fharga);
+		$.ajax({
+			url: '<?php echo base_url('Master/addCartPO')?>',
+			type: "POST",
+			data: ({
+				fjenis: fjenis,
+				fgsm: fgsm,
+				fukuran: fukuran,
+				ftonase: ftonase,
+				fjmlroll: fjmlroll,
+				fharga: fharga,
+			}),
+			success: function(response){
+				$('.cart-po').load("<?php echo base_url('Master/showCartPO')?>");
+			}
+		})
+	}
+	
+	function hapusCartPO(rowid){
+		$.ajax({
+			url: '<?php echo base_url('Master/hapusCartPO')?>',
+			type: "POST",
+			data: ({
+				rowid: rowid
+			}),
+			success: function(response){
+				$('.cart-po').load("<?php echo base_url('Master/showCartPO')?>");
+			}
+		});
+	}
+
+	function simpanCart(){
+		// alert('simpanCart');
+		fno_po = $("#fno-po").val();
+		fid = $("#fid").val();
+		ftgl = $("#ftgl").val();
+		fpajak = $("#fpajak").val();
+		$.ajax({
+			url: '<?php echo base_url('Master/simpanCartPO')?>',
+			type: "POST",
+			data: ({
+				fid: fid,
+				fno_po: fno_po,
+				ftgl: ftgl,
+				fpajak: fpajak,
+			}),
+			success: function(response){
+				if(response){
+					alert('berhasil');
+				}else{
+					alert('gagal');
+				}
+			}
+		});
+	}
 
 </script>

@@ -797,6 +797,12 @@ class Master extends CI_Controller
 		echo json_encode($response);
 	}
 
+	function loadPtPO(){ 
+		$searchTerm = $_GET['search'];
+		$response = $this->m_master->loadPtPO($searchTerm);
+		echo json_encode($response);
+	}
+
 	function load_perusahaan()
 	{
 		$searchTerm = $_GET['search'];
@@ -1670,17 +1676,99 @@ class Master extends CI_Controller
 
 	function hapusCartInputRoll() {
 		$data = array(
-			// 'rowid' => $this->input->post('row_id'),
 			'rowid' => $_POST['rowid'],
 			'qty' => 0,
 		);
 		$this->cart->update($data);
-		// echo $this->showCartInputxRoll();
 	}
 
 	function destroyCartInputRoll() {
 		$this->cart->destroy();
-		// echo $this->showCartInputxRoll();
+	}
+
+	function addCartPO(){
+		$id = $_POST['fjenis'].'_'.$_POST['fgsm'].'_'.$_POST['fukuran'];
+		$nama = $_POST['fjenis'].'-'.$_POST['fgsm'].'-'.$_POST['fukuran'];
+		$data = array(
+			'id' => $id,
+			'name' => $nama,
+			'price' => 0,
+			'qty' => 1,
+			'options' => array(
+				'fjenis' => $_POST['fjenis'],
+				'fgsm' => $_POST['fgsm'],
+				'fukuran' => $_POST['fukuran'],
+				'ftonase' => $_POST['ftonase'],
+				'fjmlroll' => $_POST['fjmlroll'],
+				'fharga' => $_POST['fharga'],
+			),
+		);
+		$this->cart->insert($data);
+		echo json_encode(array('data' => true));
+	}
+
+	function simpanCartPO(){
+		$cekIdPo = $this->db->query("SELECT*FROM po_master GROUP BY id_po")->num_rows();
+		if($cekIdPo == 0){
+			$idpo = 1;
+		}else{
+			$idpo = $cekIdPo + 1;
+		}
+		$this->m_master->simpanCartPO($idpo);
+		echo json_encode(array('data' => true));
+	}
+
+	function hapusCartPO(){
+		$data = array(
+			'rowid' => $_POST['rowid'], 
+			'qty' => 0,
+		);
+		$this->cart->update($data);
+	}
+
+	function dessCartPO() {
+		$this->cart->destroy();
+	}
+
+	function showCartPO(){
+		$html = '';
+
+		$html .= '<table style="width:100%;margin-top:15px" border="1">';
+		if($this->cart->total_items() != 0){
+			$html .='<tr>
+				<td style="width:5%;padding:5px;font-weight:bold;text-align:center">NO</td>
+				<td style="width:auto;padding:5px;font-weight:bold">JENIS</td>
+				<td style="width:auto;padding:5px;font-weight:bold">GSM</td>
+				<td style="width:auto;padding:5px;font-weight:bold">UKURAN</td>
+				<td style="width:auto;padding:5px;font-weight:bold">TONASE</td>
+				<td style="width:auto;padding:5px;font-weight:bold">JUMLAH ROLL</td>
+				<td style="width:auto;padding:5px;font-weight:bold">HARGA</td>
+				<td style="width:10%;padding:5px;font-weight:bold">AKSI</td>
+			</tr>';
+		}
+
+		$i = 0;
+		foreach($this->cart->contents() as $r){
+			$i++;
+			$html .='<tr>
+				<td style="padding:5px;text-align:center">'.$i.'</td>
+				<td style="padding:5px">'.$r['options']['fjenis'].'</td>
+				<td style="padding:5px">'.$r['options']['fgsm'].'</td>
+				<td style="padding:5px">'.$r['options']['fukuran'].'</td>
+				<td style="padding:5px">'.number_format($r['options']['ftonase']).'</td>
+				<td style="padding:5px">'.$r['options']['fjmlroll'].'</td>
+				<td style="padding:5px">Rp. '.number_format($r['options']['fharga']).'</td>
+				<td style="padding:5px"><button onclick="hapusCartPO('."'".$r['rowid']."'".')">Batal</button></td>
+			</tr>';
+		}
+		if($this->cart->total_items() != 0){
+			$html .='<tr>
+				<td style="padding:5px" colspan="8"><button onclick="simpanCart()">SIMPAN</button></td>
+			</tr>';
+		}
+		$html .= '</table>';
+
+		echo $html;
 	}
 
 	function loadDataAdmin(){

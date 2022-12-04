@@ -73,6 +73,10 @@
 	.btn-cari-inp-roll {
 		padding:5px 8px;font-weight:bold
 	}
+
+	.ilist {
+		padding-top:15px
+	}
 </style>
 
 <?php
@@ -104,15 +108,114 @@
 					</div>
 
 					<div class="body">
+						<input type="hidden" id="otorisasi" value="<?php echo $otorisasi; ?>">
 						<input type="hidden" id="v-id-pl" value="">
 						<input type="hidden" id="v-opl" value="">
 						<input type="hidden" id="v-tgl-pl" value="">
 						<input type="hidden" id="v-ii" value="">
 						<!-- <input type="text" id="v-id-pl" value=""> -->
 
-						<button disabled="disabled">PILIH :</button>
+						<div class="ilist plh-opsi-plrk">
+							<button id="btn-opsi-pl" onclick="pilih_opsi('pl')">PACKING LIST</button>
+							<button id="btn-opsi-rk" onclick="pilih_opsi('rk')">RENCANA KIRIM</button>
+						</div>
+
+						<div class="list-btn-pl">
+							<div class="ilist box-data-pl">
+								<button>ADD</button>		
+								BOX PL
+							</div>
+							<div class="ilist box-form-pl">
+								BOX FORM PL
+								<table style="width:100%" border="1">
+									<tr>
+										<td style="width:15%;padding:5px"></td>
+										<td style="width:1%;padding:5px"></td>
+										<td style="width:20%;padding:5px"></td>
+										<td style="width:auto;padding:5px"></td>
+										<td style="width:auto;padding:5px"></td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">TANGGAL</td>
+										<td style="padding:5px;text-align:center">:</td>
+										<td style="padding:5px" colspan="2">
+											<input type="date" name="ftgl" id="ftgl" class="form-control">
+										</td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">NO SURAT JALAN</td>
+										<td style="padding:5px;text-align:center">:</td>
+										<td style="padding:5px" colspan="3">
+											<table style="width:100%" border="1">
+												<tr>
+													<td><input type="text" name="fno-sj" id="fno-sj" class="form-control" placeholder="NO"></td>
+													<td style="padding:0 5px">/</td>
+													<td><input type="text" name="froll" id="froll" class="form-control" placeholder="ROLL"></td>
+													<td style="padding:0 5px">/</td>
+													<td><input type="text" name="fbulan" id="fbulan" class="form-control" placeholder="BULAN"></td>
+													<td style="padding:0 5px">/</td>
+													<td><input type="text" name="ftahun" id="ftahun" class="form-control" placeholder="TAHUN"></td>
+													<td style="padding:0 5px">/</td>
+													<td><input type="text" name="fpajak" id="fpajak" class="form-control" placeholder="PAJAK"></td>
+													<td style="padding:0 5px">/</td>
+													<td><input type="text" name="fquality" id="fquality" class="form-control" placeholder="JENIS"></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">NO SO</td>
+										<td style="padding:5px;text-align:center">:</td>
+										<td style="padding:5px" colspan="3">
+											<table style="width:100%">
+												<tr>
+													<td><input type="text" name="fno-so" id="fno-so" class="form-control" placeholder="NO"></td>
+													<td style="padding:0 5px">/</td>
+													<td><input type="text" name="fsoroll" id="fsoroll" class="form-control" placeholder="ROLL"></td>
+													<td style="padding:0 5px">/</td>
+													<td><input type="text" name="fsobulan" id="fsobulan" class="form-control" placeholder="BULAN"></td>
+													<td style="padding:0 5px">/</td>
+													<td><input type="text" name="fsotahun" id="fsotahun" class="form-control" placeholder="TAHUN"></td>
+													<td style="padding:0 5px">/</td>
+													<td><input type="text" name="fsopajak" id="fsopajak" class="form-control" placeholder="PAJAK"></td>
+													<td style="padding:0 5px">/</td>
+													<td><input type="text" name="fsoquality" id="fsoquality" class="form-control" placeholder="JENIS"></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">NO PKB</td>
+										<td style="padding:5px;text-align:center">:</td>
+										<td style="padding:5px">
+											<table style="width:100%">
+												<tr>
+													<td><input type="text" name="fno-pkb" id="fno-pkb" class="form-control" placeholder="NO"></td>
+													<td style="padding:0 5px">/</td>
+													<td><input type="text" name="ftahun-pkb" id="ftahun-pkb" class="form-control" placeholder="TAHUN"></td>
+													<td style="padding:0 5px">/</td>
+													<td><input type="text" name="ftahun-pkb" id="ftahun-pkb" class="form-control" placeholder="JENIS"></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td style="padding:20px 5px 5px;font-weight:bold" colspan="5">KIRIM KE:</td>
+									</tr>
+								</table>
+								<button>BACK</button>
+								<button>SIMPAN</button>
+							</div>
+						</div>
+						
+						<div class="list-btn-rk">
+							<div class="ilist box-data-rk">BOX RK</div>
+							<div class="ilist box-form-rk">BOX FORM RK</div>
+						</div>
+
+						<!-- <button disabled="disabled">PILIH :</button>
 						<input type="date" name="ngirim-tgl" id="ngirim-tgl" value="<?= date('Y-m-d')?>">
-						<button onclick="load_data()">CARI</button>
+						<button onclick="load_data()">CARI</button> -->
 						
 						<div class="list-pl"></div>
 						<div class="list-pl-cek"></div>
@@ -136,11 +239,29 @@
 </div> -->
 
 <script>
+	otorisasi = $("#otorisasi").val();
+
 	$(document).ready(function(){
-		plh_tgl = $('#ngirim-tgl').val();
+		// alert(otorisasi);
+		// plh_tgl = $('#ngirim-tgl').val();
 		$('.list-pl').html('').hide();
+		$(".plh-opsi-plrk").hide();
+		$(".list-btn-pl").hide();
+		$(".list-btn-rk").hide();
 		kosong();
-		load_data(plh_tgl);
+
+		if(otorisasi == 'all' || otorisasi == 'admin'){
+			$(".plh-opsi-plrk").show();
+			$("#btn-opsi-pl").show();
+			$("#btn-opsi-rk").show();
+		}else if(otorisasi == 'qc' || otorisasi == 'fg'){
+			$(".plh-opsi-plrk").show();
+			$("#btn-opsi-pl").hide();
+		}else{
+			$(".plh-opsi-plrk").hide();
+		}
+
+		// load_data(plh_tgl)else{};
 	});
 
 	function kosong(){ // reset id_pl
@@ -148,6 +269,16 @@
 		$("#v-opl").val('');
 		$("#v-tgl-pl").val('');
 		$("#v-ii").val('');
+	}
+
+	function pilih_opsi(plrk){
+		if(plrk == 'pl'){
+			$(".list-btn-pl").show();
+			$(".list-btn-rk").hide();
+		}else{
+			$(".list-btn-pl").hide();
+			$(".list-btn-rk").show();
+		}
 	}
 
 	function load_data(tgl){
