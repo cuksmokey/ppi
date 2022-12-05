@@ -1948,12 +1948,39 @@ class Master extends CI_Controller
 				$i++;
 				$html .='<tr>
 					<td style="padding:5px">'.$i.'.</td>
+					<td style="padding:5px"><button onclick="btnCek('."'".$r->id_perusahaan."'".')">CEK</button></td>
 					<td style="padding:5px">'.$kop.'</td>
 				</tr>';
 			}
 
 			$html .='</table>';
 		}
+
+		echo $html;
+	}
+
+	function btnCekShow(){
+		$id = $_POST['id'];
+		$html ='';
+		
+		$html.='<table style="margin-bottom:15px" border="1">
+		<tr>
+			<td style="width:auto;padding:5px"></td>
+			<td style="width:auto;padding:5px"></td>
+			<td style="width:auto;padding:5px"></td>
+		</tr>';
+
+		$getData = $this->db->query("SELECT id_po,no_po,status FROM po_master
+		WHERE id_perusahaan='$id' AND status='open'
+		GROUP BY id_po,no_po,status");
+		foreach($getData->result() as $r){
+			$html .='<tr>
+				<td style="padding:5px">-</td>
+				<td style="padding:5px">'.$r->no_po.'</td>
+				<td style="padding:5px">'.$r->status.'</td>
+			</tr>';
+		}
+		$html.='</table>';
 
 		echo $html;
 	}

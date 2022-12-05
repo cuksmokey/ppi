@@ -40,7 +40,10 @@
 						<button onclick="add_box()">ADD</button>
 
 						<!-- TAMPIL DATA LIST -->
-						<div class="ll box-data"></div>
+						<div class="ll box-data">
+							<div class="box-data-cek"></div>
+							<div class="box-data-list"></div>
+						</div>
 
 						<!-- TAMPIL DATA FORM -->
 						<div class="ll box-form" style="overflow:hidden">
@@ -305,6 +308,7 @@
 	});
 
 	function add_box(){
+		$(".box-data-cek").html('');
 		kosong();
 		$(".box-data").hide();
 		$(".box-form").show();
@@ -323,18 +327,35 @@
 	//
 
 	function load_data(){
-		$(".box-data").html('MEMUAT DATA');
+		$(".box-data-list").html('MEMUAT DATA');
 		$.ajax({
 			url: '<?php echo base_url('Master/loadDataPO')?>',
 			type: "POST",
 			// data: ({
-
 			// }),
 			success: function(response){
 				if(response){
-					$(".box-data").html(response);
+					$(".box-data-list").html(response);
 				}else{
-					$(".box-data").html('TIDAK DITEMUKAN DATA');
+					$(".box-data-list").html('TIDAK DITEMUKAN DATA');
+				}
+			}
+		})
+	}
+
+	function btnCek(id){
+		// alert(id);
+		$.ajax({
+			url: '<?php echo base_url('Master/btnCekShow')?>',
+			type: "POST",
+			data: ({
+				id: id,
+			}),
+			success: function(response){
+				if(response){
+					$(".box-data-cek").html(response);
+				}else{
+					$(".box-data-cek").html('not');
 				}
 			}
 		})

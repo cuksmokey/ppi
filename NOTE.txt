@@ -69,3 +69,13 @@ ALTER TABLE `db_ppi`.`user`
   ADD COLUMN `edited_by` VARCHAR(50) NULL AFTER `edited_at`,
   ADD COLUMN `last_login` TIMESTAMP NULL AFTER `edited_by`,
   ADD COLUMN `logout` TIMESTAMP NULL AFTER `last_login`;
+
+//////////////////////////////////////
+
+TAMBAH KOLOM di po po_master
+
+ALTER TABLE `db_ppi`.`po_master`   
+  ADD COLUMN `created_at` TIMESTAMP NULL AFTER `ket`,
+  ADD COLUMN `created_by` VARCHAR(50) NULL AFTER `created_at`,
+  ADD COLUMN `edited_at` TIMESTAMP NULL AFTER `created_by`,
+  ADD COLUMN `edited_by` VARCHAR(50) NULL AFTER `edited_at`;

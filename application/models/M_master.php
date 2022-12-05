@@ -813,6 +813,8 @@ class M_master extends CI_Model{
                 'no_po' => $_POST['fno_po'],
                 'harga' => $data['options']['fharga'],
                 'pajak' => $_POST['fpajak'],
+                'created_at' => date("Y-m-d H:i:s"),
+                'created_by' => $this->session->userdata('username'),
             );
             $result = $this->db->insert('po_master',$data);
         }
