@@ -1916,4 +1916,45 @@ class Master extends CI_Controller
 		$this->m_master->delete("user", "id", $id);
 		echo "1";
 	}
+
+	function loadDataPO(){
+		$html = '';
+		
+		$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,pt.alamat,m.* FROM po_master m
+		INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id
+		WHERE status='open'
+		GROUP BY id_perusahaan
+		ORDER BY pt.pimpinan,pt.nm_perusahaan");
+		if($getData->num_rows() == 0){
+			$html .='';
+		}else{
+			$html .='<table border="1">';
+
+			$html .='<tr>
+				<td style="padding:5px"></td>
+				<td style="padding:5px"></td>
+				<td style="padding:5px"></td>
+			</tr>';
+
+			$i = 0;
+			foreach($getData->result() as $r){
+				if($r->pimpinan != '-' && $r->nm_perusahaan == '-'){
+					$kop = $r->pimpinan;
+				}else if($r->pimpinan == '-' && $r->nm_perusahaan != '-'){
+					$kop = $r->nm_perusahaan;
+				}else{
+					$kop = $r->nm_perusahaan;
+				}
+				$i++;
+				$html .='<tr>
+					<td style="padding:5px">'.$i.'.</td>
+					<td style="padding:5px">'.$kop.'</td>
+				</tr>';
+			}
+
+			$html .='</table>';
+		}
+
+		echo $html;
+	}
 }

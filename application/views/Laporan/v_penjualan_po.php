@@ -17,6 +17,10 @@
 	.ll {
 		padding-top:15px;
 	}
+
+	.inp-kosong {
+		margin:0;padding:0;border:0;background: none;
+	}
 </style>
 
 <section class="content">
@@ -33,11 +37,13 @@
 					</div>
 
 					<div class="body">
-						<button>ADD</button>
+						<button onclick="add_box()">ADD</button>
 
-						<div class="ll box-data">DATA LIST PO</div>
+						<!-- TAMPIL DATA LIST -->
+						<div class="ll box-data"></div>
+
+						<!-- TAMPIL DATA FORM -->
 						<div class="ll box-form" style="overflow:hidden">
-							DATA FORM PO
 							<table style="width:100%" border="">
 								<tr>
 									<td style="width:15%;padding:5px"></td>
@@ -56,8 +62,14 @@
 								<tr>
 									<td style="padding:5px;font-weight:bold">PAJAK</td>
 									<td style="padding:5px">:</td>
+									<td style="padding:5px;text-align:center">
+										<button onclick="oppn('ppn')">PPN</button>
+										-
+										<button onclick="oppn('non')">NON</button>
+									</td>
 									<td style="padding:5px">
-										<input type="text" id="fpajak" class="form-control">
+										<input type="hidden" id="fpajak" value="">
+										<input type="text" id="fpajak-txt" class="inp-kosong" disabled>
 									</td>
 								</tr>
 								<tr>
@@ -103,11 +115,12 @@
 									<td style="width:auto;padding:5px"></td>
 									<td style="width:auto;padding:5px"></td>
 									<td style="width:auto;padding:5px"></td>
+									<td style="width:auto;padding:5px"></td>
 								</tr>
 								<tr>
 									<td style="padding:5px;font-weight:bold">NO. PO</td>
 									<td style="padding:5px">:</td>
-									<td style="padding:5px" colspan="6">
+									<td style="padding:5px" colspan="7">
 										<input type="text" id="fno-po" colspan="6" class="form-control">
 									</td>
 								</tr>
@@ -132,17 +145,21 @@
 									<td style="padding:5px">
 										<input type="text" id="fharga" class="form-control" style="text-align:center" maxlength="8" placeholder="HARGA">
 									</td>
-								</tr>
-								<tr>
-									<td style="padding:5px" colspan="7"></td>
 									<td style="padding:5px;text-align:center">
 										<button onclick="addCartPO()">ADD</button>
 									</td>
-								</tr>								
+								</tr>							
 							</table>
 
-							<div class="cart-po"></div>
+							
+
+							<div class="ll">
+								<button onclick="kosong()">BACK</button>
+							</div>
 						</div>
+
+						<div class="cart-po"></div>
+
 					</div>
 				</div>
 			</div>
@@ -165,29 +182,35 @@
 <script>
 	$(document).ready(function(){
 		$(".cart-po").load("<?php echo base_url('Master/dessCartPO') ?>");
+		$(".box-data").show();
+		$(".box-form").hide();
 		kosong();
+		load_data();
 		load_pt();
 	});
 
 	// ftgl fpajak fkepada fnama falamat ftelp
-
  	// fjenis fgsm fukuran ftonase fjmlroll fharga
 	function kosong(){
 		$("#fno-po").val("");
 		$("#fid").val("");
 		$("#ftgl").val("");
 		$("#fpajak").val("");
-		$("#fkepada").val("");
+		$("#fpajak-txt").val("");
 		$("#fnama").val("");
 		$("#falamat").val("");
 		$("#ftelp").val("");
-
 		$("#fjenis").val("");
 		$("#fgsm").val("");
 		$("#fukuran").val("");
 		$("#ftonase").val("");
 		$("#fjmlroll").val("");
 		$("#fharga").val("");
+		$(".box-data").show();
+		$(".box-form").hide(); 
+		$("#fkepada").val("");
+		load_pt();
+		load_data();
 	}
 
 	$("#fjenis").on({
@@ -227,19 +250,16 @@
 
 	function aKt(evt) { // angkatitik
 		var charCode = (evt.which) ? evt.which : event.keyCode
-		// alert(charCode);
 		if (charCode > 31 && (charCode < 46 || charCode > 57))
 			return false;
 		return true;
 	}
-
 	function hAngka(evt) {
 		var charCode = (evt.which) ? evt.which : event.keyCode
 		if (charCode > 31 && (charCode < 48 || charCode > 57))
 			return false;
 		return true;
 	}
-
 	function hHuruf(evt) {
 		let charCode = (evt.which) ? evt.which : event.keyCode
 		if ((charCode < 65 || charCode > 90) && (charCode < 97 || charCode > 122) && charCode > 32) {
@@ -275,7 +295,6 @@
 			}
 		});
 	}
-	// TAMPIL DI KOLOM
 	$('#fkepada').on('change', function() {
 		data = $('#fkepada').select2('data');
 		$("#fid").val(data[0].id);
@@ -285,6 +304,44 @@
 		$("#ftelp").val(data[0].no_telp);
 	});
 
+	function add_box(){
+		kosong();
+		$(".box-data").hide();
+		$(".box-form").show();
+	}
+
+	function oppn(oppnon){
+		if(oppnon == 'ppn'){
+			$("#fpajak").val('ppn');
+			$("#fpajak-txt").val('PPN');
+		}else{
+			$("#fpajak").val('non');
+			$("#fpajak-txt").val('NON PPN');
+		}
+	}
+
+	//
+
+	function load_data(){
+		$(".box-data").html('MEMUAT DATA');
+		$.ajax({
+			url: '<?php echo base_url('Master/loadDataPO')?>',
+			type: "POST",
+			// data: ({
+
+			// }),
+			success: function(response){
+				if(response){
+					$(".box-data").html(response);
+				}else{
+					$(".box-data").html('TIDAK DITEMUKAN DATA');
+				}
+			}
+		})
+	}
+
+	//
+
 	function addCartPO(){
 		fjenis = $("#fjenis").val();
 		fgsm = $("#fgsm").val();
@@ -292,7 +349,12 @@
 		ftonase = $("#ftonase").val().split('.').join('');
 		fjmlroll = $("#fjmlroll").val();
 		fharga = $("#fharga").val().split('.').join('');
-		alert(fjenis+' - '+fgsm+' - '+fukuran+' - '+ftonase+' - '+fjmlroll+' - '+fharga);
+		// alert(fjenis+' - '+fgsm+' - '+fukuran+' - '+ftonase+' - '+fjmlroll+' - '+fharga);
+		if (fjenis == '' || fgsm == '' || fukuran == '' || ftonase == '' || fjmlroll == '' || fharga == '') {
+			swal("HARAP LENGKAPI FORM ITEMS ! ! !", "", "error");
+			return;
+		}
+
 		$.ajax({
 			url: '<?php echo base_url('Master/addCartPO')?>',
 			type: "POST",
@@ -329,6 +391,20 @@
 		fid = $("#fid").val();
 		ftgl = $("#ftgl").val();
 		fpajak = $("#fpajak").val();
+
+		if (fno_po == '') {
+			swal("HARAP INPUT NOMER PO !", "", "error"); return;
+		}
+		if (fid == '') {
+			swal("HARAP PILIH CUSTOMER !", "", "error"); return;
+		}
+		if (ftgl == '') {
+			swal("HARAP PILIH TANGGAL !", "", "error"); return;
+		}
+		if (fpajak == '') {
+			swal("HARAP PILIH JENIS PAJAK !", "", "error"); return;
+		}
+
 		$.ajax({
 			url: '<?php echo base_url('Master/simpanCartPO')?>',
 			type: "POST",
@@ -340,7 +416,8 @@
 			}),
 			success: function(response){
 				if(response){
-					alert('berhasil');
+					// alert('berhasil');
+					kosong();
 				}else{
 					alert('gagal');
 				}

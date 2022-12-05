@@ -7,8 +7,7 @@ CHANGE `level` `level` ENUM('Admin','User','SuperAdmin','QC','FG','Rewind1','Rew
 
 ////////////////////////////////////
 
-ADDD TABLE BUAT HISTORY EDIT ROLL
-
+TAMBAH TABLE BUAT HISTORY EDIT ROLL
 CREATE TABLE `db_ppi`.`m_roll_edit`(  
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `roll` VARCHAR(50),
@@ -26,25 +25,6 @@ CREATE TABLE `db_ppi`.`m_roll_edit`(
   PRIMARY KEY (`id`)
 );
 
-
-////////////////////////////////////
-
-ADD KOLOM "seset" int 11 default "0" pada tabel m_timbangan
-ALTER TABLE `db_ppi`.`m_timbangan`
-ADD COLUMN `seset` INT(11) DEFAULT 0 NULL AFTER `ket`,
-ADD COLUMN `edited_at` TIMESTAMP NULL AFTER `packing_by`,
-ADD COLUMN `edited_by` VARCHAR(50) NULL AFTER `edited_at`;
-
-///////////////////////////////////
-
-ADD KOLOM "qc" varchar[6] isi "proses, cek, ok" setelah kolom "status" pada tabel pl
-ADD KOLOM "opl" int[2] default "0" buat order pengiriman setelah "qc" pada table pl
-
-ALTER TABLE `db_ppi`.`pl`   
-ADD COLUMN `qc` VARCHAR(6) NULL AFTER `status`,
-ADD COLUMN `tgl_pl` DATE NULL AFTER `qc`,
-ADD COLUMN `opl` INT(11) DEFAULT 0 NULL AFTER `tgl_pl`;
-
 ///////////////////////////////////
 
 TAMBAH TABLE "m_rencana_kirim"
@@ -59,7 +39,27 @@ CREATE TABLE `db_ppi`.`m_rencana_kirim`(
   PRIMARY KEY (`id`)
 );
 
+////////////////////////////////////
+
+TAMBAH KOLOM "seset" int 11 default "0" pada tabel m_timbangan
+
+ALTER TABLE `db_ppi`.`m_timbangan`
+ADD COLUMN `seset` INT(11) DEFAULT 0 NULL AFTER `ket`,
+ADD COLUMN `edited_at` TIMESTAMP NULL AFTER `packing_by`,
+ADD COLUMN `edited_by` VARCHAR(50) NULL AFTER `edited_at`;
+
+///////////////////////////////////
+
+TAMBAH KOLOM "qc" varchar[6] isi "proses, cek, ok" setelah kolom "status" pada tabel pl
+TAMBAH KOLOM "opl" int[2] default "0" buat order pengiriman setelah "qc" pada table pl
+
+ALTER TABLE `db_ppi`.`pl`   
+ADD COLUMN `qc` VARCHAR(6) NULL AFTER `status`,
+ADD COLUMN `tgl_pl` DATE NULL AFTER `qc`,
+ADD COLUMN `opl` INT(11) DEFAULT 0 NULL AFTER `tgl_pl`;
+
 //////////////////////////////////////
+
 TAMBAH kolom created dan edited di table user
 
 ALTER TABLE `db_ppi`.`user`   
