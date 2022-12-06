@@ -5009,11 +5009,14 @@ class Laporan extends CI_Controller {
         }
 	}
 
-    function newPenPO() {
-        $pt = $_GET['pt'];
-        $id_po = $_GET['id_po'];
-        $ctk = $_GET['ctk'];
+    function newPenPO() { //
+        // $pt = $_GET['pt'];
+        // $id_po = $_GET['id_po'];
+        // $ctk = $_GET['ctk'];
 
+		$pt = $_POST['id'];
+		$id_po = $_POST['id_po'];
+		$ctk = $_POST['ctk'];
 		$html = '';
 
 		// if($id_po == "" || $id_po == 0){
@@ -5028,9 +5031,10 @@ class Laporan extends CI_Controller {
         GROUP BY a.id_perusahaan,a.tgl,a.no_po");
         foreach($getPT->result() as $pt){
 			$html .= '<style>#i{mso-number-format:\@}</style>';
-			$html .= '<table style="font-size:12px;vertical-align:middle;border-collapse:collapse" border="1" cellpadding="5">';
+			$html .= '<div class="scroll-horizontal">
+				<table style="font-size:12px;color:#000;vertical-align:middle;border-collapse:collapse;border-color:#555" border="1">';
 
-            $html .= '<tr><td style="font-weight:bold;border:0" colspan="5">'.$pt->no_po.'</td></tr>';
+            // $html .= '<tr><td style="font-weight:bold;border:0" colspan="5">'.$pt->no_po.'</td></tr>';
 
             $getTgl = $this->db->query("SELECT b.tgl FROM m_timbangan a
             INNER JOIN pl b ON a.id_pl=b.id
@@ -5039,44 +5043,44 @@ class Laporan extends CI_Controller {
             GROUP BY b.tgl");
 
 			$html .= '<tr>
-                <td style="background:#87B7C9;text-align:center;font-weight:bold" rowspan="3">No.</td>
-				<td style="background:#87B7C9;text-align:center;font-weight:bold" rowspan="3">GSM</td>
-				<td style="background:#87B7C9;text-align:center;font-weight:bold" rowspan="3">UK</td>
-				<td style="background:#87B7C9;text-align:center;font-weight:bold" colspan="2" rowspan="2">ORDER</td>';
+                <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" rowspan="3">No.</td>
+				<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" rowspan="3">GSM</td>
+				<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" rowspan="3">UK</td>
+				<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" colspan="2" rowspan="2">ORDER</td>';
 			foreach($getTgl->result() as $tTgl){
-				$html .= '<td style="background:#B9E9FB;font-weight:bold;text-align:center" colspan="2">'.strtoupper($this->m_fungsi->getHariIni($tTgl->tgl)).'</td>';
+				$html .= '<td style="padding:5px;background:#B9E9FB;font-weight:bold;text-align:center" colspan="2">'.strtoupper($this->m_fungsi->getHariIni($tTgl->tgl)).'</td>';
 			}
-			$html .= '<td style="background:#87B7C9;text-align:center;font-weight:bold" colspan="2" rowspan="2">TOTAL</td>
-				<td style="background:#87B7C9;text-align:center;font-weight:bold" colspan="2" rowspan="2">( + / - )</td>
+			$html .= '<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" colspan="2" rowspan="2">TOTAL</td>
+				<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" colspan="2" rowspan="2">( + / - )</td>
 			</tr>'; // TOTAL
 
 			$html .= '<tr>';
             foreach($getTgl->result() as $tTgl){
-				$html .= '<td style="background:#B9E9FB;font-weight:bold;text-align:center" colspan="2">'.strtoupper($this->m_fungsi->tglInd_skt($tTgl->tgl)).'</td>';
+				$html .= '<td style="padding:5px;background:#B9E9FB;font-weight:bold;text-align:center" colspan="2">'.strtoupper($this->m_fungsi->tglInd_skt($tTgl->tgl)).'</td>';
             }
             $html .= '</tr>';
 			
             // ROLL, TON
 			$html .= '<tr>
-                <td style="background:#87B7C9;text-align:center;font-weight:bold">ROLL</td>
-				<td style="background:#87B7C9;text-align:center;font-weight:bold">TON</td>';
+                <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold">ROLL</td>
+				<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold">TON</td>';
             foreach($getTgl->result() as $tTgl){ // ISI PER UKURAN
-                $html .= '<td style="background:#B9E9FB;text-align:center;font-weight:bold">ROLL</td>
-				<td style="background:#B9E9FB;text-align:center;font-weight:bold">TON</td>';
+                $html .= '<td style="padding:5px;background:#B9E9FB;text-align:center;font-weight:bold">ROLL</td>
+				<td style="padding:5px;background:#B9E9FB;text-align:center;font-weight:bold">TON</td>';
             }
             // TOTAL, + -
-            $html .= '<td style="background:#87B7C9;text-align:center;font-weight:bold">ROLL</td>
-				<td style="background:#87B7C9;text-align:center;font-weight:bold">TON</td>
-                <td style="background:#87B7C9;text-align:center;font-weight:bold">ROLL</td>
-				<td style="background:#87B7C9;text-align:center;font-weight:bold">TON</td>
+            $html .= '<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold">ROLL</td>
+				<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold">TON</td>
+                <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold">ROLL</td>
+				<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold">TON</td>
 			</tr>';
             
             // KOTAK KOSONG
-            $html .= '<tr><td style="padding:0" colspan="5"></td>';
+            $html .= '<tr><td style="padding:5px;padding:0" colspan="5"></td>';
             $ik = 0;
             foreach($getTgl->result() as $tTgl){
                 $ik++;
-                $html .= '<td style="padding:0;text-align:center" colspan="2" id="i">'.$ik.'</td>';
+                $html .= '<td style="padding:5px;padding:0;text-align:center" colspan="2" id="i">'.$ik.'</td>';
             }
             $html .= '</tr>';
 
@@ -5107,49 +5111,51 @@ class Laporan extends CI_Controller {
                     $kBgNk = $bgNk;
                 }
 				$html .= '<tr>
-					<td style="text-align:center;font-weight:bold" rowspan="'.$rGsm->ttl.'" id="i">'.$ii.'</td>
-					<td style="text-align:center;font-weight:bold;background:'.$kBgNk.'" rowspan="'.$rGsm->ttl.'" id="i">'.$rGsm->nm_ker.' '.$rGsm->g_label.'</td>';
+					<td style="padding:5px;text-align:center;font-weight:bold" rowspan="'.$rGsm->ttl.'" id="i">'.$ii.'</td>
+					<td style="padding:5px;text-align:center;font-weight:bold;background:'.$kBgNk.'" rowspan="'.$rGsm->ttl.'" id="i">'.$rGsm->nm_ker.' '.$rGsm->g_label.'</td>';
 
                 // GET WIDTH
 				$getUkPO = $this->db->query("SELECT*FROM po_master
 				WHERE no_po='$rGsm->no_po' AND nm_ker='$rGsm->nm_ker' AND g_label='$rGsm->g_label'
                 ORDER BY width");
 				foreach($getUkPO->result() as $ukPO){
-					$html .= '<td style="text-align:center;font-weight:bold" id="i">'.round($ukPO->width,2).'</td>
-						<td style="text-align:center;font-weight:bold" id="i">'.number_format($ukPO->jml_roll).'</td>
-						<td style="text-align:right;font-weight:bold" id="i">'.number_format($ukPO->tonase).'</td>';
+					$html .= '<td style="padding:5px;text-align:center;font-weight:bold" id="i">'.round($ukPO->width,2).'</td>
+						<td style="padding:5px;text-align:center;font-weight:bold" id="i">'.number_format($ukPO->jml_roll).'</td>
+						<td style="padding:5px;text-align:right;font-weight:bold" id="i">'.number_format($ukPO->tonase).'</td>';
 
 					// ISI PENGIRIMAN PER UKURAN
 					foreach($getTgl->result() as $tTgl){
-						$getIsiUk = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat FROM m_timbangan a
+						$getIsiUk = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
 						INNER JOIN pl b ON a.id_pl=b.id
 						AND b.no_po='$ukPO->no_po' AND b.tgl='$tTgl->tgl' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width'
 						GROUP BY b.tgl,a.g_label,a.nm_ker,a.width");
 						if($getIsiUk->num_rows() == 0){
 							$html .= '<td></td><td></td>';
 						}else{
-							$html .= '<td style="text-align:center;background:'.$bgNk.'" id="i">'.number_format($getIsiUk->row()->jumlah).'</td>
-							<td style="text-align:right;background:'.$bgNk.'" id="i">'.number_format($getIsiUk->row()->berat).'</td>';
+							$ukFixBerat = $getIsiUk->row()->berat - $getIsiUk->row()->seset; // jika ada seset
+							$html .= '<td style="padding:5px;text-align:center;background:'.$bgNk.'" id="i">'.number_format($getIsiUk->row()->jumlah).'</td>
+							<td style="padding:5px;text-align:right;background:'.$bgNk.'" id="i">'.number_format($ukFixBerat).'</td>';
 						}
 					}
 
                     // TOTAL PER UKURAN PER GSM
-					$getUkpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat FROM m_timbangan a
+					$getUkpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
 					INNER JOIN pl b ON a.id_pl=b.id
 					AND b.no_po='$ukPO->no_po' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width'
 					GROUP BY a.nm_ker,a.g_label,a.width");
 					if($getUkpGsm->num_rows() == 0){
-						$html .= '<td style="text-align:center">-</td><td style="text-align:center">-</td>
-                            <td style="text-align:center">-</td><td style="text-align:center">-</td>';
+						$html .= '<td style="padding:5px;text-align:center">-</td><td style="padding:5px;text-align:center">-</td>
+                            <td style="padding:5px;text-align:center">-</td><td style="padding:5px;text-align:center">-</td>';
 					}else{
-						$html .= '<td style="font-weight:bold;text-align:center" id="i">'.number_format($getUkpGsm->row()->jumlah).'</td>
-						<td style="font-weight:bold;text-align:center" id="i">'.number_format($getUkpGsm->row()->berat).'</td>';
+						$ukGsmFixBerat = $getUkpGsm->row()->berat - $getUkpGsm->row()->seset;
+						$html .= '<td style="padding:5px;font-weight:bold;text-align:center" id="i">'.number_format($getUkpGsm->row()->jumlah).'</td>
+						<td style="padding:5px;font-weight:bold;text-align:center" id="i">'.number_format($ukGsmFixBerat).'</td>';
                         
                         // + -
                         $plusMinRoll = $getUkpGsm->row()->jumlah - $ukPO->jml_roll;
-                        $plusMinBerat = $getUkpGsm->row()->berat - $ukPO->tonase;
-                        $html .= '<td style="text-align:center;font-weight:bold" id="i">'.number_format($plusMinRoll).'</td>
-                            <td style="text-align:center;font-weight:bold" id="i">'.number_format($plusMinBerat).'</td>';
+                        $plusMinBerat = $ukGsmFixBerat - $ukPO->tonase;
+                        $html .= '<td style="padding:5px;text-align:center;font-weight:bold" id="i">'.number_format($plusMinRoll).'</td>
+                            <td style="padding:5px;text-align:center;font-weight:bold" id="i">'.number_format($plusMinBerat).'</td>';
 					}
 					$html .= '</tr>';
 				}
@@ -5160,44 +5166,46 @@ class Laporan extends CI_Controller {
                 }else{
                     // TOTAL PER GSM ORDER ROLL , TON
                     $html .= '<tr>
-                        <td style="background:#99DDCC;text-align:center;font-weight:bold" colspan="3"></td>
-                        <td style="background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($rGsm->jmll).'</td>
-                        <td style="background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($rGsm->tonn).'</td>';
+                        <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" colspan="3"></td>
+                        <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($rGsm->jmll).'</td>
+                        <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($rGsm->tonn).'</td>';
 
                     // TOTAL PER GSM
                     foreach($getTgl->result() as $tTgl){
-                        $getTotpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat FROM m_timbangan a
+                        $getTotpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
                         INNER JOIN pl b ON a.id_pl=b.id
                         AND b.no_po='$rGsm->no_po' AND b.tgl='$tTgl->tgl' AND a.nm_ker='$rGsm->nm_ker' AND a.g_label='$rGsm->g_label'
                         GROUP BY b.tgl,a.g_label,a.nm_ker");
                         if($getTotpGsm->num_rows() == 0){
-                            $html .= '<td style="background:#99DDCC;text-align:center;font-weight:bold">-</td>
-                                <td style="background:#99DDCC;text-align:center;font-weight:bold">-</td>';
+                            $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
+                                <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>';
                         }else{
-                            $html .= '<td style="background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($getTotpGsm->row()->jumlah).'</td>
-                            <td style="background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($getTotpGsm->row()->berat).'</td>';
+							$totGsmFixBerat = $getTotpGsm->row()->berat - $getTotpGsm->row()->seset;
+                            $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($getTotpGsm->row()->jumlah).'</td>
+                            <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($totGsmFixBerat).'</td>';
                         }
                     }
 
                     // JUMLAH TOTAL PER GSM
-                    $getJmlTotpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat FROM m_timbangan a
+                    $getJmlTotpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
                     INNER JOIN pl b ON a.id_pl=b.id
                     AND b.no_po='$rGsm->no_po' AND a.nm_ker='$rGsm->nm_ker' AND a.g_label='$rGsm->g_label'
                     GROUP BY a.g_label,a.nm_ker");
                     if($getJmlTotpGsm->num_rows() == 0){
-                        $html .= '<td style="background:#99DDCC;text-align:center;font-weight:bold">-</td>
-                            <td style="background:#99DDCC;text-align:center;font-weight:bold">-</td>
-                            <td style="background:#99DDCC;text-align:center;font-weight:bold">-</td>
-                            <td style="background:#99DDCC;text-align:center;font-weight:bold">-</td>';
+                        $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
+                            <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
+                            <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
+                            <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>';
                     }else{
-                        $html .= '<td style="background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($getJmlTotpGsm->row()->jumlah).'</td>
-                        <td style="background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($getJmlTotpGsm->row()->berat).'</td>';
+						$jmlTotGsmFixBerat = $getJmlTotpGsm->row()->berat - $getJmlTotpGsm->row()->seset;
+                        $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($getJmlTotpGsm->row()->jumlah).'</td>
+                        <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($jmlTotGsmFixBerat).'</td>';
 
                         // + -
                         $plusMinSumRoll = $getJmlTotpGsm->row()->jumlah - $rGsm->jmll;
-                        $plusMinSumBerat = $getJmlTotpGsm->row()->berat - $rGsm->tonn;
-                        $html .= '<td style="background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($plusMinSumRoll).'</td>
-                        <td style="background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($plusMinSumBerat).'</td>';
+                        $plusMinSumBerat = $jmlTotGsmFixBerat - $rGsm->tonn;
+                        $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($plusMinSumRoll).'</td>
+                        <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($plusMinSumBerat).'</td>';
                     }
                     $html .= '</tr>';
                 }
@@ -5210,38 +5218,37 @@ class Laporan extends CI_Controller {
 
             // TOTAL KESELURAHAN PO
 			$html .= '<tr>
-				<td style="background:#87B7C9;text-align:center;font-weight:bold" colspan="3">TOTAL</td>
-				<td style="background:#87B7C9;text-align:center;font-weight:bold" id="i">'.number_format($allTotRoll).'</td>
-				<td style="background:#87B7C9;text-align:center;font-weight:bold" id="i">'.number_format($allTotTonn).'</td>';
+				<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" colspan="3">TOTAL</td>
+				<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" id="i">'.number_format($allTotRoll).'</td>
+				<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" id="i">'.number_format($allTotTonn).'</td>';
 				$sumRoll = 0;
 				$sumTon = 0;
 				foreach($getTgl->result() as $tTgl){
-					$getKir = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat FROM m_timbangan a
+					$getKir = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
 					INNER JOIN pl b ON a.id_pl=b.id
 					AND b.no_po='$ukPO->no_po' AND b.tgl='$tTgl->tgl'
 					GROUP BY b.tgl");
 					if($getKir->num_rows() == 0){
 						$html .= '<td></td><td></td>';
 					}else{
-						$html .= '<td style="font-weight:bold;text-align:center;background:#B9E9FB" id="i">'.number_format($getKir->row()->jumlah).'</td>
-						<td style="font-weight:bold;text-align:center;background:#B9E9FB" id="i">'.number_format($getKir->row()->berat).'</td>';
+						$fixTotBerat = $getKir->row()->berat - $getKir->row()->seset;
+						$html .= '<td style="padding:5px;font-weight:bold;text-align:center;background:#B9E9FB" id="i">'.number_format($getKir->row()->jumlah).'</td>
+						<td style="padding:5px;font-weight:bold;text-align:center;background:#B9E9FB" id="i">'.number_format($fixTotBerat).'</td>';
 					}
 
 					$sumRoll += $getKir->row()->jumlah;
-					$sumTon += $getKir->row()->berat;
+					$sumTon += $fixTotBerat;
 				}
             
             $plusMinTottSumRoll = $sumRoll - $allTotRoll;
             $plusMinTottSumBerat = $sumTon - $allTotTonn;
-			$html .= '<td style="font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($sumRoll).'</td>
-			<td style="font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($sumTon).'</td>
-            <td style="font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($plusMinTottSumRoll).'</td>
-            <td style="font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($plusMinTottSumBerat).'</td>';
+			$html .= '<td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($sumRoll).'</td>
+			<td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($sumTon).'</td>
+            <td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($plusMinTottSumRoll).'</td>
+            <td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($plusMinTottSumBerat).'</td>';
 			$html .= '</tr>';
 
-			$html .= '<tr>
-                <td colspan="5" style="border:0"></td>
-            </tr></table>';
+			$html .= '</table></div>';
             // $html .= '<div style="page-break-after:always"></div>';
         }
 

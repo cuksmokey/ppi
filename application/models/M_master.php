@@ -525,6 +525,27 @@ class M_master extends CI_Model{
         return $data;
     }
 
+	function loadPlPO($searchTerm="", $fid=""){
+        // ASLI
+		$users = $this->db->query("SELECT*FROM po_master
+		WHERE STATUS='open' AND id_perusahaan='$fid' AND no_po LIKE '%$searchTerm%'
+		GROUP BY id_po,no_po,id_perusahaan;")->result_array();
+
+        $data = array();
+        foreach($users as $user){
+			// id_po id_perusahaan tgl nm_ker g_label width tonase jml_roll no_po harga pajak status
+            // $txt = $user['pimpinan'].' - '.$user['nm_perusahaan'].' - '.$user['alamat'];
+            $data[] = array(
+                "id" => $user['id'],
+                "text" => $user['no_po'],
+				"id_po" => $user['id_po'],
+				"nm_ker" => $user['nm_ker'],
+				"no_po" => $user['no_po'],
+            );
+        }
+        return $data;
+    }
+
     function get_invoice(){
         $query = "SELECT * FROM invoice_header ORDER BY tgl,no_invoice";
         return $this->db->query($query);

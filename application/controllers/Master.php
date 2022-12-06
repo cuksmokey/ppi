@@ -803,6 +803,13 @@ class Master extends CI_Controller
 		echo json_encode($response);
 	}
 
+	function loadPlPO(){ 
+		$searchTerm = $_GET['search'];
+		$fid = $_GET['fid'];
+		$response = $this->m_master->loadPlPO($searchTerm,$fid);
+		echo json_encode($response);
+	}
+
 	function load_perusahaan()
 	{
 		$searchTerm = $_GET['search'];
@@ -1465,7 +1472,7 @@ class Master extends CI_Controller
 					</tr>
 				</table>';
 
-				// SEMUA TAMPIL DISINI
+				// SEMUA TAMPIL DISINII
 				$html .='<div class="id-cek t-plist-rencana-'.$i.'"></div>';
 				$html .='<div class="id-cek t-plist-input-sementara-'.$i.'"></div>';
 				$html .='<div class="id-cek t-plist-hasil-input-'.$i.'"></div>';
@@ -1928,14 +1935,6 @@ class Master extends CI_Controller
 		if($getData->num_rows() == 0){
 			$html .='';
 		}else{
-			$html .='<table border="1">';
-
-			$html .='<tr>
-				<td style="padding:5px"></td>
-				<td style="padding:5px"></td>
-				<td style="padding:5px"></td>
-			</tr>';
-
 			$i = 0;
 			foreach($getData->result() as $r){
 				if($r->pimpinan != '-' && $r->nm_perusahaan == '-'){
@@ -1946,41 +1945,85 @@ class Master extends CI_Controller
 					$kop = $r->nm_perusahaan;
 				}
 				$i++;
-				$html .='<tr>
+				$html .='<table style="font-size:12px;color:#000">';
+				$html .='<tr class="ll-tr">
+					<td style="padding:5px">
+						<button class="btn-c-po" onclick="btnCek('."'".$r->id_perusahaan."'".','."'".$i."'".','."'detail'".')">DETAIL</button>
+						<button class="btn-c-po" onclick="btnCek('."'".$r->id_perusahaan."'".','."'".$i."'".','."'rekap'".')">REKAP</button>
+					</td>
 					<td style="padding:5px">'.$i.'.</td>
-					<td style="padding:5px"><button onclick="btnCek('."'".$r->id_perusahaan."'".')">CEK</button></td>
 					<td style="padding:5px">'.$kop.'</td>
 				</tr>';
+				$html .='</table>';
+
+				$html.='<div class="btn-cek btn-cek-list-'.$i.'"></div>';
 			}
-
-			$html .='</table>';
 		}
-
 		echo $html;
 	}
 
-	function btnCekShow(){
+	function btnCekShow(){ // btn-cek-list-
 		$id = $_POST['id'];
+		$opsi = $_POST['opsi'];
+		// $i = $_POST['i'];
 		$html ='';
+
+		if($opsi == 'rekap'){
+			$html .='rekap';
+		}else{ // detail
+			$getData = $this->db->query("SELECT id_po,no_po,status FROM po_master
+			WHERE id_perusahaan='$id' AND status='open'
+			GROUP BY id_po,no_po,status");
+			$i =0;
+			foreach($getData->result() as $r){
+				$i++;
+				$html .='<table  style="font-size:12px;color:#000">
+					<tr class="ll-tr">
+						<td style="padding:5px">-</td>
+						<td style="padding:5px">'.$r->no_po.'</td>
+						<td style="padding:5px"><button class="btn-c-po" onclick="btnOpen('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">'.$r->status.'</button></td>
+					</tr>
+				</table>';
+
+				$html .='<div class="ll-open btn-open-list-'.$i.'"></div>';
+			}
+		}
 		
-		$html.='<table style="margin-bottom:15px" border="1">
-		<tr>
-			<td style="width:auto;padding:5px"></td>
-			<td style="width:auto;padding:5px"></td>
-			<td style="width:auto;padding:5px"></td>
+		echo $html;
+	}
+
+	function btnOpenShow(){ // btn-open-list-
+		$id = $_POST['id'];
+		$id_po = $_POST['id_po'];
+		$no_po = $_POST['no_po'];
+		// $i = $_POST['i'];
+		$html ='';
+
+		$html .='<table style="font-size:12px;color:#000;text-align:center" border="1">';
+		$html .='<tr>
+			<td style="padding:5px;font-weight:bold">JENIS</td>
+			<td style="padding:5px;font-weight:bold">UKURAN</td>
+			<td style="padding:5px;font-weight:bold">TONASE</td>
+			<td style="padding:5px;font-weight:bold">JML ROLL</td>
+			<td style="padding:5px;font-weight:bold"></td>
 		</tr>';
 
-		$getData = $this->db->query("SELECT id_po,no_po,status FROM po_master
-		WHERE id_perusahaan='$id' AND status='open'
-		GROUP BY id_po,no_po,status");
+		$getData = $this->db->query("SELECT*FROM po_master
+		WHERE id_perusahaan='$id' AND id_po='$id_po' AND no_po='$no_po'
+		ORDER BY nm_ker,g_label,width");
+		$i = 100;
 		foreach($getData->result() as $r){
-			$html .='<tr>
-				<td style="padding:5px">-</td>
-				<td style="padding:5px">'.$r->no_po.'</td>
-				<td style="padding:5px">'.$r->status.'</td>
-			</tr>';
+			$i++;
+			$html .='<tr class="ll-tr">
+					<td style="padding:5px">'.$r->nm_ker.' '.$r->g_label.'</td>
+					<td style="padding:5px">'.round($r->width,2).'</td>
+					<td style="padding:5px;text-align:right">'.number_format($r->tonase).'</td>
+					<td style="padding:5px">'.$r->jml_roll.'</td>
+					<td style="padding:5px"><button class="btn-c-po" onclick="viewList('."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->width."'".','."'".$i."'".')">view</button></td>
+				</tr>';
 		}
-		$html.='</table>';
+
+		$html .='</table>';
 
 		echo $html;
 	}

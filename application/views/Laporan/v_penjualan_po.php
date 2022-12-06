@@ -14,6 +14,20 @@
 ?>
 
 <style>
+	.scroll-horizontal{
+		background: #fff;
+		overflow: auto;
+		white-space: nowrap;
+	}
+	
+	.ll-tr:hover {
+		background: rgba(222, 222, 222, 0.5);
+	}
+
+	.notip {
+		font-size:12px;color:#000;padding:5px;
+	}
+
 	.ll {
 		padding-top:15px;
 	}
@@ -37,7 +51,7 @@
 					</div>
 
 					<div class="body">
-						<button onclick="add_box()">ADD</button>
+						<button class="btn-c-po" onclick="add_box()">ADD</button>
 
 						<!-- TAMPIL DATA LIST -->
 						<div class="ll box-data">
@@ -46,7 +60,7 @@
 						</div>
 
 						<!-- TAMPIL DATA FORM -->
-						<div class="ll box-form" style="overflow:hidden">
+						<div class="ll box-form" style="overflow:auto;white-space:nowrap;">
 							<table style="width:100%" border="">
 								<tr>
 									<td style="width:15%;padding:5px"></td>
@@ -78,7 +92,7 @@
 								<tr>
 									<td style="padding:5px;font-weight:bold">KEPADA</td>
 									<td style="padding:5px">:</td>
-									<td style="padding:5px" colspan="2">
+									<td style="padding:5px" colspan="3">
 										<!-- <input type="text" id="fkepada" class="form-control"> -->
 										<select class="form-control" id="fkepada" style="width:100%" autocomplete="off"></select>
 									</td>
@@ -86,7 +100,7 @@
 								<tr>
 									<td style="padding:5px;font-weight:bold">NAMA</td>
 									<td style="padding:5px">:</td>
-									<td style="padding:5px" colspan="2">
+									<td style="padding:5px" colspan="3">
 										<input type="text" id="fnama" class="form-control" style="background:#e9e9e9" disabled>
 										<input type="hidden" id="fid" value="">
 									</td>
@@ -94,7 +108,7 @@
 								<tr>
 									<td style="padding:5px;font-weight:bold">ALAMAT</td>
 									<td style="padding:5px">:</td>
-									<td style="padding:5px" colspan="2">
+									<td style="padding:5px" colspan="3">
 										<!-- <input type="text" id="flamat" class="form-control"> -->
 										<textarea name="falamat" id="falamat" rows="5" class="form-control" style="resize:none;background:#e9e9e9" disabled></textarea>
 									</td>
@@ -102,7 +116,7 @@
 								<tr>
 									<td style="padding:5px;font-weight:bold">NO. TELP</td>
 									<td style="padding:5px">:</td>
-									<td style="padding:5px" colspan="2">
+									<td style="padding:5px" colspan="3">
 										<input type="text" id="ftelp" class="form-control" style="background:#e9e9e9" disabled>
 									</td>
 								</tr>
@@ -214,6 +228,9 @@
 		$("#fkepada").val("");
 		load_pt();
 		load_data();
+
+		$(".cart-po").html('');
+		$(".cart-po").load("<?php echo base_url('Master/dessCartPO') ?>");
 	}
 
 	$("#fjenis").on({
@@ -343,19 +360,51 @@
 		})
 	}
 
-	function btnCek(id){
-		// alert(id);
+	function btnCek(id,i,opsi){
+		// alert(id+' - '+i+' - '+opsi);
+		$(".btn-cek").html('');
 		$.ajax({
 			url: '<?php echo base_url('Master/btnCekShow')?>',
 			type: "POST",
 			data: ({
 				id: id,
+				opsi: opsi,
+				// i: i,
 			}),
 			success: function(response){
 				if(response){
-					$(".box-data-cek").html(response);
+					$(".btn-cek-list-" + i).html(response);
 				}else{
-					$(".box-data-cek").html('not');
+					$(".btn-cek-list-" + i).html('not');
+				}
+			}
+		})
+	}
+
+	function btnOpen(id,id_po,no_po,i){
+		// alert(id+' - '+id_po+' - '+no_po+' - '+i)
+		// Master/btnOpenShow
+		// $(".btn-c-po").prop("disabled", true).attr('style', 'background:#ccc');
+		$(".btn-c-po").prop("disabled", true);
+		$(".ll-open").html('');
+		$(".btn-open-list-" + i).html('<div class="notip">MEMUAT DATA . . .</div>');
+		$.ajax({
+			url: '<?php echo base_url('Laporan/newPenPO')?>',
+			type: "POST",
+			data: ({
+				id: id,
+				id_po: id_po,
+				// no_po: no_po,
+				// i: i,
+				ctk: 0,
+			}),
+			success: function(response){
+				if(response){
+					$(".btn-open-list-" + i).html(response);
+					// $(".btn-c-po").prop("disabled", false).removeAttr( "style");
+					$(".btn-c-po").prop("disabled", false);
+				}else{
+					$(".btn-open-list-" + i).html('not');
 				}
 			}
 		})
