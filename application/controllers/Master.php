@@ -810,6 +810,14 @@ class Master extends CI_Controller
 		echo json_encode($response);
 	}
 
+	function loadPlJns(){ 
+		$search = $_GET['search'];
+		$id_po = $_GET['id_po'];
+		$no_po = $_GET['no_po'];
+		$response = $this->m_master->loadPlJns($search,$id_po,$no_po);
+		echo json_encode($response);
+	}
+
 	function load_perusahaan()
 	{
 		$searchTerm = $_GET['search'];
@@ -1449,6 +1457,125 @@ class Master extends CI_Controller
 
 
 		$this->m_fungsi->_mpdf('', $html, 10, 10, 10, 'P');
+	}
+
+	function loadPlPlhGsm(){
+		$search = $_GET['search'];
+		$id_po = $_GET['id_po'];
+		$no_po = $_GET['no_po'];
+		$nm_ker = $_GET['nm_ker'];
+		// $html = '';
+
+		$users = $this->db->query("SELECT * FROM po_master
+		WHERE id_po='$id_po' AND no_po='$no_po' AND nm_ker='$nm_ker' AND g_label LIKE '%$search%'
+		GROUP BY nm_ker,g_label")->result_array();
+
+        $data = array();
+        foreach($users as $user){
+            $data[] = array(
+                "id" => $user['g_label'],
+                "text" => $user['g_label'],
+				"id_po" => $user['id_po'],
+				"nm_ker" => $user['nm_ker'],
+				"g_label" => $user['g_label'],
+				"no_po" => $user['no_po'],
+            );
+        }
+
+		echo json_encode($data);
+		// echo $html;
+	}
+
+	function addCartPl(){
+		// fkepada fnmpt fnama falamat ftelp ftgl fplhpajak noSJ noSOSJ noPKB fnopkb ftahunpkb fjnspkb fnopo fjenis fplhplgsm
+		// tgl no_surat no_so no_pkb no_kendaraan nm_perusahaan id_perusahaan alamat_perusahaan nama no_telp no_po status qc tgl_pl opl no_pl_inv  cek_po      sj  item_desc
+		if($_POST['pilihan'] == 'cart'){
+			$data = array(
+				'id' => $_POST['fnopkb'].'_'.$_POST['ftahunpkb'].''.$_POST['fjnspkb'],
+				'name' => $_POST['fnopkb'].'_'.$_POST['ftahunpkb'].''.$_POST['fjnspkb'],
+				'price' => 0,
+				'qty' => 1,
+				'options' => array(
+					'tgl' => $_POST['ftgl'],
+					'no_surat' => $_POST['noSJ'],
+					'no_so' => $_POST['noSOSJ'],
+					'no_pkb' => $_POST['noPKB'],
+					'no_kendaraan' => '-',
+					'nm_perusahaan' => $_POST['fnmpt'],
+					'id_perusahaan' => $_POST['fkepada'],
+					'alamat_perusahaan' => $_POST['falamat'],
+					'nama' => $_POST['fnama'],
+					'no_telp' => $_POST['ftelp'],
+					'no_po' => $_POST['fnopo'],
+					'nm_ker' => $_POST['fjenis'],
+					'g_label' => $_POST['fplhplgsm'],
+				),
+			);
+
+			$this->cart->insert($data);
+			echo json_encode(array('data' => 'cart'));
+		}else{ // simpan
+			$this->m_master->simpanCartPl();
+			echo json_encode(array('data' => 'simpan'));
+		}
+	}
+
+	function showCartPl(){
+		$html ='';
+
+		if($this->cart->total_items() != 0){
+			$html .='<table style="width:100%;font-size:12px">';
+			$html .='<tr>
+				<td style="padding:5px">TANGGAL</td>
+				<td style="padding:5px">NO. SJ</td>
+				<td style="padding:5px">NO. SO</td>
+				<td style="padding:5px">NO. PO</td>
+				<td style="padding:5px">JENIS</td>
+				<td style="padding:5px">GRAMATURE</td>
+				<td style="padding:5px">AKSI</td>
+			</tr>';
+		}
+
+		foreach($this->cart->contents() as $items){
+			$html .='<tr>
+				<td style="padding:5px">'.$items['options']['tgl'].'</td>
+				<td style="padding:5px">'.$items['options']['no_surat'].'</td>
+				<td style="padding:5px">'.$items['options']['no_so'].'</td>
+				<td style="padding:5px">'.$items['options']['no_po'].'</td>
+				<td style="padding:5px">'.$items['options']['nm_ker'].'</td>
+				<td style="padding:5px">'.$items['options']['g_label'].'</td>
+				<td style="padding:5px"><button onclick="hapusCartPl('."'".$items['rowid']."'".')">Batal</button></td>
+			</tr>';
+		}
+
+		if($this->cart->total_items() != 0){
+			$html .='</table>';
+		}
+
+		echo $html;
+	}
+
+	// function simpanCartPO(){
+	// 	$cekIdPo = $this->db->query("SELECT*FROM po_master GROUP BY id_po")->num_rows();
+	// 	if($cekIdPo == 0){
+	// 		$idpo = 1;
+	// 	}else{
+	// 		$idpo = $cekIdPo + 1;
+	// 	}
+	// 	$this->m_master->simpanCartPO($idpo);
+	// 	echo json_encode(array('data' => true));
+	// }
+
+	function hapusCartPl(){
+		$data = array(
+			'rowid' => $_POST['rowid'], 
+			'qty' => 0,
+		);
+		$this->cart->update($data);
+	}
+
+	function dessCartPl() {
+		$this->cart->destroy();
 	}
 
 	function pList(){

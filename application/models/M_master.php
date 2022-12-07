@@ -536,10 +536,28 @@ class M_master extends CI_Model{
 			// id_po id_perusahaan tgl nm_ker g_label width tonase jml_roll no_po harga pajak status
             // $txt = $user['pimpinan'].' - '.$user['nm_perusahaan'].' - '.$user['alamat'];
             $data[] = array(
-                "id" => $user['id'],
+                "id" => $user['no_po'],
                 "text" => $user['no_po'],
 				"id_po" => $user['id_po'],
+				"no_po" => $user['no_po'],
+            );
+        }
+        return $data;
+    }
+
+	function loadPlJns($search="",$id_po,$no_po){
+		$users = $this->db->query("SELECT * FROM po_master
+		WHERE id_po='$id_po' AND no_po='$no_po' AND nm_ker LIKE '%$search%'
+		GROUP BY nm_ker")->result_array();
+
+        $data = array();
+        foreach($users as $user){
+            $data[] = array(
+                "id" => $user['nm_ker'],
+                "text" => $user['nm_ker'],
+				"id_po" => $user['id_po'],
 				"nm_ker" => $user['nm_ker'],
+				// "g_label" => $user['g_label'],
 				"no_po" => $user['no_po'],
             );
         }
@@ -813,6 +831,40 @@ class M_master extends CI_Model{
             $this->db->where('id', $data['id']);
             
             $result = $this->db->update('m_timbangan');
+        }
+        return $result;
+    }
+
+	function simpanCartPl(){
+        foreach($this->cart->contents() as $data){
+			// CEK SJ JIKA ADA LEBIH DARI SATU
+			$noPkb = $data['options']['no_pkb'];
+			$cekSj = $this->db->query("SELECT*FROM pl WHERE no_pkb='$noPkb' ORDER BY id DESC");
+			if($cekSj->num_rows() == 0){
+				$nosj = $data['options']['no_surat'];
+			}else{
+				$nosj = ' '.$cekSj->row()->no_surat;
+			}
+
+			$data = array(
+				'tgl' => $data['options']['tgl'],
+				'no_surat' => $nosj,
+				'no_so' => $data['options']['no_so'],
+				'no_pkb' => $data['options']['no_pkb'],
+				'no_kendaraan' => '-',
+				'nm_perusahaan' => $data['options']['nm_perusahaan'],
+				'id_perusahaan' => $data['options']['id_perusahaan'],
+				'alamat_perusahaan' => $data['options']['alamat_perusahaan'],
+				'nama' => $data['options']['nama'],
+				'no_telp' => $data['options']['no_telp'],
+				'no_po' => $data['options']['no_po'],
+				'nm_ker' => $data['options']['nm_ker'],
+				'g_label' => $data['options']['g_label'],
+				'created_at' => date("Y-m-d H:i:s"),
+                'created_by' => $this->session->userdata('username'),
+			);
+
+			$result = $this->db->insert('pl', $data);
         }
         return $result;
     }
