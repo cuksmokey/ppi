@@ -1524,15 +1524,15 @@ class Master extends CI_Controller
 		$html ='';
 
 		if($this->cart->total_items() != 0){
-			$html .='<table style="width:100%;font-size:12px">';
+			$html .='<table style="margin-top:15px;width:100%;color:#000;font-size:12px;text-align:center;border-color:#aaa" border="1">';
 			$html .='<tr>
-				<td style="padding:5px">TANGGAL</td>
-				<td style="padding:5px">NO. SJ</td>
-				<td style="padding:5px">NO. SO</td>
-				<td style="padding:5px">NO. PO</td>
-				<td style="padding:5px">JENIS</td>
-				<td style="padding:5px">GRAMATURE</td>
-				<td style="padding:5px">AKSI</td>
+				<td style="padding:5px;font-weight:bold">TANGGAL</td>
+				<td style="padding:5px;font-weight:bold">NO. SJ</td>
+				<td style="padding:5px;font-weight:bold">NO. SO</td>
+				<td style="padding:5px;font-weight:bold">NO. PO</td>
+				<td style="padding:5px;font-weight:bold">JENIS</td>
+				<td style="padding:5px;font-weight:bold">GRAMATURE</td>
+				<td style="padding:5px;font-weight:bold">AKSI</td>
 			</tr>';
 		}
 
@@ -1555,17 +1555,6 @@ class Master extends CI_Controller
 		echo $html;
 	}
 
-	// function simpanCartPO(){
-	// 	$cekIdPo = $this->db->query("SELECT*FROM po_master GROUP BY id_po")->num_rows();
-	// 	if($cekIdPo == 0){
-	// 		$idpo = 1;
-	// 	}else{
-	// 		$idpo = $cekIdPo + 1;
-	// 	}
-	// 	$this->m_master->simpanCartPO($idpo);
-	// 	echo json_encode(array('data' => true));
-	// }
-
 	function hapusCartPl(){
 		$data = array(
 			'rowid' => $_POST['rowid'], 
@@ -1576,6 +1565,10 @@ class Master extends CI_Controller
 
 	function dessCartPl() {
 		$this->cart->destroy();
+	}
+
+	function load_pl(){
+		// 
 	}
 
 	function pList(){

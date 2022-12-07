@@ -123,7 +123,13 @@
 						<div class="list-btn-pl">
 							<div style="margin-top:15px"><button onclick="btnAdd()">ADD</button></div>
 							
-							<div class="ilist box-data-pl">LIST BOX PL</div>
+							<div class="ilist box-data-pl">
+								<button disabled="disabled">PILIH :</button>
+								<input type="date" id="tgl-list-pl" value="<?= date('Y-m-d')?>">
+								<button onclick="load_pl()">CARI</button>
+
+								<div class="show-list-pl"></div>
+							</div>
 
 							<div class="ilist box-form-pl" style="overflow:auto;white-space:nowrap;">
 								<!-- BOX FORM PL -->
@@ -191,6 +197,8 @@
 										<td style="padding:5px">:</td>
 										<td style="padding:5px" colspan="3">
 											<select class="form-control" id="fnopo" style="width:100%" autocomplete="off"></select>
+											<input type="hidden" id="hfidpo" value="">
+											<input type="hidden" id="hfnopo" value="">
 										</td>
 									</tr>
 									<tr>
@@ -382,12 +390,12 @@
 	//
 
 	function load_pt() {
-		$('#fnopo').val("").prop("disabled", true);
-		load_po('');
-		$('#fjenis').val("").prop("disabled", true);
-		plhPlPoJns('','');
-		$('#fplhplgsm').val("").prop("disabled", true);
-		plhPlGsm('','','');
+		// $('#fnopo').val("").prop("disabled", true);
+		// load_po('');
+		// $('#fjenis').val("").prop("disabled", true);
+		// plhPlPoJns('','');
+		// $('#fplhplgsm').val("").prop("disabled", true);
+		// plhPlGsm('','','');
 		$('#fkepada').select2({
 			allowClear: true,
 			placeholder: '- - SELECT - -',
@@ -416,6 +424,7 @@
 	}
 	$('#fkepada').on('change', function() {
 		data = $('#fkepada').select2('data');
+		alert(data[0].id);
 		$("#fid").val(data[0].id);
 		$("#fnmpt").val(data[0].nm_perusahaan);
 		$("#fnama").val(data[0].pimpinan);
@@ -423,22 +432,20 @@
 		$("#ftelp").val(data[0].no_telp);
 
 		$('#fnopo').val("");
-		load_po('');
 		// load_po('');
 		$('#fnopo').prop("disabled", false);
 		load_po(data[0].id);
 
-		$('#fjenis').val("").prop("disabled", true);
-		plhPlPoJns('','');
+		// $('#fjenis').val("").prop("disabled", true);
+		// plhPlPoJns('','');
 
-		$('#fplhplgsm').val("").prop("disabled", true);
-		plhPlGsm('','','');
+		// $('#fplhplgsm').val("").prop("disabled", true);
+		// plhPlGsm('','','');
 	});
 
 	function load_po(fid) {
-		// alert(fid);
-		plhPlPoJns('','');
-		plhPlGsm('','','');
+		// plhPlPoJns('','');
+		// plhPlGsm('','','');
 		$('#fnopo').select2({
 			allowClear: true,
 			placeholder: '- - SELECT - -',
@@ -469,20 +476,22 @@
 	}
 	$('#fnopo').on('change', function() {
 		data = $('#fnopo').select2('data');
-		$('#fjenis').val("");
-		plhPlPoJns('','');
 
-		plhPlPoJns(data[0].id_po,data[0].no_po);
-		$('#fjenis').prop("disabled", false);
+		// alert(data[0].id_po+' - '+data[0].no_po);
+		// alert(hfidpo+' - '+hfnopo);
+		$('#fjenis').val("");
+		// plhPlPoJns('','');
+
+		// plhPlPoJns(data[0].id_po,data[0].id);
+		alert(data[0].id_po+' - '+data[0].id);
+		// $('#fjenis').prop("disabled", false);
 		
-		$('#fplhplgsm').val("").prop("disabled", true);
-		plhPlGsm('','','');
-		// $("#fplhplgsm").val('');
+		// $('#fplhplgsm').val("").prop("disabled", true);
+		// plhPlGsm('','','');
 	});
 
 	function plhPlPoJns(id_po,no_po){
-		// alert(id_po+' - '+no_po);
-		plhPlGsm('','','');
+		// plhPlGsm('','','');
 		$('#fjenis').select2({
 			allowClear: true,
 			placeholder: '- - SELECT - -',
@@ -516,54 +525,49 @@
 	$('#fjenis').on('change', function() {
 		data = $('#fjenis').select2('data');
 		
-		plhPlGsm('','','');
+		// plhPlGsm('','','');
 		$('#fplhplgsm').prop("disabled", false);
-		plhPlGsm(data[0].id_po,data[0].no_po,data[0].nm_ker);
+		// plhPlGsm(data[0].id_po,data[0].no_po,data[0].id);
+		alert(data[0].id_po+' - '+data[0].no_po+' - '+data[0].id);
 
-		$("#fquality").val(data[0].nm_ker);
-		$("#fsoquality").val(data[0].nm_ker);
-		$("#fjns-pkb").val(data[0].nm_ker);
+		// $("#fquality").val(data[0].nm_ker);
+		// $("#fsoquality").val(data[0].nm_ker);
+		// $("#fjns-pkb").val(data[0].nm_ker);
 	});
 
-	function plhPlGsm(id_po,no_po,nm_ker){
-		// alert(id_po+' - '+no_po+' - '+nm_ker); Master/loadPlPlhGsm'
-		$('#fplhplgsm').select2({
-			allowClear: true,
-			placeholder: '- - SELECT - -',
-			ajax: {
-				dataType: 'json',
-				url: '<?php echo base_url(); ?>/Master/loadPlPlhGsm',
-				delay: 800,
-				data: function(params) {
-					if (params.term == undefined) {
-						return {
-							search: "",
-							id_po: id_po,
-							no_po: no_po,
-							nm_ker: nm_ker,
-						}
-					} else {
-						return {
-							search: params.term,
-							id_po: id_po,
-							no_po: no_po,
-							nm_ker: nm_ker,
-						}
-					}
-				},
-				processResults: function(data, page) {
-					return {
-						results: data
-					};
-				},
-			}
-		});
-	}
-	// $('#fplhplgsm').on('change', function() {
-	// 	data = $('#fplhplgsm').select2('data');
-	// 	// alert(data[0].g_label);
-	// 	// $('#fplhplgsm').val(data[0].g_label);
-	// });
+	// function plhPlGsm(id_po,no_po,nm_ker){
+	// 	$('#fplhplgsm').select2({
+	// 		allowClear: true,
+	// 		placeholder: '- - SELECT - -',
+	// 		ajax: {
+	// 			dataType: 'json',
+	// 			url: '<?php echo base_url(); ?>/Master/loadPlPlhGsm',
+	// 			delay: 800,
+	// 			data: function(params) {
+	// 				if (params.term == undefined) {
+	// 					return {
+	// 						search: "",
+	// 						id_po: id_po,
+	// 						no_po: no_po,
+	// 						nm_ker: nm_ker,
+	// 					}
+	// 				} else {
+	// 					return {
+	// 						search: params.term,
+	// 						id_po: id_po,
+	// 						no_po: no_po,
+	// 						nm_ker: nm_ker,
+	// 					}
+	// 				}
+	// 			},
+	// 			processResults: function(data, page) {
+	// 				return {
+	// 					results: data
+	// 				};
+	// 			},
+	// 		}
+	// 	});
+	// }
 
 	//
 
@@ -587,15 +591,16 @@
 		$("#fsoquality").val("");
 		$("#fjns-pkb").val("");
 
-		$('#fkepada').val("");
+		// $('#fkepada').val("");
 		load_pt();
-		$('#fnopo').val("");
+		// $('#fnopo').val("");
 		load_po('');
-		$('#fjenis').val("");
+		// $('#fjenis').val("");
 		plhPlPoJns('','');
 
-		plhPlGsm('','','');
-		// $("#fplhplgsm").html("");
+		// $("#fplhplgsm").val("");
+		// plhPlGsm('','','');
+		$(".show-add-cart-pl").load("<?php echo base_url('Master/dessCartPl') ?>");
 
 		getThnBlnRoll();
 	}
@@ -680,6 +685,22 @@
 		$("#fsobulan").val(bulan);
 	}
 
+	function load_pl(){
+		// alert('list pl');
+		tglpl = $("#tgl-list-pl").val();
+
+		$.ajax({
+			url: '<?php echo base_url('Master/load_pl')?>',
+			type: "POST",
+			data: ({
+				tglpl: tglpl,
+			}),
+			success: function(response){
+				$("#show-list-pl").html(response)
+			}
+		});		
+	}
+
 	function addCartPl(opsi){
 		// alert('cart');
 		fkepada = $("#fkepada").val(); // id_pt
@@ -750,8 +771,8 @@
 				if(json.data == 'cart'){
 					$(".show-add-cart-pl").load("<?php echo base_url('Master/showCartPl') ?>");
 				}else{
-					$(".show-add-cart-pl").load("<?php echo base_url('Master/showCartPl') ?>");
-					alert('berhasil simpan')
+					kosong();
+					alert('berhasil simpan');
 				}
 			}
 		});
@@ -768,10 +789,6 @@
 				$(".show-add-cart-pl").load("<?php echo base_url('Master/showCartPl') ?>");
 			}
 		})
-	}
-
-	function simpan(){
-		alert('save');
 	}
 
 	function load_data(tgl){

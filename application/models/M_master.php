@@ -505,9 +505,9 @@ class M_master extends CI_Model{
     function loadPtPO($searchTerm=""){
         // ASLI
 		$users = $this->db->query("SELECT p.* FROM m_perusahaan p
-        INNER JOIN pl l ON p.id=l.id_perusahaan
+        INNER JOIN po_master m ON p.id=m.id_perusahaan
         WHERE (p.pimpinan LIKE '%$searchTerm%' OR p.nm_perusahaan LIKE '%$searchTerm%' OR p.alamat LIKE '%$searchTerm%')
-        GROUP BY p.pimpinan,p.nm_perusahaan,l.id_perusahaan")->result_array();
+        GROUP BY p.pimpinan,p.nm_perusahaan,m.id_perusahaan")->result_array();
 
         $data = array();
         foreach($users as $user){
@@ -529,12 +529,10 @@ class M_master extends CI_Model{
         // ASLI
 		$users = $this->db->query("SELECT*FROM po_master
 		WHERE STATUS='open' AND id_perusahaan='$fid' AND no_po LIKE '%$searchTerm%'
-		GROUP BY id_po,no_po,id_perusahaan;")->result_array();
+		GROUP BY id_po,no_po,id_perusahaan")->result_array();
 
         $data = array();
         foreach($users as $user){
-			// id_po id_perusahaan tgl nm_ker g_label width tonase jml_roll no_po harga pajak status
-            // $txt = $user['pimpinan'].' - '.$user['nm_perusahaan'].' - '.$user['alamat'];
             $data[] = array(
                 "id" => $user['no_po'],
                 "text" => $user['no_po'],
@@ -836,6 +834,15 @@ class M_master extends CI_Model{
     }
 
 	function simpanCartPl(){
+        // CEK OPL RENCANA KIRIM
+        $tgl = $_POST['ftgl'];
+        $cekOpl = $this->db->query("SELECT*FROM pl WHERE tgl='$tgl' GROUP BY opl");
+        if($cekOpl->num_rows() == 0){
+            $opl = 1;
+        }else{
+            $opl = $cekOpl->num_rows() + 1;
+        }
+
         foreach($this->cart->contents() as $data){
 			// CEK SJ JIKA ADA LEBIH DARI SATU
 			$noPkb = $data['options']['no_pkb'];
@@ -857,6 +864,8 @@ class M_master extends CI_Model{
 				'alamat_perusahaan' => $data['options']['alamat_perusahaan'],
 				'nama' => $data['options']['nama'],
 				'no_telp' => $data['options']['no_telp'],
+                'qc' => 'proses',
+                'opl' => $opl,
 				'no_po' => $data['options']['no_po'],
 				'nm_ker' => $data['options']['nm_ker'],
 				'g_label' => $data['options']['g_label'],
