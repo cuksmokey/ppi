@@ -797,6 +797,13 @@ class Master extends CI_Controller
 		echo json_encode($response);
 	}
 
+	function loadRkPl(){
+		$search = $_GET['search'];
+		$rktgl = $_GET['rktgl'];
+		$response = $this->m_master->loadRkPl($search, $rktgl);
+		echo json_encode($response);
+	}
+
 	function loadPtPO(){ 
 		$searchTerm = $_GET['search'];
 		$response = $this->m_master->loadPtPO($searchTerm);
@@ -812,9 +819,23 @@ class Master extends CI_Controller
 
 	function loadPlJns(){ 
 		$search = $_GET['search'];
-		$id_po = $_GET['id_po'];
-		$no_po = $_GET['no_po'];
+		$idpo_nopo = $_GET['idpo_nopo'];
+		$exp = explode("_ex_", $idpo_nopo);
+		$id_po = $exp[0];
+		$no_po = $exp[1];
 		$response = $this->m_master->loadPlJns($search,$id_po,$no_po);
+		echo json_encode($response);
+	}
+
+	function loadPlPlhGsm(){ //
+		$search = $_GET['search'];
+		$idpo_nopo_nmker = $_GET['idpo_nopo_nmker'];
+		$exp = explode("_ex_", $idpo_nopo_nmker);
+		$id_po = $exp[0];
+		$no_po = $exp[1];
+		$nm_ker = $exp[2];
+
+		$response = $this->m_master->loadPlPlhGsm($search,$id_po,$no_po,$nm_ker);
 		echo json_encode($response);
 	}
 
@@ -1459,43 +1480,25 @@ class Master extends CI_Controller
 		$this->m_fungsi->_mpdf('', $html, 10, 10, 10, 'P');
 	}
 
-	function loadPlPlhGsm(){
-		$search = $_GET['search'];
-		$id_po = $_GET['id_po'];
-		$no_po = $_GET['no_po'];
-		$nm_ker = $_GET['nm_ker'];
-		// $html = '';
-
-		$users = $this->db->query("SELECT * FROM po_master
-		WHERE id_po='$id_po' AND no_po='$no_po' AND nm_ker='$nm_ker' AND g_label LIKE '%$search%'
-		GROUP BY nm_ker,g_label")->result_array();
-
-        $data = array();
-        foreach($users as $user){
-            $data[] = array(
-                "id" => $user['g_label'],
-                "text" => $user['g_label'],
-				"id_po" => $user['id_po'],
-				"nm_ker" => $user['nm_ker'],
-				"g_label" => $user['g_label'],
-				"no_po" => $user['no_po'],
-            );
-        }
-
-		echo json_encode($data);
-		// echo $html;
+	function loadNmKerSj(){
+		$id = explode("_ex_", $_POST['id']);
+		echo json_encode(array('nm_ker' => $id[2]));
 	}
 
 	function addCartPl(){
 		// fkepada fnmpt fnama falamat ftelp ftgl fplhpajak noSJ noSOSJ noPKB fnopkb ftahunpkb fjnspkb fnopo fjenis fplhplgsm
 		// tgl no_surat no_so no_pkb no_kendaraan nm_perusahaan id_perusahaan alamat_perusahaan nama no_telp no_po status qc tgl_pl opl no_pl_inv  cek_po      sj  item_desc
 		if($_POST['pilihan'] == 'cart'){
+			$expfnopo = explode("_ex_", $_POST['fnopo']);
+			$expfjenis = explode("_ex_", $_POST['fjenis']);
+
 			$data = array(
 				'id' => $_POST['fnopkb'].'_'.$_POST['ftahunpkb'].''.$_POST['fjnspkb'],
 				'name' => $_POST['fnopkb'].'_'.$_POST['ftahunpkb'].''.$_POST['fjnspkb'],
 				'price' => 0,
 				'qty' => 1,
 				'options' => array(
+					'tgl_pl' => $_POST['ftglrk'],
 					'tgl' => $_POST['ftgl'],
 					'no_surat' => $_POST['noSJ'],
 					'no_so' => $_POST['noSOSJ'],
@@ -1506,8 +1509,8 @@ class Master extends CI_Controller
 					'alamat_perusahaan' => $_POST['falamat'],
 					'nama' => $_POST['fnama'],
 					'no_telp' => $_POST['ftelp'],
-					'no_po' => $_POST['fnopo'],
-					'nm_ker' => $_POST['fjenis'],
+					'no_po' => $expfnopo[1],
+					'nm_ker' => $expfjenis[2],
 					'g_label' => $_POST['fplhplgsm'],
 				),
 			);
@@ -1565,10 +1568,6 @@ class Master extends CI_Controller
 
 	function dessCartPl() {
 		$this->cart->destroy();
-	}
-
-	function load_pl(){
-		// 
 	}
 
 	function pList(){

@@ -502,12 +502,26 @@ class M_master extends CI_Model{
 		return $data;
     }
 
+	function loadRkPl($searh = "", $rktgl = ""){
+		$users = $this->db->query("SELECT*FROM pl
+		WHERE tgl_pl='$rktgl' AND (nama LIKE '%$searh%' OR nm_perusahaan LIKE '%$searh%')
+		GROUP BY opl")->result_array();
+
+        $data = array();
+        foreach($users as $user){
+            $data[] = array(
+                "id" => $user['id'],
+                // "text" => $txt, 
+            );
+        }
+        return $data;
+    }
+
     function loadPtPO($searchTerm=""){
-        // ASLI
 		$users = $this->db->query("SELECT p.* FROM m_perusahaan p
         INNER JOIN po_master m ON p.id=m.id_perusahaan
-        WHERE (p.pimpinan LIKE '%$searchTerm%' OR p.nm_perusahaan LIKE '%$searchTerm%' OR p.alamat LIKE '%$searchTerm%')
-        GROUP BY p.pimpinan,p.nm_perusahaan,m.id_perusahaan")->result_array();
+        WHERE (p.pimpinan LIKE '%$searchTerm%' OR p.nm_perusahaan LIKE '%$searchTerm%' OR p.alamat LIKE '%$searchTerm%') AND m.status='open'
+        GROUP BY p.pimpinan,p.nm_perusahaan,m.id_perusahaan,m.status")->result_array();
 
         $data = array();
         foreach($users as $user){
@@ -526,41 +540,49 @@ class M_master extends CI_Model{
     }
 
 	function loadPlPO($searchTerm="", $fid=""){
-        // ASLI
 		$users = $this->db->query("SELECT*FROM po_master
 		WHERE STATUS='open' AND id_perusahaan='$fid' AND no_po LIKE '%$searchTerm%'
-		GROUP BY id_po,no_po,id_perusahaan")->result_array();
+		GROUP BY id_po,no_po,id_perusahaan,status")->result_array();
 
         $data = array();
         foreach($users as $user){
             $data[] = array(
-                "id" => $user['no_po'],
+                "id" => $user['id_po'].'_ex_'.$user['no_po'],
                 "text" => $user['no_po'],
-				"id_po" => $user['id_po'],
-				"no_po" => $user['no_po'],
             );
         }
         return $data;
     }
 
-	function loadPlJns($search="",$id_po,$no_po){
+	function loadPlJns($search="", $id_po="", $no_po=""){
 		$users = $this->db->query("SELECT * FROM po_master
-		WHERE id_po='$id_po' AND no_po='$no_po' AND nm_ker LIKE '%$search%'
-		GROUP BY nm_ker")->result_array();
+		WHERE id_po='$id_po' AND no_po='$no_po' AND nm_ker LIKE '%$search%' AND status='open'
+		GROUP BY id_po,no_po,nm_ker")->result_array();
 
         $data = array();
         foreach($users as $user){
             $data[] = array(
-                "id" => $user['nm_ker'],
+                "id" => $user['id_po'].'_ex_'.$user['no_po'].'_ex_'.$user['nm_ker'],
                 "text" => $user['nm_ker'],
-				"id_po" => $user['id_po'],
-				"nm_ker" => $user['nm_ker'],
-				// "g_label" => $user['g_label'],
-				"no_po" => $user['no_po'],
             );
         }
         return $data;
     }
+
+	function loadPlPlhGsm($search="", $id_po="", $no_po="", $nm_ker=""){
+		$users = $this->db->query("SELECT * FROM po_master
+		WHERE id_po='$id_po' AND no_po='$no_po' AND nm_ker='$nm_ker' AND g_label LIKE '%$search%' AND status='open'
+		GROUP BY nm_ker,g_label")->result_array();
+
+        $data = array();
+        foreach($users as $user){
+            $data[] = array(
+                "id" => $user['g_label'],
+                "text" => $user['g_label'],
+            );
+        }
+		return $data;
+	}
 
     function get_invoice(){
         $query = "SELECT * FROM invoice_header ORDER BY tgl,no_invoice";
@@ -850,10 +872,11 @@ class M_master extends CI_Model{
 			if($cekSj->num_rows() == 0){
 				$nosj = $data['options']['no_surat'];
 			}else{
-				$nosj = ' '.$cekSj->row()->no_surat;
+				$nosj = ' '.$cekSj->row()->no_surat; // TINJAU ULANG
 			}
 
 			$data = array(
+				'tgl_pl' => $data['options']['tgl_pl'],
 				'tgl' => $data['options']['tgl'],
 				'no_surat' => $nosj,
 				'no_so' => $data['options']['no_so'],

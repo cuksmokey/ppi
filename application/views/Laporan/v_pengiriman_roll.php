@@ -126,9 +126,10 @@
 							<div class="ilist box-data-pl">
 								<button disabled="disabled">PILIH :</button>
 								<input type="date" id="tgl-list-pl" value="<?= date('Y-m-d')?>">
-								<button onclick="load_pl()">CARI</button>
+								<button onclick="load_data()">CARI</button>
 
-								<div class="show-list-pl"></div>
+								<div class="list-pl"></div>
+								<div class="list-pl-cek"></div>
 							</div>
 
 							<div class="ilist box-form-pl" style="overflow:auto;white-space:nowrap;">
@@ -231,7 +232,14 @@
 										<td style="width:auto;padding:5px"></td>
 									</tr>
 									<tr>
-										<td style="padding:5px;font-weight:bold">TANGGAL</td>
+										<td style="padding:5px;font-weight:bold">RENCANA KIRIM</td>
+										<td style="padding:5px;text-align:center">:</td>
+										<td style="padding:5px">
+											<input type="date" id="ftglrk" class="form-control">
+										</td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">KIRIM TANGGAL</td>
 										<td style="padding:5px;text-align:center">:</td>
 										<td style="padding:5px">
 											<input type="date" id="ftgl" class="form-control">
@@ -275,7 +283,7 @@
 										<td style="padding:5px" colspan="3">
 											<table style="width:100%">
 												<tr>
-													<td><input type="text" id="fnoso" class="form-control" placeholder="NO" autocomplete="off" maxlength="4"></td>
+													<td><input type="text" id="fnoso" class="form-control" placeholder="NO" autocomplete="off" maxlength="4" disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
 													<td><input type="text" id="fsoroll" class="form-control" placeholder="SO-ROLL" value="SO-ROLL" autocomplete="off"></td>
 													<td style="padding:0 5px">/</td>
@@ -296,7 +304,7 @@
 										<td style="padding:5px">
 											<table style="width:100%">
 												<tr>
-													<td><input type="text" id="fnopkb" class="form-control" placeholder="NO" autocomplete="off" maxlength="4"></td>
+													<td><input type="text" id="fnopkb" class="form-control" placeholder="NO" autocomplete="off" maxlength="4" disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
 													<td><input type="text" id="ftahun-pkb" class="form-control" placeholder="TAHUN" autocomplete="off"></td>
 													<td style="padding:0 5px">/</td>
@@ -316,16 +324,77 @@
 						</div>
 						
 						<div class="list-btn-rk">
+							<div style="margin-top:15px"><button onclick="btnAddrk()">ADD</button></div>
+
 							<div class="ilist box-data-rk">BOX RK</div>
-							<div class="ilist box-form-rk">BOX FORM RK</div>
+
+							<div class="ilist box-form-rk">
+								<table style="width:100%" border="1">
+									<tr>
+										<td style="width:15%;padding:5px"></td>
+										<td style="width:1%;padding:5px"></td>
+										<td style="width:10%;padding:5px"></td>
+										<td style="width:5%;padding:5px"></td>
+										<td style="width:auto;padding:5px"></td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">RENCANA KIRIM</td>
+										<td style="padding:5px">:</td>
+										<td style="padding:5px" colspan="2">
+											<input type="date" id="rktgl" class="form-control">
+										</td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">PACKING LIST</td>
+										<td style="padding:5px">:</td>
+										<td style="padding:5px" colspan="3">
+											<select id="rkpl" class="form-control"></select>
+										</td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">PO</td>
+										<td style="padding:5px">:</td>
+										<td style="padding:5px" colspan="3">
+											<select id="rkpo" class="form-control"></select>
+										</td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">JENIS</td>
+										<td style="padding:5px">:</td>
+										<td style="padding:5px" colspan="3">
+											<select id="rkjenis" class="form-control"></select>
+										</td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">GRAMATURE</td>
+										<td style="padding:5px">:</td>
+										<td style="padding:5px" colspan="3">
+											<select id="rkglabel" class="form-control"></select>
+										</td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">UKURAN</td>
+										<td style="padding:5px">:</td>
+										<td style="padding:5px" colspan="3">
+											<select id="rkukuran" class="form-control"></select>
+										</td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">JUMLAH ROLL</td>
+										<td style="padding:5px">:</td>
+										<td style="padding:5px">
+											<input type="text" id="rkjmlroll" class="form-control">
+										</td>
+										<td style="padding:5px">
+											<button>ADD</button>
+										</td>
+									</tr>
+								</table>
+
+								<!--  -->
+							</div>
 						</div>
 
-						<!-- <button disabled="disabled">PILIH :</button>
-						<input type="date" name="ngirim-tgl" id="ngirim-tgl" value="<?= date('Y-m-d')?>">
-						<button onclick="load_data()">CARI</button> -->
-						
-						<div class="list-pl"></div>
-						<div class="list-pl-cek"></div>
 					</div>
 				</div>
 			</div>
@@ -373,6 +442,22 @@
 		$(".show-add-cart-pl").load("<?php echo base_url('Master/dessCartPl') ?>");
 	});
 
+	function pilih_opsi(plrk){
+		if(plrk == 'pl'){
+			$(".list-btn-pl").show();
+			$(".list-btn-rk").hide();
+			$(".box-form-pl").hide();
+
+			tgl = $("#tgl-list-pl").val();
+			load_data(tgl);
+		}else{
+			$(".list-btn-pl").hide();
+			$(".list-btn-rk").show();
+
+			$(".box-form-rk").hide();
+		}
+	}
+
 	$('#fplhpajak').on('change', function() { // OPSI PAJAK
 		pjk = $('#fplhpajak').val();
 		// alert(pjk);
@@ -390,19 +475,18 @@
 	//
 
 	function load_pt() {
-		// $('#fnopo').val("").prop("disabled", true);
-		// load_po('');
-		// $('#fjenis').val("").prop("disabled", true);
-		// plhPlPoJns('','');
-		// $('#fplhplgsm').val("").prop("disabled", true);
-		// plhPlGsm('','','');
+		$('#fnopo').val("").prop("disabled", true);
+		load_po('');
+		$('#fjenis').val("").prop("disabled", true);
+		plhPlPoJns('');
+		$('#fplhplgsm').val("").prop("disabled", true);
+		plhPlGsm('');
 		$('#fkepada').select2({
 			allowClear: true,
 			placeholder: '- - SELECT - -',
 			ajax: {
 				dataType: 'json',
 				url: '<?php echo base_url(); ?>/Master/loadPtPO',
-				delay: 800,
 				data: function(params) {
 					if (params.term == undefined) {
 						return {
@@ -424,7 +508,7 @@
 	}
 	$('#fkepada').on('change', function() {
 		data = $('#fkepada').select2('data');
-		alert(data[0].id);
+		
 		$("#fid").val(data[0].id);
 		$("#fnmpt").val(data[0].nm_perusahaan);
 		$("#fnama").val(data[0].pimpinan);
@@ -432,27 +516,22 @@
 		$("#ftelp").val(data[0].no_telp);
 
 		$('#fnopo').val("");
-		// load_po('');
-		$('#fnopo').prop("disabled", false);
 		load_po(data[0].id);
-
-		// $('#fjenis').val("").prop("disabled", true);
-		// plhPlPoJns('','');
-
-		// $('#fplhplgsm').val("").prop("disabled", true);
-		// plhPlGsm('','','');
+		$('#fjenis').val("").prop("disabled", true);
+		plhPlPoJns('');
+		$('#fplhplgsm').val("").prop("disabled", true);
+		plhPlGsm('');
+		
+		$('#fnopo').prop("disabled", false);
 	});
 
 	function load_po(fid) {
-		// plhPlPoJns('','');
-		// plhPlGsm('','','');
 		$('#fnopo').select2({
 			allowClear: true,
 			placeholder: '- - SELECT - -',
 			ajax: {
 				dataType: 'json',
 				url: '<?php echo base_url(); ?>/Master/loadPlPO',
-				delay: 800,
 				data: function(params) {
 					if (params.term == undefined) {
 						return {
@@ -475,42 +554,33 @@
 		});
 	}
 	$('#fnopo').on('change', function() {
-		data = $('#fnopo').select2('data');
-
-		// alert(data[0].id_po+' - '+data[0].no_po);
-		// alert(hfidpo+' - '+hfnopo);
+		data = $('#fnopo').select2('data');	
 		$('#fjenis').val("");
-		// plhPlPoJns('','');
-
-		// plhPlPoJns(data[0].id_po,data[0].id);
-		alert(data[0].id_po+' - '+data[0].id);
-		// $('#fjenis').prop("disabled", false);
+		plhPlPoJns(data[0].id);
 		
-		// $('#fplhplgsm').val("").prop("disabled", true);
-		// plhPlGsm('','','');
+		$('#fjenis').prop("disabled", false);
+		$('#fplhplgsm').val("").prop("disabled", true);
+		plhPlGsm('');
 	});
 
-	function plhPlPoJns(id_po,no_po){
-		// plhPlGsm('','','');
+	// function plhPlPoJns(id_po,no_po){
+	function plhPlPoJns(idpo_nopo){
 		$('#fjenis').select2({
 			allowClear: true,
 			placeholder: '- - SELECT - -',
 			ajax: {
 				dataType: 'json',
 				url: '<?php echo base_url(); ?>/Master/loadPlJns',
-				delay: 800,
 				data: function(params) {
 					if (params.term == undefined) {
 						return {
 							search: "",
-							id_po: id_po,
-							no_po: no_po,
+							idpo_nopo: idpo_nopo,
 						}
 					} else {
 						return {
 							search: params.term,
-							id_po: id_po,
-							no_po: no_po,
+							idpo_nopo: idpo_nopo,
 						}
 					}
 				},
@@ -525,49 +595,59 @@
 	$('#fjenis').on('change', function() {
 		data = $('#fjenis').select2('data');
 		
-		// plhPlGsm('','','');
-		$('#fplhplgsm').prop("disabled", false);
-		// plhPlGsm(data[0].id_po,data[0].no_po,data[0].id);
-		alert(data[0].id_po+' - '+data[0].no_po+' - '+data[0].id);
+		$('#fplhplgsm').val("");
+		plhPlGsm('');
+		plhPlGsm(data[0].id);
 
-		// $("#fquality").val(data[0].nm_ker);
-		// $("#fsoquality").val(data[0].nm_ker);
-		// $("#fjns-pkb").val(data[0].nm_ker);
+		$('#fplhplgsm').prop("disabled", false);
+
+		loadNmKerSj(data[0].id);
 	});
 
-	// function plhPlGsm(id_po,no_po,nm_ker){
-	// 	$('#fplhplgsm').select2({
-	// 		allowClear: true,
-	// 		placeholder: '- - SELECT - -',
-	// 		ajax: {
-	// 			dataType: 'json',
-	// 			url: '<?php echo base_url(); ?>/Master/loadPlPlhGsm',
-	// 			delay: 800,
-	// 			data: function(params) {
-	// 				if (params.term == undefined) {
-	// 					return {
-	// 						search: "",
-	// 						id_po: id_po,
-	// 						no_po: no_po,
-	// 						nm_ker: nm_ker,
-	// 					}
-	// 				} else {
-	// 					return {
-	// 						search: params.term,
-	// 						id_po: id_po,
-	// 						no_po: no_po,
-	// 						nm_ker: nm_ker,
-	// 					}
-	// 				}
-	// 			},
-	// 			processResults: function(data, page) {
-	// 				return {
-	// 					results: data
-	// 				};
-	// 			},
-	// 		}
-	// 	});
-	// }
+	function loadNmKerSj(id){
+		$.ajax({
+			url: '<?php echo base_url('Master/loadNmKerSj')?>',
+			type: "POST",
+			data: ({
+				id: id
+			}),
+			success: function(response){
+				data = JSON.parse(response)
+				$("#fquality").val(data.nm_ker);
+				$("#fsoquality").val(data.nm_ker);
+				$("#fjns-pkb").val(data.nm_ker);
+			}
+		})
+	}
+
+	function plhPlGsm(idpo_nopo_nmker){
+		$('#fplhplgsm').select2({
+			allowClear: true,
+			placeholder: '- - SELECT - -',
+			ajax: {
+				dataType: 'json',
+				url: '<?php echo base_url(); ?>/Master/loadPlPlhGsm',
+				data: function(params) {
+					if (params.term == undefined) {
+						return {
+							search: "",
+							idpo_nopo_nmker: idpo_nopo_nmker,
+						}
+					} else {
+						return {
+							search: params.term,
+							idpo_nopo_nmker: idpo_nopo_nmker,
+						}
+					}
+				},
+				processResults: function(data, page) {
+					return {
+						results: data
+					};
+				},
+			}
+		});
+	}
 
 	//
 
@@ -585,35 +665,27 @@
 		$("#falamat").val("");
 		$("#ftelp").val("");
 
+		$("#fnosj").val("");
+		$("#fnoso").val("");
+		$("#fnopkb").val("");
+		$('#ftglrk').val("");
 		$('#ftgl').val("");
 		$('#fplhpajak').val("");
 		$("#fquality").val("");
 		$("#fsoquality").val("");
 		$("#fjns-pkb").val("");
 
-		// $('#fkepada').val("");
+		$('#fkepada').val("");
 		load_pt();
-		// $('#fnopo').val("");
+		$('#fnopo').val("");
 		load_po('');
-		// $('#fjenis').val("");
-		plhPlPoJns('','');
-
-		// $("#fplhplgsm").val("");
-		// plhPlGsm('','','');
+		$('#fjenis').val("");
+		plhPlPoJns('');
+		$("#fplhplgsm").val("");
+		plhPlGsm('');
 		$(".show-add-cart-pl").load("<?php echo base_url('Master/dessCartPl') ?>");
 
 		getThnBlnRoll();
-	}
-
-	function pilih_opsi(plrk){
-		if(plrk == 'pl'){
-			$(".list-btn-pl").show();
-			$(".list-btn-rk").hide();
-			$(".box-form-pl").hide();
-		}else{
-			$(".list-btn-pl").hide();
-			$(".list-btn-rk").show();
-		}
 	}
 
 	function btnAdd(){
@@ -685,6 +757,11 @@
 		$("#fsobulan").val(bulan);
 	}
 
+	$("#fnosj").keyup(function(){
+		$("#fnoso").val(this.value);
+		$("#fnopkb").val(this.value);
+	})
+
 	function load_pl(){
 		// alert('list pl');
 		tglpl = $("#tgl-list-pl").val();
@@ -710,6 +787,7 @@
 		ftelp = $("#ftelp").val();
 		// alert(fid+' - '+fkepada+' - '+fnmpt+' - '+fnama+' - '+falamat+' - '+ftelp);
 
+		ftglrk = $("#ftglrk").val();
 		ftgl = $("#ftgl").val();
 		fplhpajak = $("#fplhpajak").val();
 		// alert(ftgl+' - '+fplhpajak);
@@ -752,6 +830,7 @@
 				fnama: fnama,
 				falamat: falamat,
 				ftelp: ftelp,
+				ftglrk: ftglrk,
 				ftgl: ftgl,
 				fplhpajak: fplhpajak,
 				noSJ: noSJ,
@@ -767,12 +846,12 @@
 			}),
 			success: function(response){
 				json = JSON.parse(response);
-				// console.log(json);
 				if(json.data == 'cart'){
 					$(".show-add-cart-pl").load("<?php echo base_url('Master/showCartPl') ?>");
 				}else{
 					kosong();
-					alert('berhasil simpan');
+					tgl = $("#tgl-list-pl").val();
+					load_data(tgl);
 				}
 			}
 		});
@@ -791,9 +870,93 @@
 		})
 	}
 
+	///////////////////////////////////////////////////////////////////////////////////////
+	// RENCANA KIRIM
+
+	function btnAddrk(){
+		rkkosong();
+		$(".box-data-rk").hide();
+		$(".box-form-rk").show();
+	}
+
+	function rkkosong(){
+		$("#rktgl").val("");
+		$("#rkpl").val("");
+		$("#rkpo").val("");
+		$("#rkjenis").val("");
+		$("#rkglabel").val("");
+		$("#rkukuran").val("");
+		$("#rkjmlroll").val("");
+
+		$(".box-data-rk").show();
+		$(".box-form-rk").hide();
+	}
+
+	// 
+
+	$('#rktgl').on('change', function() {
+		rktgl = $("#rktgl").val();
+		load_pt(rktgl);
+	});
+
+	function load_pt(rktgl) {
+		// $('#fnopo').val("").prop("disabled", true);
+		// load_po('');
+		// $('#fjenis').val("").prop("disabled", true);
+		// plhPlPoJns('');
+		// $('#fplhplgsm').val("").prop("disabled", true);
+		// plhPlGsm('');
+		$('#rkpl').select2({
+			allowClear: true,
+			placeholder: '- - SELECT - -',
+			ajax: {
+				dataType: 'json',
+				url: '<?php echo base_url(); ?>/Master/loadRkPl',
+				data: function(params) {
+					if (params.term == undefined) {
+						return {
+							search: "",
+							rktgl: rktgl,
+						}
+					} else {
+						return {
+							search: params.term,
+							rktgl: rktgl,
+						}
+					}
+				},
+				processResults: function(data, page) {
+					return {
+						results: data
+					};
+				},
+			}
+		});
+	}
+	$('#rkpl').on('change', function() {
+		data = $('#rkpl').select2('data');
+		
+		// $("#fid").val(data[0].id);
+		// $("#fnmpt").val(data[0].nm_perusahaan);
+		// $("#fnama").val(data[0].pimpinan);
+		// $("#falamat").val(data[0].alamat);
+		// $("#ftelp").val(data[0].no_telp);
+
+		// $('#fnopo').val("");
+		// load_po(data[0].id);
+		// $('#fjenis').val("").prop("disabled", true);
+		// plhPlPoJns('');
+		// $('#fplhplgsm').val("").prop("disabled", true);
+		// plhPlGsm('');
+		
+		// $('#fnopo').prop("disabled", false);
+	});
+
+	// 
+
 	function load_data(tgl){
 		kosong();
-		tgl = $("#ngirim-tgl").val();
+		tgl = $("#tgl-list-pl").val();
 		$(".list-pl").show().html('<div class="notfon">SEDANG MEMUAT . . .</div>');
 		$.ajax({
 			url: '<?php echo base_url('Master/pList'); ?>',
