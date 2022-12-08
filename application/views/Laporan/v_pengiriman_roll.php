@@ -198,8 +198,6 @@
 										<td style="padding:5px">:</td>
 										<td style="padding:5px" colspan="3">
 											<select class="form-control" id="fnopo" style="width:100%" autocomplete="off"></select>
-											<input type="hidden" id="hfidpo" value="">
-											<input type="hidden" id="hfnopo" value="">
 										</td>
 									</tr>
 									<tr>
@@ -262,13 +260,13 @@
 										<td style="padding:5px" colspan="3">
 											<table style="width:100%">
 												<tr>
-													<td><input type="text" id="fnosj" class="form-control" placeholder="NO" autocomplete="off" maxlength="4"></td>
+													<td><input type="text" id="fnosj" class="form-control" placeholder="NO" autocomplete="off" maxlength="4" onkeypress="return hanyaAngka(event)"></td>
 													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="froll" class="form-control" placeholder="ROLL" value="ROLL" autocomplete="off"></td>
+													<td><input type="text" id="froll" class="form-control" placeholder="ROLL" value="ROLL" autocomplete="off" disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fbulan" class="form-control" placeholder="BULAN" autocomplete="off"></td>
+													<td><input type="text" id="fbulan" class="form-control" placeholder="BULAN" autocomplete="off" disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="ftahun" class="form-control" placeholder="TAHUN" autocomplete="off"></td>
+													<td><input type="text" id="ftahun" class="form-control" placeholder="TAHUN" autocomplete="off" disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
 													<td><input type="text" id="fpajak" class="form-control" placeholder="PAJAK" autocomplete="off" maxlength="1" disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
@@ -285,11 +283,11 @@
 												<tr>
 													<td><input type="text" id="fnoso" class="form-control" placeholder="NO" autocomplete="off" maxlength="4" disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fsoroll" class="form-control" placeholder="SO-ROLL" value="SO-ROLL" autocomplete="off"></td>
+													<td><input type="text" id="fsoroll" class="form-control" placeholder="SO-ROLL" value="SO-ROLL" autocomplete="off" disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fsobulan" class="form-control" placeholder="BULAN" autocomplete="off"></td>
+													<td><input type="text" id="fsobulan" class="form-control" placeholder="BULAN" autocomplete="off"  disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fsotahun" class="form-control" placeholder="TAHUN" autocomplete="off"></td>
+													<td><input type="text" id="fsotahun" class="form-control" placeholder="TAHUN" autocomplete="off" disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
 													<td><input type="text" id="fsopajak" class="form-control" placeholder="PAJAK" autocomplete="off" maxlength="1" disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
@@ -307,7 +305,7 @@
 													<td><input type="text" id="fnopkb" class="form-control" placeholder="NO" autocomplete="off" maxlength="4" disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
 													<td><input type="text" id="ftahun-pkb" class="form-control" placeholder="TAHUN" autocomplete="off"></td>
-													<td style="padding:0 5px">/</td>
+													<td style="padding:0 5px" disabled style="background:#e9e9e9">/</td>
 													<td><input type="text" id="fjns-pkb" class="form-control" placeholder="JENIS" autocomplete="off" maxlength="2" disabled style="background:#e9e9e9"></td>
 												</tr>
 											</table>
@@ -348,35 +346,35 @@
 										<td style="padding:5px;font-weight:bold">PACKING LIST</td>
 										<td style="padding:5px">:</td>
 										<td style="padding:5px" colspan="3">
-											<select id="rkpl" class="form-control"></select>
+											<select id="rkpl" class="form-control" style="width:100%"></select>
 										</td>
 									</tr>
 									<tr>
 										<td style="padding:5px;font-weight:bold">PO</td>
 										<td style="padding:5px">:</td>
 										<td style="padding:5px" colspan="3">
-											<select id="rkpo" class="form-control"></select>
+											<select id="rkpo" class="form-control" style="width:100%"></select>
 										</td>
 									</tr>
 									<tr>
 										<td style="padding:5px;font-weight:bold">JENIS</td>
 										<td style="padding:5px">:</td>
 										<td style="padding:5px" colspan="3">
-											<select id="rkjenis" class="form-control"></select>
+											<select id="rkjenis" class="form-control" style="width:100%"></select>
 										</td>
 									</tr>
 									<tr>
 										<td style="padding:5px;font-weight:bold">GRAMATURE</td>
 										<td style="padding:5px">:</td>
 										<td style="padding:5px" colspan="3">
-											<select id="rkglabel" class="form-control"></select>
+											<select id="rkglabel" class="form-control" style="width:100%"></select>
 										</td>
 									</tr>
 									<tr>
 										<td style="padding:5px;font-weight:bold">UKURAN</td>
 										<td style="padding:5px">:</td>
 										<td style="padding:5px" colspan="3">
-											<select id="rkukuran" class="form-control"></select>
+											<select id="rkukuran" class="form-control" style="width:100%"></select>
 										</td>
 									</tr>
 									<tr>
@@ -386,12 +384,12 @@
 											<input type="text" id="rkjmlroll" class="form-control">
 										</td>
 										<td style="padding:5px">
-											<button>ADD</button>
+											<button onclick="addCartRk()">ADD</button>
 										</td>
 									</tr>
 								</table>
 
-								<!--  -->
+								<div class="show-cart-rk" style="margin-top:15px"></div>
 							</div>
 						</div>
 
@@ -440,6 +438,7 @@
 		}
 
 		$(".show-add-cart-pl").load("<?php echo base_url('Master/dessCartPl') ?>");
+		$(".show-cart-rk").load("<?php echo base_url('Master/dessCartRk') ?>");
 	});
 
 	function pilih_opsi(plrk){
@@ -685,64 +684,71 @@
 		plhPlGsm('');
 		$(".show-add-cart-pl").load("<?php echo base_url('Master/dessCartPl') ?>");
 
-		getThnBlnRoll();
+		// getThnBlnRoll();
 	}
 
 	function btnAdd(){
 		kosong();
-		getThnBlnRoll();
+		// getThnBlnRoll();
 		$(".box-data-pl").hide();
 		$(".box-form-pl").show();
 	}
 
 	function btnBack(){
 		kosong();
-		// getThnBlnRoll();
 		$(".box-data-pl").show();
 		$(".box-form-pl").hide();
 	}
 
-	function getThnBlnRoll() {
-		let num = new Date().getFullYear();
+	$('#ftgl').on('change', function() { // OPSI PAJAK
+		ftgl = $("#ftgl").val();
+		getThnBlnRoll(ftgl);
+	});
+
+	function getThnBlnRoll(ftgl) {
+		// let num = new Date().getFullYear();
+		let num = ftgl;
 		let text = num.toString();
 		let tahun = text.substr(2, 2);
+		let bulan = text.substr(5, 2);
+		alert(text+' - '+tahun+' - '+bulan);
 
-		let bulan;
-		switch (new Date().getMonth()) {
-			case 0:
+		// let bulan;
+		switch (bulan) {
+			case '01':
 				bulan = "I";
 				break;
-			case 1:
+			case '02':
 				bulan = "II";
 				break;
-			case 2:
+			case '03':
 				bulan = "III";
 				break;
-			case 3:
+			case '04':
 				bulan = "IV";
 				break;
-			case 4:
+			case '05':
 				bulan = "V";
 				break;
-			case 5:
+			case '06':
 				bulan = "VI";
 				break;
-			case 6:
+			case '07':
 				bulan = "VII";
 				break;
-			case 7:
+			case '08':
 				bulan = "VIII";
 				break;
-			case 8:
+			case '09':
 				bulan = "IX";
 				break;
-			case 9:
+			case '10':
 				bulan = "X";
 				break;
-			case 10:
+			case '11':
 				bulan = "XI";
 				break;
-			case 11:
+			case '12':
 				bulan = "XII";
 				break;
 			default:
@@ -877,6 +883,18 @@
 		rkkosong();
 		$(".box-data-rk").hide();
 		$(".box-form-rk").show();
+		$('#rkpl').val("").prop('disabled', true);
+		load_rkpl();
+		$('#rkpo').val("").prop('disabled', true);
+		load_rkpo();
+		$('#rkjenis').val("").prop('disabled', true);
+		load_rkjns();
+		$('#rkglabel').val("").prop('disabled', true);
+		load_rkgsm();
+		$("#rkukuran").val("").prop('disabled', true);
+		load_rkuk();
+
+		$("#rkjmlroll").val("").prop('disabled', true).attr('style', 'background:#e9e9e9');
 	}
 
 	function rkkosong(){
@@ -890,22 +908,21 @@
 
 		$(".box-data-rk").show();
 		$(".box-form-rk").hide();
+		$(".show-cart-rk").load("<?php echo base_url('Master/dessCartRk') ?>");
 	}
 
 	// 
 
 	$('#rktgl').on('change', function() {
+		$('#rkpl').val("").prop('disabled', false);
 		rktgl = $("#rktgl").val();
-		load_pt(rktgl);
+		load_rkpl(rktgl);
+
+		$(".show-cart-rk").load("<?php echo base_url('Master/dessCartRk') ?>");
+		// rkpo rkjenis rkglabel rkukuran
 	});
 
-	function load_pt(rktgl) {
-		// $('#fnopo').val("").prop("disabled", true);
-		// load_po('');
-		// $('#fjenis').val("").prop("disabled", true);
-		// plhPlPoJns('');
-		// $('#fplhplgsm').val("").prop("disabled", true);
-		// plhPlGsm('');
+	function load_rkpl(rktgl) {
 		$('#rkpl').select2({
 			allowClear: true,
 			placeholder: '- - SELECT - -',
@@ -935,22 +952,217 @@
 	}
 	$('#rkpl').on('change', function() {
 		data = $('#rkpl').select2('data');
-		
-		// $("#fid").val(data[0].id);
-		// $("#fnmpt").val(data[0].nm_perusahaan);
-		// $("#fnama").val(data[0].pimpinan);
-		// $("#falamat").val(data[0].alamat);
-		// $("#ftelp").val(data[0].no_telp);
 
-		// $('#fnopo').val("");
-		// load_po(data[0].id);
-		// $('#fjenis').val("").prop("disabled", true);
-		// plhPlPoJns('');
-		// $('#fplhplgsm').val("").prop("disabled", true);
-		// plhPlGsm('');
-		
-		// $('#fnopo').prop("disabled", false);
+		$('#rkpo').val("").prop('disabled', false);
+		load_rkpo(data[0].id);
+		$('#rkjenis').val("").prop('disabled', true);
+		load_rkjns();
+		$('#rkglabel').val("").prop('disabled', true);
+		load_rkgsm();
+		$('#rkukuran').val("").prop('disabled', true);
+		load_rkuk();
+
+		$("#rkjmlroll").val("").prop('disabled', true).attr('style', 'background:#e9e9e9');
+
+		$(".show-cart-rk").load("<?php echo base_url('Master/dessCartRk') ?>");
+		// rkpo rkjenis rkglabel rkukuran
 	});
+
+	function load_rkpo(opl_tglpl) {
+		$('#rkpo').select2({
+			allowClear: true,
+			placeholder: '- - SELECT - -',
+			ajax: {
+				dataType: 'json',
+				url: '<?php echo base_url(); ?>/Master/loadRkPo',
+				data: function(params) {
+					if (params.term == undefined) {
+						return {
+							search: "",
+							opl_tglpl: opl_tglpl,
+						}
+					} else {
+						return {
+							search: params.term,
+							opl_tglpl: opl_tglpl,
+						}
+					}
+				},
+				processResults: function(data, page) {
+					return {
+						results: data
+					};
+				},
+			}
+		});
+	}
+	$('#rkpo').on('change', function() {
+		data = $('#rkpo').select2('data');
+
+		$('#rkjenis').val("").prop('disabled', false);
+		load_rkjns(data[0].id);
+		$('#rkglabel').val("").prop('disabled', true);
+		load_rkgsm();
+		$("#rkukuran").val("").prop('disabled', true);
+		load_rkuk();
+
+		$("#rkjmlroll").val("").prop('disabled', true).attr('style', 'background:#e9e9e9');
+		// rkpo rkjenis rkglabel rkukuran
+	});
+
+	function load_rkjns(opl_tglpl_nopo) {
+		$('#rkjenis').select2({
+			allowClear: true,
+			placeholder: '- - SELECT - -',
+			ajax: {
+				dataType: 'json',
+				url: '<?php echo base_url(); ?>/Master/loadRkJns',
+				data: function(params) {
+					if (params.term == undefined) {
+						return {
+							search: "",
+							opl_tglpl_nopo: opl_tglpl_nopo,
+						}
+					} else {
+						return {
+							search: params.term,
+							opl_tglpl_nopo: opl_tglpl_nopo,
+						}
+					}
+				},
+				processResults: function(data, page) {
+					return {
+						results: data
+					};
+				},
+			}
+		});
+	}
+	$('#rkjenis').on('change', function() {
+		data = $('#rkjenis').select2('data');
+
+		$('#rkglabel').val("").prop('disabled', false);
+		load_rkgsm(data[0].id);
+		$("#rkukuran").val("").prop('disabled', true);
+		load_rkuk();
+
+		$("#rkjmlroll").val("").prop('disabled', true).attr('style', 'background:#e9e9e9');
+		// rkpo rkjenis rkglabel rkukuran
+	});
+
+	function load_rkgsm(opl_tglpl_nopo_nmker) {
+		$('#rkglabel').select2({
+			allowClear: true,
+			placeholder: '- - SELECT - -',
+			ajax: {
+				dataType: 'json',
+				url: '<?php echo base_url(); ?>/Master/loadRkGsm',
+				data: function(params) {
+					if (params.term == undefined) {
+						return {
+							search: "",
+							opl_tglpl_nopo_nmker: opl_tglpl_nopo_nmker,
+						}
+					} else {
+						return {
+							search: params.term,
+							opl_tglpl_nopo_nmker: opl_tglpl_nopo_nmker,
+						}
+					}
+				},
+				processResults: function(data, page) {
+					return {
+						results: data
+					};
+				},
+			}
+		});
+	}
+	$('#rkglabel').on('change', function() {
+		data = $('#rkglabel').select2('data');
+
+		$("#rkukuran").val("").prop('disabled', false);
+		load_rkuk(data[0].id);
+
+		$("#rkjmlroll").val("").prop('disabled', true).attr('style', 'background:#e9e9e9');
+		// rkpo rkjenis rkglabel rkukuran
+	});
+
+	function load_rkuk(opl_tglpl_nopo_nmker_glabel) {
+		$('#rkukuran').select2({
+			allowClear: true,
+			placeholder: '- - SELECT - -',
+			ajax: {
+				dataType: 'json',
+				url: '<?php echo base_url(); ?>/Master/loadRkUkuran',
+				data: function(params) {
+					if (params.term == undefined) {
+						return {
+							search: "",
+							opl_tglpl_nopo_nmker_glabel: opl_tglpl_nopo_nmker_glabel,
+						}
+					} else {
+						return {
+							search: params.term,
+							opl_tglpl_nopo_nmker_glabel: opl_tglpl_nopo_nmker_glabel,
+						}
+					}
+				},
+				processResults: function(data, page) {
+					return {
+						results: data
+					};
+				},
+			}
+		});
+	}
+	$('#rkukuran').on('change', function() {
+		data = $('#rkukuran').select2('data');
+		$("#rkjmlroll").val("").prop('disabled', false).attr('style', 'background:#fff');
+		// rkpo rkjenis rkglabel rkukuran
+	});
+
+	//
+
+	function addCartRk(){
+		rkukuran = $("#rkukuran").val();
+		rkjmlroll = $("#rkjmlroll").val();
+
+		$.ajax({
+			url: '<?php echo base_url('Master/addCartRk')?>',
+			type: "POST",
+			data: ({
+				rkukuran: rkukuran,
+				rkjmlroll: rkjmlroll,
+			}),
+			success: function(response) {
+				$(".show-cart-rk").load("<?php echo base_url('Master/showCartRk') ?>");
+			}
+		})
+	}
+
+	function simpanCartRk(){
+		$.ajax({
+			url: '<?php echo base_url('Master/simpanCartRk')?>',
+			type: "POST",
+			success: function(response) {
+				alert('berhasil');
+			}
+		})
+	}
+
+	function hapusCartRk(rowid){
+		$.ajax({
+			url: '<?php echo base_url('Master/hapusCartRk')?>',
+			type: "POST",
+			data:({
+				rowid: rowid,
+			}),
+			success: function(response) {
+				$(".show-cart-rk").load("<?php echo base_url('Master/showCartRk') ?>");
+			}
+		})
+	}
 
 	// 
 
@@ -1118,6 +1330,15 @@
 				btnRencana(v_id_pl,v_opl,v_tgl_pl,v_ii);
 			}
 		});
+	}
+
+	//
+
+	function hanyaAngka(evt) {
+		var charCode = (evt.which) ? evt.which : event.keyCode
+		if (charCode > 31 && (charCode < 48 || charCode > 57))
+			return false;
+		return true;
 	}
 
 </script>

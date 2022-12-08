@@ -505,17 +505,91 @@ class M_master extends CI_Model{
 	function loadRkPl($searh = "", $rktgl = ""){
 		$users = $this->db->query("SELECT*FROM pl
 		WHERE tgl_pl='$rktgl' AND (nama LIKE '%$searh%' OR nm_perusahaan LIKE '%$searh%')
-		GROUP BY opl")->result_array();
+		GROUP BY tgl_pl,opl")->result_array();
 
         $data = array();
         foreach($users as $user){
+            if($user['nama'] == '-'){
+                $nama = '';
+            }else{
+                $nama = $user['nama'].' - ';
+            }
+            if($user['nm_perusahaan'] == '-'){
+                $nmpt = '';
+            }else{
+                $nmpt = $user['nm_perusahaan'];
+            }
+            $text = $nama.$nmpt;
             $data[] = array(
-                "id" => $user['id'],
-                // "text" => $txt, 
+                "id" => $user['opl'].'_ex_'.$user['tgl_pl'],
+                "text" => $text,
             );
         }
         return $data;
     }
+
+    function loadRkPo($search = "", $opl = "", $tgl_pl = ""){
+        $users = $this->db->query("SELECT*FROM pl
+        WHERE tgl_pl='$tgl_pl' AND opl='$opl' AND no_po LIKE '%$search%'
+        GROUP BY tgl_pl,opl,no_po")->result_array();
+
+        $data = array();
+        foreach($users as $user){
+            $data[] = array(
+                "id" => $user['opl'].'_ex_'.$user['tgl_pl'].'_ex_'.$user['no_po'],
+                "text" => $user['no_po'],
+            );
+        }
+        return $data;
+    }
+
+    function loadRkJns($search = "", $opl = "", $tglpl = "", $no_po = ""){
+        $users = $this->db->query("SELECT*FROM pl
+        WHERE tgl_pl='$tglpl' AND opl='$opl' AND no_po='$no_po' AND nm_ker LIKE '%$search%'
+        GROUP BY tgl_pl,opl,no_po,nm_ker")->result_array();
+
+        $data = array();
+        foreach($users as $user){
+            $data[] = array(
+                "id" => $user['opl'].'_ex_'.$user['tgl_pl'].'_ex_'.$user['no_po'].'_ex_'.$user['nm_ker'],
+                "text" => $user['nm_ker'],
+            );
+        }
+        return $data;
+    }
+
+    function loadRkGsm($search = "", $opl = "", $tglpl = "", $no_po = "", $nmker = ""){
+        $users = $this->db->query("SELECT*FROM pl
+        WHERE tgl_pl='$tglpl' AND opl='$opl' AND no_po='$no_po' AND nm_ker='$nmker' AND g_label LIKE '%$search%'
+        GROUP BY tgl_pl,opl,no_po,nm_ker,g_label")->result_array();
+
+        $data = array();
+        foreach($users as $user){
+            $data[] = array(
+                "id" => $user['opl'].'_ex_'.$user['tgl_pl'].'_ex_'.$user['no_po'].'_ex_'.$user['nm_ker'].'_ex_'.$user['g_label'],
+                "text" => $user['g_label'],
+            );
+        }
+        return $data;
+    }
+
+    function loadRkUkuran($search = "", $opl = "", $tglpl = "", $no_po = "", $nmker = "", $g_label =""){
+        $users = $this->db->query("SELECT tgl_pl,opl,p.no_po,p.nm_ker,p.g_label,m.width FROM pl p
+        INNER JOIN po_master m ON p.no_po=m.no_po AND p.id_perusahaan=m.id_perusahaan AND p.nm_ker=m.nm_ker AND p.g_label=m.g_label
+        WHERE tgl_pl='$tglpl' AND opl='$opl' AND p.no_po='$no_po' AND p.nm_ker='$nmker' AND p.g_label='$g_label' AND m.width LIKE '%$search%'
+        GROUP BY tgl_pl,opl,p.no_po,p.nm_ker,p.g_label,m.width")->result_array();
+
+        $data = array();
+        foreach($users as $user){
+            $data[] = array(
+                "id" => $user['opl'].'_ex_'.$user['tgl_pl'].'_ex_'.$user['no_po'].'_ex_'.$user['nm_ker'].'_ex_'.$user['g_label'].'_ex_'.$user['width'],
+                "text" => round($user['width'],2),
+            );
+        }
+        return $data;
+    }
+
+    //
 
     function loadPtPO($searchTerm=""){
 		$users = $this->db->query("SELECT p.* FROM m_perusahaan p
@@ -855,6 +929,21 @@ class M_master extends CI_Model{
         return $result;
     }
 
+    function simpanCartRk(){
+        foreach($this->cart->contents() as $data){
+            $data = array(
+                'tgl' => $data['options']['tgl'],
+                'nm_ker' => $data['options']['nm_ker'],
+                'g_label' => $data['options']['g_label'],
+                'width' => $data['options']['width'],
+                'jml_roll' => $data['qty'],
+                'order_pl' => $data['options']['order_pl'],
+            );
+            $result = $this->db->insert('m_rencana_kirim', $data);
+        }
+        return $result;
+    }    
+
 	function simpanCartPl(){
         // CEK OPL RENCANA KIRIM
         $tgl = $_POST['ftgl'];
@@ -867,12 +956,12 @@ class M_master extends CI_Model{
 
         foreach($this->cart->contents() as $data){
 			// CEK SJ JIKA ADA LEBIH DARI SATU
-			$noPkb = $data['options']['no_pkb'];
-			$cekSj = $this->db->query("SELECT*FROM pl WHERE no_pkb='$noPkb' ORDER BY id DESC");
+			$noSO = $data['options']['no_so'];
+			$cekSj = $this->db->query("SELECT*FROM pl WHERE no_so='$noSO' ORDER BY id DESC");
 			if($cekSj->num_rows() == 0){
 				$nosj = $data['options']['no_surat'];
 			}else{
-				$nosj = ' '.$cekSj->row()->no_surat; // TINJAU ULANG
+				$nosj = ' '.$cekSj->row()->no_surat;
 			}
 
 			$data = array(

@@ -804,6 +804,48 @@ class Master extends CI_Controller
 		echo json_encode($response);
 	}
 
+	function loadRkPo(){
+		$search = $_GET['search'];
+		$exp = explode("_ex_", $_GET['opl_tglpl']);
+		$opl = $exp[0];
+		$tglpl = $exp[1];
+		$response = $this->m_master->loadRkPo($search, $opl, $tglpl);
+		echo json_encode($response);
+	}
+
+	function loadRkJns(){
+		$search = $_GET['search'];
+		$exp = explode("_ex_", $_GET['opl_tglpl_nopo']);
+		$opl = $exp[0];
+		$tglpl = $exp[1];
+		$nopo = $exp[2];
+		$response = $this->m_master->loadRkJns($search, $opl, $tglpl, $nopo);
+		echo json_encode($response);
+	}
+
+	function loadRkGsm(){
+		$search = $_GET['search'];
+		$exp = explode("_ex_", $_GET['opl_tglpl_nopo_nmker']);
+		$opl = $exp[0];
+		$tglpl = $exp[1];
+		$nopo = $exp[2];
+		$nmker = $exp[3];
+		$response = $this->m_master->loadRkGsm($search, $opl, $tglpl, $nopo, $nmker);
+		echo json_encode($response);
+	}
+
+	function loadRkUkuran(){
+		$search = $_GET['search'];
+		$exp = explode("_ex_", $_GET['opl_tglpl_nopo_nmker_glabel']);
+		$opl = $exp[0];
+		$tglpl = $exp[1];
+		$nopo = $exp[2];
+		$nmker = $exp[3];
+		$glabel = $exp[4];
+		$response = $this->m_master->loadRkUkuran($search, $opl, $tglpl, $nopo, $nmker, $glabel);
+		echo json_encode($response);
+	}
+
 	function loadPtPO(){ 
 		$searchTerm = $_GET['search'];
 		$response = $this->m_master->loadPtPO($searchTerm);
@@ -1567,6 +1609,88 @@ class Master extends CI_Controller
 	}
 
 	function dessCartPl() {
+		$this->cart->destroy();
+	}
+
+	function addCartRk(){
+		// 5_ex_2022-12-08_ex_TESET/RENCANA/KIRIM_ex_MH_ex_150_ex_190.00
+		#tgl nm_ker g_label width jml_roll order_pl
+		$exp = explode("_ex_", $_POST['rkukuran']);
+		$tgl = $exp[1];
+		$nm_ker = $exp[3];
+		$g_label = $exp[4];
+		$width = $exp[5];
+		// $jml_roll = $_POST['rkjmlroll'];
+		$order_pl = $exp[0];
+
+		$data = array(
+			'id' => $nm_ker.$g_label.'_'.$width.$order_pl,
+			'name' => $nm_ker.$g_label.'_'.$width.$order_pl,
+			'price' => 0,
+			'qty' => $_POST['rkjmlroll'],
+			'options' => array(
+				'tgl' => $tgl,
+				'nm_ker' => $nm_ker,
+				'g_label' => $g_label,
+				'width' => $width,
+				// 'jml_roll' => $jml_roll,
+				'order_pl' => $order_pl,
+			),
+		);
+
+		$this->cart->insert($data);		
+	}
+
+	function showCartRk(){
+		$html ='';
+
+		if($this->cart->total_items() != 0){
+			$html .='<table style="margin-top:15px;width:100%;color:#000;font-size:12px;text-align:center;border-color:#aaa" border="1">';
+			$html .='<tr>
+				<td style="padding:5px;font-weight:bold">TANGGAL</td>
+				<td style="padding:5px;font-weight:bold">JENIS</td>
+				<td style="padding:5px;font-weight:bold">GRAMATURE</td>
+				<td style="padding:5px;font-weight:bold">UKURAN</td>
+				<td style="padding:5px;font-weight:bold">JUMLAH</td>
+				<td style="padding:5px;font-weight:bold">AKSI</td>
+			</tr>';
+		}
+
+		foreach($this->cart->contents() as $items){
+			$html .='<tr>
+				<td style="padding:5px">'.$items['options']['tgl'].'</td>
+				<td style="padding:5px">'.$items['options']['nm_ker'].'</td>
+				<td style="padding:5px">'.$items['options']['g_label'].'</td>
+				<td style="padding:5px">'.$items['options']['width'].'</td>
+				<td style="padding:5px">'.$items['qty'].'</td>
+				<td style="padding:5px"><button onclick="hapusCartRk('."'".$items['rowid']."'".')">Batal</button></td>
+			</tr>';
+		}
+
+		if($this->cart->total_items() != 0){
+			$html .='<tr>
+					<td style="padding:5px"><button onclick="simpanCartRk()">SIMPAN</button></td>
+				</tr>
+			</table>';
+		}
+
+		echo $html;
+	}
+
+	function simpanCartRk(){
+		$this->m_master->simpanCartRk();
+		echo json_encode(array('data' => true));
+	}
+
+	function hapusCartRk(){
+		$data = array(
+			'rowid' => $_POST['rowid'], 
+			'qty' => 0,
+		);
+		$this->cart->update($data);
+	}
+
+	function dessCartRk() {
 		$this->cart->destroy();
 	}
 
