@@ -279,7 +279,7 @@
 		joint = $("#ejoint-"+i).val();
 		ket = $("#eket-"+i).val().toUpperCase();
 		status = $("#opt_status-"+i).val();
-		alert(tgl+' - '+g_ac+' - '+rct+' - '+bi+' - '+nm_ker+' - '+g_label+' - '+width+' - '+diameter+' - '+weight+' - '+joint+' - '+ket+' - '+status);
+		// alert(tgl+' - '+g_ac+' - '+rct+' - '+bi+' - '+nm_ker+' - '+g_label+' - '+width+' - '+diameter+' - '+weight+' - '+joint+' - '+ket+' - '+status);
 
 		// MENAMPUNG DATA LAMA
 		lroll = $("#lroll-"+i).val();
@@ -291,7 +291,7 @@
 		ljoint = $("#ljoint-"+i).val();
 		lket = $("#lket-"+i).val();
 		lstatus = $("#lstatus-"+i).val();
-		console.log(lroll,lnm_ker,lg_label,lwidth,lweight,ldiameter,ljoint,lket,lstatus);
+		// console.log(lroll,lnm_ker,lg_label,lwidth,lweight,ldiameter,ljoint,lket,lstatus);
 
 		if (nm_ker == '' || g_label == '' || width == '' || diameter == '' || weight == '' || joint == '') {
 			showNotification("alert-danger", "DATA JENIS, GSM, UKURAN, DIAMETER, BERAT, JOINT, TIDAK BOLEH KOSONG!!!", "bottom", "center", "", "");

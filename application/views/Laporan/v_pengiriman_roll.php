@@ -215,9 +215,6 @@
 											<select id="fplhplgsm" class="form-control" style="width:100%" autocomplete="off"></select>
 										</td>
 										<td style="padding:5px"></td>
-										<td style="padding:5px;text-align:right">
-											<button onclick="addCartPl('cart')">ADD</button>
-										</td>
 									</tr>
 								</table>
 
@@ -304,11 +301,14 @@
 												<tr>
 													<td><input type="text" id="fnopkb" class="form-control" placeholder="NO" autocomplete="off" maxlength="4" disabled style="background:#e9e9e9"></td>
 													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="ftahun-pkb" class="form-control" placeholder="TAHUN" autocomplete="off"></td>
-													<td style="padding:0 5px" disabled style="background:#e9e9e9">/</td>
+													<td><input type="text" id="ftahun-pkb" class="form-control" placeholder="TAHUN" autocomplete="off" disabled style="background:#e9e9e9"></td>
+													<td style="padding:0 5px">/</td>
 													<td><input type="text" id="fjns-pkb" class="form-control" placeholder="JENIS" autocomplete="off" maxlength="2" disabled style="background:#e9e9e9"></td>
 												</tr>
 											</table>
+										</td>
+										<td style="padding:5px;text-align:right" colspan="2">
+											<button onclick="addCartPl('cart')">ADD</button>
 										</td>
 									</tr>
 								</table>
@@ -554,6 +554,11 @@
 	}
 	$('#fnopo').on('change', function() {
 		data = $('#fnopo').select2('data');	
+
+		$("#fnosj").val("");
+		$("#fnoso").val("");
+		$("#fnopkb").val("");
+
 		$('#fjenis').val("");
 		plhPlPoJns(data[0].id);
 		
@@ -593,6 +598,10 @@
 	}
 	$('#fjenis').on('change', function() {
 		data = $('#fjenis').select2('data');
+
+		$("#fnosj").val("");
+		$("#fnoso").val("");
+		$("#fnopkb").val("");
 		
 		$('#fplhplgsm').val("");
 		plhPlGsm('');
@@ -711,7 +720,7 @@
 		let text = num.toString();
 		let tahun = text.substr(2, 2);
 		let bulan = text.substr(5, 2);
-		alert(text+' - '+tahun+' - '+bulan);
+		// alert(text+' - '+tahun+' - '+bulan);
 
 		// let bulan;
 		switch (bulan) {
@@ -826,6 +835,26 @@
 		fjenis = $("#fjenis").val();
 		fplhplgsm = $("#fplhplgsm").val();
 		// alert(fnopo+' - '+fjenis+' - '+fplhplgsm+' - '+noSJ);
+
+		if(fkepada == '' || fnmpt == '' || fnama == '' || falamat == '' || ftelp == ''){
+			swal("HARAP PILIH CUSTOMER!", "", "error");
+			return;
+		}
+		
+		if(ftglrk == '' || ftgl == '' || fplhpajak == ''){
+			swal("HARAP LENGKAPI TGL KIRIM / RENCANA KIRIM / PILIH PAJAK!", "", "error");
+			return;
+		}
+
+		if(fnopo == "" || fjenis == "" || fplhplgsm == ""){
+			swal("HARAP LENGKAPI NO PO / JENIS / GRAMATURE", "", "error");
+			return;
+		}
+
+		if (fnosj == '' || froll == '' || fbulan == '' || ftahun == '' || fpajak == '' || fquality == '' || fnoso == '' || fsoroll == '' || fsobulan == ''  || fsotahun == '' || fsopajak == '' || fsoquality == '' || fnopkb == '' || ftahunpkb == '' || fjnspkb == '') {
+			swal("HARAP LENGKAPI NO SURAT!", "", "error");
+			return;
+		}
 
 		$.ajax({
 			url: '<?php echo base_url('Master/addCartPl')?>',
@@ -1124,9 +1153,14 @@
 
 	//
 
-	function addCartRk(){
+	function addCartRk(){ //
 		rkukuran = $("#rkukuran").val();
 		rkjmlroll = $("#rkjmlroll").val();
+
+		if(rkukuran == '' || rkjmlroll == ''){
+			swal("HARAP LENGKAPI FORM!", "", "error");
+			return;
+		}
 
 		$.ajax({
 			url: '<?php echo base_url('Master/addCartRk')?>',
@@ -1186,9 +1220,9 @@
 		});
 	}
 
-	function btnRencana(id_pl,opl,tgl_pl,i){ // KLIK PROSES
+	function btnRencana(id_rk,opl,tgl_pl,i){ // KLIK PROSES
 		kosong();
-		$("#v-id-pl").val(id_pl);
+		$("#v-id-pl").val(id_rk);
 		$("#v-opl").val(opl);
 		$("#v-tgl-pl").val(tgl_pl);
 		$("#v-ii").val(i);
@@ -1206,7 +1240,7 @@
 			success: function(response) {
 				if(response){
 					$(".t-plist-rencana-" + i).html(response);
-					hasilInputSementara(id_pl,i);
+					hasilInputSementara(id_rk,i);
 				}else{
 					$(".t-plist-rencana-" + i).html('<div style="notfon">BELUM ADA RENCANA KIRIMAN</div>');
 				}
@@ -1214,14 +1248,15 @@
 		});
 	}
 
-	function hasilInputSementara(id_pl,i) {
+	function hasilInputSementara(id_rk,i) {
 		// alert(id_pl)
-		$(".t-plist-input-sementara-" + i).html('<div class="notfon">MEMUAT DATA</div>');
+		$(".t-plist-input-sementara-" + i).html('<div style="margin-top:15px;color:#000">MEMUAT DATA . . .</div>');
 		$.ajax({
 			url: '<?php echo base_url('Master/pListInputSementara')?>',
 			type: "POST",
 			data: ({
-				id_pl: id_pl,
+				id_rk: id_rk,
+				i: i,
 			}),
 			success: function(response){
 				if(response){
@@ -1235,7 +1270,7 @@
 
 	function btnInputRoll(i,nm_ker,g_label,width,roll='',cari=''){ // KLIK JUMLAH PADA RENCARA KIRIMAN
 		// alert(i+' - '+id_pl+' - '+nm_ker+' - '+g_label+' - '+width+' - '+roll+' - '+cari);
-		v_id_pl = $("#v-id-pl").val();
+		// v_id_pl = $("#v-id-pl").val();
 		if(cari == ''){
 			$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/destroyCartInputRoll') ?>");
 		}
@@ -1263,7 +1298,7 @@
 
 	// function cartInputRoll(id,roll,nm_ker,g_label,diameter,width,weight,joint,ket,i){
 	function cartInputRoll(id,roll,status,i){
-		id_pl = $("#v-id-pl").val();
+		id_rk = $("#v-id-pl").val();
 		// alert(id_pl);
 		$.ajax({
 			url: '<?php echo base_url('Master/pListCartInputRoll')?>',
@@ -1279,12 +1314,11 @@
 				// joint: joint,
 				// ket: ket,
 				status: status,
-				id_pl: id_pl,
+				id_rk: id_rk,
 				i: i,
 			}),
 			success: function(response){
 				json = JSON.parse(response);
-				// console.log(json);
 				if(json.data){
 					$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/showCartInputRoll') ?>");
 				}else{
@@ -1317,7 +1351,7 @@
 
 	function simpanInputRoll(){
 		// alert('simpan');
-		v_id_pl = $("#v-id-pl").val();
+		v_id_rk = $("#v-id-pl").val();
 		v_opl = $("#v-opl").val();
 		v_tgl_pl = $("#v-tgl-pl").val();
 		v_ii = $("#v-ii").val();
@@ -1327,9 +1361,29 @@
 			type: "POST",
 			success: function(response){
 				// data = JSON.parse(response);
-				btnRencana(v_id_pl,v_opl,v_tgl_pl,v_ii);
+				btnRencana(v_id_rk,v_opl,v_tgl_pl,v_ii);
 			}
 		});
+	}
+
+	function editRollRk(id,i){
+		// alert(id);
+		id_rk = $("#v-id-pl").val();
+		seset = $("#his-seset-" + id).val();
+		// alert(id+' - '+seset);
+		$.ajax({
+			url: '<?php echo base_url('Master/editRollRk')?>',
+			type: "POST",
+			data: ({
+				id: id,
+				seset: seset
+			}),
+			success: function(response){
+				// $("#his-seset-" + id).val('b');
+				hasilInputSementara(id_rk,i);
+				// alert('berhasil seset');
+			}
+		})
 	}
 
 	//

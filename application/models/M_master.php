@@ -916,10 +916,11 @@ class M_master extends CI_Model{
 
     function simpanInputRoll(){
         foreach($this->cart->contents() as $data){
-            if($data['options']['status'] == 0){ // jika stok update
-                $this->db->set('status', '1');
-            }
-            $this->db->set('id_pl', $data['options']['id_pl']);
+            // if($data['options']['status'] == 0){ // jika stok update
+            //     $this->db->set('status', '1');
+            // }
+            // $this->db->set('id_pl', $data['options']['id_pl']);
+            $this->db->set('id_rk', $data['options']['id_rk']);
             $this->db->set('packing_at', date("Y-m-d H:i:s"));
             $this->db->set('packing_by', $this->session->userdata('username'));
             $this->db->where('id', $data['id']);
@@ -929,17 +930,70 @@ class M_master extends CI_Model{
         return $result;
     }
 
+	function editRollRk(){
+		// edited_at  edited_by
+		$id = $_POST['id'];
+		$seset = $_POST['seset'];
+
+		$cek = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id'")->row();
+		if($cek->seset == $seset){
+            $result = true;
+        }else{
+            $data = array(
+                'roll' => $cek->roll,
+                'nm_ker' => $cek->nm_ker,
+                'g_label' => $cek->g_label,
+                'width' => $cek->width,
+                'diameter' => $cek->diameter,
+                'weight' => $cek->weight,
+                'joint' => $cek->joint,
+                'seset' => $cek->seset,
+                'status' => $cek->status,
+                'ket' => $cek->ket,
+                'edited_at' => date("Y-m-d H:i:s"),
+                'edited_by' => $this->session->userdata('username'),
+            );
+            $result= $this->db->insert("m_roll_edit",$data);
+
+			$this->db->set('seset', $seset);
+			$this->db->set('edited_at', date("Y-m-d H:i:s"));
+			$this->db->set('edited_by', $this->session->userdata('username'));
+			$this->db->where('id', $id);
+			$result = $this->db->update('m_timbangan');
+        }
+		
+		
+		return $result;
+	}
+
     function simpanCartRk(){
         foreach($this->cart->contents() as $data){
-            $data = array(
-                'tgl' => $data['options']['tgl'],
-                'nm_ker' => $data['options']['nm_ker'],
-                'g_label' => $data['options']['g_label'],
-                'width' => $data['options']['width'],
-                'jml_roll' => $data['qty'],
-                'order_pl' => $data['options']['order_pl'],
-            );
-            $result = $this->db->insert('m_rencana_kirim', $data);
+			$exp = explode("-", $data['options']['tgl']);
+			$idrk = 'RK-'.$exp[0].$exp[1].$exp[2].'-'.$data['options']['order_pl'];
+
+			// JIKA ADA JENIS, GSM, UKURAN YANG SAMA = QTY DITAMBAHKAN SAJA
+			$nm_ker = $data['options']['nm_ker'];
+			$g_label = $data['options']['g_label'];
+			$width = $data['options']['width'];
+			$cek = $this->db->query("SELECT*FROM m_rencana_kirim WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width'");
+			if($cek->num_rows() == 0){
+				$jmlroll = $data['options']['jml_roll'];
+				$data = array(
+					'id_rk' => $idrk,
+					'tgl' => $data['options']['tgl'],
+					'nm_ker' => $data['options']['nm_ker'],
+					'g_label' => $data['options']['g_label'],
+					'width' => $data['options']['width'],
+					'jml_roll' => $jmlroll,
+					'order_pl' => $data['options']['order_pl'],
+				);
+				$result = $this->db->insert('m_rencana_kirim', $data);
+			}else{
+				$jmlroll = $cek->row()->jml_roll + $data['options']['jml_roll'];
+				$this->db->set('jml_roll', $jmlroll);
+				$this->db->where('id', $cek->row()->id);
+				$result = $this->db->update('m_rencana_kirim');
+			}
         }
         return $result;
     }    

@@ -30,6 +30,7 @@ CREATE TABLE `db_ppi`.`m_roll_edit`(
 TAMBAH TABLE "m_rencana_kirim"
 CREATE TABLE `db_ppi`.`m_rencana_kirim`(  
   `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `id_rk` VARCHAR(50),
   `tgl` DATE,
   `nm_ker` VARCHAR(11),
   `g_label` VARCHAR(11),
@@ -45,6 +46,7 @@ TAMBAH KOLOM "seset" int 11 default "0" pada tabel m_timbangan
 
 ALTER TABLE `db_ppi`.`m_timbangan`
 ADD COLUMN `seset` INT(11) DEFAULT 0 NULL AFTER `ket`,
+ADD COLUMN `id_rk` VARCHAR(50) NULL AFTER `id_pl`,
 ADD COLUMN `edited_at` TIMESTAMP NULL AFTER `packing_by`,
 ADD COLUMN `edited_by` VARCHAR(50) NULL AFTER `edited_at`;
 

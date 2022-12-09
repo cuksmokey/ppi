@@ -48,8 +48,9 @@
 </head>
 
 <body class="theme-red">
+	
     <!-- Page Loader -->
-    <div class="page-loader-wrapper">
+    <!-- <div class="page-loader-wrapper">
         <div class="loader">
             <div class="preloader">
                 <div class="spinner-layer pl-red">
@@ -63,7 +64,9 @@
             </div>
             <p>Please wait...</p>
         </div>
-    </div>
+    </div> -->
+
+
     <!-- #END# Page Loader -->
     <!-- Overlay For Sidebars -->
     <div class="overlay"></div>
