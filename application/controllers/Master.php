@@ -1216,27 +1216,54 @@ class Master extends CI_Controller
 	function editQCRoll(){
 		$id = $_POST['id'];
 
-		$this->m_master->updateQCRoll();
-		$idNewRoll = $this->m_master->get_data_one("m_timbangan", "id", $id)->row();
-		echo json_encode(
-			array(
-				'data' => true,
-				'id_roll' => $idNewRoll->id,
-				'roll' => $idNewRoll->roll,
-				'tgl' => $idNewRoll->tgl,
-				'g_ac' => $idNewRoll->g_ac,
-				'rct' => $idNewRoll->rct,
-				'bi' => $idNewRoll->bi,
-				'nm_ker' => $idNewRoll->nm_ker,
-				'g_label' => $idNewRoll->g_label,
-				'width' => $idNewRoll->width,
-				'diameter' => $idNewRoll->diameter,
-				'weight' => $idNewRoll->weight,
-				'joint' => $idNewRoll->joint,
-				'ket' => $idNewRoll->ket,
-				'status' => $idNewRoll->status,
-			)
-		);
+		// CEK JIKA SUDAH MASUK RENCANA KIRIM
+		$cek_rk = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND (id_rk='' OR id_rk IS NULL)");
+
+		if($cek_rk->num_rows() == 0){
+			$idOldRoll = $this->m_master->get_data_one("m_timbangan", "id", $id)->row();
+			echo json_encode(
+				array(
+					'data' => false,
+					'msg' => 'DATA SUDAH MASUK RENCANA KIRIM!',
+					'id_roll' => $idOldRoll->id,
+					'roll' => $idOldRoll->roll,
+					'tgl' => $idOldRoll->tgl,
+					'g_ac' => $idOldRoll->g_ac,
+					'rct' => $idOldRoll->rct,
+					'bi' => $idOldRoll->bi,
+					'nm_ker' => $idOldRoll->nm_ker,
+					'g_label' => $idOldRoll->g_label,
+					'width' => $idOldRoll->width,
+					'diameter' => $idOldRoll->diameter,
+					'weight' => $idOldRoll->weight,
+					'joint' => $idOldRoll->joint,
+					'ket' => $idOldRoll->ket,
+					'status' => $idOldRoll->status,
+				)
+			);
+		}else{
+			$this->m_master->updateQCRoll();
+			$idNewRoll = $this->m_master->get_data_one("m_timbangan", "id", $id)->row();
+			echo json_encode(
+				array(
+					'data' => true,
+					'id_roll' => $idNewRoll->id,
+					'roll' => $idNewRoll->roll,
+					'tgl' => $idNewRoll->tgl,
+					'g_ac' => $idNewRoll->g_ac,
+					'rct' => $idNewRoll->rct,
+					'bi' => $idNewRoll->bi,
+					'nm_ker' => $idNewRoll->nm_ker,
+					'g_label' => $idNewRoll->g_label,
+					'width' => $idNewRoll->width,
+					'diameter' => $idNewRoll->diameter,
+					'weight' => $idNewRoll->weight,
+					'joint' => $idNewRoll->joint,
+					'ket' => $idNewRoll->ket,
+					'status' => $idNewRoll->status,
+				)
+			);
+		}
 	}
 
 	function print_timbangan()
@@ -1698,7 +1725,7 @@ class Master extends CI_Controller
 		$tgl = $_POST['tgl'];
 		$html ='';
 
-		$getCust = $this->db->query("SELECT r.id_rk,p.* FROM pl p
+		$getCust = $this->db->query("SELECT r.id_rk AS idrk,p.* FROM pl p
 		INNER JOIN m_rencana_kirim r ON p.tgl_pl=r.tgl AND p.opl=r.order_pl
 		WHERE qc='proses' AND tgl_pl='$tgl'
 		GROUP BY opl");
@@ -1710,7 +1737,10 @@ class Master extends CI_Controller
 				$i++;
 				$html .='<table class="list-table">
 					<tr>
-						<td style="padding:5px 0;text-align:center"><button onclick="btnRencana('."'".$cust->id_rk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">PROSES</button></td>
+						<td style="padding:5px 0;text-align:center">
+							<button onclick="btnRencana('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">PROSES</button>
+							<button onclick="btnRencanaEdit('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">EDIT</button>
+						</td>
 						<td style="padding:5px;text-align:center">'.$i.'</td>
 						<td style="padding:5px">'.$cust->nm_perusahaan.'</td>
 					</tr>
@@ -1718,6 +1748,7 @@ class Master extends CI_Controller
 
 				// SEMUA TAMPIL DISINII
 				$html .='<div class="id-cek t-plist-rencana-'.$i.'"></div>';
+				$html .='<div class="id-cek t-plist-edit-'.$i.'"></div>';
 				$html .='<div class="id-cek t-plist-input-sementara-'.$i.'"></div>';
 				$html .='<div class="id-cek t-plist-hasil-input-'.$i.'"></div>';
 				$html .='<div class="id-cek t-plist-input-'.$i.'"></div>';
@@ -1741,8 +1772,9 @@ class Master extends CI_Controller
 			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">D(CM)</td>
 			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BERAT</td>
 			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">JNT</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:30%">KET</td>
+			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:25%">KET</td>
 			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">SESET</td>
+			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">LABEL</td>
 			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:20%">AKSI</td>
 		</tr>';
 
@@ -1764,7 +1796,7 @@ class Master extends CI_Controller
 				$bgtrt = 'list-p-putih';
 			}
 			$html .='<tr class="'.$bgtrt.'">
-				<td style="padding:5px;font-weight:bold;text-align:left" colspan="11">'.$ker->nm_ker.''.$ker->g_label.' - '.round($ker->width,2).'</td>
+				<td style="padding:5px;font-weight:bold;text-align:left" colspan="12">'.$ker->nm_ker.''.$ker->g_label.' - '.round($ker->width,2).'</td>
 			</tr>';
 
 			$getWidth = $this->db->query("SELECT * FROM m_timbangan
@@ -1816,7 +1848,8 @@ class Master extends CI_Controller
 					<td style="padding:5px;position:relative">
 						<input type="text" id="his-seset-'.$w->id.'" value="'.number_format($w->seset).'" style="position:absolute;text-align:center;top:0;left:0;right:0;bottom:0;width:100%;border:0;">
 					</td>
-					<td style="padding:5px"><button onclick="editRollRk('."'".$w->id."'".','."'".$l."'".')">EDIT</button> - <button onclick="">BATAL</button></td>
+					<td style="padding:5px"><button onclick="">REQ</button></td>
+					<td style="padding:5px"><button onclick="editRollRk('."'".$w->id."'".','."'".$l."'".')">EDIT</button> - <button onclick="batalRollRk('."'".$w->id."'".','."'".$l."'".')">BATAL</button></td>
 				</tr>';
 
 				$totBerat += $w->weight - $w->seset;
@@ -1827,7 +1860,7 @@ class Master extends CI_Controller
 			<td style="padding:5px;font-weight:bold">'.number_format($totRoll).'</td>
 			<td style="padding:5px;font-weight:bold" colspan="5">TOTAL</td>
 			<td style="padding:5px;font-weight:bold">'.number_format($totBerat).'</td>
-			<td style="padding:5px;font-weight:bold" colspan="4">-</td>
+			<td style="padding:5px;font-weight:bold" colspan="5">-</td>
 		</tr>';
 
 		$html .='</table></div>';
@@ -1840,6 +1873,18 @@ class Master extends CI_Controller
 		echo json_encode(
 			array(
 				'data' => 'berhasil',
+			)
+		);
+	}
+
+	function batalRollRk(){
+		$id = $_POST['id'];
+		$id_rk = $_POST['id_rk'];
+		$return = $this->m_master->batalRollRk();
+
+		echo json_encode(
+			array(
+				'data' => $return,
 			)
 		);
 	}

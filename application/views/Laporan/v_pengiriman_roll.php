@@ -123,14 +123,14 @@
 						<div class="list-btn-pl">
 							<div style="margin-top:15px"><button onclick="btnAdd()">ADD</button></div>
 							
-							<div class="ilist box-data-pl">
+							<!-- <div class="ilist box-data-pl">
 								<button disabled="disabled">PILIH :</button>
 								<input type="date" id="tgl-list-pl" value="<?= date('Y-m-d')?>">
 								<button onclick="load_data()">CARI</button>
 
 								<div class="list-pl"></div>
 								<div class="list-pl-cek"></div>
-							</div>
+							</div> -->
 
 							<div class="ilist box-form-pl" style="overflow:auto;white-space:nowrap;">
 								<!-- BOX FORM PL -->
@@ -324,7 +324,15 @@
 						<div class="list-btn-rk">
 							<div style="margin-top:15px"><button onclick="btnAddrk()">ADD</button></div>
 
-							<div class="ilist box-data-rk">BOX RK</div>
+							<!-- <div class="ilist box-data-rk">BOX RK</div> -->
+							<div class="ilist box-data-rk">
+								<button disabled="disabled">PILIH :</button>
+								<input type="date" id="tgl-list-rk" value="<?= date('Y-m-d')?>">
+								<button onclick="load_data()">CARI</button>
+
+								<div class="list-pl"></div>
+								<div class="list-pl-cek"></div>
+							</div>
 
 							<div class="ilist box-form-rk">
 								<table style="width:100%" border="1">
@@ -422,6 +430,8 @@
 		$(".plh-opsi-plrk").hide();
 		$(".list-btn-pl").hide();
 		$(".list-btn-rk").hide();
+
+		$(".box-form-rk").hide();
 		kosong();
 		// load_po('');
 		// plhPlPoJns('','');
@@ -446,13 +456,14 @@
 			$(".list-btn-pl").show();
 			$(".list-btn-rk").hide();
 			$(".box-form-pl").hide();
-
-			tgl = $("#tgl-list-pl").val();
-			load_data(tgl);
 		}else{
 			$(".list-btn-pl").hide();
 			$(".list-btn-rk").show();
 
+			tgl = $("#tgl-list-rk").val();
+			load_data(tgl);
+
+			$(".box-data-rk").show();
 			$(".box-form-rk").hide();
 		}
 	}
@@ -699,13 +710,13 @@
 	function btnAdd(){
 		kosong();
 		// getThnBlnRoll();
-		$(".box-data-pl").hide();
+		// $(".box-data-pl").hide();
 		$(".box-form-pl").show();
 	}
 
 	function btnBack(){
 		kosong();
-		$(".box-data-pl").show();
+		// $(".box-data-pl").show();
 		$(".box-form-pl").hide();
 	}
 
@@ -779,7 +790,7 @@
 
 	function load_pl(){
 		// alert('list pl');
-		tglpl = $("#tgl-list-pl").val();
+		// tglpl = $("#tgl-list-pl").val();
 
 		$.ajax({
 			url: '<?php echo base_url('Master/load_pl')?>',
@@ -885,8 +896,8 @@
 					$(".show-add-cart-pl").load("<?php echo base_url('Master/showCartPl') ?>");
 				}else{
 					kosong();
-					tgl = $("#tgl-list-pl").val();
-					load_data(tgl);
+					// tgl = $("#tgl-list-pl").val();
+					// load_data(tgl);
 				}
 			}
 		});
@@ -911,6 +922,7 @@
 	function btnAddrk(){
 		rkkosong();
 		$(".box-data-rk").hide();
+		// $(".box-data-pl").hide();
 		$(".box-form-rk").show();
 		$('#rkpl').val("").prop('disabled', true);
 		load_rkpl();
@@ -927,6 +939,11 @@
 	}
 
 	function rkkosong(){
+		$("#v-id-pl").val('');
+		$("#v-opl").val('');
+		$("#v-tgl-pl").val('');
+		$("#v-ii").val('');
+
 		$("#rktgl").val("");
 		$("#rkpl").val("");
 		$("#rkpo").val("");
@@ -1202,7 +1219,7 @@
 
 	function load_data(tgl){
 		kosong();
-		tgl = $("#tgl-list-pl").val();
+		tgl = $("#tgl-list-rk").val();
 		$(".list-pl").show().html('<div class="notfon">SEDANG MEMUAT . . .</div>');
 		$.ajax({
 			url: '<?php echo base_url('Master/pList'); ?>',
@@ -1221,13 +1238,13 @@
 	}
 
 	function btnRencana(id_rk,opl,tgl_pl,i){ // KLIK PROSES
-		kosong();
+		rkkosong();
 		$("#v-id-pl").val(id_rk);
 		$("#v-opl").val(opl);
 		$("#v-tgl-pl").val(tgl_pl);
 		$("#v-ii").val(i);
 		$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/destroyCartInputRoll') ?>");
-		// alert(opl+' '+tgl_pl+' '+i);
+		// alert(id_rk+' - '+opl+' '+tgl_pl+' '+i);
 		$(".id-cek").html('');
 		$.ajax({
 			url: '<?php echo base_url('Master/pListRencana')?>',
@@ -1246,6 +1263,28 @@
 				}
 			}
 		});
+	}
+
+	function btnRencanaEdit(id_rk,opl,tgl_pl,i){
+		// alert(id_rk+' - '+opl+' - '+tgl_pl+' - '+i);
+		$(".id-cek").html('');
+
+		
+		$(".box-form-rk").show();
+		$('#rkpl').val("").prop('disabled', true);
+		load_rkpl();
+		$('#rkpo').val("").prop('disabled', true);
+		load_rkpo();
+		$('#rkjenis').val("").prop('disabled', true);
+		load_rkjns();
+		$('#rkglabel').val("").prop('disabled', true);
+		load_rkgsm();
+		$("#rkukuran").val("").prop('disabled', true);
+		load_rkuk();
+
+		$("#rkjmlroll").val("").prop('disabled', true).attr('style', 'background:#e9e9e9');
+		
+		$(".t-plist-edit-" + i).html('test');
 	}
 
 	function hasilInputSementara(id_rk,i) {
@@ -1382,6 +1421,24 @@
 				// $("#his-seset-" + id).val('b');
 				hasilInputSementara(id_rk,i);
 				// alert('berhasil seset');
+			}
+		})
+	}
+
+	function batalRollRk(id,i){
+		id_rk = $("#v-id-pl").val();
+		// alert(id+' - '+i+' - '+id_rk);
+		$.ajax({
+			url: '<?php echo base_url('Master/batalRollRk')?>',
+			type: "POST",
+			data: ({
+				id: id,
+				id_rk: id_rk
+			}),
+			success: function(data){
+				// alert('batal');
+				// console.log(data.data);
+				hasilInputSementara(id_rk,i);
 			}
 		})
 	}

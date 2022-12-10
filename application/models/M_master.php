@@ -962,8 +962,14 @@ class M_master extends CI_Model{
 			$result = $this->db->update('m_timbangan');
         }
 		
-		
 		return $result;
+	}
+
+	function batalRollRk(){
+		$id = $_POST['id'];
+		$this->db->set('id_rk', '');
+		$this->db->where('id', $id);
+		return $this->db->update('m_timbangan');
 	}
 
     function simpanCartRk(){

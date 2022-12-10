@@ -5601,15 +5601,6 @@ class Laporan extends CI_Controller {
 					}
 					$oBtn = '';
 					$cBtn = '';
-				// }else if($roll->status == 2 && $roll->id_pl == 0){ // PPI
-                //     $bgStt = 'cek-status-stok';
-				// 	if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
-				// 		$diss = 'disabled';
-				// 	}else{
-				// 		$diss = '';
-				// 	}
-				// 	$oBtn = '';
-				// 	$cBtn = '';
 				}else if($roll->status == 3 && $roll->id_pl == 0){ // BUFFER
                     $bgStt = 'cek-status-buffer';
 					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){

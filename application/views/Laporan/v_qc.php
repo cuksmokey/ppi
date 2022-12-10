@@ -327,7 +327,13 @@
 			}),
 			success: function(data) {
 				json = JSON.parse(data);
-				showNotification("alert-success", "BERHASIL!!!", "top", "center", "", "");
+				if(json.data){
+					showNotification("alert-success", "BERHASIL!!!", "top", "center", "", "");
+				}else{
+					swal(json.msg, "", "error");
+					// return;
+				}
+
 				$("#etgl-"+i).val(json.tgl).animateCss('fadeInRight');
 				$("#eg_ac-"+i).val(json.g_ac).animateCss('fadeInRight');
 				$("#erct-"+i).val(json.rct).animateCss('fadeInRight');
