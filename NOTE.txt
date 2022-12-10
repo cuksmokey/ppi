@@ -56,7 +56,7 @@ TAMBAH KOLOM "qc" varchar[6] isi "proses, cek, ok" setelah kolom "status" pada t
 TAMBAH KOLOM "opl" int[2] default "0" buat order pengiriman setelah "qc" pada table pl
 
 ALTER TABLE `db_ppi`.`pl`   
-ADD COLUMN `qc` VARCHAR(6) NULL AFTER `status`,
+ADD COLUMN `qc` VARCHAR(6) DEFAULT 'ok' NULL AFTER `status`,
 ADD COLUMN `tgl_pl` DATE NULL AFTER `qc`,
 ADD COLUMN `opl` INT(11) DEFAULT 0 NULL AFTER `tgl_pl`,
 ADD COLUMN `nm_ker` VARCHAR(50) NULL AFTER `opl`,

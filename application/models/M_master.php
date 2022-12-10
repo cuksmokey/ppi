@@ -591,16 +591,31 @@ class M_master extends CI_Model{
 
     //
 
-    function loadPtPO($searchTerm=""){
-		$users = $this->db->query("SELECT p.* FROM m_perusahaan p
-        INNER JOIN po_master m ON p.id=m.id_perusahaan
-        WHERE (p.pimpinan LIKE '%$searchTerm%' OR p.nm_perusahaan LIKE '%$searchTerm%' OR p.alamat LIKE '%$searchTerm%') AND m.status='open'
-        GROUP BY p.pimpinan,p.nm_perusahaan,m.id_perusahaan,m.status")->result_array();
+    function loadPtPO($searchTerm="", $opsi=""){
+        if($opsi == 'pl'){
+            $users = $this->db->query("SELECT p.* FROM m_perusahaan p
+            INNER JOIN po_master m ON p.id=m.id_perusahaan
+            WHERE (p.pimpinan LIKE '%$searchTerm%' OR p.nm_perusahaan LIKE '%$searchTerm%' OR p.alamat LIKE '%$searchTerm%') AND m.status='open'
+            GROUP BY p.pimpinan,p.nm_perusahaan,m.id_perusahaan,m.status")->result_array();
+        }else{ // PO
+            $users = $this->db->query("SELECT*FROM m_perusahaan pt WHERE NOT EXISTS (SELECT*FROM pl_box bx WHERE bx.id_perusahaan=pt.id)
+            AND (pt.pimpinan LIKE '%$searchTerm%' OR pt.nm_perusahaan LIKE '%$searchTerm%' OR pt.alamat LIKE '%$searchTerm%')")->result_array();
+        }        
 
         $data = array();
         foreach($users as $user){
+            if($user['pimpinan'] == '' || $user['pimpinan'] == '-'){
+                $nama = '';
+            }else{
+                $nama = $user['pimpinan'].' - ';
+            }
+            if($user['nm_perusahaan'] == '' || $user['nm_perusahaan'] == '-'){
+                $pt = '';
+            }else{
+                $pt = $user['nm_perusahaan'].' - ';
+            }
             // id pimpinan nm_perusahaan alamat no_telp
-            $txt = $user['pimpinan'].' - '.$user['nm_perusahaan'].' - '.$user['alamat'];
+            $txt = $nama.$pt.$user['alamat'];
             $data[] = array(
                 "id"=>$user['id'],
                 "text"=>$txt, 
@@ -621,7 +636,7 @@ class M_master extends CI_Model{
         $data = array();
         foreach($users as $user){
             $data[] = array(
-                "id" => $user['id_po'].'_ex_'.$user['no_po'],
+                "id" => $user['id_po'].'_ex_'.$user['no_po'].'_ex_'.$user['pajak'],
                 "text" => $user['no_po'],
             );
         }
@@ -636,7 +651,7 @@ class M_master extends CI_Model{
         $data = array();
         foreach($users as $user){
             $data[] = array(
-                "id" => $user['id_po'].'_ex_'.$user['no_po'].'_ex_'.$user['nm_ker'],
+                "id" => $user['id_po'].'_ex_'.$user['no_po'].'_ex_'.$user['nm_ker'].'_ex_'.$user['pajak'],
                 "text" => $user['nm_ker'],
             );
         }

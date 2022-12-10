@@ -5093,26 +5093,21 @@ class Laporan extends CI_Controller {
 			$allTotTonn = 0;
 			foreach($getGsm->result() as $rGsm){
 				$ii++;
-				if(($rGsm->nm_ker == 'MH' || $rGsm->nm_ker == 'MN' || $rGsm->nm_ker == 'BK') && ($rGsm->g_label == 105 || $rGsm->g_label == 110)){
+				if(($rGsm->nm_ker == 'MH' || $rGsm->nm_ker == 'MN') && ($rGsm->g_label == 105 || $rGsm->g_label == 110)){
 					$bgNk = '#ddf';
-				}else if(($rGsm->nm_ker == 'MH' || $rGsm->nm_ker == 'BK') && $rGsm->g_label == 125){
+				}else if(($rGsm->nm_ker == 'MH' || $rGsm->nm_ker == 'MN') && ($rGsm->g_label == 120 || $rGsm->g_label == 125)){
 					$bgNk = '#ffd';
-				}else if(($rGsm->nm_ker == 'MH' || $rGsm->nm_ker == 'MN' || $rGsm->nm_ker == 'BK') && $rGsm->g_label == 150){
+				}else if(($rGsm->nm_ker == 'MH' || $rGsm->nm_ker == 'MN') && $rGsm->g_label == 150){
 					$bgNk = '#fdd';
 				}else if($rGsm->nm_ker == 'WP'){
 					$bgNk = '#dfd';
-				}else{
+				}else{ // BK
 					$bgNk = '#fff';
 				}
 
-                if($rGsm->nm_ker == 'BK'){
-                    $kBgNk = '#fff';
-                }else{
-                    $kBgNk = $bgNk;
-                }
 				$html .= '<tr>
 					<td style="padding:5px;text-align:center;font-weight:bold" rowspan="'.$rGsm->ttl.'" id="i">'.$ii.'</td>
-					<td style="padding:5px;text-align:center;font-weight:bold;background:'.$kBgNk.'" rowspan="'.$rGsm->ttl.'" id="i">'.$rGsm->nm_ker.' '.$rGsm->g_label.'</td>';
+					<td style="padding:5px;text-align:center;font-weight:bold;background:'.$bgNk.'" rowspan="'.$rGsm->ttl.'" id="i">'.$rGsm->nm_ker.' '.$rGsm->g_label.'</td>';
 
                 // GET WIDTH
 				$getUkPO = $this->db->query("SELECT*FROM po_master
@@ -5249,7 +5244,6 @@ class Laporan extends CI_Controller {
 			$html .= '</tr>';
 
 			$html .= '</table></div>';
-            // $html .= '<div style="page-break-after:always"></div>';
         }
 
         // CETAK

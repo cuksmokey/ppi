@@ -123,14 +123,13 @@
 						<div class="list-btn-pl">
 							<div style="margin-top:15px"><button onclick="btnAdd()">ADD</button></div>
 							
-							<!-- <div class="ilist box-data-pl">
+							<div class="ilist box-data-pl">
 								<button disabled="disabled">PILIH :</button>
 								<input type="date" id="tgl-list-pl" value="<?= date('Y-m-d')?>">
-								<button onclick="load_data()">CARI</button>
+								<button onclick="load_data_pl()">CARI</button>
 
 								<div class="list-pl"></div>
-								<div class="list-pl-cek"></div>
-							</div> -->
+							</div>
 
 							<div class="ilist box-form-pl" style="overflow:auto;white-space:nowrap;">
 								<!-- BOX FORM PL -->
@@ -218,6 +217,8 @@
 									</tr>
 								</table>
 
+								<div class="cek_no_sj"></div>
+
 								<table style="margin-top:15px;width:100%" border="1">
 									<tr>
 										<td style="width:15%;padding:5px"></td>
@@ -244,7 +245,7 @@
 										<td style="padding:5px;font-weight:bold">PAJAK</td>
 										<td style="padding:5px;text-align:center">:</td>
 										<td style="padding:5px;text-align:center">
-											<select id="fplhpajak" class="form-control">
+											<select id="fplhpajak" class="form-control" disabled style="background:#e9e9e9">
 												<option value="">PILIH</option>
 												<option value="ppn">PPN</option>
 												<option value="non">NON PPN</option>
@@ -317,7 +318,7 @@
 
 
 								<button onclick="btnBack()" style="margin-top:15px">BACK</button>
-								<button onclick="addCartPl('simpan')">SIMPAN</button>
+								<!-- <button onclick="addCartPl('simpan')">SIMPAN</button> -->
 							</div>
 						</div>
 						
@@ -330,8 +331,7 @@
 								<input type="date" id="tgl-list-rk" value="<?= date('Y-m-d')?>">
 								<button onclick="load_data()">CARI</button>
 
-								<div class="list-pl"></div>
-								<div class="list-pl-cek"></div>
+								<div class="list-rk"></div>
 							</div>
 
 							<div class="ilist box-form-rk">
@@ -426,7 +426,7 @@
 	$(document).ready(function(){
 		// alert(otorisasi);
 		// plh_tgl = $('#ngirim-tgl').val();
-		$('.list-pl').html('').hide();
+		$('.list-rk').html('').hide();
 		$(".plh-opsi-plrk").hide();
 		$(".list-btn-pl").hide();
 		$(".list-btn-rk").hide();
@@ -468,20 +468,6 @@
 		}
 	}
 
-	$('#fplhpajak').on('change', function() { // OPSI PAJAK
-		pjk = $('#fplhpajak').val();
-		// alert(pjk);
-		if(pjk == 'ppn'){
-			ppnornon = 'A';
-		}else if(pjk == 'non'){
-			ppnornon = 'B';
-		}else{
-			ppnornon = '';
-		}
-		$("#fpajak").val(ppnornon);
-		$("#fsopajak").val(ppnornon);
-	});
-
 	//
 
 	function load_pt() {
@@ -500,11 +486,13 @@
 				data: function(params) {
 					if (params.term == undefined) {
 						return {
-							search: ""
+							search: "",
+							opsi: "pl"
 						}
 					} else {
 						return {
-							search: params.term
+							search: params.term,
+							opsi: "pl"
 						}
 					}
 				},
@@ -569,6 +557,7 @@
 		$("#fnosj").val("");
 		$("#fnoso").val("");
 		$("#fnopkb").val("");
+		opsiPajak(data[0].id)
 
 		$('#fjenis').val("");
 		plhPlPoJns(data[0].id);
@@ -620,8 +609,64 @@
 
 		$('#fplhplgsm').prop("disabled", false);
 
+		csjfjenis = $('#fjenis').val();
+		cek_no_sj(csjfjenis);
 		loadNmKerSj(data[0].id);
 	});
+
+	function opsiPajak(id){
+		// alert(id);
+		$.ajax({
+			url: '<?php echo base_url('Master/opsiPajak')?>',
+			type: "POST",
+			data: ({
+				id: id,
+			}),
+			success: function(json){
+				data = JSON.parse(json);
+				if(data.pajak == 'ppn'){
+					ppnornon = 'A';
+				}else if(data.pajak == 'non'){
+					ppnornon = 'B';
+				}else{
+					ppnornon = '';
+				}
+				$('#fplhpajak').val(data.pajak);
+				$("#fpajak").val(ppnornon);
+				$("#fsopajak").val(ppnornon);
+			}
+		})
+	}
+
+	$('#ftgl').on('change', function() { // OPSI PAJAK
+		ftgl = $("#ftgl").val();
+		getThnBlnRoll(ftgl);
+
+		csjfjenis = $('#fjenis').val();
+		// csjfjenis = $('#fnopo').val();
+		cek_no_sj(csjfjenis);
+	});
+
+	function cek_no_sj(id){
+		// alert(id);
+		csjftgl = $('#ftgl').val();
+		csjfplhpajak = $('#fplhpajak').val();
+		// alert(id+' - '+csjftgl+' - '+csjfplhpajak);
+		$(".cek_no_sj").html('. . .');
+		$.ajax({
+			url: '<?php echo base_url('Master/cek_no_sj')?>',
+			type: "POST",
+			data: ({
+				id: id,
+				tgl: csjftgl,
+				pjk: csjfplhpajak,
+			}),
+			success: function(data){
+				// console.log(data)
+				$(".cek_no_sj").html(data);
+			}
+		})
+	}
 
 	function loadNmKerSj(id){
 		$.ajax({
@@ -704,26 +749,24 @@
 		plhPlGsm('');
 		$(".show-add-cart-pl").load("<?php echo base_url('Master/dessCartPl') ?>");
 
+		load_data_pl();
 		// getThnBlnRoll();
 	}
 
 	function btnAdd(){
 		kosong();
+		// tglpl = $("#tgl-list-pl").val();
 		// getThnBlnRoll();
-		// $(".box-data-pl").hide();
+		load_data_pl();
+		$(".box-data-pl").hide();
 		$(".box-form-pl").show();
 	}
 
 	function btnBack(){
 		kosong();
-		// $(".box-data-pl").show();
+		$(".box-data-pl").show();
 		$(".box-form-pl").hide();
 	}
-
-	$('#ftgl').on('change', function() { // OPSI PAJAK
-		ftgl = $("#ftgl").val();
-		getThnBlnRoll(ftgl);
-	});
 
 	function getThnBlnRoll(ftgl) {
 		// let num = new Date().getFullYear();
@@ -788,9 +831,9 @@
 		$("#fnopkb").val(this.value);
 	})
 
-	function load_pl(){
+	function load_data_pl(){
 		// alert('list pl');
-		// tglpl = $("#tgl-list-pl").val();
+		tglpl = $("#tgl-list-pl").val();
 
 		$.ajax({
 			url: '<?php echo base_url('Master/load_pl')?>',
@@ -799,9 +842,10 @@
 				tglpl: tglpl,
 			}),
 			success: function(response){
-				$("#show-list-pl").html(response)
+				// $("#show-list-pl").html(response)
+				$(".list-pl").html(response)
 			}
-		});		
+		});
 	}
 
 	function addCartPl(opsi){
@@ -857,13 +901,18 @@
 			return;
 		}
 
-		if(fnopo == "" || fjenis == "" || fplhplgsm == ""){
+		if(fnopo == '' || fjenis == '' || fplhplgsm == ''){
 			swal("HARAP LENGKAPI NO PO / JENIS / GRAMATURE", "", "error");
 			return;
 		}
 
-		if (fnosj == '' || froll == '' || fbulan == '' || ftahun == '' || fpajak == '' || fquality == '' || fnoso == '' || fsoroll == '' || fsobulan == ''  || fsotahun == '' || fsopajak == '' || fsoquality == '' || fnopkb == '' || ftahunpkb == '' || fjnspkb == '') {
+		if(fnosj == '' || froll == '' || fbulan == '' || ftahun == '' || fpajak == '' || fquality == '' || fnoso == '' || fsoroll == '' || fsobulan == ''  || fsotahun == '' || fsopajak == '' || fsoquality == '' || fnopkb == '' || ftahunpkb == '' || fjnspkb == '') {
 			swal("HARAP LENGKAPI NO SURAT!", "", "error");
+			return;
+		}
+
+		if(fnosj.toString().length < 3){
+			swal("NOMER SURAT JALAN MINIMAL 3 DIGIT!", "", "error");
 			return;
 		}
 
@@ -893,11 +942,19 @@
 			success: function(response){
 				json = JSON.parse(response);
 				if(json.data == 'cart'){
-					$(".show-add-cart-pl").load("<?php echo base_url('Master/showCartPl') ?>");
-				}else{
-					kosong();
-					// tgl = $("#tgl-list-pl").val();
-					// load_data(tgl);
+					if(json.opsi){
+						$(".show-add-cart-pl").load("<?php echo base_url('Master/showCartPl') ?>");
+						swal(json.msg, "", "success");
+					}else{
+						swal(json.msg, "", "error");
+					}
+				}else{ // simpan
+					if(json.opsi){
+						swal(json.msg, "", "success");
+						kosong();
+					}else{
+						swal(json.msg, "", "error");
+					}
 				}
 			}
 		});
@@ -922,7 +979,6 @@
 	function btnAddrk(){
 		rkkosong();
 		$(".box-data-rk").hide();
-		// $(".box-data-pl").hide();
 		$(".box-form-rk").show();
 		$('#rkpl').val("").prop('disabled', true);
 		load_rkpl();
@@ -1220,7 +1276,7 @@
 	function load_data(tgl){
 		kosong();
 		tgl = $("#tgl-list-rk").val();
-		$(".list-pl").show().html('<div class="notfon">SEDANG MEMUAT . . .</div>');
+		$(".list-rk").show().html('<div class="notfon">SEDANG MEMUAT . . .</div>');
 		$.ajax({
 			url: '<?php echo base_url('Master/pList'); ?>',
 			type: "POST",
@@ -1229,9 +1285,9 @@
 			}),
 			success: function(response){
 				if(response){
-					$(".list-pl").show().html(response);
+					$(".list-rk").show().html(response);
 				}else{
-					$(".list-pl").show().html('<div class="notfon">DATA TIDAK DITEMUKAN</div>');
+					$(".list-rk").show().html('<div class="notfon">DATA TIDAK DITEMUKAN</div>');
 				}
 			}
 		});

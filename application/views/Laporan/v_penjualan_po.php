@@ -53,6 +53,17 @@
 					<div class="body">
 						<button class="btn-c-po" onclick="add_box()">ADD</button>
 
+						<div class="table-cari" style="margin-top:15px">
+							<table style="width:100%">
+								<tr>
+									<td style="width:50%">
+										<input type="text" name="cari_po" id="cari_po" class="form-control" autocomplete="off" placeholder="CARI">
+									</td>
+									<td><button onclick="caripo()">CARI</button></td>
+								</tr>
+							</table>
+						</div>
+
 						<!-- TAMPIL DATA LIST -->
 						<div class="ll box-data">
 							<div class="box-data-cek"></div>
@@ -80,14 +91,19 @@
 									<td style="padding:5px;font-weight:bold">PAJAK</td>
 									<td style="padding:5px">:</td>
 									<td style="padding:5px;text-align:center">
-										<button onclick="oppn('ppn')">PPN</button>
+										<!-- <button onclick="oppn('ppn')">PPN</button>
 										-
-										<button onclick="oppn('non')">NON</button>
+										<button onclick="oppn('non')">NON</button> -->
+										<select name="fpajak" id="fpajak" class="form-control">
+											<option value="">PILIH</option>
+											<option value="ppn">PPN</option>
+											<option value="non">NON PPN</option>
+										</select>
 									</td>
-									<td style="padding:5px">
+									<!-- <td style="padding:5px">
 										<input type="hidden" id="fpajak" value="">
 										<input type="text" id="fpajak-txt" class="inp-kosong" disabled>
-									</td>
+									</td> -->
 								</tr>
 								<tr>
 									<td style="padding:5px;font-weight:bold">KEPADA</td>
@@ -202,8 +218,7 @@
 		$(".box-data").show();
 		$(".box-form").hide();
 		kosong();
-		load_data();
-		load_pt();
+		// load_pt();
 	});
 
 	// ftgl fpajak fkepada fnama falamat ftelp
@@ -213,7 +228,7 @@
 		$("#fid").val("");
 		$("#ftgl").val("");
 		$("#fpajak").val("");
-		$("#fpajak-txt").val("");
+		// $("#fpajak-txt").val("");
 		$("#fnama").val("");
 		$("#falamat").val("");
 		$("#ftelp").val("");
@@ -226,8 +241,10 @@
 		$(".box-data").show();
 		$(".box-form").hide(); 
 		$("#fkepada").val("");
+
+		$(".table-cari").show();
 		load_pt();
-		load_data();
+		load_data('');
 
 		$(".cart-po").html('');
 		$(".cart-po").load("<?php echo base_url('Master/dessCartPO') ?>");
@@ -299,11 +316,13 @@
 				data: function(params) {
 					if (params.term == undefined) {
 						return {
-							search: ""
+							search: "",
+							opsi: "po",
 						}
 					} else {
 						return {
-							search: params.term
+							search: params.term,
+							opsi: "po",
 						}
 					}
 				},
@@ -327,29 +346,27 @@
 	function add_box(){
 		$(".box-data-cek").html('');
 		kosong();
+		$(".table-cari").hide();
 		$(".box-data").hide();
 		$(".box-form").show();
 	}
 
-	function oppn(oppnon){
-		if(oppnon == 'ppn'){
-			$("#fpajak").val('ppn');
-			$("#fpajak-txt").val('PPN');
-		}else{
-			$("#fpajak").val('non');
-			$("#fpajak-txt").val('NON PPN');
-		}
+	function caripo(){
+		cari = $("#cari_po").val();
+		load_data(cari);
 	}
 
 	//
 
-	function load_data(){
+	function load_data(caripo){
+		// alert(caripo)
 		$(".box-data-list").html('MEMUAT DATA');
 		$.ajax({
 			url: '<?php echo base_url('Master/loadDataPO')?>',
 			type: "POST",
-			// data: ({
-			// }),
+			data: ({
+				caripo: caripo,
+			}),
 			success: function(response){
 				if(response){
 					$(".box-data-list").html(response);
@@ -457,11 +474,15 @@
 
 	function simpanCart(){
 		// alert('simpanCart');
+		fkepada = $("#fkepada").val();
 		fno_po = $("#fno-po").val();
 		fid = $("#fid").val();
 		ftgl = $("#ftgl").val();
 		fpajak = $("#fpajak").val();
 
+		if (fkepada == '') {
+			swal("PILIH CUSTOMER !", "", "error"); return;
+		}
 		if (fno_po == '') {
 			swal("HARAP INPUT NOMER PO !", "", "error"); return;
 		}

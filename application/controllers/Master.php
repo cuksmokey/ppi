@@ -848,7 +848,8 @@ class Master extends CI_Controller
 
 	function loadPtPO(){ 
 		$searchTerm = $_GET['search'];
-		$response = $this->m_master->loadPtPO($searchTerm);
+		$opsi = $_GET['opsi'];
+		$response = $this->m_master->loadPtPO($searchTerm,$opsi);
 		echo json_encode($response);
 	}
 
@@ -857,6 +858,11 @@ class Master extends CI_Controller
 		$fid = $_GET['fid'];
 		$response = $this->m_master->loadPlPO($searchTerm,$fid);
 		echo json_encode($response);
+	}
+
+	function opsiPajak(){
+		$pajak = explode("_ex_", $_POST['id']);
+		echo json_encode(array('pajak' => $pajak[2]));
 	}
 
 	function loadPlJns(){ 
@@ -1549,6 +1555,112 @@ class Master extends CI_Controller
 		$this->m_fungsi->_mpdf('', $html, 10, 10, 10, 'P');
 	}
 
+	function load_pl(){
+		$tglpl = $_POST['tglpl'];
+		$html = '';
+
+		// $getData = $this->db->query("");
+		$html .='test';
+
+		echo $html;
+	}
+
+	function cek_no_sj(){
+		$html = '';
+		if($_POST['tgl'] == '' || $_POST['id'] == '' || $_POST['pjk'] == ''){
+			$jenis = '';
+			$fyear = '';
+			$syear = '';
+			$kpjk = '';
+		}else{
+			$jns = explode("_ex_", $_POST['id']);
+			$jenis = $jns[2];
+			$fyear = substr($_POST['tgl'], 0, 4);
+			$syear = substr($_POST['tgl'], 2, 2);
+			$pjk = $_POST['pjk'];
+			if($pjk == 'ppn'){
+				$kpjk = 'A';
+			}else if($pjk == 'non'){
+				$kpjk = 'B';
+			}else{
+				$kpjk = '';
+			}
+		}
+		
+		// PACKING LIST OK
+		$getData = $this->db->query("SELECT p.tgl,no_surat,nama,nm_perusahaan,qc FROM pl p
+		INNER JOIN m_timbangan t ON p.id=t.id_pl
+		WHERE p.tgl LIKE '%$fyear%' AND no_surat LIKE '%$syear/$kpjk/$jenis%' AND qc='ok'
+		GROUP BY p.tgl DESC,no_pkb DESC,qc LIMIT 10");
+		if($_POST['tgl'] == '' || $_POST['id'] == '' || $_POST['pjk'] == '' || $getData->num_rows() == 0){
+			$html .= '';
+		}else{
+			$html .='<table style="color:#000;font-size:12px;text-align:center;margin-top:15px" border="1">';
+			$html .='<tr>
+				<td style="padding:5px;font-weight:bold" colspan="4">10 KIRIMAN TERAKHIR</td>
+			</tr>';
+			$i = 0;
+			foreach($getData->result() as $r){
+				$i++;
+				if($r->nama == '-' || $r->nama == ''){
+					$nama = '';
+				}else{
+					$nama = $r->nama.' - ';
+				}
+				if($r->nm_perusahaan == '-' || $r->nm_perusahaan == ''){
+					$nmpt = '';
+				}else{
+					$nmpt = $r->nm_perusahaan;
+				}
+
+				$html .= '<tr>
+					<td style="padding:5px">'.$i.'</td>
+					<td style="padding:5px">'.$r->tgl.'</td>
+					<td style="padding:5px">'.trim($r->no_surat).'</td>
+					<td style="padding:5px;text-align:left">'.$nama.$nmpt.'</td>
+				</tr>';
+			}
+			$html .='</table>';
+		}
+
+		// PACKING LIST PROSES
+		$getData = $this->db->query("SELECT tgl,no_surat,nama,nm_perusahaan,qc FROM pl
+		WHERE tgl LIKE '%$fyear%' AND no_surat LIKE '%$syear/$kpjk/$jenis%' AND qc='proses'
+		GROUP BY tgl DESC,no_pkb DESC,qc");
+		if($_POST['tgl'] == '' || $_POST['id'] == '' || $_POST['pjk'] == '' || $getData->num_rows() == 0){
+			$html .= '';
+		}else{
+			$html .='<table style="color:#000;font-size:12px;text-align:center;margin-top:15px" border="1">';
+			$html .='<tr>
+				<td style="padding:5px;font-weight:bold" colspan="4">PACKING LIST PROSES</td>
+			</tr>';
+			$i = 0;
+			foreach($getData->result() as $r){
+				$i++;
+				if($r->nama == '-' || $r->nama == ''){
+					$nama = '';
+				}else{
+					$nama = $r->nama.' - ';
+				}
+				if($r->nm_perusahaan == '-' || $r->nm_perusahaan == ''){
+					$nmpt = '';
+				}else{
+					$nmpt = $r->nm_perusahaan;
+				}
+
+				$html .= '<tr>
+					<td style="padding:5px">'.$i.'</td>
+					<td style="padding:5px">'.$r->tgl.'</td>
+					<td style="padding:5px">'.trim($r->no_surat).'</td>
+					<td style="padding:5px;text-align:left">'.$nama.$nmpt.'</td>
+				</tr>';
+			}
+			$html .='</table>';
+		}
+
+		echo $html;
+	}
+
 	function loadNmKerSj(){
 		$id = explode("_ex_", $_POST['id']);
 		echo json_encode(array('nm_ker' => $id[2]));
@@ -1557,38 +1669,64 @@ class Master extends CI_Controller
 	function addCartPl(){
 		// fkepada fnmpt fnama falamat ftelp ftgl fplhpajak noSJ noSOSJ noPKB fnopkb ftahunpkb fjnspkb fnopo fjenis fplhplgsm
 		// tgl no_surat no_so no_pkb no_kendaraan nm_perusahaan id_perusahaan alamat_perusahaan nama no_telp no_po status qc tgl_pl opl no_pl_inv  cek_po      sj  item_desc
+		// CEK NOMER SURAT JALAN SUDAH TERPAKAI ATAU BELUM = PACKING LIST OK
+		$year = substr($_POST['ftgl'], 0, 4);
+		$noSJ = explode("/", trim($_POST['noSJ']));
+		$no = $noSJ[0];
+		$thn = $noSJ[3];
+		$pjk = $noSJ[4];
+		$jns = $noSJ[5];
+		$getnoSJ = $this->db->query("SELECT p.tgl,no_surat,no_so,no_pkb,qc FROM pl p
+		INNER JOIN m_timbangan t ON p.id=t.id_pl
+		WHERE p.tgl LIKE '%$year%' AND no_surat LIKE '%$no%' AND no_surat LIKE '%$thn/$pjk/$jns%' AND qc='ok'
+		GROUP BY p.tgl,no_surat,no_so,no_pkb");
 		if($_POST['pilihan'] == 'cart'){
-			$expfnopo = explode("_ex_", $_POST['fnopo']);
-			$expfjenis = explode("_ex_", $_POST['fjenis']);
+			if($getnoSJ->num_rows() == 0){
+				// CEK NOMER SURAT JALAN SUDAH TERPAKAI ATAU BELUM = PACKING LIST PROSES
+				$getnoSJproses = $this->db->query("SELECT tgl,no_surat,no_so,no_pkb,qc FROM pl
+				WHERE tgl LIKE '%$year%' AND no_surat LIKE '%$no%' AND no_surat LIKE '%$thn/$pjk/$jns%' AND qc='proses'
+				GROUP BY tgl,no_surat,no_so,no_pkb");
+				if($getnoSJproses->num_rows() == 0){
+					$expfnopo = explode("_ex_", $_POST['fnopo']);
+					$expfjenis = explode("_ex_", $_POST['fjenis']);
 
-			$data = array(
-				'id' => $_POST['fnopkb'].'_'.$_POST['ftahunpkb'].''.$_POST['fjnspkb'],
-				'name' => $_POST['fnopkb'].'_'.$_POST['ftahunpkb'].''.$_POST['fjnspkb'],
-				'price' => 0,
-				'qty' => 1,
-				'options' => array(
-					'tgl_pl' => $_POST['ftglrk'],
-					'tgl' => $_POST['ftgl'],
-					'no_surat' => $_POST['noSJ'],
-					'no_so' => $_POST['noSOSJ'],
-					'no_pkb' => $_POST['noPKB'],
-					'no_kendaraan' => '-',
-					'nm_perusahaan' => $_POST['fnmpt'],
-					'id_perusahaan' => $_POST['fkepada'],
-					'alamat_perusahaan' => $_POST['falamat'],
-					'nama' => $_POST['fnama'],
-					'no_telp' => $_POST['ftelp'],
-					'no_po' => $expfnopo[1],
-					'nm_ker' => $expfjenis[2],
-					'g_label' => $_POST['fplhplgsm'],
-				),
-			);
-
-			$this->cart->insert($data);
-			echo json_encode(array('data' => 'cart'));
+					$data = array(
+						'id' => $_POST['fnopkb'].'_'.$_POST['ftahunpkb'].''.$_POST['fjnspkb'],
+						'name' => $_POST['fnopkb'].'_'.$_POST['ftahunpkb'].''.$_POST['fjnspkb'],
+						'price' => 0,
+						'qty' => 1,
+						'options' => array(
+							'tgl_pl' => $_POST['ftglrk'],
+							'tgl' => $_POST['ftgl'],
+							'no_surat' => $_POST['noSJ'],
+							'no_so' => $_POST['noSOSJ'],
+							'no_pkb' => $_POST['noPKB'],
+							'no_kendaraan' => '-',
+							'nm_perusahaan' => $_POST['fnmpt'],
+							'id_perusahaan' => $_POST['fkepada'],
+							'alamat_perusahaan' => $_POST['falamat'],
+							'nama' => $_POST['fnama'],
+							'no_telp' => $_POST['ftelp'],
+							'no_po' => $expfnopo[1],
+							'nm_ker' => $expfjenis[2],
+							'g_label' => $_POST['fplhplgsm'],
+						),
+					);
+					$this->cart->insert($data);
+					echo json_encode(array('data' => 'cart', 'opsi' => true, 'msg' => 'BERHASIL DITAMBAHKAN!'));
+				}else{
+					echo json_encode(array('data' => 'cart', 'opsi' => false, 'msg' => 'NOMER SURAT JALAN SUDAH TERPAKAI!'));
+				}
+			}else{
+				echo json_encode(array('data' => 'cart', 'opsi' => false, 'msg' => 'NOMER SURAT JALAN SUDAH TERPAKAI!'));
+			}
 		}else{ // simpan
-			$this->m_master->simpanCartPl();
-			echo json_encode(array('data' => 'simpan'));
+			if($getnoSJ->num_rows() == 0){
+				$this->m_master->simpanCartPl();
+				echo json_encode(array('data' => 'simpan', 'opsi' => true, 'msg' => 'BERHASIL SIMPAN PL!'));
+			}else{
+				echo json_encode(array('data' => 'simpan', 'opsi' => false, 'msg' => 'NOMER SURAT JALAN SUDAH TERPAKAI!'));
+			}
 		}
 	}
 
@@ -1621,6 +1759,9 @@ class Master extends CI_Controller
 		}
 
 		if($this->cart->total_items() != 0){
+			$html .='<tr>
+				<td style="padding:5px" colspan="7"><button onclick="addCartPl('."'simpan'".')">SIMPAN</button></td>
+			</tr>';
 			$html .='</table>';
 		}
 
@@ -2312,11 +2453,12 @@ class Master extends CI_Controller
 	}
 
 	function loadDataPO(){
+		$caripo = $_POST['caripo'];
 		$html = '';
 		
 		$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,pt.alamat,m.* FROM po_master m
 		INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id
-		WHERE status='open'
+		WHERE status='open' AND (pt.pimpinan LIKE '%$caripo%' OR pt.nm_perusahaan LIKE '%$caripo%')
 		GROUP BY id_perusahaan
 		ORDER BY pt.pimpinan,pt.nm_perusahaan");
 		if($getData->num_rows() == 0){
@@ -2324,13 +2466,18 @@ class Master extends CI_Controller
 		}else{
 			$i = 0;
 			foreach($getData->result() as $r){
-				if($r->pimpinan != '-' && $r->nm_perusahaan == '-'){
-					$kop = $r->pimpinan;
-				}else if($r->pimpinan == '-' && $r->nm_perusahaan != '-'){
-					$kop = $r->nm_perusahaan;
+				if($r->pimpinan == '-' || $r->pimpinan == ''){
+					$nama = '';
+				}else{
+					$nama = $r->pimpinan.' - ';
+				}
+
+				if($r->nm_perusahaan == '-' && $r->nm_perusahaan == ''){
+					$kop = '';
 				}else{
 					$kop = $r->nm_perusahaan;
 				}
+
 				$i++;
 				$html .='<table style="font-size:12px;color:#000">';
 				$html .='<tr class="ll-tr">
@@ -2339,7 +2486,7 @@ class Master extends CI_Controller
 						<button class="btn-c-po" onclick="btnCek('."'".$r->id_perusahaan."'".','."'".$i."'".','."'rekap'".')">REKAP</button>
 					</td>
 					<td style="padding:5px">'.$i.'.</td>
-					<td style="padding:5px">'.$kop.'</td>
+					<td style="padding:5px">'.$nama.$kop.'</td>
 				</tr>';
 				$html .='</table>';
 
@@ -2368,7 +2515,9 @@ class Master extends CI_Controller
 					<tr class="ll-tr">
 						<td style="padding:5px">-</td>
 						<td style="padding:5px">'.$r->no_po.'</td>
-						<td style="padding:5px"><button class="btn-c-po" onclick="btnOpen('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">'.$r->status.'</button></td>
+						<td style="padding:5px">
+							<button class="btn-c-po" onclick="btnOpen('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">'.$r->status.'</button>
+						</td>
 					</tr>
 				</table>';
 
