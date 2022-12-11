@@ -133,189 +133,196 @@
 
 							<div class="ilist box-form-pl" style="overflow:auto;white-space:nowrap;">
 								<!-- BOX FORM PL -->
-								<table style="width:100%" border="1">
-									<tr>
-										<td style="width:15%;padding:5px"></td>
-										<td style="width:1%;padding:5px"></td>
-										<td style="width:25%;padding:5px"></td>
-										<td style="width:auto;padding:5px"></td>
-										<td style="width:auto;padding:5px"></td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold" colspan="5">KIRIM KE:</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">PILIH</td>
-										<td style="padding:5px">:</td>
-										<td style="padding:5px" colspan="3">
-											<select class="form-control" id="fkepada" style="width:100%" autocomplete="off"></select>
-										</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">KEPADA</td>
-										<td style="padding:5px">:</td>
-										<td style="padding:5px" colspan="3">
-											<input type="text" id="fnmpt" class="form-control" style="background:#e9e9e9" disabled>
-											<input type="hidden" id="fid" value="">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">NAMA</td>
-										<td style="padding:5px">:</td>
-										<td style="padding:5px" colspan="3">
-											<input type="text" id="fnama" class="form-control" style="background:#e9e9e9" disabled>
-											<input type="hidden" id="fid" value="">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">ALAMAT</td>
-										<td style="padding:5px">:</td>
-										<td style="padding:5px" colspan="3">
-											<!-- <input type="text" id="flamat" class="form-control"> -->
-											<textarea name="falamat" id="falamat" rows="5" class="form-control" style="resize:none;background:#e9e9e9" disabled></textarea>
-										</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">NO. TELP</td>
-										<td style="padding:5px">:</td>
-										<td style="padding:5px" colspan="3">
-											<input type="text" id="ftelp" class="form-control" style="background:#e9e9e9" disabled>
-										</td>
-									</tr>
-								</table>
+								<div class="box-form-pl-cust">
+									<table style="width:100%" border="1">
+										<tr>
+											<td style="width:15%;padding:5px"></td>
+											<td style="width:1%;padding:5px"></td>
+											<td style="width:25%;padding:5px"></td>
+											<td style="width:auto;padding:5px"></td>
+											<td style="width:auto;padding:5px"></td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold" colspan="5">KIRIM KE:</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">PILIH</td>
+											<td style="padding:5px">:</td>
+											<td style="padding:5px" colspan="3">
+												<select class="form-control" id="fkepada" style="width:100%" autocomplete="off"></select>
+											</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">KEPADA</td>
+											<td style="padding:5px">:</td>
+											<td style="padding:5px" colspan="3">
+												<input type="text" id="fnmpt" class="form-control" style="background:#e9e9e9" disabled>
+												<input type="hidden" id="fid" value="">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">NAMA</td>
+											<td style="padding:5px">:</td>
+											<td style="padding:5px" colspan="3">
+												<input type="text" id="fnama" class="form-control" style="background:#e9e9e9" disabled>
+												<input type="hidden" id="fid" value="">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">ALAMAT</td>
+											<td style="padding:5px">:</td>
+											<td style="padding:5px" colspan="3">
+												<!-- <input type="text" id="flamat" class="form-control"> -->
+												<textarea name="falamat" id="falamat" rows="5" class="form-control" style="resize:none;background:#e9e9e9" disabled></textarea>
+											</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">NO. TELP</td>
+											<td style="padding:5px">:</td>
+											<td style="padding:5px" colspan="3">
+												<input type="text" id="ftelp" class="form-control" style="background:#e9e9e9" disabled>
+											</td>
+										</tr>
+									</table>
+								</div>
 
-								<table style="margin-top:15px;width:100%" border="1">
-									<tr>
-										<td style="width:15%;padding:5px"></td>
-										<td style="width:1%;padding:5px"></td>
-										<td style="width:25%;padding:5px"></td>
-										<td style="width:auto;padding:5px"></td>
-										<td style="width:auto;padding:5px"></td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">NO PO</td>
-										<td style="padding:5px">:</td>
-										<td style="padding:5px" colspan="3">
-											<select class="form-control" id="fnopo" style="width:100%" autocomplete="off"></select>
-										</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">JENIS</td>
-										<td style="padding:5px;text-align:center">:</td>
-										<td style="padding:5px">
-											<select id="fjenis" class="form-control" style="width:100%" autocomplete="off"></select>
-										</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">GAMATURE</td>
-										<td style="padding:5px">:</td>
-										<td style="padding:5px">
-											<!-- <div class="fplhplgsm"></div> -->
-											<select id="fplhplgsm" class="form-control" style="width:100%" autocomplete="off"></select>
-										</td>
-										<td style="padding:5px"></td>
-									</tr>
-								</table>
+								<div class="box-form-pl-po">
+									<table style="margin-top:15px;width:100%" border="1">
+										<tr>
+											<td style="width:15%;padding:5px"></td>
+											<td style="width:1%;padding:5px"></td>
+											<td style="width:25%;padding:5px"></td>
+											<td style="width:auto;padding:5px"></td>
+											<td style="width:auto;padding:5px"></td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">NO PO</td>
+											<td style="padding:5px">:</td>
+											<td style="padding:5px" colspan="3">
+												<select class="form-control" id="fnopo" style="width:100%" autocomplete="off"></select>
+											</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">JENIS</td>
+											<td style="padding:5px;text-align:center">:</td>
+											<td style="padding:5px">
+												<select id="fjenis" class="form-control" style="width:100%" autocomplete="off"></select>
+											</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">GAMATURE</td>
+											<td style="padding:5px">:</td>
+											<td style="padding:5px">
+												<!-- <div class="fplhplgsm"></div> -->
+												<select id="fplhplgsm" class="form-control" style="width:100%" autocomplete="off"></select>
+											</td>
+											<td style="padding:5px"></td>
+										</tr>
+									</table>
+								</div>
 
 								<div class="cek_no_sj"></div>
 
-								<table style="margin-top:15px;width:100%" border="1">
-									<tr>
-										<td style="width:15%;padding:5px"></td>
-										<td style="width:1%;padding:5px"></td>
-										<td style="width:25%;padding:5px"></td>
-										<td style="width:auto;padding:5px"></td>
-										<td style="width:auto;padding:5px"></td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">RENCANA KIRIM</td>
-										<td style="padding:5px;text-align:center">:</td>
-										<td style="padding:5px">
-											<input type="date" id="ftglrk" class="form-control">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">KIRIM TANGGAL</td>
-										<td style="padding:5px;text-align:center">:</td>
-										<td style="padding:5px">
-											<input type="date" id="ftgl" class="form-control">
-										</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">PAJAK</td>
-										<td style="padding:5px;text-align:center">:</td>
-										<td style="padding:5px;text-align:center">
-											<select id="fplhpajak" class="form-control" disabled style="background:#e9e9e9">
-												<option value="">PILIH</option>
-												<option value="ppn">PPN</option>
-												<option value="non">NON PPN</option>
-											</select>
-										</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">NO SURAT JALAN</td>
-										<td style="padding:5px;text-align:center">:</td>
-										<td style="padding:5px" colspan="3">
-											<table style="width:100%">
-												<tr>
-													<td><input type="text" id="fnosj" class="form-control" placeholder="NO" autocomplete="off" maxlength="4" onkeypress="return hanyaAngka(event)"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="froll" class="form-control" placeholder="ROLL" value="ROLL" autocomplete="off" disabled style="background:#e9e9e9"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fbulan" class="form-control" placeholder="BULAN" autocomplete="off" disabled style="background:#e9e9e9"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="ftahun" class="form-control" placeholder="TAHUN" autocomplete="off" disabled style="background:#e9e9e9"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fpajak" class="form-control" placeholder="PAJAK" autocomplete="off" maxlength="1" disabled style="background:#e9e9e9"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fquality" class="form-control" placeholder="JENIS" autocomplete="off" maxlength="2" disabled style="background:#e9e9e9"></td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">NO SO</td>
-										<td style="padding:5px;text-align:center">:</td>
-										<td style="padding:5px" colspan="3">
-											<table style="width:100%">
-												<tr>
-													<td><input type="text" id="fnoso" class="form-control" placeholder="NO" autocomplete="off" maxlength="4" disabled style="background:#e9e9e9"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fsoroll" class="form-control" placeholder="SO-ROLL" value="SO-ROLL" autocomplete="off" disabled style="background:#e9e9e9"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fsobulan" class="form-control" placeholder="BULAN" autocomplete="off"  disabled style="background:#e9e9e9"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fsotahun" class="form-control" placeholder="TAHUN" autocomplete="off" disabled style="background:#e9e9e9"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fsopajak" class="form-control" placeholder="PAJAK" autocomplete="off" maxlength="1" disabled style="background:#e9e9e9"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fsoquality" class="form-control" placeholder="JENIS" autocomplete="off" maxlength="2" disabled style="background:#e9e9e9"></td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">NO PKB</td>
-										<td style="padding:5px;text-align:center">:</td>
-										<td style="padding:5px">
-											<table style="width:100%">
-												<tr>
-													<td><input type="text" id="fnopkb" class="form-control" placeholder="NO" autocomplete="off" maxlength="4" disabled style="background:#e9e9e9"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="ftahun-pkb" class="form-control" placeholder="TAHUN" autocomplete="off" disabled style="background:#e9e9e9"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="fjns-pkb" class="form-control" placeholder="JENIS" autocomplete="off" maxlength="2" disabled style="background:#e9e9e9"></td>
-												</tr>
-											</table>
-										</td>
-										<td style="padding:5px;text-align:right" colspan="2">
-											<button onclick="addCartPl('cart')">ADD</button>
-										</td>
-									</tr>
-								</table>
+								<div class="box-form-pl-no">
+									<table style="margin-top:15px;width:100%" border="1">
+										<tr>
+											<td style="width:15%;padding:5px"></td>
+											<td style="width:1%;padding:5px"></td>
+											<td style="width:25%;padding:5px"></td>
+											<td style="width:auto;padding:5px"></td>
+											<td style="width:auto;padding:5px"></td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">RENCANA KIRIM</td>
+											<td style="padding:5px;text-align:center">:</td>
+											<td style="padding:5px">
+												<input type="date" id="ftglrk" class="form-control">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">KIRIM TANGGAL</td>
+											<td style="padding:5px;text-align:center">:</td>
+											<td style="padding:5px">
+												<input type="date" id="ftgl" class="form-control">
+											</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">PAJAK</td>
+											<td style="padding:5px;text-align:center">:</td>
+											<td style="padding:5px;text-align:center">
+												<select id="fplhpajak" class="form-control" disabled style="background:#e9e9e9">
+													<option value="">PILIH</option>
+													<option value="ppn">PPN</option>
+													<option value="non">NON PPN</option>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">NO SURAT JALAN</td>
+											<td style="padding:5px;text-align:center">:</td>
+											<td style="padding:5px" colspan="3">
+												<table style="width:100%">
+													<tr>
+														<td><input type="text" id="fnosj" class="form-control" placeholder="NO" autocomplete="off" maxlength="4" onkeypress="return hanyaAngka(event)"></td>
+														<td style="padding:0 5px">/</td>
+														<td><input type="text" id="froll" class="form-control" placeholder="ROLL" value="ROLL" autocomplete="off" disabled style="background:#e9e9e9"></td>
+														<td style="padding:0 5px">/</td>
+														<td><input type="text" id="fbulan" class="form-control" placeholder="BULAN" autocomplete="off" disabled style="background:#e9e9e9"></td>
+														<td style="padding:0 5px">/</td>
+														<td><input type="text" id="ftahun" class="form-control" placeholder="TAHUN" autocomplete="off" disabled style="background:#e9e9e9"></td>
+														<td style="padding:0 5px">/</td>
+														<td><input type="text" id="fpajak" class="form-control" placeholder="PAJAK" autocomplete="off" maxlength="1" disabled style="background:#e9e9e9"></td>
+														<td style="padding:0 5px">/</td>
+														<td><input type="text" id="fquality" class="form-control" placeholder="JENIS" autocomplete="off" maxlength="2" disabled style="background:#e9e9e9"></td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">NO SO</td>
+											<td style="padding:5px;text-align:center">:</td>
+											<td style="padding:5px" colspan="3">
+												<table style="width:100%">
+													<tr>
+														<td><input type="text" id="fnoso" class="form-control" placeholder="NO" autocomplete="off" maxlength="4" disabled style="background:#e9e9e9"></td>
+														<td style="padding:0 5px">/</td>
+														<td><input type="text" id="fsoroll" class="form-control" placeholder="SO-ROLL" value="SO-ROLL" autocomplete="off" disabled style="background:#e9e9e9"></td>
+														<td style="padding:0 5px">/</td>
+														<td><input type="text" id="fsobulan" class="form-control" placeholder="BULAN" autocomplete="off"  disabled style="background:#e9e9e9"></td>
+														<td style="padding:0 5px">/</td>
+														<td><input type="text" id="fsotahun" class="form-control" placeholder="TAHUN" autocomplete="off" disabled style="background:#e9e9e9"></td>
+														<td style="padding:0 5px">/</td>
+														<td><input type="text" id="fsopajak" class="form-control" placeholder="PAJAK" autocomplete="off" maxlength="1" disabled style="background:#e9e9e9"></td>
+														<td style="padding:0 5px">/</td>
+														<td><input type="text" id="fsoquality" class="form-control" placeholder="JENIS" autocomplete="off" maxlength="2" disabled style="background:#e9e9e9"></td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">NO PKB</td>
+											<td style="padding:5px;text-align:center">:</td>
+											<td style="padding:5px">
+												<table style="width:100%">
+													<tr>
+														<td><input type="text" id="fnopkb" class="form-control" placeholder="NO" autocomplete="off" maxlength="4" disabled style="background:#e9e9e9"></td>
+														<td style="padding:0 5px">/</td>
+														<td><input type="text" id="ftahun-pkb" class="form-control" placeholder="TAHUN" autocomplete="off" disabled style="background:#e9e9e9"></td>
+														<td style="padding:0 5px">/</td>
+														<td><input type="text" id="fjns-pkb" class="form-control" placeholder="JENIS" autocomplete="off" maxlength="2" disabled style="background:#e9e9e9"></td>
+													</tr>
+												</table>
+											</td>
+											<td style="padding:5px;text-align:right" colspan="2">
+												<button onclick="addCartPl('cart')">ADD</button>
+											</td>
+										</tr>
+									</table>
+								</div>
 
 								<div class="show-add-cart-pl"></div>
 
+								<div class="show-edit-cart-pl"></div>
 
 								<button onclick="btnBack()" style="margin-top:15px">BACK</button>
 								<!-- <button onclick="addCartPl('simpan')">SIMPAN</button> -->
@@ -331,7 +338,7 @@
 								<input type="date" id="tgl-list-rk" value="<?= date('Y-m-d')?>">
 								<button onclick="load_data()">CARI</button>
 
-								<div class="list-rk"></div>
+								<div style="margin-top:15px" class="list-rk"></div>
 							</div>
 
 							<div class="ilist box-form-rk">
@@ -398,9 +405,12 @@
 								</table>
 
 								<div class="show-cart-rk" style="margin-top:15px"></div>
+								
+								<div class="show-list-edit-rk" style="margin-top:15px"></div>
+
+								<button onclick="btnBackRk()" style="margin-top:15px">BACK</button>
 							</div>
 						</div>
-
 					</div>
 				</div>
 			</div>
@@ -433,8 +443,7 @@
 
 		$(".box-form-rk").hide();
 		kosong();
-		// load_po('');
-		// plhPlPoJns('','');
+		rkkosong();
 
 		if(otorisasi == 'all' || otorisasi == 'admin'){
 			$(".plh-opsi-plrk").show();
@@ -455,16 +464,15 @@
 		if(plrk == 'pl'){
 			$(".list-btn-pl").show();
 			$(".list-btn-rk").hide();
+			$(".box-data-pl").show();
 			$(".box-form-pl").hide();
+			kosong()
 		}else{
 			$(".list-btn-pl").hide();
 			$(".list-btn-rk").show();
-
-			tgl = $("#tgl-list-rk").val();
-			load_data(tgl);
-
 			$(".box-data-rk").show();
 			$(".box-form-rk").hide();
+			rkkosong();
 		}
 	}
 
@@ -732,8 +740,8 @@
 		$("#fnosj").val("");
 		$("#fnoso").val("");
 		$("#fnopkb").val("");
-		$('#ftglrk').val("");
-		$('#ftgl').val("");
+		$('#ftglrk').val("").prop("disabled", false).removeAttr('style');
+		$('#ftgl').val("").prop("disabled", false).removeAttr('style');
 		$('#fplhpajak').val("");
 		$("#fquality").val("");
 		$("#fsoquality").val("");
@@ -750,7 +758,11 @@
 		$(".show-add-cart-pl").load("<?php echo base_url('Master/dessCartPl') ?>");
 
 		load_data_pl();
-		// getThnBlnRoll();
+		
+		$(".cek_no_sj").html('');
+		$(".show-edit-cart-pl").html('');
+		pl = 'simpan';
+		vopl = '';
 	}
 
 	function btnAdd(){
@@ -760,6 +772,7 @@
 		load_data_pl();
 		$(".box-data-pl").hide();
 		$(".box-form-pl").show();
+		$(".box-form-pl-cust").show();
 	}
 
 	function btnBack(){
@@ -834,7 +847,7 @@
 	function load_data_pl(){
 		// alert('list pl');
 		tglpl = $("#tgl-list-pl").val();
-
+		$(".list-pl").html('MEMUAT DATA. . .');
 		$.ajax({
 			url: '<?php echo base_url('Master/load_pl')?>',
 			type: "POST",
@@ -843,13 +856,86 @@
 			}),
 			success: function(response){
 				// $("#show-list-pl").html(response)
-				$(".list-pl").html(response)
+				$(".list-pl").html(response);
 			}
 		});
 	}
 
+	function prosesPL(idpt,tglpl,opl,i){
+		alert(idpt+' - '+tglpl+' - '+opl+' - '+i);
+		// $(".cek-pl").html('');
+		// $.ajax({
+		// 	url: '<?php echo base_url('Master/prosesPL')?>',
+		// 	type: "POST",
+		// 	data: ({
+
+		// 	}),
+		// 	success: function(data){
+		// 		$(".proses-pl-" + i).html();
+		// 	}
+		// })
+	}
+
+	function editPL(idpt,tglpl,opl,i){
+		// alert(idpt+' - '+tglpl+' - '+opl+' - '+i);
+		$(".cek-pl").html('');
+		$(".box-data-pl").hide();
+		$(".box-form-pl").show();
+		$('#fnopo').val("").prop("disabled", true);
+		load_po('');
+		$('#fjenis').val("").prop("disabled", true);
+		plhPlPoJns('');
+		$('#fplhplgsm').val("").prop("disabled", true);
+		plhPlGsm('');
+		$.ajax({
+			url: '<?php echo base_url('Master/editPL')?>',
+			type: "POST",
+			data: ({
+				idpt: idpt,
+				tglpl: tglpl,
+				opl: opl,
+				i: i,
+			}),
+			success: function(json){
+				data = JSON.parse(json);
+				$(".box-form-pl-cust").hide();
+				$(".box-form-pl-po").show();
+				$(".box-form-pl-no").show();
+				$('#fnopo').prop("disabled", false);
+				$("#fkepada").val(data.cust);
+				$("#fnmpt").val(data.fnmpt);
+				$("#fnama").val(data.fnama);
+				$("#falamat").val(data.falamat);
+				$("#ftelp").val(data.ftelp);
+				$("#ftglrk").val(data.ftglrk).prop("disabled", true).attr('style', 'background:#e9e9e9');
+				$("#ftgl").val(data.ftgl).prop("disabled", true).attr('style', 'background:#e9e9e9');
+				
+				getThnBlnRoll(data.ftgl);
+				load_po(data.cust);
+
+				pl = 'edit';
+				vopl = data.opl;
+				showEditPl(idpt,tglpl,opl,i);
+			}
+		})
+	}
+
+	function showEditPl(idpt,tglpl,opl,i){
+		// alert(idpt+' - '+tglpl+' - '+opl+' - '+i);
+		$.ajax({
+			url: '<?php echo base_url('Master/showEditPl')?>',
+			type: "POST",
+			data: ({
+				idpt,tglpl,opl,i
+			}),
+			success: function(data){
+				$(".show-edit-cart-pl").html(data);
+			}
+		})
+	}
+
 	function addCartPl(opsi){
-		// alert('cart');
+		// alert(pl);
 		fkepada = $("#fkepada").val(); // id_pt
 		fnmpt = $("#fnmpt").val();
 		fnama = $("#fnama").val();
@@ -891,9 +977,11 @@
 		fplhplgsm = $("#fplhplgsm").val();
 		// alert(fnopo+' - '+fjenis+' - '+fplhplgsm+' - '+noSJ);
 
-		if(fkepada == '' || fnmpt == '' || fnama == '' || falamat == '' || ftelp == ''){
-			swal("HARAP PILIH CUSTOMER!", "", "error");
-			return;
+		if(pl == 'simpan'){
+			if(fkepada == '' || fnmpt == '' || fnama == '' || falamat == '' || ftelp == ''){
+				swal("HARAP PILIH CUSTOMER!", "", "error");
+				return;
+			}
 		}
 		
 		if(ftglrk == '' || ftgl == '' || fplhpajak == ''){
@@ -901,7 +989,7 @@
 			return;
 		}
 
-		if(fnopo == '' || fjenis == '' || fplhplgsm == ''){
+		if(fnopo == '' || fjenis == '' || fplhplgsm == '' || fnopo == null || fjenis == null || fplhplgsm == null || fnopo == undefined || fjenis == undefined || fplhplgsm == undefined){
 			swal("HARAP LENGKAPI NO PO / JENIS / GRAMATURE", "", "error");
 			return;
 		}
@@ -938,13 +1026,15 @@
 				fjenis: fjenis,
 				fplhplgsm: fplhplgsm,
 				pilihan: opsi,
+				pl: pl,
+				opl: vopl,
 			}),
 			success: function(response){
 				json = JSON.parse(response);
 				if(json.data == 'cart'){
 					if(json.opsi){
 						$(".show-add-cart-pl").load("<?php echo base_url('Master/showCartPl') ?>");
-						swal(json.msg, "", "success");
+						// swal(json.msg, "", "success");
 					}else{
 						swal(json.msg, "", "error");
 					}
@@ -994,13 +1084,19 @@
 		$("#rkjmlroll").val("").prop('disabled', true).attr('style', 'background:#e9e9e9');
 	}
 
+	function btnBackRk(){
+		rkkosong();
+		$(".box-data-rk").show();
+		$(".box-form-rk").hide();
+	}
+
 	function rkkosong(){
 		$("#v-id-pl").val('');
 		$("#v-opl").val('');
 		$("#v-tgl-pl").val('');
 		$("#v-ii").val('');
 
-		$("#rktgl").val("");
+		$("#rktgl").val("").prop('disabled', false);
 		$("#rkpl").val("");
 		$("#rkpo").val("");
 		$("#rkjenis").val("");
@@ -1011,6 +1107,9 @@
 		$(".box-data-rk").show();
 		$(".box-form-rk").hide();
 		$(".show-cart-rk").load("<?php echo base_url('Master/dessCartRk') ?>");
+
+		tgl = $("#tgl-list-rk").val();
+		load_data(tgl);
 	}
 
 	// 
@@ -1019,9 +1118,6 @@
 		$('#rkpl').val("").prop('disabled', false);
 		rktgl = $("#rktgl").val();
 		load_rkpl(rktgl);
-
-		$(".show-cart-rk").load("<?php echo base_url('Master/dessCartRk') ?>");
-		// rkpo rkjenis rkglabel rkukuran
 	});
 
 	function load_rkpl(rktgl) {
@@ -1065,9 +1161,6 @@
 		load_rkuk();
 
 		$("#rkjmlroll").val("").prop('disabled', true).attr('style', 'background:#e9e9e9');
-
-		$(".show-cart-rk").load("<?php echo base_url('Master/dessCartRk') ?>");
-		// rkpo rkjenis rkglabel rkukuran
 	});
 
 	function load_rkpo(opl_tglpl) {
@@ -1249,11 +1342,18 @@
 	}
 
 	function simpanCartRk(){
+		rkukuran = $("#rkukuran").val();
+		tgl = $("#tgl-list-rk").val();
+		// alert(rkukuran);
 		$.ajax({
 			url: '<?php echo base_url('Master/simpanCartRk')?>',
 			type: "POST",
+			data:({
+				rkukuran: rkukuran
+			}),
 			success: function(response) {
-				alert('berhasil');
+				swal(json.msg, "", "success");
+				rkkosong()
 			}
 		})
 	}
@@ -1274,7 +1374,6 @@
 	// 
 
 	function load_data(tgl){
-		kosong();
 		tgl = $("#tgl-list-rk").val();
 		$(".list-rk").show().html('<div class="notfon">SEDANG MEMUAT . . .</div>');
 		$.ajax({
@@ -1323,9 +1422,7 @@
 
 	function btnRencanaEdit(id_rk,opl,tgl_pl,i){
 		// alert(id_rk+' - '+opl+' - '+tgl_pl+' - '+i);
-		$(".id-cek").html('');
-
-		
+		$(".box-data-rk").hide();
 		$(".box-form-rk").show();
 		$('#rkpl').val("").prop('disabled', true);
 		load_rkpl();
@@ -1337,10 +1434,27 @@
 		load_rkgsm();
 		$("#rkukuran").val("").prop('disabled', true);
 		load_rkuk();
-
 		$("#rkjmlroll").val("").prop('disabled', true).attr('style', 'background:#e9e9e9');
 		
-		$(".t-plist-edit-" + i).html('test');
+		$.ajax({
+			url: '<?php echo base_url('Master/btnRencanaEdit')?>',
+			type: "POST",
+			data: ({
+				id_rk: id_rk,
+				opl: opl,
+				tgl_pl: tgl_pl,
+			}),
+			success: function(json){
+				data = JSON.parse(json);
+				// alert(data.id);
+				$("#rktgl").val(data.tgl).prop('disabled', true);
+				$("#rkpl").val(data.tgl).prop('disabled', true);
+				$('#rkpo').val("").prop('disabled', false);
+				load_rkpo(data.id);
+				// $(".show-list-edit-rk").html(data);
+			}
+		})
+
 	}
 
 	function hasilInputSementara(id_rk,i) {

@@ -502,9 +502,9 @@ class M_master extends CI_Model{
 		return $data;
     }
 
-	function loadRkPl($searh = "", $rktgl = ""){
+	function loadRkPl($searh = "", $rktgl = ""){ //
 		$users = $this->db->query("SELECT*FROM pl
-		WHERE tgl_pl='$rktgl' AND (nama LIKE '%$searh%' OR nm_perusahaan LIKE '%$searh%')
+		WHERE tgl_pl='$rktgl' AND (nama LIKE '%$searh%' OR nm_perusahaan LIKE '%$searh%') AND (id_rk='' OR id_rk IS NULL)
 		GROUP BY tgl_pl,opl")->result_array();
 
         $data = array();
@@ -1016,28 +1016,55 @@ class M_master extends CI_Model{
 				$result = $this->db->update('m_rencana_kirim');
 			}
         }
+
+        // UPDATE PL
+        // 5_ex_2022-12-08_ex_TESET/RENCANA/KIRIM_ex_MH_ex_150_ex_190.00
+        // 1_ex_2022-12-11_ex_TEST/PO/AP_ex_MH_ex_125_ex_150.00
+        $exp = explode("_ex_", $_POST['rkukuran']);
+		$tgl = $exp[1];
+		$order_pl = $exp[0];
+        $updidrkPl = $this->db->query("SELECT*FROM m_rencana_kirim WHERE tgl='$tgl' AND order_pl='$order_pl'");
+        $getpl = $this->db->query("SELECT*FROM pl WHERE tgl_pl='$tgl' AND opl='$order_pl'");
+        foreach($getpl->result() as $r){
+            $this->db->set('id_rk', $updidrkPl->row()->id_rk);
+            $this->db->where('id', $r->id);
+            $result = $this->db->update('pl');
+        }
+
         return $result;
     }    
 
 	function simpanCartPl(){
         // CEK OPL RENCANA KIRIM
-        $tgl = $_POST['ftgl'];
-        $cekOpl = $this->db->query("SELECT*FROM pl WHERE tgl='$tgl' GROUP BY opl");
-        if($cekOpl->num_rows() == 0){
-            $opl = 1;
+        $tgl_pl = $_POST['ftglrk'];
+        $vopl = $_POST['opl'];
+        if($_POST['pl'] == 'edit'){
+            $eCekOpl = $this->db->query("SELECT*FROM pl WHERE tgl_pl='$tgl_pl' AND opl='$vopl' GROUP BY opl");
+            $opl = $eCekOpl->row()->opl;
         }else{
-            $opl = $cekOpl->num_rows() + 1;
+            $cekOpls = $this->db->query("SELECT*FROM pl WHERE tgl_pl='$tgl_pl' GROUP BY opl");
+            if($cekOpls->num_rows() == 0){
+                $opl = 1;
+            }else{
+                $opl = $cekOpls->num_rows() + 1;
+            }
         }
 
         foreach($this->cart->contents() as $data){
 			// CEK SJ JIKA ADA LEBIH DARI SATU
-			$noSO = $data['options']['no_so'];
-			$cekSj = $this->db->query("SELECT*FROM pl WHERE no_so='$noSO' ORDER BY id DESC");
+			$noSj = $data['options']['no_surat'];
+			$cekSj = $this->db->query("SELECT*FROM pl WHERE no_surat LIKE '%$noSj%' ORDER BY id DESC");
 			if($cekSj->num_rows() == 0){
 				$nosj = $data['options']['no_surat'];
 			}else{
 				$nosj = ' '.$cekSj->row()->no_surat;
 			}
+
+            if($_POST['pl'] == 'edit'){
+                $idpt = $eCekOpl->row()->id_perusahaan;
+            }else{
+                $idpt = $data['options']['id_perusahaan'];
+            }
 
 			$data = array(
 				'tgl_pl' => $data['options']['tgl_pl'],
@@ -1047,7 +1074,7 @@ class M_master extends CI_Model{
 				'no_pkb' => $data['options']['no_pkb'],
 				'no_kendaraan' => '-',
 				'nm_perusahaan' => $data['options']['nm_perusahaan'],
-				'id_perusahaan' => $data['options']['id_perusahaan'],
+				'id_perusahaan' => $idpt,
 				'alamat_perusahaan' => $data['options']['alamat_perusahaan'],
 				'nama' => $data['options']['nama'],
 				'no_telp' => $data['options']['no_telp'],
@@ -1059,9 +1086,21 @@ class M_master extends CI_Model{
 				'created_at' => date("Y-m-d H:i:s"),
                 'created_by' => $this->session->userdata('username'),
 			);
-
 			$result = $this->db->insert('pl', $data);
         }
+
+        // UPDATE JIKA SUDAH ADA RENCANA KIRIM
+        $idrk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE tgl='$tgl_pl' AND order_pl='$vopl' GROUP BY tgl,order_pl");
+        $urk = $this->db->query("SELECT*FROM pl WHERE tgl_pl='$tgl_pl' AND opl='$vopl' AND (id_rk='' OR id_rk IS NULL)");
+        if($idrk->num_rows() > 0){
+            foreach($urk->result() as $r){
+                $this->db->set('id_rk', $idrk->row()->id_rk);
+                $this->db->where('id', $r->id);
+                $result = $this->db->update('pl');
+            }
+        }
+        
+
         return $result;
     }
 
