@@ -847,7 +847,7 @@
 	function load_data_pl(){
 		// alert('list pl');
 		tglpl = $("#tgl-list-pl").val();
-		$(".list-pl").html('MEMUAT DATA. . .');
+		$(".list-pl").html('<div style="color:#000;padding-top:10px">SEDANG MEMUAT . . .</div>');
 		$.ajax({
 			url: '<?php echo base_url('Master/load_pl')?>',
 			type: "POST",

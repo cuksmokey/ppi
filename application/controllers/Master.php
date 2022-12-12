@@ -20,7 +20,8 @@ class Master extends CI_Controller
 	{
 		$this->load->view('header');
 		if($this->session->userdata('level') == "SuperAdmin"){
-			$this->load->view('home');
+			// $this->load->view('home');
+			$this->load->view('Laporan/v_stok');
 		}else if($this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG"){
 			$this->load->view('Laporan/v_stok');
 		}else{
@@ -1564,7 +1565,7 @@ class Master extends CI_Controller
 		GROUP BY id_perusahaan,tgl_pl,opl");
 		
 		if($getData->num_rows() == 0){
-			$html .='';
+			$html .='<div style="color:#000;padding-top:10px">DATA TIDAK DITEMUKAN</div>';
 		}else{
 			$i = 0;
 			foreach($getData->result() as $r){

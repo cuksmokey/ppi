@@ -50,7 +50,7 @@
 <body class="theme-red">
 	
     <!-- Page Loader -->
-    <!-- <div class="page-loader-wrapper">
+    <div class="page-loader-wrapper">
         <div class="loader">
             <div class="preloader">
                 <div class="spinner-layer pl-red">
@@ -64,7 +64,7 @@
             </div>
             <p>Please wait...</p>
         </div>
-    </div> -->
+    </div>
 
 
     <!-- #END# Page Loader -->
@@ -109,12 +109,11 @@
                 <ul class="list">
                     <li class="header">MAIN NAVIGATION</li>
                     <?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
-                    <li>
+                    <!-- <li>
                         <a href="<?php echo base_url() ?>">
-                            <!-- <i class="material-icons">home</i> -->
                             <span>Dashboard</span>
                         </a>
-                    </li>
+                    </li> -->
                     <?php } ?>
                     <li>
                         <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2") { ?>
@@ -133,25 +132,23 @@
                                 <li>
                                     <a href="<?php echo base_url('Master/Perusahaan') ?>">Perusahaan</a>
                                 </li>
-                                <li>
+                                <!-- <li>
                                     <a href="<?php echo base_url('Master/PO') ?>">PO</a>
-                                </li>
+                                </li> -->
                             <?php } ?>
                         </ul>
                     </li>
                     <?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
-                        <li>
+                        <!-- <li>
                             <a href="<?php echo base_url('Master/Packing_list') ?>">
-                                <!-- <i class="material-icons">list</i> -->
                                 <span>Packing List</span>
                             </a>
                         </li>
                         <li>
                             <a href="<?php echo base_url('Master/Invoice') ?>">
-                                <!-- <i class="material-icons">list</i> -->
                                 <span>Invoice</span>
                             </a>
-                        </li>
+                        </li> -->
                     <?php } ?>
                     <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin") { ?>
                         <li>
