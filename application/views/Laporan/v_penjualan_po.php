@@ -380,6 +380,8 @@
 	function btnCek(id,i,opsi){
 		// alert(id+' - '+i+' - '+opsi);
 		$(".btn-cek").html('');
+		$(".btn-c-po").prop("disabled", true);
+		$(".btn-cek-list-" + i).html('<div class="notip">MEMUAT DATA . . .</div>');
 		$.ajax({
 			url: '<?php echo base_url('Master/btnCekShow')?>',
 			type: "POST",
@@ -391,6 +393,7 @@
 			success: function(response){
 				if(response){
 					$(".btn-cek-list-" + i).html(response);
+					$(".btn-c-po").prop("disabled", false);
 				}else{
 					$(".btn-cek-list-" + i).html('not');
 				}

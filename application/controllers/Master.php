@@ -2644,7 +2644,77 @@ class Master extends CI_Controller
 		$html ='';
 
 		if($opsi == 'rekap'){
-			$html .='rekap';
+			$html .='<table style="margin:10px 5px;font-size:12px;color:#000" border="1">';
+			$html .='<tr style="background:#e9e9e9">
+				<td style="padding:5px;font-weight:bold;text-align:center">NO</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">NO. PO</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">T(ROLL)</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">T(BERAT)</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">P(ROLL)</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">P(BERAT)</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">-/+(ROLL)</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">-/+(BERAT)</td>
+			</tr>';
+			$getDatar = $this->db->query("SELECT id_po,no_po,STATUS,SUM(jml_roll) AS jml_roll,SUM(tonase) AS tonase FROM po_master
+			WHERE id_perusahaan='$id' AND STATUS='open'
+			GROUP BY id_po,no_po,STATUS");
+			$i = 0;
+			$tRkpPOJmlRoll = 0;
+			$tRkpPOTonase = 0;
+			$tRkpKirJmlRoll = 0;
+			$tRkpKirTonase = 0;
+			$tRkpKirSeset = 0;
+			foreach($getDatar->result() as $rk){
+				$i++;
+				$html .='<tr>
+					<td style="padding:5px;font-weight:bold;text-align:center">'.$i.'</td>
+					<td style="padding:5px">'.$rk->no_po.'</td>
+					<td style="padding:5px;text-align:right">'.number_format($rk->jml_roll).'</td>
+					<td style="padding:5px;text-align:right">'.number_format($rk->tonase).'</td>';
+
+					$getKir = $this->db->query("SELECT COUNT(m.roll) AS mjmlroll,SUM(weight) AS totberat,SUM(seset) AS totseset FROM m_timbangan m
+					INNER JOIN pl p ON m.id_pl=p.id
+					WHERE p.id_perusahaan='$id' AND p.no_po='$rk->no_po'
+					GROUP BY p.no_po");
+					if($getKir->num_rows() == 0){
+						$html .='<td style="padding:5px;text-align:center">-</td>
+							<td style="padding:5px;text-align:center">-</td>
+							<td style="padding:5px;text-align:center">-</td>
+							<td style="padding:5px;text-align:center">-</td>
+						';
+						$kjmlroll = 0;
+						$ktonase = 0;
+					}else{
+						$kjmlroll = $getKir->row()->mjmlroll;
+						$ktonase = $getKir->row()->totberat - $getKir->row()->totseset;
+
+						$html .='<td style="padding:5px;text-align:right">'.$getKir->row()->mjmlroll.'</td>
+							<td style="padding:5px;text-align:right">'.number_format($ktonase).'</td>
+							<td style="padding:5px;text-align:right">'.number_format($getKir->row()->mjmlroll - $rk->jml_roll).'</td>
+							<td style="padding:5px;text-align:right">'.number_format($ktonase - $rk->tonase).'</td>
+						';	
+					}
+				$html.='</tr>';
+				
+				$tRkpPOJmlRoll += $rk->jml_roll;
+				$tRkpPOTonase += $rk->tonase;
+				$tRkpKirJmlRoll += $kjmlroll;
+				$tRkpKirTonase += $ktonase;
+			}
+			// - / +
+			$tpmjmlRoll = $tRkpKirJmlRoll - $tRkpPOJmlRoll;
+			$tpmTonase = $tRkpKirTonase - $tRkpPOTonase;
+			$html .='<tr style="background:#e9e9e9">
+				<td style="padding:5px;font-weight:bold;text-align:center" colspan="2">TOTAL</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tRkpPOJmlRoll).'</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tRkpPOTonase).'</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tRkpKirJmlRoll).'</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tRkpKirTonase).'</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tpmjmlRoll).'</td>
+				<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tpmTonase).'</td>
+			</tr>';
+
+			$html .='</table>';
 		}else{ // detail
 			$getData = $this->db->query("SELECT id_po,no_po,status FROM po_master
 			WHERE id_perusahaan='$id' AND status='open'
@@ -2652,7 +2722,7 @@ class Master extends CI_Controller
 			$i =0;
 			foreach($getData->result() as $r){
 				$i++;
-				$html .='<table  style="font-size:12px;color:#000">
+				$html .='<table style="font-size:12px;color:#000">
 					<tr class="ll-tr">
 						<td style="padding:5px">-</td>
 						<td style="padding:5px">'.$r->no_po.'</td>
