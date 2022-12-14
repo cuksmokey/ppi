@@ -47,6 +47,12 @@
     <link href="<?php echo base_url(); ?>assets/css/themes/all-themes.css" rel="stylesheet" />
 </head>
 
+<style>
+    .list li:hover {
+        background: rgba(222, 222, 222, 0.5);
+    }
+</style>
+
 <body class="theme-red">
 	
     <!-- Page Loader -->

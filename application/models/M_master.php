@@ -1133,6 +1133,8 @@ class M_master extends CI_Model{
 			$getPo = $this->db->query("SELECT*FROM po_master WHERE no_po='$poLama'");
 			foreach($getPo->result() as $po){
 				$this->db->set('no_po', $_POST['fno_po']);
+				$this->db->set('edited_at', date("Y-m-d H:i:s"));
+				$this->db->set('edited_by', $this->session->userdata('username'));
 				$this->db->where('id_po', $_POST['update_idpo']);
 				$this->db->where('no_po', $_POST['lno_po']);
 				$result = $this->db->update('po_master');

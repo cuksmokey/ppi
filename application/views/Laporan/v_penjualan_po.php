@@ -405,8 +405,8 @@
 		})
 	}
 
-	function btnCek(id,i,opsi){
-		// alert(id+' - '+i+' - '+opsi);
+	function btnCek(id,i){
+		alert(id+' - '+i);
 		$(".btn-cek").html('');
 		$(".btn-c-po").prop("disabled", true);
 		$(".btn-cek-list-" + i).html('<div class="notip">MEMUAT DATA . . .</div>');
@@ -415,8 +415,8 @@
 			type: "POST",
 			data: ({
 				id: id,
-				opsi: opsi,
-				// i: i,
+				// opsi: opsi,
+				i: i,
 			}),
 			success: function(response){
 				if(response){
@@ -425,6 +425,22 @@
 				}else{
 					$(".btn-cek-list-" + i).html('not');
 				}
+			}
+		})
+	}
+
+	function btnCekRekap(id,i){
+		$(".btn-c-po").prop("disabled", true);
+		$(".btn-cek-list-rekap-" + i).html('<div class="notip">MEMUAT DATA . . .</div>');
+		$.ajax({
+			url: '<?php echo base_url('Master/btnCekRekap')?>',
+			type: "POST",
+			data: ({
+				id: id,
+			}),
+			success: function(response){
+				$(".btn-cek-list-rekap-" + i).html(response);
+				$(".btn-c-po").prop("disabled", false);
 			}
 		})
 	}
