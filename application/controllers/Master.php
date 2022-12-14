@@ -2379,19 +2379,57 @@ class Master extends CI_Controller
 				'fharga' => $_POST['fharga'],
 			),
 		);
-		$this->cart->insert($data);
-		echo json_encode(array('data' => true));
+		$uidpt = $_POST['update_idpt'];
+		$uidpo = $_POST['update_idpo'];
+		$unopo = $_POST['update_nopo'];
+		$nmker = $_POST['fjenis'];
+		$glabel = $_POST['fgsm'];
+		$width = $_POST['fukuran'];
+
+		// UPDATE CEK JIKA ADA JENIS, GSM, UKURAN YANG SAMA
+		$cek1 = $this->db->query("SELECT*FROM po_master
+		WHERE id_perusahaan='$uidpt' AND id_po='$uidpo' AND no_po='$unopo' AND nm_ker='$nmker' AND g_label='$glabel' AND width='$width'
+		GROUP BY id_perusahaan,id_po,nm_ker,g_label,width");
+		if($_POST['option'] == 'update'){
+			if($cek1->num_rows() == 0){
+				$this->cart->insert($data);
+				echo json_encode(array('response' => true, 'msg' => 'BERHASIL!'));
+			}else{
+				echo json_encode(array('response' => false, 'msg' => 'JENIS / GSM / UKURAN SUDAH ADA!'));
+			}
+		}else{
+			$this->cart->insert($data);
+			echo json_encode(array('response' => true, 'msg' => 'BERHASIL!'));
+		}
 	}
 
 	function simpanCartPO(){
 		$cekIdPo = $this->db->query("SELECT*FROM po_master GROUP BY id_po")->num_rows();
-		if($cekIdPo == 0){
-			$idpo = 1;
+		if($_POST['option'] == 'update'){
+			$idpo = $_POST['update_idpo'];
 		}else{
-			$idpo = $cekIdPo + 1;
+			if($cekIdPo == 0){
+				$idpo = 1;
+			}else{
+				$idpo = $cekIdPo + 1;
+			}
 		}
-		$this->m_master->simpanCartPO($idpo);
-		echo json_encode(array('data' => true));
+
+		// CEK PO APA MASIH ADA YANG PAKAI CUSTOMER LAIN
+		if($_POST['option'] == 'update'){ // UPDATE
+			$fnopo = $_POST['fno_po'];
+			$cek = $this->db->query("SELECT*FROM po_master WHERE no_po='$fnopo' GROUP BY no_po");
+			if(($_POST['fno_po'] != $_POST['lno_po']) && $cek->num_rows() > 0){
+				echo json_encode(array('response' => false, 'msg' => 'NO. PO SUDAH TERPAKAI CUSTOMER LAIN!'));
+			}else{
+				$this->m_master->simpanCartPO($idpo);
+				echo json_encode(array('response' => true, 'msg' => 'BERHASIL EDIT PO!'));
+			}
+		}else{ // SIMPAN
+			$this->m_master->simpanCartPO($idpo);
+			echo json_encode(array('response' => true, 'msg' => 'BERHASIL EDIT PO!'));
+		}
+
 	}
 
 	function hapusCartPO(){
@@ -2409,17 +2447,18 @@ class Master extends CI_Controller
 	function showCartPO(){
 		$html = '';
 
-		$html .= '<table style="width:100%;text-align:center;margin-top:15px" border="1">';
+		$html .= '<table style="width:100%;text-align:center;font-size:12px;color:#000;margin-top:15px" border="1">';
 		if($this->cart->total_items() != 0){
-			$html .='<tr>
+			$html .='<tr><td style="text-align:left;font-weight:bold" colspan="8">ADD ITEMS :</td></tr>
+			<tr style="background:#e9e9e9">
 				<td style="width:5%;padding:5px;font-weight:bold">NO</td>
-				<td style="width:auto;padding:5px;font-weight:bold">JENIS</td>
-				<td style="width:auto;padding:5px;font-weight:bold">GSM</td>
-				<td style="width:auto;padding:5px;font-weight:bold">UKURAN</td>
-				<td style="width:auto;padding:5px;font-weight:bold">TONASE</td>
-				<td style="width:auto;padding:5px;font-weight:bold">JUMLAH ROLL</td>
-				<td style="width:auto;padding:5px;font-weight:bold">HARGA</td>
-				<td style="width:10%;padding:5px;font-weight:bold">AKSI</td>
+				<td style="width:10%;padding:5px;font-weight:bold">JENIS</td>
+				<td style="width:10%;padding:5px;font-weight:bold">GSM</td>
+				<td style="width:10%;padding:5px;font-weight:bold">UKURAN</td>
+				<td style="width:10%;padding:5px;font-weight:bold">TONASE</td>
+				<td style="width:10%;padding:5px;font-weight:bold">JUMLAH ROLL</td>
+				<td style="width:10%;padding:5px;font-weight:bold">HARGA</td>
+				<td style="width:auto;padding:5px;font-weight:bold">AKSI</td>
 			</tr>';
 		}
 
@@ -2499,13 +2538,14 @@ class Master extends CI_Controller
 		$getData = $this->db->query("SELECT*FROM po_master
 		WHERE id_perusahaan='$id' AND id_po='$id_po' AND no_po='$no_po'
 		ORDER BY nm_ker,g_label,width");
-		$html .= '<table style="width:100%;text-align:center;margin-top:15px" border="1">';
-		$html .='<tr>
+		$html .= '<table style="width:100%;font-size:12px;color:#000;text-align:center;margin-top:15px" border="1">';
+		$html .='<tr><td style="text-align:left;font-weight:bold" colspan="8">LIST ITEMS :</td></tr>
+		<tr style="background:#e9e9e9">
 			<td style="width:5%;padding:5px;font-weight:bold">NO</td>
 			<td style="width:10%;padding:5px;font-weight:bold">JENIS</td>
 			<td style="width:10%;padding:5px;font-weight:bold">GSM</td>
 			<td style="width:10%;padding:5px;font-weight:bold">WIDTH</td>
-			<td style="width:10%;padding:5px;font-weight:bold">TN</td>
+			<td style="width:10%;padding:5px;font-weight:bold">TON</td>
 			<td style="width:10%;padding:5px;font-weight:bold">ROLL</td>
 			<td style="width:10%;padding:5px;font-weight:bold">HARGA</td>
 			<td style="width:auto;padding:5px;font-weight:bold">AKSI</td>
@@ -2513,31 +2553,73 @@ class Master extends CI_Controller
 		$i = 0;
 		foreach($getData->result() as $r){
 			$i++;
-			$html .='<tr>
-				<td style="padding:5px">'.$i.'</td>
-				<td style="padding:5px">'.$r->nm_ker.'</td>
-				<td style="padding:5px">'.$r->g_label.'</td>
-				<td style="padding:5px">'.round($r->width, 2).'</td>
-				<td style="padding:5px">'.number_format($r->tonase).'</td>
-				<td style="padding:5px">'.$r->jml_roll.'</td>
-				<td style="padding:5px">Rp. '.number_format($r->harga).'</td>';
 			// cek jika ukuran sudah terjual tidak bisa diedit / hapus
 			$cek = $this->db->query("SELECT*FROM pl p
 			INNER JOIN m_timbangan m ON p.id=m.id_pl
-			WHERE p.id_perusahaan='$id' AND p.no_po='$no_po' AND m.nm_ker='$r->nm_ker' AND m.g_label='$r->g_label' AND m.width='$r->width'
-			GROUP BY p.id_perusahaan,p.no_po,m.nm_ker,m.g_label,width");
+			WHERE p.id_perusahaan='$id' AND p.no_po='$no_po' AND m.nm_ker='$r->nm_ker' AND m.g_label='$r->g_label' AND m.width='$r->width' AND p.qc='ok'
+			GROUP BY p.id_perusahaan,p.no_po,p.qc,m.nm_ker,m.g_label,width");
 			if($cek->num_rows() == 0){
-				$html .='<td style="padding:5px">
-					<button>EDIT</button> - <button>HAPUS</button>
+				$dis = '';
+				$btn ='<td style="padding:5px">
+					<button onclick="editItemPO('."'".$r->id."'".','."'".$id."'".','."'".$id_po."'".','."'".$no_po."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->width."'".','."'".$i."'".')">EDIT</button>
+					<button onclick="hapusItemPO('."'".$r->id."'".','."'".$id."'".','."'".$id_po."'".','."'".$no_po."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->width."'".','."'".$i."'".')">HAPUS</button>
 				</td>';
 			}else{
-				$html .='<td style="padding:5px">-</td>';
+				$dis ='disabled';
+				$btn ='<td style="padding:5px">-</td>';
 			}
+			$html .='<tr class="itr">
+				<td style="padding:5px">'.$i.'</td>
+				<td style="position:relative"><input type="text" id="wnmker-'.$i.'" value="'.$r->nm_ker.'" class="inp-abs" onkeypress="return hHuruf(event)" maxlength="2" '.$dis.'></td>
+				<td style="position:relative"><input type="text" id="wglabel-'.$i.'" value="'.$r->g_label.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="3" '.$dis.'></td>
+				<td style="position:relative"><input type="text" id="wwidth-'.$i.'" value="'.round($r->width, 2).'" class="inp-abs" onkeypress="return aKt(event)" maxlength="6" '.$dis.'></td>
+				<td style="position:relative"><input type="text" id="etonase-'.$i.'" value="'.$r->tonase.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="8" '.$dis.'></td>
+				<td style="position:relative"><input type="text" id="ejmlroll-'.$i.'" value="'.$r->jml_roll.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="3" '.$dis.'></td>
+				<td style="position:relative"><input type="text" id="eharga-'.$i.'" value="'.$r->harga.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="8" '.$dis.'></td>
+				'.$btn.'';
 			$html .='</tr>';
 		}
 		$html .='</table>';
 
 		echo $html;
+	}
+
+	function editItemPO(){
+		$id = $_POST['id'];
+		$id_pt = $_POST['id_pt'];
+		$id_po = $_POST['id_po'];
+		$no_po = $_POST['no_po'];
+		$nm_ker = $_POST['nm_ker'];
+		$g_label = $_POST['g_label'];
+		$width = $_POST['width'];
+		$i = $_POST['i'];
+		$wnmker = $_POST['wnmker'];
+		$wglabel = $_POST['wglabel'];
+		$wwidth = $_POST['wwidth'];
+		$etonase = $_POST['etonase'];
+		$ejmlroll = $_POST['ejmlroll'];
+		$eharga = $_POST['eharga'];
+		// 521 - 8 - CMBP4 - 76A/PURC.CMBP/11/22 - MH - 110 - 170.00
+		$cek1 = $this->db->query("SELECT*FROM po_master
+		WHERE id_perusahaan='$id_pt' AND id_po='$id_po' AND no_po='$no_po' AND nm_ker='$wnmker' AND g_label='$wglabel' AND width='$wwidth'
+		GROUP BY id_perusahaan,id_po,nm_ker,g_label,width");
+		if(($nm_ker != $wnmker || $g_label != $wglabel || $width != $wwidth) && $cek1->num_rows() > 0){
+				echo json_encode(array('response' => false,'msg' => 'JENIS / GSM / UKURAN SUDAH ADA!',));
+		}else{
+			$this->m_master->editItemPO();
+			echo json_encode(array(
+				'response' => true,
+				'msg' => 'BERHASIL EDIT!',
+			));
+		}
+	}
+
+	function hapusItemPO(){
+		$this->m_master->delete("po_master", "id", $_POST['id']);
+		echo json_encode(array(
+			'response' => true,
+			'msg' => 'BERHASIL DIHAPUS!',
+		));
 	}
 
 	function loadDataAdmin(){

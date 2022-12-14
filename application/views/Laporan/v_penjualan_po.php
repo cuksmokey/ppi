@@ -23,6 +23,9 @@
 	.ll-tr:hover {
 		background: rgba(222, 222, 222, 0.5);
 	}
+	.itr:hover {
+		background: rgba(233, 233, 233, 0.5);
+	}
 
 	.notip {
 		font-size:12px;color:#000;padding:5px;
@@ -34,6 +37,10 @@
 
 	.inp-kosong {
 		margin:0;padding:0;border:0;background: none;
+	}
+
+	.inp-abs {
+		position:absolute;top:0;right:0;left:0;bottom:0;border:0;margin:0;padding:5px;text-align:center;background:none;
 	}
 </style>
 
@@ -80,6 +87,7 @@
 										<td style="width:20%;padding:5px"></td>
 										<td style="width:34%;padding:5px"></td>
 										<td style="width:30%;padding:5px"></td>
+										
 									</tr>
 									<tr>
 										<td style="padding:5px;font-weight:bold">TANGGAL</td>
@@ -157,6 +165,7 @@
 										<td style="padding:5px;font-weight:bold">NO. PO</td>
 										<td style="padding:5px">:</td>
 										<td style="padding:5px" colspan="7">
+											<input type="hidden" id="lno-po" value="">
 											<input type="text" id="fno-po" colspan="6" class="form-control">
 										</td>
 									</tr>
@@ -182,6 +191,9 @@
 											<input type="text" id="fharga" class="form-control" style="text-align:center" maxlength="8" placeholder="HARGA">
 										</td>
 										<td style="padding:5px;text-align:center">
+											<!-- <input type="hidden" id="update-idpt" value=""> -->
+											<input type="hidden" id="update-idpo" value="">
+											<input type="hidden" id="update-nopo" value="">
 											<button onclick="addCartPO()">ADD</button>
 										</td>
 									</tr>							
@@ -231,6 +243,7 @@
  	// fjenis fgsm fukuran ftonase fjmlroll fharga
 	function kosong(){
 		$("#fno-po").val("").prop('disabled', false).removeAttr('stylr');
+		$("#lno-po").val("");
 		$("#fid").val("");
 		$("#ftgl").val("").prop('disabled', false).removeAttr('style');
 		$("#fpajak").val("").prop('disabled', false).removeAttr('style');
@@ -242,8 +255,8 @@
 		$("#fjenis").val("");
 		$("#fgsm").val("");
 		$("#fukuran").val("");
-		$("#ftonase").val("");
 		$("#fjmlroll").val("");
+		$("#ftonase").val("");
 		$("#fharga").val("");
 		$(".box-data").show();
 		$(".box-form").hide(); 
@@ -253,6 +266,10 @@
 		load_pt();
 		load_data('');
 		option = 'new';
+		
+		// $("#update-idpt").val("");
+		$("#update-idpo").val("");
+		$("#update-nopo").val("");
 
 		$(".cart-po").html('');
 		$(".show-items-po").html('');
@@ -451,11 +468,12 @@
 				$("#ftgl").val(data.tgl).prop('disabled', true).attr('style', 'background:#e9e9e9');
 				$("#fpajak").val(data.pajak).prop('disabled', true).attr('style', 'background:#e9e9e9');
 				$("#fkepada").val(data.id).prop('disabled', true);
-				$("#fid").val(data.id);
+				// $("#fid").val(data.id);
 				$("#fnmpt").val(data.nm_perusahaan);
 				$("#fnama").val(data.pimpinan);
 				$("#falamat").val(data.alamat);
 				$("#ftelp").val(data.no_telp);
+				$(".table-cari").hide();
 				$(".box-data").hide();
 				$(".box-form").show();
 				$(".box-form-po").hide();
@@ -478,8 +496,12 @@
 				data = JSON.parse(json);
 				$(".box-form-po-load").html('');
 				$(".box-form-po").show();
+				$("#lno-po").val(data.no_po);
 				$("#fno-po").val(data.no_po).prop('disabled', data.dd).attr('style', 'background:'+data.bg);
 				loadItemPO(id,id_po,no_po,i);
+				$("#fid").val(id);
+				$("#update-idpo").val(id_po);
+				$("#update-nopo").val(no_po);
 				option = 'update';
 			}
 		});
@@ -501,6 +523,71 @@
 		})
 	}
 
+	function editItemPO(id,id_pt,id_po,no_po,nm_ker,g_label,width,i){
+		wnmker = $("#wnmker-" + i).val();
+		wglabel = $("#wglabel-" + i).val();
+		wwidth = $("#wwidth-" + i).val();
+		etonase = $("#etonase-" + i).val();
+		ejmlroll = $("#ejmlroll-" + i).val();
+		eharga = $("#eharga-" + i).val();
+		// alert(enopo);
+		// alert(id+' - '+id_pt+' - '+id_po+' - '+no_po+' - '+nm_ker+' - '+g_label+' - '+width+' - '+i+' = '+wnmker+' - '+wglabel+' - '+wwidth+' - '+etonase+' - '+ejmlroll+' - '+eharga);
+		$.ajax({
+			url: '<?php echo base_url('Master/editItemPO')?>',
+			type: "POST",
+			data: ({
+				id,id_pt,id_po,no_po,nm_ker,g_label,width,i,wnmker,wglabel,wwidth,etonase,ejmlroll,eharga
+			}),
+			success: function(json){
+				data = JSON.parse(json);
+				// alert(data.response+' - '+data.msg);
+				if(data.response){
+					swal(data.msg, "", "success");
+					loadItemPO(id_pt,id_po,no_po,i);
+				}else{
+					swal(data.msg, "", "error");
+				}
+			}
+		})
+	}
+
+	function hapusItemPO(id,id_pt,id_po,no_po,nm_ker,g_label,width,i){
+		// alert(id);
+		swal({
+			title: "Apakah Anda Yakin ?",
+			text: nm_ker+''+g_label+' - '+width,
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-danger",
+			confirmButtonText: "Ya",
+			cancelButtonText: "Batal",
+			closeOnConfirm: false,
+			closeOnCancel: false
+		},
+		function(isConfirm) {
+			if (isConfirm) {
+				$.ajax({
+					url: '<?php echo base_url('Master/hapusItemPO')?>',
+					type: "POST",
+					data: ({
+						id
+					}),
+					success: function(json){
+						data = JSON.parse(json);
+						if(data.response){
+							swal(data.msg, "", "success");
+							loadItemPO(id_pt,id_po,no_po,i);
+						}else{
+							swal("BATAL DIHAPUS!", "", "error");
+						}
+					}
+				})
+			}else{
+				swal("BATAL DIHAPUS!", "", "error");
+			}
+		});
+	}
+
 	//
 
 	function addCartPO(){
@@ -516,6 +603,10 @@
 			return;
 		}
 
+		update_idpt = $("#fid").val();
+		update_idpo = $("#update-idpo").val();
+		update_nopo = $("#update-nopo").val();
+
 		$.ajax({
 			url: '<?php echo base_url('Master/addCartPO')?>',
 			type: "POST",
@@ -526,10 +617,16 @@
 				ftonase: ftonase,
 				fjmlroll: fjmlroll,
 				fharga: fharga,
-				option,
+				option,update_idpt,update_idpo,update_nopo,
 			}),
-			success: function(response){
-				$('.cart-po').load("<?php echo base_url('Master/showCartPO')?>");
+			success: function(json){
+				data = JSON.parse(json);
+				if(data.response){
+					swal(data.msg, "", "success");
+					$('.cart-po').load("<?php echo base_url('Master/showCartPO')?>");
+				}else{
+					swal(data.msg, "", "error");
+				}
 			}
 		})
 	}
@@ -550,6 +647,7 @@
 	function simpanCart(){
 		// alert('simpanCart');
 		fkepada = $("#fkepada").val();
+		lno_po = $("#lno-po").val();
 		fno_po = $("#fno-po").val();
 		fid = $("#fid").val();
 		ftgl = $("#ftgl").val();
@@ -572,21 +670,27 @@
 			swal("HARAP PILIH JENIS PAJAK !", "", "error"); return;
 		}
 
+		update_idpo = $("#update-idpo").val();
+		update_nopo = $("#update-nopo").val();
+
 		$.ajax({
 			url: '<?php echo base_url('Master/simpanCartPO')?>',
 			type: "POST",
 			data: ({
 				fid: fid,
+				lno_po: lno_po,
 				fno_po: fno_po,
 				ftgl: ftgl,
 				fpajak: fpajak,
-				option,
+				option,update_idpo,update_nopo,
 			}),
-			success: function(response){
-				if(response){
+			success: function(json){
+				data = JSON.parse(json);
+				if(data.response){
+					swal(data.msg, "", "success");
 					kosong();
 				}else{
-					alert('gagal');
+					swal(data.msg, "", "error");
 				}
 			}
 		});

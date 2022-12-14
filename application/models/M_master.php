@@ -1126,8 +1126,35 @@ class M_master extends CI_Model{
             );
             $result = $this->db->insert('po_master',$data);
         }
+
+		// JIKA UPDATE PO DIUBAH
+		if($_POST['option'] == 'update' && ($_POST['fno_po'] != $_POST['lno_po'])){
+			$poLama = $_POST['lno_po'];
+			$getPo = $this->db->query("SELECT*FROM po_master WHERE no_po='$poLama'");
+			foreach($getPo->result() as $po){
+				$this->db->set('no_po', $_POST['fno_po']);
+				$this->db->where('id_po', $_POST['update_idpo']);
+				$this->db->where('no_po', $_POST['lno_po']);
+				$result = $this->db->update('po_master');
+			}
+		}
+
         return $result;
     }
+
+	function editItemPO(){
+		// id_po id_perusahaan tgl nm_ker g_label width tonase jml_roll no_po harga pajak status ket created_at created_by edited_at edited_by
+		$this->db->set('nm_ker', $_POST['wnmker']);
+		$this->db->set('g_label', $_POST['wglabel']);
+		$this->db->set('width', $_POST['wwidth']);
+		$this->db->set('tonase', $_POST['etonase']);
+		$this->db->set('jml_roll', $_POST['ejmlroll']);
+		$this->db->set('harga', $_POST['eharga']);
+		$this->db->set('edited_at', date("Y-m-d H:i:s"));
+		$this->db->set('edited_by', $this->session->userdata('username'));
+		$this->db->where('id', $_POST['id']);
+		$this->db->update('po_master');
+	}
 
     function simpanAdministrator(){
         $status = $_POST['status'];
