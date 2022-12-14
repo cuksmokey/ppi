@@ -38,18 +38,18 @@
                     <?php echo form_open('Login/aksi_login'); ?>
                     <div class="msg"><?php echo $this->session->flashdata('msg'); ?></div>
                     <div class="input-group">
-                        <span class="input-group-addon">
+                        <!-- <span class="input-group-addon">
                             <i class="material-icons">person</i>
-                        </span>
+                        </span> -->
                         <div class="form-line">
                             <input type="text" name="Username" class="form-control" placeholder="Username" required="" autofocus/>
                             <!-- <input type="text" class="form-control" name="username" placeholder="Username" required autofocus> -->
                         </div>
                     </div>
                     <div class="input-group">
-                        <span class="input-group-addon">
+                        <!-- <span class="input-group-addon">
                             <i class="material-icons">lock</i>
-                        </span>
+                        </span> -->
                         <div class="form-line">
                             <input type="password" name="Password" class="form-control" placeholder="Password" required="" />
                             <!-- <input type="password" class="form-control" name="password" placeholder="Password" required> -->

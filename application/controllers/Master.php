@@ -2409,10 +2409,10 @@ class Master extends CI_Controller
 	function showCartPO(){
 		$html = '';
 
-		$html .= '<table style="width:100%;margin-top:15px" border="1">';
+		$html .= '<table style="width:100%;text-align:center;margin-top:15px" border="1">';
 		if($this->cart->total_items() != 0){
 			$html .='<tr>
-				<td style="width:5%;padding:5px;font-weight:bold;text-align:center">NO</td>
+				<td style="width:5%;padding:5px;font-weight:bold">NO</td>
 				<td style="width:auto;padding:5px;font-weight:bold">JENIS</td>
 				<td style="width:auto;padding:5px;font-weight:bold">GSM</td>
 				<td style="width:auto;padding:5px;font-weight:bold">UKURAN</td>
@@ -2430,19 +2430,112 @@ class Master extends CI_Controller
 				<td style="padding:5px;text-align:center">'.$i.'</td>
 				<td style="padding:5px">'.$r['options']['fjenis'].'</td>
 				<td style="padding:5px">'.$r['options']['fgsm'].'</td>
-				<td style="padding:5px">'.$r['options']['fukuran'].'</td>
+				<td style="padding:5px">'.round($r['options']['fukuran'], 2).'</td>
 				<td style="padding:5px">'.number_format($r['options']['ftonase']).'</td>
 				<td style="padding:5px">'.$r['options']['fjmlroll'].'</td>
 				<td style="padding:5px">Rp. '.number_format($r['options']['fharga']).'</td>
 				<td style="padding:5px"><button onclick="hapusCartPO('."'".$r['rowid']."'".')">Batal</button></td>
 			</tr>';
 		}
-		if($this->cart->total_items() != 0){
-			$html .='<tr>
-				<td style="padding:5px" colspan="8"><button onclick="simpanCart()">SIMPAN</button></td>
-			</tr>';
-		}
+		// if($this->cart->total_items() != 0){
+		// 	$html .='<tr>
+		// 		<td style="padding:5px;text-align:right" colspan="8"><button onclick="simpanCart()">SIMPAN</button></td>
+		// 	</tr>';
+		// }
 		$html .= '</table>';
+
+		echo $html;
+	}
+
+	function editPO(){
+		$id = $_POST['id'];
+		$id_po = $_POST['id_po'];
+		$no_po = $_POST['no_po'];
+		$cek = $this->db->query("SELECT * FROM m_perusahaan p INNER JOIN po_master m ON p.id=m.id_perusahaan
+		WHERE p.id='$id' AND m.id_po='$id_po' AND m.no_po='$no_po' AND m.status='open'
+		GROUP BY p.id,m.id_po,m.no_po")->row();
+		echo json_encode(array(
+			'id' => $cek->id,
+			'tgl' => $cek->tgl,
+			'pajak' => $cek->pajak,
+			'pimpinan' => $cek->pimpinan,
+			'nm_perusahaan' => $cek->nm_perusahaan,
+			'alamat' => $cek->alamat,
+			'no_telp' =>$cek->no_telp,
+			'id_po' => $cek->id_po,
+			'no_po' => $cek->no_po,
+		));
+	}
+
+	function cekEditPO(){
+		$id = $_POST['id'];
+		$id_po = $_POST['id_po'];
+		$no_po = $_POST['no_po'];
+		$cek = $this->db->query("SELECT*FROM pl p INNER JOIN m_timbangan m ON p.id=m.id_pl WHERE p.id_perusahaan='$id' AND p.no_po='$no_po'
+		GROUP BY p.id_perusahaan,p.no_po");
+		if($cek->num_rows() == 0){
+			$edit = false;
+			$background = '#fff';
+			$no_po = $no_po;
+		}else{
+			$edit = true;
+			$background = '#e9e9e9';
+			$no_po = $cek->row()->no_po;
+		}
+		echo json_encode(array(
+			'dd' => $edit,
+			'bg' => $background,
+			'no_po' => $no_po,
+		));
+	}
+
+	function loadItemPO(){
+		$id = $_POST['id'];
+		$id_po = $_POST['id_po'];
+		$no_po = $_POST['no_po'];
+		$i = $_POST['i'];
+		$html = '';
+
+		$getData = $this->db->query("SELECT*FROM po_master
+		WHERE id_perusahaan='$id' AND id_po='$id_po' AND no_po='$no_po'
+		ORDER BY nm_ker,g_label,width");
+		$html .= '<table style="width:100%;text-align:center;margin-top:15px" border="1">';
+		$html .='<tr>
+			<td style="width:5%;padding:5px;font-weight:bold">NO</td>
+			<td style="width:10%;padding:5px;font-weight:bold">JENIS</td>
+			<td style="width:10%;padding:5px;font-weight:bold">GSM</td>
+			<td style="width:10%;padding:5px;font-weight:bold">WIDTH</td>
+			<td style="width:10%;padding:5px;font-weight:bold">TN</td>
+			<td style="width:10%;padding:5px;font-weight:bold">ROLL</td>
+			<td style="width:10%;padding:5px;font-weight:bold">HARGA</td>
+			<td style="width:auto;padding:5px;font-weight:bold">AKSI</td>
+		</tr>';
+		$i = 0;
+		foreach($getData->result() as $r){
+			$i++;
+			$html .='<tr>
+				<td style="padding:5px">'.$i.'</td>
+				<td style="padding:5px">'.$r->nm_ker.'</td>
+				<td style="padding:5px">'.$r->g_label.'</td>
+				<td style="padding:5px">'.round($r->width, 2).'</td>
+				<td style="padding:5px">'.number_format($r->tonase).'</td>
+				<td style="padding:5px">'.$r->jml_roll.'</td>
+				<td style="padding:5px">Rp. '.number_format($r->harga).'</td>';
+			// cek jika ukuran sudah terjual tidak bisa diedit / hapus
+			$cek = $this->db->query("SELECT*FROM pl p
+			INNER JOIN m_timbangan m ON p.id=m.id_pl
+			WHERE p.id_perusahaan='$id' AND p.no_po='$no_po' AND m.nm_ker='$r->nm_ker' AND m.g_label='$r->g_label' AND m.width='$r->width'
+			GROUP BY p.id_perusahaan,p.no_po,m.nm_ker,m.g_label,width");
+			if($cek->num_rows() == 0){
+				$html .='<td style="padding:5px">
+					<button>EDIT</button> - <button>HAPUS</button>
+				</td>';
+			}else{
+				$html .='<td style="padding:5px">-</td>';
+			}
+			$html .='</tr>';
+		}
+		$html .='</table>';
 
 		echo $html;
 	}
@@ -2620,11 +2713,11 @@ class Master extends CI_Controller
 				}
 
 				$i++;
+				// <button class="btn-c-po" onclick="btnCek('."'".$r->id_perusahaan."'".','."'".$i."'".','."'rekap'".')">REKAP</button>
 				$html .='<table style="font-size:12px;color:#000">';
 				$html .='<tr class="ll-tr">
 					<td style="padding:5px">
 						<button class="btn-c-po" onclick="btnCek('."'".$r->id_perusahaan."'".','."'".$i."'".','."'detail'".')">DETAIL</button>
-						<button class="btn-c-po" onclick="btnCek('."'".$r->id_perusahaan."'".','."'".$i."'".','."'rekap'".')">REKAP</button>
 					</td>
 					<td style="padding:5px">'.$i.'.</td>
 					<td style="padding:5px">'.$nama.$kop.'</td>
@@ -2639,102 +2732,105 @@ class Master extends CI_Controller
 
 	function btnCekShow(){ // btn-cek-list-
 		$id = $_POST['id'];
-		$opsi = $_POST['opsi'];
+		// $opsi = $_POST['opsi'];
 		// $i = $_POST['i'];
 		$html ='';
 
-		if($opsi == 'rekap'){
-			$html .='<table style="margin:10px 5px;font-size:12px;color:#000" border="1">';
-			$html .='<tr style="background:#e9e9e9">
-				<td style="padding:5px;font-weight:bold;text-align:center">NO</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">NO. PO</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">T(ROLL)</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">T(BERAT)</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">P(ROLL)</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">P(BERAT)</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">-/+(ROLL)</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">-/+(BERAT)</td>
-			</tr>';
-			$getDatar = $this->db->query("SELECT id_po,no_po,STATUS,SUM(jml_roll) AS jml_roll,SUM(tonase) AS tonase FROM po_master
-			WHERE id_perusahaan='$id' AND STATUS='open'
-			GROUP BY id_po,no_po,STATUS");
-			$i = 0;
-			$tRkpPOJmlRoll = 0;
-			$tRkpPOTonase = 0;
-			$tRkpKirJmlRoll = 0;
-			$tRkpKirTonase = 0;
-			$tRkpKirSeset = 0;
-			foreach($getDatar->result() as $rk){
-				$i++;
-				$html .='<tr>
-					<td style="padding:5px;font-weight:bold;text-align:center">'.$i.'</td>
-					<td style="padding:5px">'.$rk->no_po.'</td>
-					<td style="padding:5px;text-align:right">'.number_format($rk->jml_roll).'</td>
-					<td style="padding:5px;text-align:right">'.number_format($rk->tonase).'</td>';
+		// if($opsi == 'rekap'){
+		$html .='<div style="overflow:auto;white-space:nowrap"><table style="margin:10px 5px;font-size:12px;color:#000" border="1">';
+		$html .='<tr style="background:#e9e9e9">
+			<td style="padding:5px;font-weight:bold;text-align:center">NO</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">NO. PO</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">T(ROLL)</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">T(BERAT)</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">P(ROLL)</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">P(BERAT)</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">-/+(ROLL)</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">-/+(BERAT)</td>
+		</tr>';
+		$getDatar = $this->db->query("SELECT id_po,no_po,STATUS,SUM(jml_roll) AS jml_roll,SUM(tonase) AS tonase FROM po_master
+		WHERE id_perusahaan='$id' AND STATUS='open'
+		GROUP BY id_po,no_po,STATUS");
+		$i = 0;
+		$tRkpPOJmlRoll = 0;
+		$tRkpPOTonase = 0;
+		$tRkpKirJmlRoll = 0;
+		$tRkpKirTonase = 0;
+		foreach($getDatar->result() as $rk){
+			$i++;
+			$html .='<tr>
+				<td style="padding:5px;font-weight:bold;text-align:center">'.$i.'</td>
+				<td style="padding:5px">'.$rk->no_po.'</td>
+				<td style="padding:5px;text-align:right">'.number_format($rk->jml_roll).'</td>
+				<td style="padding:5px;text-align:right">'.number_format($rk->tonase).'</td>';
 
-					$getKir = $this->db->query("SELECT COUNT(m.roll) AS mjmlroll,SUM(weight) AS totberat,SUM(seset) AS totseset FROM m_timbangan m
-					INNER JOIN pl p ON m.id_pl=p.id
-					WHERE p.id_perusahaan='$id' AND p.no_po='$rk->no_po'
-					GROUP BY p.no_po");
-					if($getKir->num_rows() == 0){
-						$html .='<td style="padding:5px;text-align:center">-</td>
-							<td style="padding:5px;text-align:center">-</td>
-							<td style="padding:5px;text-align:center">-</td>
-							<td style="padding:5px;text-align:center">-</td>
-						';
-						$kjmlroll = 0;
-						$ktonase = 0;
-					}else{
-						$kjmlroll = $getKir->row()->mjmlroll;
-						$ktonase = $getKir->row()->totberat - $getKir->row()->totseset;
+				$getKir = $this->db->query("SELECT COUNT(m.roll) AS mjmlroll,SUM(weight) AS totberat,SUM(seset) AS totseset FROM m_timbangan m
+				INNER JOIN pl p ON m.id_pl=p.id
+				WHERE p.id_perusahaan='$id' AND p.no_po='$rk->no_po'
+				GROUP BY p.no_po");
+				if($getKir->num_rows() == 0){
+					$html .='<td style="padding:5px;text-align:center">-</td>
+						<td style="padding:5px;text-align:center">-</td>
+						<td style="padding:5px;text-align:center">-</td>
+						<td style="padding:5px;text-align:center">-</td>
+					';
+					$kjmlroll = 0;
+					$ktonase = 0;
+				}else{
+					$kjmlroll = $getKir->row()->mjmlroll;
+					$ktonase = $getKir->row()->totberat - $getKir->row()->totseset;
 
-						$html .='<td style="padding:5px;text-align:right">'.$getKir->row()->mjmlroll.'</td>
-							<td style="padding:5px;text-align:right">'.number_format($ktonase).'</td>
-							<td style="padding:5px;text-align:right">'.number_format($getKir->row()->mjmlroll - $rk->jml_roll).'</td>
-							<td style="padding:5px;text-align:right">'.number_format($ktonase - $rk->tonase).'</td>
-						';	
-					}
-				$html.='</tr>';
-				
-				$tRkpPOJmlRoll += $rk->jml_roll;
-				$tRkpPOTonase += $rk->tonase;
-				$tRkpKirJmlRoll += $kjmlroll;
-				$tRkpKirTonase += $ktonase;
-			}
-			// - / +
-			$tpmjmlRoll = $tRkpKirJmlRoll - $tRkpPOJmlRoll;
-			$tpmTonase = $tRkpKirTonase - $tRkpPOTonase;
-			$html .='<tr style="background:#e9e9e9">
-				<td style="padding:5px;font-weight:bold;text-align:center" colspan="2">TOTAL</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tRkpPOJmlRoll).'</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tRkpPOTonase).'</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tRkpKirJmlRoll).'</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tRkpKirTonase).'</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tpmjmlRoll).'</td>
-				<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tpmTonase).'</td>
-			</tr>';
-
-			$html .='</table>';
-		}else{ // detail
-			$getData = $this->db->query("SELECT id_po,no_po,status FROM po_master
-			WHERE id_perusahaan='$id' AND status='open'
-			GROUP BY id_po,no_po,status");
-			$i =0;
-			foreach($getData->result() as $r){
-				$i++;
-				$html .='<table style="font-size:12px;color:#000">
-					<tr class="ll-tr">
-						<td style="padding:5px">-</td>
-						<td style="padding:5px">'.$r->no_po.'</td>
-						<td style="padding:5px">
-							<button class="btn-c-po" onclick="btnOpen('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">'.$r->status.'</button>
-						</td>
-					</tr>
-				</table>';
-
-				$html .='<div class="ll-open btn-open-list-'.$i.'"></div>';
-			}
+					$html .='<td style="padding:5px;text-align:right">'.$getKir->row()->mjmlroll.'</td>
+						<td style="padding:5px;text-align:right">'.number_format($ktonase).'</td>
+						<td style="padding:5px;text-align:right">'.number_format($getKir->row()->mjmlroll - $rk->jml_roll).'</td>
+						<td style="padding:5px;text-align:right">'.number_format($ktonase - $rk->tonase).'</td>
+					';	
+				}
+			$html.='</tr>';
+			
+			$tRkpPOJmlRoll += $rk->jml_roll;
+			$tRkpPOTonase += $rk->tonase;
+			$tRkpKirJmlRoll += $kjmlroll;
+			$tRkpKirTonase += $ktonase;
 		}
+		// - / +
+		$tpmjmlRoll = $tRkpKirJmlRoll - $tRkpPOJmlRoll;
+		$tpmTonase = $tRkpKirTonase - $tRkpPOTonase;
+		$html .='<tr style="background:#e9e9e9">
+			<td style="padding:5px;font-weight:bold;text-align:center" colspan="2">TOTAL</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tRkpPOJmlRoll).'</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tRkpPOTonase).'</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tRkpKirJmlRoll).'</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tRkpKirTonase).'</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tpmjmlRoll).'</td>
+			<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($tpmTonase).'</td>
+		</tr>';
+
+		$html .='</table></div>';
+
+	// }else{ // detail
+		$getData = $this->db->query("SELECT id_po,no_po,status FROM po_master
+		WHERE id_perusahaan='$id' AND status='open'
+		GROUP BY id_po,no_po,status");
+		$i =0;
+		$html .='<div style="overflow:auto;white-space:nowrap">';
+		foreach($getData->result() as $r){
+			$i++;
+			$html .='<table style="font-size:12px;color:#000">
+				<tr class="ll-tr">
+					<td style="padding:5px">-</td>
+					<td style="padding:5px">'.$r->no_po.'</td>
+					<td style="padding:5px">
+						<button class="btn-c-po" onclick="btnOpen('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">'.$r->status.'</button>
+						<button class="btn-c-po" onclick="editPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">edit</button>
+					</td>
+				</tr>
+			</table>';
+
+			$html .='<div class="ll-open btn-open-list-'.$i.'"></div>';
+		}
+		$html .='</div>';
+		// }
 		
 		echo $html;
 	}
