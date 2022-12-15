@@ -2087,7 +2087,8 @@ class Master extends CI_Controller
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">JNT</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:25%">KET</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">SESET</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:25%">AKSI</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">LABEL</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:20%">AKSI</td>
 			</tr>';
 			// <td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">LABEL</td>
 
@@ -2106,11 +2107,6 @@ class Master extends CI_Controller
 					$bgtrt = 'list-p-putih';
 				}
 
-				// if(){
-
-				// }else{
-
-				// }
 				$html .='<tr class="'.$bgtrt.'">
 					<td style="padding:5px;font-weight:bold;text-align:left" colspan="12">'.$ker->nm_ker.''.$ker->g_label.' - '.round($ker->width,2).'</td>
 				</tr>';
@@ -2151,11 +2147,18 @@ class Master extends CI_Controller
 						$ketSeset = $w->ket;
 					}
 
+					// REQ PRINT LABEL
+					if($w->lbl_rk == 'req'){
+						$lds = 'disabled';
+					}else{
+						$lds = '';
+					}
+
 					// PILIH OPSI
 					if($plh == 'pl'){
 						$aksi = '-';
 					}else{
-						$aksi = '<button onclick="editRollRk('."'".$w->id."'".','."'".$l."'".')">EDIT</button> - <button onclick="batalRollRk('."'".$w->id."'".','."'".$l."'".')">BATAL</button>';
+						$aksi = '<button onclick="editRollRk('."'".$w->id."'".','."'".$w->diameter."'".','."'".$w->seset."'".','."'".$l."'".')">EDIT</button> - <button onclick="batalRollRk('."'".$w->id."'".','."'".$l."'".')">BATAL</button>';
 					}
 
 					$html .='<tr class="'.$bgtr.'">
@@ -2164,17 +2167,20 @@ class Master extends CI_Controller
 						<td style="padding:5px;'.$bgbw.'">'.$w->g_ac.'</td>
 						<td style="padding:5px;'.$bgrct.'">'.$w->rct.'</td>
 						<td style="padding:5px;'.$bgbi.'">'.$w->bi.'</td>
-						<td style="padding:5px">'.$w->diameter.'</td>
+						<td style="position:relative">
+							<input type="text" id="his-diameter-'.$w->id.'" value="'.$w->diameter.'" class="inp-abs" maxlength="3" onkeypress="return hanyaAngka(event)">
+						</td>
 						<td style="padding:5px">'.number_format($w->weight - $w->seset).'</td>
 						<td style="padding:5px">'.$w->joint.'</td>
-						<td style="padding:5px;text-align:left">'.$ketSeset.'</td>
-						<td style="padding:5px;position:relative">
-							<input type="text" id="his-seset-'.$w->id.'" value="'.number_format($w->seset).'" class="inp-abs">
+						<td style="position:relative">
+							<textarea disabled class="txt-area-new">'.$ketSeset.'</textarea>
 						</td>
+						<td style="position:relative">
+							<input type="text" id="his-seset-'.$w->id.'" value="'.number_format($w->seset).'" class="inp-abs" maxlength="4" onkeypress="return hanyaAngka(event)">
+						</td>
+						<td style="padding:5px"><button '.$lds.' onclick="reqLabelRk('."'".$w->id."'".','."'".$w->id_rk."'".','."'".$l."'".')">req</button></td>
 						<td style="padding:5px">'.$aksi.'</td>
 					</tr>';
-					// <td style="padding:5px"><button onclick="">REQ</button></td>
-
 					$totBerat += $w->weight - $w->seset;
 				}
 				$totRoll += $ker->jml;
@@ -2185,33 +2191,31 @@ class Master extends CI_Controller
 				<td style="padding:5px;font-weight:bold">'.number_format($totBerat).'</td>
 				<td style="padding:5px;font-weight:bold" colspan="5">-</td>
 			</tr>';
-
 			$html .='</table></div>';
 		}
-
 		echo $html;
 	}
 
 	function editRollRk(){
-		$id = $_POST['id'];
-		$this->m_master->editRollRk();
-		echo json_encode(
-			array(
-				'data' => 'berhasil',
-			)
-		);
+		// CEK JIKA ADA DIAMETER, SESET MASIH SAMA ATAU ISI KOSONG
+		if($_POST['seset'] == $_POST['vseset'] && $_POST['diameter'] == $_POST['vdiameter']){
+			echo json_encode(array('res' => false, 'msg' => 'ISI MASIH SAMA!', ));
+		}else if($_POST['seset'] == '' || $_POST['diameter'] == 0 || $_POST['diameter'] == ''){
+			echo json_encode(array('res' => false, 'msg' => 'SESET / DIAMETER HARUS DI ISI!', ));
+		}else{
+			$this->m_master->editRollRk();
+			echo json_encode(array('res' => true, 'msg' => 'BERHASIL!', ));
+		}
+	}
+
+	function reqLabelRk(){
+		$retrun = $this->m_master->reqLabelRk();
+		echo json_encode(array('res' => $retrun, 'msg' => 'REQUEST LABEL BERHASIL!'));
 	}
 
 	function batalRollRk(){
-		$id = $_POST['id'];
-		$id_rk = $_POST['id_rk'];
 		$return = $this->m_master->batalRollRk();
-
-		echo json_encode(
-			array(
-				'data' => $return,
-			)
-		);
+		echo json_encode(array('res' => $return, 'msg' => 'BERHASIL BATAL!'));
 	}
 
 	function editListRk(){
@@ -2378,7 +2382,8 @@ class Master extends CI_Controller
 		$html='';
 
 		$key = 'cari';
-		$html .='<div style="padding:10px 0 0">
+		$html .='<div class="plistinputroll">
+		<div style="padding:10px 0 0">
 			<button style="padding:5px;font-weight:bold" disabled>'.$nm_ker.''.$g_label.' - '.round($width,2).' :</button>
 			<input type="text" name="roll" id="roll" maxlength="14" style="border:1px solid #ccc;padding:7px;border-radius:5px" autocomplete="off" placeholder="ROLL">
 			<button class="btn-cari-inp-roll" onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".','."'".$key."'".')">CARI</button>
@@ -2395,19 +2400,19 @@ class Master extends CI_Controller
 			$ii = 0;
 			$html .='<div style="padding-top:10px"><table class="list-table" style="text-align:center;width:100%" border="1">
 			<tr style="background:#e9e9e9">
-				<td style="padding:5px;font-weight:bold;width:5%">No.</td>
-				<td style="padding:5px;font-weight:bold;width:18%">Roll</td>
+				<td style="padding:5px;font-weight:bold;width:5%">NO.</td>
+				<td style="padding:5px;font-weight:bold;width:18%">ROLL</td>
 				<td style="padding:5px;font-weight:bold;width:5%">BW</td>
 				<td style="padding:5px;font-weight:bold;width:5%">RCT</td>
 				<td style="padding:5px;font-weight:bold;width:5%">BI</td>
-				<td style="padding:5px;font-weight:bold;width:5%">Jenis</td>
+				<td style="padding:5px;font-weight:bold;width:5%">JENIS</td>
 				<td style="padding:5px;font-weight:bold;width:5%">GSM</td>
-				<td style="padding:5px;font-weight:bold;width:5%">C M</td>
-				<td style="padding:5px;font-weight:bold;width:5%">Ukuran</td>
-				<td style="padding:5px;font-weight:bold;width:5%">Berat</td>
-				<td style="padding:5px;font-weight:bold;width:5%">Jnt</td>
-				<td style="padding:5px;font-weight:bold;width:27%">Keterangan</td>
-				<td style="padding:5px;font-weight:bold;width:5%">Aksi</td>
+				<td style="padding:5px;font-weight:bold;width:5%">D(CM)</td>
+				<td style="padding:5px;font-weight:bold;width:5%">WIDTH</td>
+				<td style="padding:5px;font-weight:bold;width:5%">BERAT</td>
+				<td style="padding:5px;font-weight:bold;width:5%">JNT</td>
+				<td style="padding:5px;font-weight:bold;width:27%">KETERANGAN</td>
+				<td style="padding:5px;font-weight:bold;width:5%">AKSI</td>
 			</tr>';
 			foreach($getRoll->result() as $r){
 				$ii++;
@@ -2434,7 +2439,7 @@ class Master extends CI_Controller
 				// <td style="padding:5px"><button onclick="cartInputRoll('."'".$r->id."'".','."'".$r->roll."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->diameter."'".','."'".$r->width."'".','."'".$r->weight."'".','."'".$r->joint."'".','."'".$r->ket."'".','."'".$i."'".')">ADD</button></td>
 			}
 		}
-		$html .='</table></div>';
+		$html .='</table></div></div>';
 		echo $html;
 	}
 

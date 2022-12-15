@@ -11,6 +11,10 @@
 		background:transparent;margin:0;padding:0;border:0;resize:none;width:100%;height:20px
 	}
 
+	.txt-area-new {
+		position:absolute;top:0;right:0;left:0;bottom:0;width:100%;height:100%;resize:none;background:none;margin:0;padding:5px;border:0;
+	}
+
 	.list-p-biru {
 		background: #ccf
 	}
@@ -1125,6 +1129,15 @@
 
 	$('#rktgl').on('change', function() {
 		$('#rkpl').val("").prop('disabled', false);
+		$('#rkpo').val("").prop('disabled', true);
+		load_rkpo();
+		$('#rkjenis').val("").prop('disabled', true);
+		load_rkjns();
+		$('#rkglabel').val("").prop('disabled', true);
+		load_rkgsm();
+		$('#rkukuran').val("").prop('disabled', true);
+		load_rkuk();
+		$("#rkjmlroll").val("").prop('disabled', true).attr('style', 'background:#e9e9e9');
 		rktgl = $("#rktgl").val();
 		load_rkpl(rktgl);
 	});
@@ -1674,40 +1687,68 @@
 		});
 	}
 
-	function editRollRk(id,i){
+	function editRollRk(id,vdiameter,vseset,i){
 		// alert(id);
+		$(".plistinputroll").html('');
 		id_rk = $("#v-id-pl").val();
 		seset = $("#his-seset-" + id).val();
+		diameter = $("#his-diameter-" + id).val();
 		// alert(id+' - '+seset);
 		$.ajax({
 			url: '<?php echo base_url('Master/editRollRk')?>',
 			type: "POST",
 			data: ({
 				id: id,
-				seset: seset
+				seset: seset,
+				diameter: diameter,
+				vdiameter,vseset,
 			}),
-			success: function(response){
-				// $("#his-seset-" + id).val('b');
-				hasilInputSementara(id_rk,i,'rk');
-				// alert('berhasil seset');
+			success: function(json){
+				data = JSON.parse(json)
+				if(data.res){
+					swal(data.msg, "", "success");
+					hasilInputSementara(id_rk,i,'rk');
+				}else{
+					swal(data.msg, "", "error");
+				}
+			}
+		})
+	}
+
+	function reqLabelRk(id,idrk,i){
+		// alert(id+' - '+idrk+' - '+i);
+		$.ajax({
+			url: '<?php echo base_url('Master/reqLabelRk')?>',
+			type: "POST",
+			data: ({
+				id
+			}),
+			success: function(json){
+				data = JSON.parse(json);
+				if(data.res){
+					swal(data.msg, "", "success")
+					hasilInputSementara(idrk,i,'rk');
+				}
 			}
 		})
 	}
 
 	function batalRollRk(id,i){
 		id_rk = $("#v-id-pl").val();
+		$(".plistinputroll").html('');
 		// alert(id+' - '+i+' - '+id_rk);
 		$.ajax({
 			url: '<?php echo base_url('Master/batalRollRk')?>',
 			type: "POST",
 			data: ({
-				id: id,
-				id_rk: id_rk
+				id
 			}),
-			success: function(data){
-				// alert('batal');
-				// console.log(data.data);
-				hasilInputSementara(id_rk,i,'rk');
+			success: function(json){
+				data = JSON.parse(json);
+				if(data.res){
+					swal(data.msg, "", "success");
+					hasilInputSementara(id_rk,i,'rk');
+				}
 			}
 		})
 	}

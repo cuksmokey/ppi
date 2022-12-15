@@ -949,6 +949,7 @@ class M_master extends CI_Model{
 		// edited_at  edited_by
 		$id = $_POST['id'];
 		$seset = $_POST['seset'];
+		$diameter = $_POST['diameter'];
 
 		$cek = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id'")->row();
 		if($cek->seset == $seset){
@@ -970,6 +971,7 @@ class M_master extends CI_Model{
             );
             $result= $this->db->insert("m_roll_edit",$data);
 
+			$this->db->set('diameter', $diameter);
 			$this->db->set('seset', $seset);
 			$this->db->set('edited_at', date("Y-m-d H:i:s"));
 			$this->db->set('edited_by', $this->session->userdata('username'));
@@ -980,10 +982,15 @@ class M_master extends CI_Model{
 		return $result;
 	}
 
+    function reqLabelRk(){
+        $this->db->set('lbl_rk', 'req');
+        $this->db->where('id', $_POST['id']);
+        return $this->db->update('m_timbangan');
+    }
+
 	function batalRollRk(){
-		$id = $_POST['id'];
 		$this->db->set('id_rk', null);
-		$this->db->where('id', $id);
+		$this->db->where('id', $_POST['id']);
 		return $this->db->update('m_timbangan');
 	}
 
