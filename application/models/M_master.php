@@ -982,9 +982,17 @@ class M_master extends CI_Model{
 
 	function batalRollRk(){
 		$id = $_POST['id'];
-		$this->db->set('id_rk', '');
+		$this->db->set('id_rk', null);
 		$this->db->where('id', $id);
 		return $this->db->update('m_timbangan');
+	}
+
+	function editListRk(){
+		$id = $_POST['id'];
+		$ejmlroll = $_POST['ejmlroll'];
+		$this->db->set('jml_roll', $ejmlroll);
+		$this->db->where('id', $id);
+		return $this->db->update('m_rencana_kirim');
 	}
 
     function simpanCartRk(){
@@ -996,7 +1004,9 @@ class M_master extends CI_Model{
 			$nm_ker = $data['options']['nm_ker'];
 			$g_label = $data['options']['g_label'];
 			$width = $data['options']['width'];
-			$cek = $this->db->query("SELECT*FROM m_rencana_kirim WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width'");
+			$ctgl = $data['options']['tgl'];
+			$corder_pl = $data['options']['order_pl'];
+			$cek = $this->db->query("SELECT*FROM m_rencana_kirim WHERE tgl='$ctgl' AND order_pl='$corder_pl' AND nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width'");
 			if($cek->num_rows() == 0){
 				$jmlroll = $data['options']['jml_roll'];
 				$data = array(
@@ -1018,8 +1028,6 @@ class M_master extends CI_Model{
         }
 
         // UPDATE PL
-        // 5_ex_2022-12-08_ex_TESET/RENCANA/KIRIM_ex_MH_ex_150_ex_190.00
-        // 1_ex_2022-12-11_ex_TEST/PO/AP_ex_MH_ex_125_ex_150.00
         $exp = explode("_ex_", $_POST['rkukuran']);
 		$tgl = $exp[1];
 		$order_pl = $exp[0];
@@ -1066,12 +1074,20 @@ class M_master extends CI_Model{
                 $idpt = $data['options']['id_perusahaan'];
             }
 
+			// JIKA PL NON PPN UPDATE NO PKB " . "
+			$expSJ = explode("/", $data['options']['no_surat']);
+			if($expSJ[4] == 'B'){
+				$p = '.';
+			}else{
+				$p = '';
+			}
+
 			$data = array(
 				'tgl_pl' => $data['options']['tgl_pl'],
 				'tgl' => $data['options']['tgl'],
 				'no_surat' => $nosj,
 				'no_so' => $data['options']['no_so'],
-				'no_pkb' => $data['options']['no_pkb'],
+				'no_pkb' => $data['options']['no_pkb'].$p,
 				'no_kendaraan' => '-',
 				'nm_perusahaan' => $data['options']['nm_perusahaan'],
 				'id_perusahaan' => $idpt,
@@ -1099,7 +1115,6 @@ class M_master extends CI_Model{
                 $result = $this->db->update('pl');
             }
         }
-        
 
         return $result;
     }

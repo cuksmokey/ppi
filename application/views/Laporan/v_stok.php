@@ -142,8 +142,8 @@
 						<input type="hidden" id="otorisasi" value="<?= $otorisasi ?>">
 						<input type="hidden" id="stat" value="">
 
-						<button onclick="plh_menu('stok')">STOK GUDANG</button>
-						<button onclick="plh_menu('produksi')">PRODUKSI</button>
+						<button class="tmbl-plh" onclick="plh_menu('stok')">STOK GUDANG</button>
+						<button class="tmbl-plh" onclick="plh_menu('produksi')">PRODUKSI</button>
 
 						<div class="menu-stok" style="padding-top:10px">
 							<button disabled>STOK : </button>
@@ -350,6 +350,7 @@
 			tJns = `<b>${Njenis}</b>`;
 		}
 
+		$(".tmbl-plh").prop("disabled", true);
 		$(".tmbl-stok").prop("disabled", true).attr('style', 'background:#ccc');
 		$(".tmbl-buffer").prop("disabled", true).attr('style', 'background:#ccc');
 		$(".box-data").show().html(`Memuat data ROLL ${tJns}. Tunggu Sebentar . . .`);
@@ -366,6 +367,7 @@
 				vjenis: vjenis,
 			}),
 			success: function(response){
+				$(".tmbl-plh").prop("disabled", false);
 				$(".tmbl-stok").prop("disabled", false).removeAttr( "style");
 				$(".tmbl-buffer").prop("disabled", false).removeAttr( "style");
 				$(".box-data").show().html(response);

@@ -5446,8 +5446,8 @@ class Laporan extends CI_Controller {
 
                 $getKirim = $this->db->query("SELECT pl.tgl,pl.no_surat,COUNT(r.roll) AS jml_roll,SUM(r.weight) AS jml_berat FROM m_timbangan r
                 INNER JOIN pl pl ON r.id_pl=pl.id
-                WHERE nm_ker='$masPO->nm_ker' AND g_label='$masPO->g_label' AND width='$masPO->width' AND pl.no_po='$masPO->no_po'
-                GROUP BY pl.tgl,nm_ker,g_label,width,pl.no_po");
+                WHERE r.nm_ker='$masPO->nm_ker' AND r.g_label='$masPO->g_label' AND width='$masPO->width' AND pl.no_po='$masPO->no_po'
+                GROUP BY pl.tgl,r.nm_ker,r.g_label,width,pl.no_po");
 				$sumRollKiriman = 0;
                 foreach($getKirim->result() as $kirim){
 					$html .='<tr>

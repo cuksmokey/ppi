@@ -77,6 +77,10 @@
 	.ilist {
 		padding-top:15px
 	}
+
+	.inp-abs {
+		position:absolute;top:0;right:0;left:0;bottom:0;border:0;margin:0;padding:5px;text-align:center;background:none;
+	}
 </style>
 
 <?php
@@ -432,6 +436,7 @@
 
 <script>
 	otorisasi = $("#otorisasi").val();
+	option = '';
 
 	$(document).ready(function(){
 		// alert(otorisasi);
@@ -769,7 +774,7 @@
 		kosong();
 		// tglpl = $("#tgl-list-pl").val();
 		// getThnBlnRoll();
-		load_data_pl();
+		// load_data_pl();
 		$(".box-data-pl").hide();
 		$(".box-form-pl").show();
 		$(".box-form-pl-cust").show();
@@ -861,9 +866,10 @@
 		});
 	}
 
-	function prosesPL(idpt,tglpl,opl,i){
-		alert(idpt+' - '+tglpl+' - '+opl+' - '+i);
-		// $(".cek-pl").html('');
+	function prosesPL(idpt,idrk,tglpl,opl,i){
+		// alert(idpt+' - '+idrk+' - '+tglpl+' - '+opl+' - '+i);
+		$(".cek-pl").html('');
+		hasilInputSementara(idrk,i,'pl');
 		// $.ajax({
 		// 	url: '<?php echo base_url('Master/prosesPL')?>',
 		// 	type: "POST",
@@ -1110,6 +1116,9 @@
 
 		tgl = $("#tgl-list-rk").val();
 		load_data(tgl);
+
+		$(".show-list-edit-rk").html('');
+		option = 'insert';
 	}
 
 	// 
@@ -1322,7 +1331,7 @@
 	function addCartRk(){ //
 		rkukuran = $("#rkukuran").val();
 		rkjmlroll = $("#rkjmlroll").val();
-
+		// alert(option)
 		if(rkukuran == '' || rkjmlroll == ''){
 			swal("HARAP LENGKAPI FORM!", "", "error");
 			return;
@@ -1334,6 +1343,7 @@
 			data: ({
 				rkukuran: rkukuran,
 				rkjmlroll: rkjmlroll,
+				option
 			}),
 			success: function(response) {
 				$(".show-cart-rk").load("<?php echo base_url('Master/showCartRk') ?>");
@@ -1344,16 +1354,21 @@
 	function simpanCartRk(){
 		rkukuran = $("#rkukuran").val();
 		tgl = $("#tgl-list-rk").val();
+		// alert(option);
 		// alert(rkukuran);
 		$.ajax({
 			url: '<?php echo base_url('Master/simpanCartRk')?>',
 			type: "POST",
 			data:({
-				rkukuran: rkukuran
+				rkukuran: rkukuran,
+				option
 			}),
-			success: function(response) {
-				swal(json.msg, "", "success");
-				rkkosong()
+			success: function(json) {
+				data = JSON.parse(json);
+				if(data.data){
+					swal(data.msg, "", "success");
+					rkkosong()
+				}
 			}
 		})
 	}
@@ -1393,7 +1408,6 @@
 	}
 
 	function btnRencana(id_rk,opl,tgl_pl,i){ // KLIK PROSES
-		rkkosong();
 		$("#v-id-pl").val(id_rk);
 		$("#v-opl").val(opl);
 		$("#v-tgl-pl").val(tgl_pl);
@@ -1401,6 +1415,7 @@
 		$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/destroyCartInputRoll') ?>");
 		// alert(id_rk+' - '+opl+' '+tgl_pl+' '+i);
 		$(".id-cek").html('');
+		$(".t-plist-rencana-" + i).html('Memuat Rencana Kirim . . .');
 		$.ajax({
 			url: '<?php echo base_url('Master/pListRencana')?>',
 			type: "POST",
@@ -1412,7 +1427,7 @@
 			success: function(response) {
 				if(response){
 					$(".t-plist-rencana-" + i).html(response);
-					hasilInputSementara(id_rk,i);
+					hasilInputSementara(id_rk,i,'rk');
 				}else{
 					$(".t-plist-rencana-" + i).html('<div style="notfon">BELUM ADA RENCANA KIRIMAN</div>');
 				}
@@ -1435,6 +1450,7 @@
 		$("#rkukuran").val("").prop('disabled', true);
 		load_rkuk();
 		$("#rkjmlroll").val("").prop('disabled', true).attr('style', 'background:#e9e9e9');
+		$(".show-list-edit-rk").html('');
 		
 		$.ajax({
 			url: '<?php echo base_url('Master/btnRencanaEdit')?>',
@@ -1451,27 +1467,110 @@
 				$("#rkpl").val(data.tgl).prop('disabled', true);
 				$('#rkpo').val("").prop('disabled', false);
 				load_rkpo(data.id);
-				// $(".show-list-edit-rk").html(data);
+				showListEditRk(id_rk,opl,tgl_pl,i);
+				option = 'update'
+				
 			}
 		})
-
 	}
 
-	function hasilInputSementara(id_rk,i) {
+	function showListEditRk(id_rk,opl,tgl_pl,i){
+		// alert(id_rk)
+		$(".show-list-edit-rk").html('Memuat . . .');
+		$.ajax({
+			url: '<?php echo base_url('Master/showListEditRk')?>',
+			type: "POST",
+			data: ({
+				id_rk,opl,tgl_pl,i
+			}),
+			success: function(data){
+				$(".show-list-edit-rk").html(data);
+			}
+		})
+	}
+	
+	function editListRk(id,nm_ker,g_label,width,id_rk,opl,tgl_pl,i,ii,ljmlroll){
+		ejmlroll = $("#elrkroll-" + ii).val();
+		// alert(ejmlroll);
+		$.ajax({
+			url: '<?php echo base_url('Master/editListRk')?>',
+			type: "POST",
+			data: ({
+				id,ejmlroll,ljmlroll
+			}),
+			success: function(json){
+				data = JSON.parse(json);
+				if(data.response){
+					swal(data.msg, "", "success");
+					btnRencanaEdit(id_rk,opl,tgl_pl,i)
+				}else{
+					swal(data.msg, "", "error");
+				}
+			}
+		})
+	}
+
+	function hapusListRk(id,nm_ker,g_label,width,id_rk,opl,tgl_pl,i){
+		// alert(id)
+		swal({
+			title: "Apakah Anda Yakin ?",
+			text: nm_ker+''+g_label+' - '+width,
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-danger",
+			confirmButtonText: "Ya",
+			cancelButtonText: "Batal",
+			closeOnConfirm: false,
+			closeOnCancel: false
+		},
+		function(isConfirm) {
+			if (isConfirm) {
+				$.ajax({
+					url: '<?php echo base_url('Master/hapusListRk')?>',
+					type: "POST",
+					data: ({
+						id
+					}),
+					success: function(json){
+						data = JSON.parse(json);
+						if(data.response){
+							swal(data.msg, "", "success");
+							btnRencanaEdit(id_rk,opl,tgl_pl,i)
+						}
+					}
+				})
+			}else{
+				swal("BATAL DIHAPUS!", "", "error");
+			}
+		});
+		
+	}
+
+	function hasilInputSementara(id_rk,i,plh) {
 		// alert(id_pl)
-		$(".t-plist-input-sementara-" + i).html('<div style="margin-top:15px;color:#000">MEMUAT DATA . . .</div>');
+		if(plh == 'rk'){
+			$(".t-plist-input-sementara-" + i).html('<div style="margin-top:15px;color:#000">MEMUAT DATA . . .</div>');
+		}else{
+			$(".proses-pl-" + i).html('<div style="margin:5px;color:#000">MEMUAT DATA . . .</div>');
+		}
 		$.ajax({
 			url: '<?php echo base_url('Master/pListInputSementara')?>',
 			type: "POST",
 			data: ({
 				id_rk: id_rk,
 				i: i,
+				plh
 			}),
 			success: function(response){
 				if(response){
-					$(".t-plist-input-sementara-" + i).html(response);
+					if(plh == 'rk'){
+						$(".t-plist-input-sementara-" + i).html(response);
+					}else{
+						$(".proses-pl-" + i).html(response);
+					}
 				}else{
 					$(".t-plist-input-sementara-" + i).html('');
+					$(".proses-pl-" + i).html('');
 				}
 			}
 		});
@@ -1589,7 +1688,7 @@
 			}),
 			success: function(response){
 				// $("#his-seset-" + id).val('b');
-				hasilInputSementara(id_rk,i);
+				hasilInputSementara(id_rk,i,'rk');
 				// alert('berhasil seset');
 			}
 		})
@@ -1608,7 +1707,7 @@
 			success: function(data){
 				// alert('batal');
 				// console.log(data.data);
-				hasilInputSementara(id_rk,i);
+				hasilInputSementara(id_rk,i,'rk');
 			}
 		})
 	}

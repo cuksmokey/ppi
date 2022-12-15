@@ -166,29 +166,29 @@
 										<td style="padding:5px">:</td>
 										<td style="padding:5px" colspan="7">
 											<input type="hidden" id="lno-po" value="">
-											<input type="text" id="fno-po" colspan="6" class="form-control">
+											<input type="text" id="fno-po" colspan="6" class="form-control" autocomplete="off">
 										</td>
 									</tr>
 									<tr>
 										<td style="padding:5px;font-weight:bold">ITEMS</td>
 										<td style="padding:5px">:</td>
 										<td style="padding:5px">
-											<input type="text" id="fjenis" class="form-control" style="text-align:center" maxlength="2" placeholder="JENIS" onkeypress="return hHuruf(event)">
+											<input type="text" id="fjenis" class="form-control" style="text-align:center" maxlength="2" placeholder="JENIS" onkeypress="return hHuruf(event)" autocomplete="off">
 										</td>
 										<td style="padding:5px">
-											<input type="text" id="fgsm" class="form-control" style="text-align:center" maxlength="3" placeholder="GSM" onkeypress="return hAngka(event)">
+											<input type="text" id="fgsm" class="form-control" style="text-align:center" maxlength="3" placeholder="GSM" onkeypress="return hAngka(event)" autocomplete="off">
 										</td>
 										<td style="padding:5px">
-											<input type="text" id="fukuran" class="form-control" style="text-align:center" maxlength="6" placeholder="UKURAN" onkeypress="return aKt(event)">
+											<input type="text" id="fukuran" class="form-control" style="text-align:center" maxlength="6" placeholder="UKURAN" onkeypress="return aKt(event)" autocomplete="off">
 										</td>
 										<td style="padding:5px">
-											<input type="text" id="ftonase" class="form-control" style="text-align:center" maxlength="8" placeholder="TONASE">
+											<input type="text" id="ftonase" class="form-control" style="text-align:center" maxlength="8" placeholder="TONASE" autocomplete="off">
 										</td>
 										<td style="padding:5px">
-											<input type="text" id="fjmlroll" class="form-control" style="text-align:center" maxlength="3" placeholder="JML ROLL" onkeypress="return hAngka(event)">
+											<input type="text" id="fjmlroll" class="form-control" style="text-align:center" maxlength="3" placeholder="JML ROLL" onkeypress="return hAngka(event)" autocomplete="off">
 										</td>
 										<td style="padding:5px">
-											<input type="text" id="fharga" class="form-control" style="text-align:center" maxlength="8" placeholder="HARGA">
+											<input type="text" id="fharga" class="form-control" style="text-align:center" maxlength="8" placeholder="HARGA" autocomplete="off">
 										</td>
 										<td style="padding:5px;text-align:center">
 											<!-- <input type="hidden" id="update-idpt" value=""> -->

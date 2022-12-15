@@ -1570,10 +1570,18 @@ class Master extends CI_Controller
 			$i = 0;
 			foreach($getData->result() as $r){
 				$i++;
+
+				// KALAU BELUM ADA ISI RENCANA KIRIM
+				if($r->id_rk == null || $r->id_rk == ''){
+					$ds = 'disabled';
+				}else{
+					$ds = '';
+				}
+
 				$html .='<table style="font-size:12px;color:#000">';
 				$html .='<tr>
 					<td style="padding:5px">
-						<button onclick="prosesPL('."'".$r->id_perusahaan."'".','."'".$r->tgl_pl."'".','."'".$r->opl."'".','."'".$i."'".')">PROSES</button>
+						<button '.$ds.' onclick="prosesPL('."'".$r->id_perusahaan."'".','."'".$r->id_rk."'".','."'".$r->tgl_pl."'".','."'".$r->opl."'".','."'".$i."'".')">PROSES</button>
 						<button onclick="editPL('."'".$r->id_perusahaan."'".','."'".$r->tgl_pl."'".','."'".$r->opl."'".','."'".$i."'".')">EDIT</button>
 					</td>
 					<td style="padding:5px">'.$i.'</td>
@@ -1588,6 +1596,10 @@ class Master extends CI_Controller
 		}
 
 		echo $html;
+	}
+
+	function prosesPL(){
+
 	}
 
 	function editPL(){
@@ -1621,6 +1633,17 @@ class Master extends CI_Controller
 		$getData = $this->db->query("SELECT*FROM pl
 		WHERE qc='proses' AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
 		ORDER BY opl,nm_ker,no_po,g_label");
+		if($getData->row()->nama == '-' || $getData->row()->nama == ''){
+			$nama = '';
+		}else{
+			$nama = $getData->row()->nama.' - ';
+		}
+		if($getData->row()->nm_perusahaan == '-' || $getData->row()->nm_perusahaan == ''){
+			$pt = '';
+		}else{
+			$pt = $getData->row()->nm_perusahaan;
+		}
+		$html .='<div style="margin-top:15px;font-weight:bold;color:#000">'.$nama.$pt.'</div>';
 		$html .='<table style="font-size:12px;color:#000;text-align:center;margin-top:15px" border="1">';
 		$html .='<tr>
 			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO.</td>
@@ -1888,7 +1911,7 @@ class Master extends CI_Controller
 
 		if($this->cart->total_items() != 0){
 			$html .='<tr>
-				<td style="padding:5px;text-align:left" colspan="8"><button onclick="addCartPl('."'simpan'".')">SIMPAN</button></td>
+				<td style="padding:5px;text-align:right" colspan="8"><button onclick="addCartPl('."'simpan'".')">SIMPAN</button></td>
 			</tr>';
 			$html .='</table>';
 		}
@@ -1941,8 +1964,8 @@ class Master extends CI_Controller
 		$html ='';
 
 		if($this->cart->total_items() != 0){
-			$html .='<table style="margin-top:15px;width:100%;color:#000;font-size:12px;text-align:center;border-color:#aaa" border="1">';
-			$html .='<tr>
+			$html .='<table style="margin-top:15px;color:#000;font-size:12px;text-align:center;border-color:#aaa" border="1">';
+			$html .='<tr style="background:#e9e9e9">
 				<td style="padding:5px;font-weight:bold">TANGGAL</td>
 				<td style="padding:5px;font-weight:bold">JENIS</td>
 				<td style="padding:5px;font-weight:bold">GRAMATURE</td>
@@ -1957,7 +1980,7 @@ class Master extends CI_Controller
 				<td style="padding:5px">'.$items['options']['tgl'].'</td>
 				<td style="padding:5px">'.$items['options']['nm_ker'].'</td>
 				<td style="padding:5px">'.$items['options']['g_label'].'</td>
-				<td style="padding:5px">'.$items['options']['width'].'</td>
+				<td style="padding:5px">'.round($items['options']['width'], 2).'</td>
 				<td style="padding:5px">'.$items['options']['jml_roll'].'</td>
 				<td style="padding:5px"><button onclick="hapusCartRk('."'".$items['rowid']."'".')">Batal</button></td>
 			</tr>';
@@ -1965,7 +1988,7 @@ class Master extends CI_Controller
 
 		if($this->cart->total_items() != 0){
 			$html .='<tr>
-					<td style="padding:5px" colspan="6"><button onclick="simpanCartRk()">SIMPAN</button></td>
+					<td style="padding:5px;text-align:right" colspan="6"><button onclick="simpanCartRk()">SIMPAN</button></td>
 				</tr>
 			</table>';
 		}
@@ -1975,7 +1998,7 @@ class Master extends CI_Controller
 
 	function simpanCartRk(){
 		$this->m_master->simpanCartRk();
-		echo json_encode(array('data' => true));
+		echo json_encode(array('data' => true, 'msg' => 'BERHASIL SIMPAN RENCANA KIRIM!'));
 	}
 
 	function hapusCartRk(){
@@ -2042,110 +2065,130 @@ class Master extends CI_Controller
 	function pListInputSementara(){
 		$id_rk = $_POST['id_rk'];
 		$l = $_POST['i'];
+		$plh = $_POST['plh'];
 		$html ='';
-
-		$html .='<div style="overflow:auto;white-space:nowrap;"><table class="list-table" style="width:100%;text-align:center;margin-top:15px" border="1">';
-		$html .='<tr>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">NO.</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:10%">NO. ROLL</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BW</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">RCT</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BI</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">D(CM)</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BERAT</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">JNT</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:25%">KET</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">SESET</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">LABEL</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:20%">AKSI</td>
-		</tr>';
 
 		$getKer = $this->db->query("SELECT id_rk,nm_ker,g_label,width,COUNT(width) AS jml FROM m_timbangan
 		WHERE id_rk='$id_rk'
 		GROUP BY nm_ker,g_label,width");
-		$totRoll = 0;
-		$totBerat = 0;
-		foreach($getKer->result() as $ker){
-			if($ker->nm_ker == 'MH' && $ker->g_label == 110){
-				$bgtrt = 'list-p-biru';
-			}else if(($ker->nm_ker == 'MH') && ($ker->g_label == 120 || $ker->g_label == 125)){
-				$bgtrt = 'list-p-kuning';
-			}else if(($ker->nm_ker == 'MH' || $ker->nm_ker == 'MN') && $ker->g_label == 150){
-				$bgtrt = 'list-p-merah';
-			}else if($ker->nm_ker == 'WP'){
-				$bgtrt = 'list-p-hijau';
-			}else{
-				$bgtrt = 'list-p-putih';
-			}
-			$html .='<tr class="'.$bgtrt.'">
-				<td style="padding:5px;font-weight:bold;text-align:left" colspan="12">'.$ker->nm_ker.''.$ker->g_label.' - '.round($ker->width,2).'</td>
+
+		if($getKer->num_rows() == 0){
+			$html .='';
+		}else{
+			$html .='<div style="overflow:auto;white-space:nowrap;"><table class="list-table" style="width:100%;text-align:center;margin-top:15px" border="1">';
+			$html .='<tr>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">NO.</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:10%">NO. ROLL</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BW</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">RCT</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BI</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">D(CM)</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BERAT</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">JNT</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:25%">KET</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">SESET</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:25%">AKSI</td>
 			</tr>';
+			// <td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">LABEL</td>
 
-			$getWidth = $this->db->query("SELECT * FROM m_timbangan
-			WHERE id_rk='$ker->id_rk' AND nm_ker='$ker->nm_ker' AND g_label='$ker->g_label' AND width='$ker->width'
-			ORDER BY roll");
-			$i = 0;
-			foreach($getWidth->result() as $w){
-				$i++;
-				if($w->status == '3'){
-					$bgtr = 'status-buffer';
+			$totRoll = 0;
+			$totBerat = 0;
+			foreach($getKer->result() as $ker){
+				if($ker->nm_ker == 'MH' && $ker->g_label == 110){
+					$bgtrt = 'list-p-biru';
+				}else if(($ker->nm_ker == 'MH') && ($ker->g_label == 120 || $ker->g_label == 125)){
+					$bgtrt = 'list-p-kuning';
+				}else if(($ker->nm_ker == 'MH' || $ker->nm_ker == 'MN') && $ker->g_label == 150){
+					$bgtrt = 'list-p-merah';
+				}else if($ker->nm_ker == 'WP'){
+					$bgtrt = 'list-p-hijau';
 				}else{
-					$bgtr = 'status-stok';
+					$bgtrt = 'list-p-putih';
 				}
 
-				if($w->nm_ker == 'MH'){
-					$bgbw = '';
-					$bgrct = '';
-					$bgbi = 'background:#eee';
-				}else if($w->nm_ker == 'BK'){
-					$bgbw = '';
-					$bgrct = 'background:#eee';
-					$bgbi = '';
-				}else if($w->nm_ker == 'WP'){
-					$bgbw = '';
-					$bgrct = 'background:#eee';
-					$bgbi = 'background:#eee';
-				}else{
-					$bgbw = '';
-					$bgrct = 'background:#eee';
-					$bgbi = 'background:#eee';
-				}
+				// if(){
 
-				if($w->seset > 0){
-					$ketSeset = '- '.$w->seset.'KG. '.$w->weight.'. '.$w->ket;
-				}else{
-					$ketSeset = $w->ket;
-				}
+				// }else{
 
-				$html .='<tr class="'.$bgtr.'">
-					<td style="padding:5px">'.$i.'</td>
-					<td style="padding:5px">'.$w->roll.'</td>
-					<td style="padding:5px;'.$bgbw.'">'.$w->g_ac.'</td>
-					<td style="padding:5px;'.$bgrct.'">'.$w->rct.'</td>
-					<td style="padding:5px;'.$bgbi.'">'.$w->bi.'</td>
-					<td style="padding:5px">'.$w->diameter.'</td>
-					<td style="padding:5px">'.number_format($w->weight - $w->seset).'</td>
-					<td style="padding:5px">'.$w->joint.'</td>
-					<td style="padding:5px;text-align:left">'.$ketSeset.'</td>
-					<td style="padding:5px;position:relative">
-						<input type="text" id="his-seset-'.$w->id.'" value="'.number_format($w->seset).'" style="position:absolute;text-align:center;top:0;left:0;right:0;bottom:0;width:100%;border:0;">
-					</td>
-					<td style="padding:5px"><button onclick="">REQ</button></td>
-					<td style="padding:5px"><button onclick="editRollRk('."'".$w->id."'".','."'".$l."'".')">EDIT</button> - <button onclick="batalRollRk('."'".$w->id."'".','."'".$l."'".')">BATAL</button></td>
+				// }
+				$html .='<tr class="'.$bgtrt.'">
+					<td style="padding:5px;font-weight:bold;text-align:left" colspan="12">'.$ker->nm_ker.''.$ker->g_label.' - '.round($ker->width,2).'</td>
 				</tr>';
 
-				$totBerat += $w->weight - $w->seset;
-			}
-			$totRoll += $ker->jml;
-		}
-		$html .='<tr>
-			<td style="padding:5px;font-weight:bold">'.number_format($totRoll).'</td>
-			<td style="padding:5px;font-weight:bold" colspan="5">TOTAL</td>
-			<td style="padding:5px;font-weight:bold">'.number_format($totBerat).'</td>
-			<td style="padding:5px;font-weight:bold" colspan="5">-</td>
-		</tr>';
+				$getWidth = $this->db->query("SELECT * FROM m_timbangan
+				WHERE id_rk='$ker->id_rk' AND nm_ker='$ker->nm_ker' AND g_label='$ker->g_label' AND width='$ker->width'
+				ORDER BY roll");
+				$i = 0;
+				foreach($getWidth->result() as $w){
+					$i++;
+					if($w->status == '3'){
+						$bgtr = 'status-buffer';
+					}else{
+						$bgtr = 'status-stok';
+					}
 
-		$html .='</table></div>';
+					if($w->nm_ker == 'MH'){
+						$bgbw = '';
+						$bgrct = '';
+						$bgbi = 'background:#eee';
+					}else if($w->nm_ker == 'BK'){
+						$bgbw = '';
+						$bgrct = 'background:#eee';
+						$bgbi = '';
+					}else if($w->nm_ker == 'WP'){
+						$bgbw = '';
+						$bgrct = 'background:#eee';
+						$bgbi = 'background:#eee';
+					}else{
+						$bgbw = '';
+						$bgrct = 'background:#eee';
+						$bgbi = 'background:#eee';
+					}
+
+					if($w->seset > 0){
+						$ketSeset = '- '.$w->seset.'KG. '.$w->weight.'. '.$w->ket;
+					}else{
+						$ketSeset = $w->ket;
+					}
+
+					// PILIH OPSI
+					if($plh == 'pl'){
+						$aksi = '-';
+					}else{
+						$aksi = '<button onclick="editRollRk('."'".$w->id."'".','."'".$l."'".')">EDIT</button> - <button onclick="batalRollRk('."'".$w->id."'".','."'".$l."'".')">BATAL</button>';
+					}
+
+					$html .='<tr class="'.$bgtr.'">
+						<td style="padding:5px">'.$i.'</td>
+						<td style="padding:5px">'.$w->roll.'</td>
+						<td style="padding:5px;'.$bgbw.'">'.$w->g_ac.'</td>
+						<td style="padding:5px;'.$bgrct.'">'.$w->rct.'</td>
+						<td style="padding:5px;'.$bgbi.'">'.$w->bi.'</td>
+						<td style="padding:5px">'.$w->diameter.'</td>
+						<td style="padding:5px">'.number_format($w->weight - $w->seset).'</td>
+						<td style="padding:5px">'.$w->joint.'</td>
+						<td style="padding:5px;text-align:left">'.$ketSeset.'</td>
+						<td style="padding:5px;position:relative">
+							<input type="text" id="his-seset-'.$w->id.'" value="'.number_format($w->seset).'" class="inp-abs">
+						</td>
+						<td style="padding:5px">'.$aksi.'</td>
+					</tr>';
+					// <td style="padding:5px"><button onclick="">REQ</button></td>
+
+					$totBerat += $w->weight - $w->seset;
+				}
+				$totRoll += $ker->jml;
+			}
+			$html .='<tr style="background:#e9e9e9">
+				<td style="padding:5px;font-weight:bold">'.number_format($totRoll).'</td>
+				<td style="padding:5px;font-weight:bold" colspan="5">TOTAL</td>
+				<td style="padding:5px;font-weight:bold">'.number_format($totBerat).'</td>
+				<td style="padding:5px;font-weight:bold" colspan="5">-</td>
+			</tr>';
+
+			$html .='</table></div>';
+		}
+
 		echo $html;
 	}
 
@@ -2171,6 +2214,103 @@ class Master extends CI_Controller
 		);
 	}
 
+	function editListRk(){
+		if($_POST['ljmlroll'] ==  $_POST['ejmlroll']){
+			echo json_encode(array(
+				'response' => false,
+				'msg' => 'JUMLAH SAMA!',
+			));
+		}else if($_POST['ejmlroll'] == '' || $_POST['ejmlroll'] == 0){
+			echo json_encode(array(
+				'response' => false,
+				'msg' => 'JUMLAH ROLL TIDAK BOLEH KOSONG!',
+			));
+		}else{
+			$this->m_master->editListRk();
+			echo json_encode(array(
+				'response' => true,
+				'msg' => 'BERHASIL EDIT!',
+			));
+		}
+	}
+
+	function hapusListRk(){
+		$this->m_master->delete("m_rencana_kirim", "id", $_POST['id']);
+		echo json_encode(array(
+			'response' => true,
+			'msg' => 'BERHASIL DIHAPUS!',
+		));
+	}
+
+	function showListEditRk(){
+		$idrk = $_POST['id_rk'];
+		$opl = $_POST['opl'];
+		$tgl_pl = $_POST['tgl_pl'];
+		$li = $_POST['i'];
+		$html ='';
+
+		$pl = $this->db->query("SELECT*FROM pl WHERE id_rk='$idrk' GROUP BY id_rk")->row();
+		if($pl->nama == '-'){
+			$nama = '';
+		}else{
+			$nama = $pl->nama.' - ';
+		}
+		if($pl->nm_perusahaan == '-'){
+			$pt = '';
+		}else{
+			$pt = $pl->nm_perusahaan;
+		}
+		$html .='<div style="padding:5px;color:#000;font-weight:bold" colspan="6">'.$nama.$pt.'</div>';
+
+		$getData = $this->db->query("SELECT*FROM m_rencana_kirim
+		WHERE id_rk='$idrk'
+		ORDER BY nm_ker,g_label,width");
+		$html .='<table style="font-size:12px;color:#000;text-align:center" border="1">';
+		$html .='<tr>
+			<td style="background:#e9e9e9;padding:5px;font-weight:bold">NO</td>
+			<td style="background:#e9e9e9;padding:5px;font-weight:bold">JENIS</td>
+			<td style="background:#e9e9e9;padding:5px;font-weight:bold">GSM</td>
+			<td style="background:#e9e9e9;padding:5px;font-weight:bold">UKURAN</td>
+			<td style="background:#e9e9e9;padding:5px;font-weight:bold">JML ROLL</td>
+			<td style="background:#e9e9e9;padding:5px;font-weight:bold">AKSI</td>
+		</tr>';
+		$i = 0;
+		$sumJmlRoll = 0;
+		foreach($getData->result() as $r){
+			$i++;
+
+			// CEJ JIKA RENCANA KIRIM SUDAH ADA ROLL TIDAK BISA HAPUS
+			$iRoll = $this->db->query("SELECT*FROM m_timbangan WHERE id_rk='$idrk' AND nm_ker='$r->nm_ker' AND g_label='$r->g_label' AND width='$r->width' GROUP BY id_rk");
+			if($iRoll->num_rows() == 0){
+				$aksi = ' - <button onclick="hapusListRk('."'".$r->id."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->width."'".','."'".$idrk."'".','."'".$opl."'".','."'".$tgl_pl."'".','."'".$li."'".')">hapus</button>';
+			}else{
+				$aksi = '';
+			}
+
+			$html.='<tr>
+				<td style="padding:5px">'.$i.'</td>
+				<td style="padding:5px">'.$r->nm_ker.'</td>
+				<td style="padding:5px">'.$r->g_label.'</td>
+				<td style="padding:5px">'.round($r->width, 2).'</td>
+				<td style="position:relative">
+					<input class="inp-abs" type="text" value="'.$r->jml_roll.'" id="elrkroll-'.$i.'" maxlength="3" onkeypress="return hanyaAngka(event)">
+				</td>
+				<td style="padding:5px">
+					<button onclick="editListRk('."'".$r->id."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->width."'".','."'".$idrk."'".','."'".$opl."'".','."'".$tgl_pl."'".','."'".$li."'".','."'".$i."'".','."'".$r->jml_roll."'".')">edit</button>'.$aksi.'
+				</td>
+			</tr>';
+			$sumJmlRoll += $r->jml_roll;
+		}
+		$html .='<tr>
+			<td style="background:#e9e9e9;padding:5px;font-weight:bold" colspan="4">TOTAL</td>
+			<td style="background:#e9e9e9;padding:5px;font-weight:bold">'.number_format($sumJmlRoll).'</td>
+			<td style="background:#e9e9e9"></td>
+		</tr>';
+		$html .='</table>';
+
+		echo $html;
+	}
+
 	function pListRencana(){
 		$opl = $_POST['opl'];		
 		$tgl_pl = $_POST['tgl_pl'];
@@ -2185,11 +2325,12 @@ class Master extends CI_Controller
 			$html .= '';
 		}else{
 			$html .='<table class="list-table" style="font-weight:bold;text-align:center" border="1">
-				<tr>
+				<tr style="background:#e9e9e9">
 					<td style="padding:5px">JENIS</td>
 					<td style="padding:5px">UKURAN</td>
 					<td style="padding:5px">JUMLAH</td>
 				</tr>';
+			$sumjrll = 0;
 			foreach($getUkRencKirim->result() as $ukRenc){
 				if(($ukRenc->nm_ker == 'MH' || $ukRenc->nm_ker == 'MN') && ($ukRenc->g_label == 105 || $ukRenc->g_label == 110)){
 					$bgtr = 'list-p-biru';
@@ -2209,13 +2350,20 @@ class Master extends CI_Controller
 				$html .='<tr class="'.$bgtr.'">
 					<td style="padding:5px" rowspan="'.$rowsp.'">'.$ukRenc->nm_ker.' '.$ukRenc->g_label.'</td></tr>';
 
+				$totjmlroll = 0;
 				foreach($getUk->result() as $uk){
 					$html .='<tr class="'.$bgtr.'">
 						<td style="padding:5px">'.round($uk->width,2).'</td>
 						<td style="padding:5px"><button onclick="btnInputRoll('."'".$i."'".','."'".$uk->nm_ker."'".','."'".$uk->g_label."'".','."'".$uk->width."'".')" style="background:0;border:0">'.$uk->jml_roll.'</button></td>
 					</tr>';
+					$totjmlroll += $uk->jml_roll;
 				}
+				$sumjrll += $totjmlroll;
 			}
+			$html .='<tr style="background:#e9e9e9">
+				<td style="padding:5px;font-weight:bold" colspan="2">TOTAL</td>
+				<td style="padding:5px;font-weight:bold">'.number_format($sumjrll).'</td>
+			</tr>';
 			$html .='</table>';
 		}
 		echo $html;
@@ -2245,8 +2393,8 @@ class Master extends CI_Controller
 			$html .='<div class="notfon">DATA TIDAK DITEMUKAN</div>';
 		}else{
 			$ii = 0;
-			$html .='<div style="padding-top:10px"><table class="list-table" style="text-align:center;width:100%;border-color:#ccc" border="1">
-			<tr>
+			$html .='<div style="padding-top:10px"><table class="list-table" style="text-align:center;width:100%" border="1">
+			<tr style="background:#e9e9e9">
 				<td style="padding:5px;font-weight:bold;width:5%">No.</td>
 				<td style="padding:5px;font-weight:bold;width:18%">Roll</td>
 				<td style="padding:5px;font-weight:bold;width:5%">BW</td>
@@ -2269,7 +2417,7 @@ class Master extends CI_Controller
 					$bgtr = 'status-stok';
 				}
 				$html .='<tr class="'.$bgtr.'">
-					<td style="padding:5px">'.$ii.'</td>
+					<td style="padding:5px;font-weight:bold">'.$ii.'</td>
 					<td style="padding:5px;text-align:left">'.$r->roll.'</td>
 					<td style="padding:5px">'.$r->g_ac.'</td>
 					<td style="padding:5px">'.$r->rct.'</td>
@@ -2319,11 +2467,11 @@ class Master extends CI_Controller
 		$html = '';
 
 		if($this->cart->total_items() != 0){
-			$html .='<table class="list-table" style="font-weight:bold;text-align:center;margin:15px 0;border-color:#ccc" border="1">
-			<tr>
-				<td style="padding:5px">No.</td>
-				<td style="padding:5px">Roll</td>
-				<td style="padding:5px">Aksi</td>
+			$html .='<table class="list-table" style="text-align:center;margin:15px 0 5px" border="1">
+			<tr style="background:#e9e9e9">
+				<td style="font-weight:bold;padding:5px">NO.</td>
+				<td style="font-weight:bold;padding:5px">ROLL</td>
+				<td style="font-weight:bold;padding:5px">AKSI</td>
 			</tr>';
 		}
 
@@ -2331,15 +2479,15 @@ class Master extends CI_Controller
 		foreach($this->cart->contents() as $items){
 			$i++;
 			$html .='<tr>
-				<td style="padding:5px">'.$i.'</td>
-				<td style="padding:5px">'.$items['options']['roll'].'</td>
+				<td style="font-weight:bold;padding:5px">'.$i.'</td>
+				<td style="font-weight:bold;padding:5px">'.$items['options']['roll'].'</td>
 				<td style="padding:5px"><button onclick="hapusCartInputRoll('."'".$items['rowid']."'".','."'".$items['options']['i']."'".')">Batal</button></td>
 			</tr>';
 		}
 		$html .='</table>';
 
 		if($this->cart->total_items() != 0){
-			$html .='<button onclick="simpanInputRoll()">SIMPAN</button>';
+			$html .='<div style="font-size:12px;font-weight:bold;color:#000"><button onclick="simpanInputRoll()">SIMPAN</button></div>';
 		}
 		// return $html;
 		echo $html;
@@ -2605,6 +2753,8 @@ class Master extends CI_Controller
 		GROUP BY id_perusahaan,id_po,nm_ker,g_label,width");
 		if(($nm_ker != $wnmker || $g_label != $wglabel || $width != $wwidth) && $cek1->num_rows() > 0){
 				echo json_encode(array('response' => false,'msg' => 'JENIS / GSM / UKURAN SUDAH ADA!',));
+		}else if($wnmker == '' ||$wglabel == '' ||$wwidth == '' ||$etonase == '' ||$ejmlroll == '' ||$eharga == ''){
+			echo json_encode(array('response' => false,'msg' => 'TIDAK BOLEH ADA YANG KOSONG!',));
 		}else{
 			$this->m_master->editItemPO();
 			echo json_encode(array(
