@@ -26,6 +26,17 @@
 		border-radius:5px
 	}
 
+	.lbl-besar{
+		text-decoration: none;
+		padding: 5px;
+		color:#000;
+		font-weight: bold;
+	}
+
+	.lbl-besar:hover{
+		color:#000;
+	}
+
 	.ttggll, .ipt-txt {
 		background:transparent;margin:0;padding:0;border:0
 	}
@@ -331,7 +342,6 @@
 					showNotification("alert-success", "BERHASIL!!!", "top", "center", "", "");
 				}else{
 					swal(json.msg, "", "error");
-					// return;
 				}
 
 				$("#etgl-"+i).val(json.tgl).animateCss('fadeInRight');
@@ -360,9 +370,4 @@
 			}
 		});
 	}
-
-	// function NumberFormat(num) {
-	// 	return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-	// }
-
 </script>

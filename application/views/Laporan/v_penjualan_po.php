@@ -78,8 +78,8 @@
 						</div>
 
 						<!-- TAMPIL DATA FORM -->
-						<div class="ll box-form" style="overflow:auto;white-space:nowrap;">
-							<div class="box-form-cus">
+						<div class="ll box-form">
+							<div class="box-form-cus" style="overflow:auto;white-space:nowrap;">
 								<table style="width:100%" border="1">
 									<tr>
 										<td style="width:15%;padding:5px"></td>
@@ -406,7 +406,7 @@
 	}
 
 	function btnCek(id,i){
-		alert(id+' - '+i);
+		// alert(id+' - '+i);
 		$(".btn-cek").html('');
 		$(".btn-c-po").prop("disabled", true);
 		$(".btn-cek-list-" + i).html('<div class="notip">MEMUAT DATA . . .</div>');

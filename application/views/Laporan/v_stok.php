@@ -26,6 +26,17 @@
 		border-radius:5px
 	}
 
+	.lbl-besar{
+		text-decoration: none;
+		padding: 5px;
+		color:#000;
+		font-weight: bold;
+	}
+
+	.lbl-besar:hover{
+		color:#000;
+	}
+
 	.ttggll, .ipt-txt {
 		background:transparent;margin:0;padding:0;border:0
 	}
@@ -210,6 +221,19 @@
 			<div class="modal-body">
 				<div class="isi-stok-list"></div>
 				<div class="isi-stok-tuan"></div>
+			</div>
+			<div class="modal-footer"></div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="modal-qc-list" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header"></div>
+			<div class="modal-body">
+				<div class="isi-qc-terjual"></div>
+				<div class="isi-qc-edit"></div>
 			</div>
 			<div class="modal-footer"></div>
 		</div>
@@ -474,7 +498,7 @@
 		ljoint = $("#ljoint-"+i).val();
 		lket = $("#lket-"+i).val();
 		lstatus = $("#lstatus-"+i).val();
-		console.log(lroll,lnm_ker,lg_label,lwidth,lweight,ldiameter,ljoint,lket,lstatus);
+		// console.log(lroll,lnm_ker,lg_label,lwidth,lweight,ldiameter,ljoint,lket,lstatus);
 
 		$.ajax({
 			url: '<?php echo base_url('Master/editQCRoll') ?>',
@@ -499,10 +523,6 @@
 				showNotification("alert-success", "BERHASIL!!!", "top", "center", "", "");
 				$("#eket-"+i).val(json.ket).animateCss('fadeInRight');
 				$("#opt_status-"+i).val(json.status).animateCss('fadeInRight');
-				// $("#eroll-"+i).html(`<td style="padding:0 3px;border:1px solid #aaa">
-				// 	<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('${json.roll}'">
-				// 	<input class="ipt-txt" type="text" id="eroll-${i}" value="'${json.roll}" disabled style="width:100px" maxlength="14"></button>
-				// </td>`);
 		
 				// MENAMPUNG DATA LAMA
 				$("#lroll-"+i).val(json.roll);

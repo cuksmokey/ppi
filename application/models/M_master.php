@@ -907,7 +907,9 @@ class M_master extends CI_Model{
         $this->db->where('id', $_POST['id']);
         $result = $this->db->update('m_timbangan');
 
-        if(($_POST['lnm_ker'] == $_POST['nm_ker']) && ($_POST['lg_label'] == $_POST['g_label']) && ($_POST['lwidth'] == $_POST['width']) && ($_POST['lweight'] == $_POST['weight']) && ($_POST['ldiameter'] == $_POST['diameter']) && ($_POST['ljoint'] == $_POST['joint']) && ($_POST['lket'] == $_POST['ket']) && ($_POST['lstatus'] == $_POST['status'])){
+		if($_POST['edit'] == 'ListStokGudang' && ($_POST['lket'] == $_POST['ket']) && ($_POST['lstatus'] == $_POST['status'])){
+			$result = true;
+		}else if($_POST['edit'] == 'LapQC' && ($_POST['lnm_ker'] == $_POST['nm_ker']) && ($_POST['lg_label'] == $_POST['g_label']) && ($_POST['lwidth'] == $_POST['width']) && ($_POST['lweight'] == $_POST['weight']) && ($_POST['ldiameter'] == $_POST['diameter']) && ($_POST['ljoint'] == $_POST['joint']) && ($_POST['lket'] == $_POST['ket']) && ($_POST['lstatus'] == $_POST['status'])){
             $result = true;
         }else{
             $data = array(
@@ -925,7 +927,6 @@ class M_master extends CI_Model{
             );
             $result= $this->db->insert("m_roll_edit",$data);
         }
-		
 		return $result;
 	}
 

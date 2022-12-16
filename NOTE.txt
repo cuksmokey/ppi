@@ -8,6 +8,7 @@ CHANGE `level` `level` ENUM('Admin','User','SuperAdmin','QC','FG','Finance','Off
 ////////////////////////////////////
 
 TAMBAH TABLE BUAT HISTORY EDIT ROLL
+
 CREATE TABLE `db_ppi`.`m_roll_edit`(  
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `roll` VARCHAR(50),
@@ -28,6 +29,7 @@ CREATE TABLE `db_ppi`.`m_roll_edit`(
 ///////////////////////////////////
 
 TAMBAH TABLE "m_rencana_kirim"
+
 CREATE TABLE `db_ppi`.`m_rencana_kirim`(  
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `id_rk` VARCHAR(50),

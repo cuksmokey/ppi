@@ -1273,102 +1273,100 @@ class Master extends CI_Controller
 		}
 	}
 
-	function print_timbangan()
-	{
+	function print_timbangan() {
 		$id = $_GET['id'];
 		$data = $this->db->query("SELECT * FROM m_timbangan WHERE roll = '$id'")->row();
 		$data_perusahaan = $this->db->query("SELECT * FROM perusahaan limit 1")->row();
 		$html = '';
-		
-		if($data->ctk == 0){
-			$this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
-			$html .= '<h1> ' . $data_perusahaan->nama . ' </h1>  ' . $data_perusahaan->daerah . ' , Email : ' . $data_perusahaan->email . '
+		$html .= '<h1> ' . $data_perusahaan->nama . ' </h1>  ' . $data_perusahaan->daerah . ' , Email : ' . $data_perusahaan->email . '
 			<hr>
-			
 			<br><br><br>
 			<table style="margin:0;font-size:52px;width:100%" cellspacing="0" border="1">
 				<tr>
 					<td style="width:50%">QUALITY</td>
-					<td style="text-align:center">' . $data->nm_ker . '</td>
+					<td style="text-align:center">'.$data->nm_ker.'</td>
 				</tr>
 				<tr>
 					<td>GRAMMAGE</td>
-					<td style="text-align:center">' . $data->g_label . ' GSM</td>
+					<td style="text-align:center">'.$data->g_label.' GSM</td>
 				</tr>
 				<tr>
 					<td>WIDTH</td>
-					<td style="text-align:center">' . round($data->width, 2) . ' CM</td>
+					<td style="text-align:center">'.round($data->width, 2).' CM</td>
 				</tr>
 				<tr>
 					<td>DIAMETER</td>
-					<td style="text-align:center">' . $data->diameter . ' CM</td>
+					<td style="text-align:center">'.$data->diameter.' CM</td>
 				</tr>
 				<tr>
 					<td>WEIGHT</td>
-					<td style="text-align:center">' . $data->weight . ' KG</td>
+					<td style="text-align:center">'.($data->weight - $data->seset).' KG</td>
 				</tr>
 				<tr>
 					<td>JOINT</td>
-					<td style="text-align:center">' . $data->joint . '</td>
+					<td style="text-align:center">'.$data->joint.'</td>
 				</tr>
 				<tr>
 					<td>ROLL NUMBER</td>
-					<td style="text-align:center">' . $data->roll . '</td>
+					<td style="text-align:center">'.$data->roll.'</td>
 				</tr>
 			</table>';
+		
+		if($data->ctk == 0){
+			$this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
+			$this->m_fungsi->_mpdfCustom('', $html, 10, 10, 10, 'L');
+		}else if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC"){
 			$this->m_fungsi->_mpdfCustom('', $html, 10, 10, 10, 'L');
 		}else{
-			// $html.='<div style="text-align:center;font-weight:bold;font-size:40px">DATA ROLL '.$data->roll.' SUDAH PRINT LABEL. HARAP HUBUNGI QC</div>';
 			redirect(base_url("Master"));
 		}
 	}
 
-	function print_timbangan2()
-	{
+	function print_timbangan2() {
 		$id = $_GET['id'];
 		$data = $this->db->query("SELECT * FROM m_timbangan WHERE roll = '$id'")->row();
 		$html = '';
-		
-		if($data->ctk == 0){
-			$this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
-			$html .= '<br><br><br><br><br><br>
+		$html .= '<br><br><br><br><br><br>
 			<table cellspacing="0" cellpadding="5" style="font-size:37px;width:100%" border="1">
 				<tr>
 					<td>QUALITY</td>
-					<td style="text-align:center">' . $data->nm_ker . '</td>
+					<td style="text-align:center">'.$data->nm_ker.'</td>
 				</tr>
 				<tr>
 					<td>GRAMMAGE</td>
-					<td style="text-align:center">' . $data->g_label . ' GSM</td>
+					<td style="text-align:center">'.$data->g_label.' GSM</td>
 				</tr>
 				<tr>
 					<td>WIDTH</td>
-					<td style="text-align:center">' . round($data->width,2) . ' CM</td>
+					<td style="text-align:center">'.round($data->width,2).' CM</td>
 				</tr>
 				<tr>
 					<td>DIAMETER</td>
-					<td style="text-align:center">' . $data->diameter . ' CM</td>
+					<td style="text-align:center">'.$data->diameter.' CM</td>
 				</tr>
 				<tr>
 					<td>WEIGHT</td>
-					<td style="text-align:center">' . $data->weight . ' KG</td>
+					<td style="text-align:center">'.($data->weight - $data->seset).' KG</td>
 				</tr>
 				<tr>
 					<td>JOINT</td>
-					<td style="text-align:center">' . $data->joint . '</td>
+					<td style="text-align:center">'.$data->joint.'</td>
 				</tr>
 				<tr>
 					<td>ROLL NUMBER</td>
-					<td style="text-align:center">' . $data->roll . '</td>
+					<td style="text-align:center">'.$data->roll.'</td>
 				</tr>
 				<tr>
 			</table>';
+		
+		if($data->ctk == 0){
+			$this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
+			$this->m_fungsi->_mpdf('', $html, 10, 10, 10, 'P');
+		}else if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level')){
+			$this->m_fungsi->_mpdf('', $html, 10, 10, 10, 'P');
 		}else{
-			// $html.='<div style="text-align:center;font-weight:bold;font-size:40px">DATA ROLL '.$data->roll.' SUDAH PRINT LABEL. HARAP HUBUNGI QC</div>';
 			redirect(base_url("Master"));
 		}
-
-		$this->m_fungsi->_mpdf('', $html, 10, 10, 10, 'P');
 	}
 
 	function print_pl()
@@ -2569,9 +2567,9 @@ class Master extends CI_Controller
 		}
 
 		// CEK PO APA MASIH ADA YANG PAKAI CUSTOMER LAIN
+		$fnopo = $_POST['fno_po'];
+		$cek = $this->db->query("SELECT*FROM po_master WHERE no_po='$fnopo' GROUP BY no_po");
 		if($_POST['option'] == 'update'){ // UPDATE
-			$fnopo = $_POST['fno_po'];
-			$cek = $this->db->query("SELECT*FROM po_master WHERE no_po='$fnopo' GROUP BY no_po");
 			if(($_POST['fno_po'] != $_POST['lno_po']) && $cek->num_rows() > 0){
 				echo json_encode(array('response' => false, 'msg' => 'NO. PO SUDAH TERPAKAI CUSTOMER LAIN!'));
 			}else{
@@ -2579,8 +2577,12 @@ class Master extends CI_Controller
 				echo json_encode(array('response' => true, 'msg' => 'BERHASIL EDIT PO!'));
 			}
 		}else{ // SIMPAN
-			$this->m_master->simpanCartPO($idpo);
-			echo json_encode(array('response' => true, 'msg' => 'BERHASIL EDIT PO!'));
+			if($cek->num_rows() > 0){
+				echo json_encode(array('response' => false, 'msg' => 'NO. PO SUDAH TERPAKAI CUSTOMER LAIN!'));
+			}else{
+				$this->m_master->simpanCartPO($idpo);
+				echo json_encode(array('response' => true, 'msg' => 'BERHASIL SIMPAN PO!'));
+			}
 		}
 
 	}

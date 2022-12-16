@@ -5332,13 +5332,16 @@ class Laporan extends CI_Controller {
             }else{
                 $Btgl = "tgl BETWEEN '2020-04-01' AND '9999-01-01'";
             }
+
+			// DATA INTI DARI SEGALA INTI
             $getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
             WHERE $Btgl $statusIdPl $where
             GROUP BY nm_ker");
 
-            $html .='<tr>
-            <td style="padding:5px;font-weight:bold" rowspan="2">No.</td>
-            <td style="padding:5px;font-weight:bold" rowspan="2">Ukuran</td>';
+			// GET SEMUA KOP JENIS
+            $html .='<tr style="background:#e9e9e9">
+            <td style="padding:5px;font-weight:bold" rowspan="2">NO.</td>
+            <td style="padding:5px;font-weight:bold" rowspan="2">UKURAN</td>';
             foreach($getLabel->result() as $lbl){
                 $getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
                 WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl
@@ -5347,21 +5350,22 @@ class Laporan extends CI_Controller {
             }
             $html .='</tr>';
             
+			// GET SEMUA KOP GRAMATURE
             $html .='<tr>';
             foreach($getLabel->result() as $lbl){
                 $getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
                 WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl
                 GROUP BY nm_ker,g_label");
                 foreach($getGsm->result() as $gsm){
-                    $html .='<td style="padding:5px;font-weight:bold">'.$gsm->g_label.'</td>';
+                    $html .='<td style="padding:5px;background:#e9e9e9;font-weight:bold">'.$gsm->g_label.'</td>';
                 }
             }
             $html .='</tr>';
 
+			// TAMPIL SEMUA DATA UKURAN
             $getWidth = $this->db->query("SELECT width FROM m_timbangan
             WHERE $Btgl $statusIdPl $where
-            -- AND width BETWEEN '155' AND '210' # TESTING STOK
-            -- AND width BETWEEN '160' AND '215' # TESTING BUFFER
+            -- AND width BETWEEN '110' AND '130' # TESTING
             GROUP BY width");
             $i = 0;
             foreach($getWidth->result() as $width){
@@ -5402,6 +5406,23 @@ class Laporan extends CI_Controller {
                 }
             }
             $html .='</tr>';
+			// TOTAL SEMUANYA PER GRAMATURE
+			$html .='<tr style="background:#e9e9e9">
+				<td style="padding:5px;font-weight:bold" colspan="2">TOTAL</td>';
+				foreach($getLabel->result() as $lbl){
+					$getGsm = $this->db->query("SELECT nm_ker,g_label,COUNT(width) AS totjmlroll FROM m_timbangan
+					WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl
+					GROUP BY nm_ker,g_label");
+					foreach($getGsm->result() as $s){
+						if($s->totjmlroll == 0){
+							$totot = 0;
+						}else{
+							$totot = $s->totjmlroll;
+						}
+						$html .='<td style="padding:5px;font-weight:bold">'.number_format($totot).'</td>';
+					}
+				}
+			$html .='</tr>';
         }
 		$html .='</table>';
 
@@ -5554,20 +5575,20 @@ class Laporan extends CI_Controller {
 		}else if($getRoll->num_rows() == 0){
             $html .='<tr><td style="font-weight:bold;text-align:center">DATA TIDAK DITEMUKAN...</td></tr>';
 		}else{
-			$html .='<tr>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">TANGGAL</th>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">ROLL</th>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">BW</th>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">RCT</th>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">BI</th>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">JENIS</th>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">GSM</th>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">UK</th>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">CM</th>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">BERAT</th>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">J</th>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">KETERANGAN</th>
-				<th style="padding:6px;border:1px solid #aaa;font-weight:bold;text-align:center">STATUS</th>
+			$html .='<tr style="background:#e9e9e9">
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">TANGGAL</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">ROLL</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">BW</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">RCT</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">BI</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">JENIS</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">GSM</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">UK</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">CM</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">BERAT</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">J</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">KETERANGAN</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">STATUS</th>
 			</tr>';
 			foreach($getRoll->result() as $roll){
                 // TAMPILKAN EDIT
@@ -5634,11 +5655,11 @@ class Laporan extends CI_Controller {
                 <input type="hidden" id="lstatus-'.$i.'" value="'.$roll->status.'">
                 ';
 				$html .='<tr class="'.$bgStt.'">
-					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<input class="ttggll" type="date" id="etgl-'.$i.'" value="'.$roll->tgl.'" '.$diss.' style="width:85px">'.$cBtn.'</td>
-					<td style="padding:0 3px;border:1px solid #aaa">'.$oBre.''.$oBtn.'<input class="ipt-txt" type="text" id="eroll-'.$i.'" value="'.$roll->roll.'" disabled style="width:100px" maxlength="14">'.$cBtn.''.$cBre.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_ac-'.$i.'" value="'.$roll->g_ac.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="erct-'.$i.'" value="'.$roll->rct.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>';
+					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<input class="ttggll" type="date" id="etgl-'.$i.'" value="'.$roll->tgl.'" '.$diss.' style="width:85px">'.$cBtn.'</td>
+					<td style="padding:0 3px;border:1px solid #999">'.$oBre.''.$oBtn.'<input class="ipt-txt" type="text" id="eroll-'.$i.'" value="'.$roll->roll.'" disabled style="width:100px" maxlength="14">'.$cBtn.''.$cBre.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_ac-'.$i.'" value="'.$roll->g_ac.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="erct-'.$i.'" value="'.$roll->rct.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>';
                 
                 // PLH JENIS KERTAS
                 if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
@@ -5655,7 +5676,7 @@ class Laporan extends CI_Controller {
                         <option value="MH COLOR">MH COLOR</option>
                     </select>';
                 }
-                $html .= '<td style="border:1px solid #aaa;text-align:center">'.$oBtn.''.$optKer.''.$cBtn.'</td>';
+                $html .= '<td style="border:1px solid #999;text-align:center">'.$oBtn.''.$optKer.''.$cBtn.'</td>';
                 
                 // khusus ket dan status
                 if($otori == 'user' || ($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
@@ -5663,16 +5684,16 @@ class Laporan extends CI_Controller {
                 }else{
                     $fgdiss = '';
                 }
-                $html .='<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_label-'.$i.'" value="'.$roll->g_label.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ewidth-'.$i.'" value="'.round($roll->width,2).'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ediameter-'.$i.'" value="'.$roll->diameter.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="eweight-'.$i.'" value="'.$roll->weight.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" onkeypress="return hanyaAngka(event)" maxlength="5" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #aaa">'.$oBtn.'<input class="ipt-txt" type="text" id="ejoint-'.$i.'" value="'.$roll->joint.'" '.$diss.' onkeypress="return aK(event)" maxlength="2" onkeypress="return hanyaAngka(event)" maxlength="3" style="width:30px;text-align:center">'.$cBtn.'</td>
-					<td style="padding:0 3px;border:1px solid #aaa">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$fgdiss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
+                $html .='<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_label-'.$i.'" value="'.$roll->g_label.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ewidth-'.$i.'" value="'.round($roll->width,2).'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ediameter-'.$i.'" value="'.$roll->diameter.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eweight-'.$i.'" value="'.$roll->weight.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" onkeypress="return hanyaAngka(event)" maxlength="5" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ejoint-'.$i.'" value="'.$roll->joint.'" '.$diss.' onkeypress="return aK(event)" maxlength="2" onkeypress="return hanyaAngka(event)" maxlength="3" style="width:30px;text-align:center">'.$cBtn.'</td>
+					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$fgdiss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
 
                     // PILIH STATUS
                     if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
-                        $html .='<td style="border:1px solid #aaa;text-align:center">'.$oBtn.'TERJUAL'.$cBtn.'</td>';
+                        $html .='<td style="border:1px solid #999;text-align:center">'.$oBtn.'TERJUAL'.$cBtn.'</td>';
                     }else{
                         if($roll->status == 0 && $roll->id_pl == 0){
                             $oStt = 0;
@@ -5694,7 +5715,7 @@ class Laporan extends CI_Controller {
                             <option value="2">PPI</option>
                             <option value="3">BUFFER</option>
                         </select>';
-                        $html .='<td style="border:1px solid #aaa;text-align:center">'.$opt.'</td>';
+                        $html .='<td style="border:1px solid #999;text-align:center">'.$opt.'</td>';
                         
                         // TOMBOL EDIT
                         if($otori == 'user'){
@@ -5796,25 +5817,60 @@ class Laporan extends CI_Controller {
         $getData = $this->db->query("SELECT*FROM m_roll_edit
         WHERE roll='$roll'");
         $i = 0;
+		$html .='<tr>
+			<td style="padding:5px">no</td>
+			<td style="padding:5px">roll</td>
+			<td style="padding:5px">nm_ker</td>
+			<td style="padding:5px">g_label</td>
+			<td style="padding:5px">width</td>
+			<td style="padding:5px">diameter</td>
+			<td style="padding:5px">weight</td>
+			<td style="padding:5px">joint</td>
+			<td style="padding:5px">ket</td>
+			<td style="padding:5px">seset</td>
+			<td style="padding:5px">status</td>
+			<td style="padding:5px">edited_at</td>
+			<td style="padding:5px">edited_by</td>
+		</tr>';
         foreach($getData->result() as $ser){
             $i++;
-            // roll            nm_ker  g_label  width   diameter  weight   joint  ket             seset  status
+			if($ser->status == 0){
+				$stt = 'STOK';
+			}else if($ser->status == 2){
+				$stt = 'PPI';
+			}else if($ser->status == 3){
+				$stt = 'BUFFER';
+			}else{
+				$stt = 'STOK';
+			}
             $html .='<tr>
                 <td style="padding:5px">'.$i.'</td>
                 <td style="padding:5px">'.$ser->roll.'</td>
                 <td style="padding:5px">'.$ser->nm_ker.'</td>
                 <td style="padding:5px">'.$ser->g_label.'</td>
-                <td style="padding:5px">'.$ser->width.'</td>
+                <td style="padding:5px">'.round($ser->width,2).'</td>
                 <td style="padding:5px">'.$ser->diameter.'</td>
                 <td style="padding:5px">'.$ser->weight.'</td>
                 <td style="padding:5px">'.$ser->joint.'</td>
                 <td style="padding:5px">'.$ser->ket.'</td>
-                <td style="padding:5px">'.$ser->status.'</td>
+                <td style="padding:5px">'.$ser->seset.'</td>
+                <td style="padding:5px">'.$stt.'</td>
                 <td style="padding:5px">'.$ser->edited_at.'</td>
                 <td style="padding:5px">'.$ser->edited_by.'</td>
             </tr>';
         }
         $html .='</table>';
+
+		if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC"){
+			$print = base_url("Master/print_timbangan?id=").$roll;
+			$print2 = base_url("Master/print_timbangan2?id=").$roll;
+			$html .='<div style="margin-top:15px;color:#000;font-size:12px">
+				PRINT LABEL :
+				<a type="button" href="'.$print.'" target="_blank" class="lbl-besar">LABEL BESAR</a> - 
+				<a type="button" href="'.$print2.'" target="_blank" class="lbl-besar">LABEL KECIL</a>
+			</div>';
+		}
+		
 
         echo $html;
     }
