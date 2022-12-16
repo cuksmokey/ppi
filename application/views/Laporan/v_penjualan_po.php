@@ -405,6 +405,61 @@
 		})
 	}
 
+	function hapusPO(id,id_po,no_po,i){
+		// alert(id+' - '+id_po+' - '+no_po+' - '+i)
+		swal({
+			title: "Apakah Anda Yakin ?",
+			text: no_po,
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-danger",
+			confirmButtonText: "Ya",
+			cancelButtonText: "Batal",
+			closeOnConfirm: false,
+			closeOnCancel: false
+		},
+		function(isConfirm) {
+			if (isConfirm) {
+				$.ajax({
+					url: '<?php echo base_url('Master/hapusPO')?>',
+					type: "POST",
+					data: ({
+						id,id_po,no_po,i
+					}),
+					success: function(json){
+						data = JSON.parse(json);
+						if(data.res){
+							swal(data.msg, "", "success");
+							kosong();
+						}else{
+							swal(data.msg, "", "error");
+						}
+					}
+				});
+			}else{
+				swal("BATAL DIHAPUS!", "", "error");
+			}
+		});
+	}
+
+	function closePO(id,id_po,no_po,i){
+		alert(id+' - '+id_po+' - '+no_po+' - '+i)
+		$.ajax({
+			url: '<?php echo base_url('Master/closePO')?>',
+			type: "POST",
+			data: ({
+				id,id_po,no_po,i
+			}),
+			success: function(json){
+				data = JSON.parse(json);
+				if(data.res){
+					swal(data.msg, "", "success");
+					kosong();
+				}
+			}
+		})
+	}
+
 	function btnCek(id,i){
 		// alert(id+' - '+i);
 		$(".btn-cek").html('');

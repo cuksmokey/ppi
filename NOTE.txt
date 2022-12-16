@@ -2,6 +2,7 @@ PENAMBAHAN LEVEL DI TABLE USER LEVEL "QC , FG, Rewind1, Rewind2"
 user > user
 developer > developer
 admin > 123
+
 ALTER TABLE `db_ppi`.`user`
 CHANGE `level` `level` ENUM('Admin','User','SuperAdmin','QC','FG','Finance','Office','Rewind1','Rewind2') CHARSET latin1 COLLATE latin1_swedish_ci NULL;
 

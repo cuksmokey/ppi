@@ -3051,22 +3051,32 @@ class Master extends CI_Controller
 		$li = $_POST['i'];
 		$html = '';
 
-		$getData = $this->db->query("SELECT id_po,no_po,status FROM po_master
+		$getData = $this->db->query("SELECT id_po,no_po,status,pajak FROM po_master
 		WHERE id_perusahaan='$id' AND status='open'
-		GROUP BY id_po,no_po,status");
+		GROUP BY id_po,no_po,status,pajak");
 		$i =0;
 		$html .='<div style="overflow:auto;white-space:nowrap">';
 		foreach($getData->result() as $r){
 			$i++;
+			// CEK JIKA ADA PACKINGLIST OK
+			$cek = $this->db->query("SELECT*FROM pl a
+			INNER JOIN m_timbangan m ON a.id=m.id_pl
+			WHERE a.id_perusahaan='$id' AND a.no_po='$r->no_po' AND qc='ok'
+			GROUP BY a.id_perusahaan,a.no_po");
+			if($cek->num_rows() == 0){
+				$aksi = '<button onclick="hapusPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">hapus</button>';
+			}else{
+				$aksi = '<button onclick="closePO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">close</button>';
+			}
 			$html .='<table style="font-size:12px;color:#000">
 				<tr class="ll-tr">
 					<td style="padding:5px">-</td>
+					<td style="padding:5px"><button disabled>'.$r->pajak.'</button></td>
 					<td style="padding:5px">'.$r->no_po.'</td>
 					<td style="padding:5px">
 						<button class="btn-c-po" onclick="btnOpen('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">'.$r->status.'</button>
 						<button class="btn-c-po" onclick="editPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">edit</button>
-						<button disabled onclick="hapusPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">hapus</button>
-						<button disabled onclick="closePO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">close</button>
+						'.$aksi.'
 					</td>
 				</tr>
 			</table>';
@@ -3077,6 +3087,28 @@ class Master extends CI_Controller
 		$html .='</div>';
 
 		echo $html;
+	}
+
+	function hapusPO(){
+		// 3 - 40 - TESTPO/NON/PPN - 1
+		$id = $_POST['id'];
+		$no_po = $_POST['no_po'];
+		// CEK LAGI PO NYA
+		$cek = $this->db->query("SELECT*FROM pl a
+		INNER JOIN m_timbangan m ON a.id=m.id_pl
+		WHERE a.id_perusahaan='$id' AND a.no_po='$no_po' AND qc='ok'
+		GROUP BY a.id_perusahaan,a.no_po");
+		if($cek->num_rows() == 0){
+			$this->m_master->hapusPO();
+			echo json_encode(array('res' => true, 'msg' => 'BERHASIL HAPUS PO!'));
+		}else{
+			echo json_encode(array('res' => false, 'msg' => 'GAGAL HAPUS PO!'));
+		}
+	}
+
+	function closePO() {
+		$return = $this->m_master->closePO();
+		echo json_encode(array('res' => $return, 'msg' => $_POST['no_po'].' BERHASIL DI CLOSE!'));
 	}
 
 	// function btnOpenShow(){ // btn-open-list-

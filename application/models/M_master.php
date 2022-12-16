@@ -883,6 +883,24 @@ class M_master extends CI_Model{
         return $result;
     }
 
+    function hapusPO(){
+        $id = $_POST['id'];
+        $id_po = $_POST['id_po'];
+        $no_po = $_POST['no_po'];
+        return $this->db->query("DELETE FROM po_master WHERE id_perusahaan='$id' AND id_po='$id_po' AND no_po='$no_po'");
+    }
+
+    function closePO(){
+        $id = $_POST['id'];
+        $id_po = $_POST['id_po'];
+        $no_po = $_POST['no_po'];
+        $this->db->set('status', 'close');
+        $this->db->where('id_perusahaan', $id);
+        $this->db->where('id_po', $id_po);
+        $this->db->where('no_po', $no_po);
+        return $this->db->update('po_master');
+    }
+
 	function updateQCRoll(){
         if($_POST['edit'] == 'ListStokGudang'){
             $this->db->set('ket', $_POST['ket']);
