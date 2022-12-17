@@ -1220,6 +1220,84 @@ class Master extends CI_Controller
 		}
 	}
 
+	function loadAllOutstandingPO(){
+		$html = '';
+
+		$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,m.*FROM po_master m INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id WHERE m.status='open' GROUP BY id_perusahaan,STATUS ORDER BY pt.pimpinan,pt.nm_perusahaan");
+		$html .='<div style="overflow:auto;white-space:nowrap;"><table style="font-size:12px;color:#000" border="1">';
+		$html .='<tr style="background:#e9e9e9;text-align:center">
+			<td style="padding:5px;font-weight:bold">NO</td>
+			<td style="padding:5px;font-weight:bold">CUSTOMER</td>
+			<td style="padding:5px;font-weight:bold">SISA PO</td>
+			<td style="padding:5px;font-weight:bold">KIRIMAN</td>
+			<td style="padding:5px;font-weight:bold">- / +</td>
+		</tr>';
+		$i = 0;
+		$sumoPO = 0;
+		$sumoKIR = 0;
+		foreach($getData->result() as $r){
+			$i++;
+			if($r->pimpinan == '-' || $r->pimpinan == ''){
+				$nama = '';
+			}else{
+				$nama = $r->pimpinan.' - ';
+			}
+			if($r->nm_perusahaan == '-' || $r->nm_perusahaan == ''){
+				$nmpt = '';
+			}else{
+				$nmpt = $r->nm_perusahaan;
+			}
+			$html .='<tr>
+				<td style="padding:5px;text-align:center">'.$i.'</td>
+				<td style="padding:5px">'.$r->id_perusahaan.' - '.$nama.$nmpt.'</td>';
+				
+				// SISA PO
+				$getTotPO = $this->db->query("SELECT SUM(tonase) AS toton,m.* FROM po_master m
+				WHERE id_perusahaan='$r->id_perusahaan' AND STATUS='open'
+				GROUP BY id_perusahaan");
+				$html .='<td style="padding:5px;text-align:right">'.number_format($getTotPO->row()->toton).'</td>';
+
+				// TOTAL KIRIMAN
+				$po = $this->db->query("SELECT * FROM po_master m
+				WHERE id_perusahaan='$r->id_perusahaan' AND STATUS='open'
+				GROUP BY id_perusahaan,id_po,no_po");
+				$totkir = 0;
+				foreach($po->result() as $p){
+					$plroll = $this->db->query("SELECT SUM(m.weight - m.seset) plroll FROM pl p
+					INNER JOIN m_timbangan m ON p.id=m.id_pl
+					WHERE p.no_po='$p->no_po' AND qc='ok'
+					GROUP BY p.no_po");
+					if($plroll->num_rows() == 0){
+						$totBerat = 0;
+					}else{
+						$totBerat = $plroll->row()->plroll;
+					}
+					$totkir += $totBerat;
+				}
+				$html .='<td style="padding:5px;text-align:right">'.number_format($totkir).'</td>';
+
+				// - / +
+				$selisih = $totkir - $getTotPO->row()->toton;
+				$html .='<td style="padding:5px;text-align:right">'.number_format($selisih).'</td>';
+			$html .='</tr>';
+
+			//
+			$sumoPO += $getTotPO->row()->toton;
+			$sumoKIR += $totkir;
+		}
+		// TOTAL
+		$sumselisih = $sumoKIR - $sumoPO;
+		$html .='<tr style="background:#e9e9e9;font-weight:bold;text-align:center">
+			<td style="padding:5px" colspan="2">TOTAL</td>
+			<td style="padding:5px">'.number_format($sumoPO).'</td>
+			<td style="padding:5px">'.number_format($sumoKIR).'</td>
+			<td style="padding:5px">'.number_format($sumselisih).'</td>
+		</tr>';
+		$html .='</table></div>';
+
+		echo $html;
+	}
+
 	function editQCRoll(){
 		$id = $_POST['id'];
 
@@ -3064,9 +3142,9 @@ class Master extends CI_Controller
 			WHERE a.id_perusahaan='$id' AND a.no_po='$r->no_po' AND qc='ok'
 			GROUP BY a.id_perusahaan,a.no_po");
 			if($cek->num_rows() == 0){
-				$aksi = '<button onclick="hapusPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">hapus</button>';
+				$aksi = '<button class="btn-c-po" onclick="hapusPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">hapus</button>';
 			}else{
-				$aksi = '<button onclick="closePO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">close</button>';
+				$aksi = '<button class="btn-c-po" onclick="closePO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">close</button>';
 			}
 			$html .='<table style="font-size:12px;color:#000">
 				<tr class="ll-tr">

@@ -58,8 +58,13 @@
 					</div>
 
 					<div class="body">
-						<button class="btn-c-po" onclick="add_box()">ADD</button>
+						<div style="font-size:12px;color:#000">
+							<button class="btn-c-po" onclick="add_box('add')">ADD</button>
+							<button class="btn-c-po" onclick="add_box('close')">LIST CLOSE PO</button>
+							<button class="btn-c-po" onclick="add_box('routpo')">REKAP OUTSTANDING PO</button>
+						</div>
 
+						<!-- FORM PENCARIAN -->
 						<div class="table-cari" style="margin-top:15px">
 							<table style="width:100%">
 								<tr>
@@ -70,6 +75,12 @@
 								</tr>
 							</table>
 						</div>
+
+						<!-- TAMPIL DATA CLOSE PO -->
+						<div class="ll box-close-po"></div>
+
+						<!-- TAMPIL ALL DATA OUTSTANDING PO -->
+						<div class="ll box-outstanding-po"></div>
 
 						<!-- TAMPIL DATA LIST -->
 						<div class="ll box-data">
@@ -273,6 +284,8 @@
 
 		$(".cart-po").html('');
 		$(".show-items-po").html('');
+		$(".box-close-po").hide().html('');
+		$(".box-outstanding-po").hide().html('');
 		$(".cart-po").load("<?php echo base_url('Master/dessCartPO') ?>");
 	}
 
@@ -369,14 +382,50 @@
 		$("#ftelp").val(data[0].no_telp);
 	});
 
-	function add_box(){
-		$(".box-data-cek").html('');
-		kosong();
-		$(".table-cari").hide();
-		$(".box-data").hide();
-		$(".box-form").show();
-		$(".box-form-cus").show();
-		$(".box-form-po").show();
+	function add_box(opsi){
+		// add close routpo
+		// box-close-po
+		// box-outstanding-po
+		if(opsi == 'add'){
+			$(".box-data-cek").html('');
+			kosong();
+			$(".table-cari").hide();
+			$(".box-data").hide();
+			$(".box-form").show();
+			$(".box-form-cus").show();
+			$(".box-form-po").show();
+			$(".box-outstanding-po").hide();
+			$(".box-close-po").hide();
+		}else if(opsi == 'close'){
+			kosong();
+			// table-cari
+			$(".table-cari").hide();
+			$(".box-data").hide();
+			$(".box-form").hide();
+			$(".box-outstanding-po").hide();
+			$(".box-close-po").show().html('close');
+		}else if(opsi == 'routpo'){
+			kosong();
+			$(".table-cari").hide();
+			$(".box-data").hide();
+			$(".box-form").hide();
+			$(".box-close-po").hide();
+			$(".box-outstanding-po").show();
+			loadAllOutstandingPO();
+		}
+	}
+
+	function loadAllOutstandingPO(){
+		$(".box-outstanding-po").html('Memuat data . . .');
+		$.ajax({
+			url: '<?php echo base_url('Master/loadAllOutstandingPO')?>',
+			type: "POST",
+			// data: ({
+			// }),
+			success: function(res){
+				$(".box-outstanding-po").html(res);
+			}
+		})
 	}
 
 	function caripo(){
@@ -443,21 +492,38 @@
 	}
 
 	function closePO(id,id_po,no_po,i){
-		alert(id+' - '+id_po+' - '+no_po+' - '+i)
-		$.ajax({
-			url: '<?php echo base_url('Master/closePO')?>',
-			type: "POST",
-			data: ({
-				id,id_po,no_po,i
-			}),
-			success: function(json){
-				data = JSON.parse(json);
-				if(data.res){
-					swal(data.msg, "", "success");
-					kosong();
-				}
+		// alert(id+' - '+id_po+' - '+no_po+' - '+i)
+		swal({
+			title: "Apakah Anda Yakin ?",
+			text: no_po,
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-danger",
+			confirmButtonText: "Ya",
+			cancelButtonText: "Batal",
+			closeOnConfirm: false,
+			closeOnCancel: false
+		},
+		function(isConfirm) {
+			if (isConfirm) {
+				$.ajax({
+					url: '<?php echo base_url('Master/closePO')?>',
+					type: "POST",
+					data: ({
+						id,id_po,no_po,i
+					}),
+					success: function(json){
+						data = JSON.parse(json);
+						if(data.res){
+							swal(data.msg, "", "success");
+							kosong();
+						}
+					}
+				});
+			}else{
+				swal("BATAL CLOSE!", "", "error");
 			}
-		})
+		});
 	}
 
 	function btnCek(id,i){
