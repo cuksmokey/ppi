@@ -59,12 +59,13 @@
 
 					<div class="body">
 						<div style="font-size:12px;color:#000">
-							<button class="btn-c-po" onclick="add_box('add')">ADD</button>
-							<button class="btn-c-po" onclick="add_box('close')">LIST CLOSE PO</button>
+							<button class="btn-c-po" onclick="add_box('open')">OPEN PO</button>
+							<button class="btn-c-po" onclick="add_box('close')">CLOSE PO</button>
 							<button class="btn-c-po" onclick="add_box('routpo')">REKAP OUTSTANDING PO</button>
 						</div>
 
 						<!-- FORM PENCARIAN -->
+						<input type="hidden" id="pilihan-cari" value="">
 						<div class="table-cari" style="margin-top:15px">
 							<table style="width:100%">
 								<tr>
@@ -84,6 +85,9 @@
 
 						<!-- TAMPIL DATA LIST -->
 						<div class="ll box-data">
+							<div style="margin:0 5px 10px;font-size:12px;color:#000">
+								<button class="btn-c-po" onclick="add_box('add')">ADD</button>
+							</div>
 							<div class="box-data-cek"></div>
 							<div class="box-data-list"></div>
 						</div>
@@ -216,7 +220,7 @@
 							<div class="show-items-po"></div>
 
 							<div class="ll">
-								<button onclick="kosong()">BACK</button>
+								<button onclick="back()">BACK</button>
 								<button onclick="simpanCart()">SIMPAN</button>
 							</div>
 						</div>
@@ -244,8 +248,6 @@
 
 	$(document).ready(function(){
 		$(".cart-po").load("<?php echo base_url('Master/dessCartPO') ?>");
-		$(".box-data").show();
-		$(".box-form").hide();
 		kosong();
 		// load_pt();
 	});
@@ -269,13 +271,15 @@
 		$("#fjmlroll").val("");
 		$("#ftonase").val("");
 		$("#fharga").val("");
-		$(".box-data").show();
+		$(".box-data").hide();
 		$(".box-form").hide(); 
 		$("#fkepada").val("").prop('disabled', false);
 
-		$(".table-cari").show();
+		$(".table-cari").hide();
+		$("#cari_po").val("");
+		$("#pilihan-cari").val('open');
 		load_pt();
-		load_data('');
+		// load_data('open','');
 		option = 'new';
 		
 		// $("#update-idpt").val("");
@@ -287,6 +291,12 @@
 		$(".box-close-po").hide().html('');
 		$(".box-outstanding-po").hide().html('');
 		$(".cart-po").load("<?php echo base_url('Master/dessCartPO') ?>");
+	}
+
+	function back(){
+		kosong();
+		$(".table-cari").show();
+		load_data('open','');
 	}
 
 	$("#fjenis").on({
@@ -383,9 +393,6 @@
 	});
 
 	function add_box(opsi){
-		// add close routpo
-		// box-close-po
-		// box-outstanding-po
 		if(opsi == 'add'){
 			$(".box-data-cek").html('');
 			kosong();
@@ -396,14 +403,22 @@
 			$(".box-form-po").show();
 			$(".box-outstanding-po").hide();
 			$(".box-close-po").hide();
-		}else if(opsi == 'close'){
-			kosong();
-			// table-cari
-			$(".table-cari").hide();
-			$(".box-data").hide();
-			$(".box-form").hide();
+		}else if(opsi == 'open'){
+			$("#cari_po").val("");
+			$(".table-cari").show();
+			$("#pilihan-cari").val(opsi);
+			load_data(opsi,'');
+			$(".box-data").show();
 			$(".box-outstanding-po").hide();
-			$(".box-close-po").show().html('close');
+			$(".box-close-po").hide();
+		}else if(opsi == 'close'){
+			$("#cari_po").val("");
+			$(".table-cari").show();
+			$("#pilihan-cari").val(opsi);
+			load_data(opsi,'');
+			$(".box-data").hide();
+			$(".box-outstanding-po").hide();
+			$(".box-close-po").show();
 		}else if(opsi == 'routpo'){
 			kosong();
 			$(".table-cari").hide();
@@ -430,25 +445,34 @@
 
 	function caripo(){
 		cari = $("#cari_po").val();
-		load_data(cari);
+		plh = $("#pilihan-cari").val();
+		load_data(plh,cari);
 	}
 
 	//
 
-	function load_data(caripo){
+	function load_data(opsi,caripo){
 		// alert(caripo)
-		$(".box-data-list").html('MEMUAT DATA');
+		if(opsi == 'open'){
+			box = '.box-data-list';
+		}else{
+			box = '.box-close-po';
+		}
+		$(box).html('<div style="margin:5px">Memuat Data . . .</div>');
 		$.ajax({
 			url: '<?php echo base_url('Master/loadDataPO')?>',
 			type: "POST",
 			data: ({
+				opsi: opsi,
 				caripo: caripo,
 			}),
 			success: function(response){
-				if(response){
+				if(opsi == 'open'){
+					$(".box-close-po").html('');
 					$(".box-data-list").html(response);
 				}else{
-					$(".box-data-list").html('TIDAK DITEMUKAN DATA');
+					$(".box-data-list").html('');
+					$(".box-close-po").html(response);
 				}
 			}
 		})
@@ -526,7 +550,7 @@
 		});
 	}
 
-	function btnCek(id,i){
+	function btnCek(id,opsi,i){
 		// alert(id+' - '+i);
 		$(".btn-cek").html('');
 		$(".btn-c-po").prop("disabled", true);
@@ -536,7 +560,7 @@
 			type: "POST",
 			data: ({
 				id: id,
-				// opsi: opsi,
+				opsi: opsi,
 				i: i,
 			}),
 			success: function(response){
@@ -550,7 +574,7 @@
 		})
 	}
 
-	function btnCekRekap(id,i){
+	function btnCekRekap(id,opsi,i){
 		$(".btn-c-po").prop("disabled", true);
 		$(".btn-cek-list-rekap-" + i).html('<div class="notip">MEMUAT DATA . . .</div>');
 		$.ajax({
@@ -558,6 +582,7 @@
 			type: "POST",
 			data: ({
 				id: id,
+				opsi: opsi,
 			}),
 			success: function(response){
 				$(".btn-cek-list-rekap-" + i).html(response);
@@ -566,7 +591,7 @@
 		})
 	}
 
-	function btnOpen(id,id_po,no_po,i){
+	function btnOpen(id,id_po,no_po,opsi,i){
 		// alert(id+' - '+id_po+' - '+no_po+' - '+i)
 		$(".btn-c-po").prop("disabled", true);
 		$(".ll-open").html('');
@@ -577,18 +602,14 @@
 			data: ({
 				id: id,
 				id_po: id_po,
-				// no_po: no_po,
+				no_po: no_po,
+				opsi: opsi,
 				// i: i,
 				ctk: 0,
 			}),
 			success: function(response){
-				if(response){
-					$(".btn-open-list-" + i).html(response);
-					// $(".btn-c-po").prop("disabled", false).removeAttr( "style");
-					$(".btn-c-po").prop("disabled", false);
-				}else{
-					$(".btn-open-list-" + i).html('not');
-				}
+				$(".btn-open-list-" + i).html(response);
+				$(".btn-c-po").prop("disabled", false);
 			}
 		})
 	}

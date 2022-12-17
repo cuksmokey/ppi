@@ -1249,7 +1249,7 @@ class Master extends CI_Controller
 			}
 			$html .='<tr>
 				<td style="padding:5px;text-align:center">'.$i.'</td>
-				<td style="padding:5px">'.$r->id_perusahaan.' - '.$nama.$nmpt.'</td>';
+				<td style="padding:5px">'.$nama.$nmpt.'</td>';
 				
 				// SISA PO
 				$getTotPO = $this->db->query("SELECT SUM(tonase) AS toton,m.* FROM po_master m
@@ -1646,6 +1646,15 @@ class Master extends CI_Controller
 			$i = 0;
 			foreach($getData->result() as $r){
 				$i++;
+				if($r->nama != '-' && $r->nm_perusahaan == '-'){
+					$nama = $r->nama;
+				}else if($r->nama == '-' && $r->nm_perusahaan != '-'){
+					$nama = $r->nm_perusahaan;
+				}else if($r->nama != '-' && $r->nm_perusahaan != '-'){
+					$nama = $r->nama.' - '.$r->nm_perusahaan;
+				}else{
+					$nama = '';
+				}
 
 				// KALAU BELUM ADA ISI RENCANA KIRIM
 				if($r->id_rk == null || $r->id_rk == ''){
@@ -1661,7 +1670,7 @@ class Master extends CI_Controller
 						<button onclick="editPL('."'".$r->id_perusahaan."'".','."'".$r->tgl_pl."'".','."'".$r->opl."'".','."'".$i."'".')">EDIT</button>
 					</td>
 					<td style="padding:5px">'.$i.'</td>
-					<td style="padding:5px">'.$r->nm_perusahaan.'</td>
+					<td style="padding:5px">'.$nama.'</td>
 				</tr>';
 				$html .='</table>';
 
@@ -2103,6 +2112,15 @@ class Master extends CI_Controller
 			$i = 0;
 			foreach($getCust->result() as $cust){
 				$i++;
+				if($cust->nama != '-' && $cust->nm_perusahaan == '-'){
+					$nama = $cust->nama;
+				}else if($cust->nama == '-' && $cust->nm_perusahaan != '-'){
+					$nama = $cust->nm_perusahaan;
+				}else if($cust->nama != '-' && $cust->nm_perusahaan != '-'){
+					$nama = $cust->nama.' - '.$cust->nm_perusahaan;
+				}else{
+					$nama = '';
+				}
 				$html .='<table class="list-table">
 					<tr>
 						<td style="padding:5px 0;text-align:center">
@@ -2110,7 +2128,7 @@ class Master extends CI_Controller
 							<button onclick="btnRencanaEdit('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">EDIT</button>
 						</td>
 						<td style="padding:5px;text-align:center">'.$i.'</td>
-						<td style="padding:5px">'.$cust->nm_perusahaan.'</td>
+						<td style="padding:5px">'.$nama.'</td>
 					</tr>
 				</table>';
 
@@ -2689,7 +2707,7 @@ class Master extends CI_Controller
 				<td style="width:10%;padding:5px;font-weight:bold">GSM</td>
 				<td style="width:10%;padding:5px;font-weight:bold">UKURAN</td>
 				<td style="width:10%;padding:5px;font-weight:bold">TONASE</td>
-				<td style="width:10%;padding:5px;font-weight:bold">JUMLAH ROLL</td>
+				<td style="width:10%;padding:5px;font-weight:bold">JML ROLL</td>
 				<td style="width:10%;padding:5px;font-weight:bold">HARGA</td>
 				<td style="width:auto;padding:5px;font-weight:bold">AKSI</td>
 			</tr>';
@@ -3004,16 +3022,17 @@ class Master extends CI_Controller
 	}
 
 	function loadDataPO(){
+		$opsi = $_POST['opsi'];
 		$caripo = $_POST['caripo'];
 		$html = '';
 		
 		$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,pt.alamat,m.* FROM po_master m
 		INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id
-		WHERE status='open' AND (pt.pimpinan LIKE '%$caripo%' OR pt.nm_perusahaan LIKE '%$caripo%')
+		WHERE status='$opsi' AND (pt.pimpinan LIKE '%$caripo%' OR pt.nm_perusahaan LIKE '%$caripo%')
 		GROUP BY id_perusahaan
 		ORDER BY pt.pimpinan,pt.nm_perusahaan");
 		if($getData->num_rows() == 0){
-			$html .='';
+			$html .='<div style="padding:5px">DATA TIDAK ADA!</div>';
 		}else{
 			$i = 0;
 			foreach($getData->result() as $r){
@@ -3022,19 +3041,16 @@ class Master extends CI_Controller
 				}else{
 					$nama = $r->pimpinan.' - ';
 				}
-
 				if($r->nm_perusahaan == '-' && $r->nm_perusahaan == ''){
 					$kop = '';
 				}else{
 					$kop = $r->nm_perusahaan;
 				}
-
 				$i++;
-				// <button class="btn-c-po" onclick="btnCek('."'".$r->id_perusahaan."'".','."'".$i."'".','."'rekap'".')">REKAP</button>
 				$html .='<table style="font-size:12px;color:#000">';
 				$html .='<tr class="ll-tr">
 					<td style="padding:5px">
-						<button class="btn-c-po" onclick="btnCek('."'".$r->id_perusahaan."'".','."'".$i."'".')">DETAIL</button>
+						<button class="btn-c-po" onclick="btnCek('."'".$r->id_perusahaan."'".','."'".$opsi."'".','."'".$i."'".')">DETAIL</button>
 					</td>
 					<td style="padding:5px">'.$i.'.</td>
 					<td style="padding:5px">'.$nama.$kop.'</td>
@@ -3050,6 +3066,7 @@ class Master extends CI_Controller
 
 	function btnCekRekap(){
 		$id = $_POST['id'];
+		$opsi = $_POST['opsi'];
 		$html ='';
 
 		$html .='<div style="overflow:auto;white-space:nowrap"><table style="margin:10px 5px;font-size:12px;color:#000" border="1">';
@@ -3064,7 +3081,7 @@ class Master extends CI_Controller
 			<td style="padding:5px;font-weight:bold;text-align:center">-/+(BERAT)</td>
 		</tr>';
 		$getDatar = $this->db->query("SELECT id_po,no_po,STATUS,SUM(jml_roll) AS jml_roll,SUM(tonase) AS tonase FROM po_master
-		WHERE id_perusahaan='$id' AND STATUS='open'
+		WHERE id_perusahaan='$id' AND STATUS='$opsi'
 		GROUP BY id_po,no_po,STATUS");
 		$i = 0;
 		$tRkpPOJmlRoll = 0;
@@ -3126,11 +3143,12 @@ class Master extends CI_Controller
 
 	function btnCekShow(){ // btn-cek-list-
 		$id = $_POST['id'];
+		$opsi = $_POST['opsi'];
 		$li = $_POST['i'];
 		$html = '';
 
 		$getData = $this->db->query("SELECT id_po,no_po,status,pajak FROM po_master
-		WHERE id_perusahaan='$id' AND status='open'
+		WHERE id_perusahaan='$id' AND status='$opsi'
 		GROUP BY id_po,no_po,status,pajak");
 		$i =0;
 		$html .='<div style="overflow:auto;white-space:nowrap">';
@@ -3141,10 +3159,21 @@ class Master extends CI_Controller
 			INNER JOIN m_timbangan m ON a.id=m.id_pl
 			WHERE a.id_perusahaan='$id' AND a.no_po='$r->no_po' AND qc='ok'
 			GROUP BY a.id_perusahaan,a.no_po");
-			if($cek->num_rows() == 0){
-				$aksi = '<button class="btn-c-po" onclick="hapusPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">hapus</button>';
-			}else{
-				$aksi = '<button class="btn-c-po" onclick="closePO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">close</button>';
+			if($opsi == 'open'){
+				$edit = '<button class="btn-c-po" onclick="editPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">edit</button>';
+				if($cek->num_rows() == 0){
+					// CEK LAGI KALAU ADA PACKING LIST ATAU RENCANA KIRIM TIDAK BISA HAPUS
+					$cek2 = $this->db->query("SELECT*FROM pl WHERE id_perusahaan='$id' AND no_po='$r->no_po' GROUP BY no_po;");
+					if($cek2->num_rows() == 0){
+						$aksi = $edit.'<button class="btn-c-po" onclick="hapusPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">hapus</button>';
+					}else{
+						$aksi = '';
+					}
+				}else{
+					$aksi = $edit.'<button class="btn-c-po" onclick="closePO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">close</button>';
+				}
+			}else{ //CLOSE TIDAK ADA AKSI
+				$aksi = '';
 			}
 			$html .='<table style="font-size:12px;color:#000">
 				<tr class="ll-tr">
@@ -3152,8 +3181,7 @@ class Master extends CI_Controller
 					<td style="padding:5px"><button disabled>'.$r->pajak.'</button></td>
 					<td style="padding:5px">'.$r->no_po.'</td>
 					<td style="padding:5px">
-						<button class="btn-c-po" onclick="btnOpen('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">'.$r->status.'</button>
-						<button class="btn-c-po" onclick="editPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">edit</button>
+						<button class="btn-c-po" onclick="btnOpen('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$opsi."'".','."'".$i."'".')">open</button>
 						'.$aksi.'
 					</td>
 				</tr>
@@ -3161,7 +3189,7 @@ class Master extends CI_Controller
 
 			$html .='<div class="ll-open btn-open-list-'.$i.'"></div>';
 		}
-		$html .='<div style="padding:5px;font-size:12px;color:#000"><button class="btn-c-po" onclick="btnCekRekap('."'".$id."'".','."'".$li."'".')">REKAP</button></div>';
+		$html .='<div style="padding:5px;font-size:12px;color:#000"><button class="btn-c-po" onclick="btnCekRekap('."'".$id."'".','."'".$opsi."'".','."'".$li."'".')">REKAP</button></div>';
 		$html .='</div>';
 
 		echo $html;
@@ -3188,40 +3216,4 @@ class Master extends CI_Controller
 		$return = $this->m_master->closePO();
 		echo json_encode(array('res' => $return, 'msg' => $_POST['no_po'].' BERHASIL DI CLOSE!'));
 	}
-
-	// function btnOpenShow(){ // btn-open-list-
-	// 	$id = $_POST['id'];
-	// 	$id_po = $_POST['id_po'];
-	// 	$no_po = $_POST['no_po'];
-	// 	// $i = $_POST['i'];
-	// 	$html ='';
-
-	// 	$html .='<table style="font-size:12px;color:#000;text-align:center" border="1">';
-	// 	$html .='<tr>
-	// 		<td style="padding:5px;font-weight:bold">JENIS</td>
-	// 		<td style="padding:5px;font-weight:bold">UKURAN</td>
-	// 		<td style="padding:5px;font-weight:bold">TONASE</td>
-	// 		<td style="padding:5px;font-weight:bold">JML ROLL</td>
-	// 		<td style="padding:5px;font-weight:bold"></td>
-	// 	</tr>';
-
-	// 	$getData = $this->db->query("SELECT*FROM po_master
-	// 	WHERE id_perusahaan='$id' AND id_po='$id_po' AND no_po='$no_po'
-	// 	ORDER BY nm_ker,g_label,width");
-	// 	$i = 100;
-	// 	foreach($getData->result() as $r){
-	// 		$i++;
-	// 		$html .='<tr class="ll-tr">
-	// 				<td style="padding:5px">'.$r->nm_ker.' '.$r->g_label.'</td>
-	// 				<td style="padding:5px">'.round($r->width,2).'</td>
-	// 				<td style="padding:5px;text-align:right">'.number_format($r->tonase).'</td>
-	// 				<td style="padding:5px">'.$r->jml_roll.'</td>
-	// 				<td style="padding:5px"><button class="btn-c-po" onclick="viewList('."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->width."'".','."'".$i."'".')">view</button></td>
-	// 			</tr>';
-	// 	}
-
-	// 	$html .='</table>';
-
-	// 	echo $html;
-	// }
 }

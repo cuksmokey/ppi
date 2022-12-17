@@ -123,18 +123,20 @@
 						<input type="hidden" id="v-ii" value="">
 						<!-- <input type="text" id="v-id-pl" value=""> -->
 
-						<div class="ilist plh-opsi-plrk">
+						<div class="ilist plh-opsi-plrk" style="color:#000;font-size:12px">
 							<button id="btn-opsi-pl" onclick="pilih_opsi('pl')">PACKING LIST</button>
 							<button id="btn-opsi-rk" onclick="pilih_opsi('rk')">RENCANA KIRIM</button>
 						</div>
 
 						<div class="list-btn-pl">
-							<div style="margin-top:15px"><button onclick="btnAdd()">ADD</button></div>
+							<div style="margin-top:15px;color:#000;font-size:12px"><button onclick="btnAdd()">ADD</button></div>
 							
 							<div class="ilist box-data-pl">
-								<button disabled="disabled">PILIH :</button>
-								<input type="date" id="tgl-list-pl" value="<?= date('Y-m-d')?>">
-								<button onclick="load_data_pl()">CARI</button>
+								<div style="color:#000;font-size:12px">
+									<button disabled="disabled">PILIH :</button>
+									<input type="date" id="tgl-list-pl" value="<?= date('Y-m-d')?>">
+									<button onclick="load_data_pl()">CARI</button>
+								</div>
 
 								<div class="list-pl"></div>
 							</div>
@@ -338,13 +340,15 @@
 						</div>
 						
 						<div class="list-btn-rk">
-							<div style="margin-top:15px"><button onclick="btnAddrk()">ADD</button></div>
+							<div style="margin-top:15px;color:#000;font-size:12px"><button onclick="btnAddrk()">ADD</button></div>
 
 							<!-- <div class="ilist box-data-rk">BOX RK</div> -->
 							<div class="ilist box-data-rk">
-								<button disabled="disabled">PILIH :</button>
-								<input type="date" id="tgl-list-rk" value="<?= date('Y-m-d')?>">
-								<button onclick="load_data()">CARI</button>
+								<div style="color:#000;font-size:12px">
+									<button disabled="disabled">PILIH :</button>
+									<input type="date" id="tgl-list-rk" value="<?= date('Y-m-d')?>">
+									<button onclick="load_data()">CARI</button>
+								</div>
 
 								<div style="margin-top:15px" class="list-rk"></div>
 							</div>
