@@ -34,6 +34,7 @@ TAMBAH TABLE "m_rencana_kirim"
 CREATE TABLE `db_ppi`.`m_rencana_kirim`(  
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `id_rk` VARCHAR(50),
+  `qc_rk` VARCHAR(6) DEFAULT 'proses',
   `tgl` DATE,
   `nm_ker` VARCHAR(11),
   `g_label` VARCHAR(11),

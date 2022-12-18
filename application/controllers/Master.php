@@ -1634,6 +1634,7 @@ class Master extends CI_Controller
 
 	function load_pl(){
 		$tglpl = $_POST['tglpl'];
+		$pbtnrencana = $_POST['pilihbtnrencana'];
 		$html = '';
 
 		$getData = $this->db->query("SELECT * FROM pl
@@ -1662,11 +1663,11 @@ class Master extends CI_Controller
 				}else{
 					$ds = '';
 				}
-
+				// onclick="btnRencana('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$pbtnrencana."'".','."'".$i."'".')"
 				$html .='<table style="font-size:12px;color:#000">';
 				$html .='<tr>
-					<td style="padding:5px">
-						<button '.$ds.' onclick="prosesPL('."'".$r->id_perusahaan."'".','."'".$r->id_rk."'".','."'".$r->tgl_pl."'".','."'".$r->opl."'".','."'".$i."'".')">PROSES</button>
+					<td>
+						<button '.$ds.' onclick="btnRencana('."'".$r->id_rk."'".','."'".$r->opl."'".','."'".$r->tgl_pl."'".','."'".$pbtnrencana."'".','."'".$i."'".')">PROSES</button>
 						<button onclick="editPL('."'".$r->id_perusahaan."'".','."'".$r->tgl_pl."'".','."'".$r->opl."'".','."'".$i."'".')">EDIT</button>
 					</td>
 					<td style="padding:5px">'.$i.'</td>
@@ -1674,17 +1675,13 @@ class Master extends CI_Controller
 				</tr>';
 				$html .='</table>';
 
+				$html .='<div class="cek-pl proses-pl-rk-'.$i.'"></div>';
 				$html .='<div class="cek-pl proses-pl-'.$i.'"></div>';
 				$html .='<div class="cek-pl edit-pl-po-'.$i.'"></div>';
-				$html .='<div class="cek-pl edit-pl-no-'.$i.'"></div>';
 			}
 		}
 
 		echo $html;
-	}
-
-	function prosesPL(){
-
 	}
 
 	function editPL(){
@@ -2100,14 +2097,15 @@ class Master extends CI_Controller
 
 	function pList(){
 		$tgl = $_POST['tgl'];
+		$pbtnrencana = $_POST['pilihbtnrencana'];
 		$html ='';
 
-		$getCust = $this->db->query("SELECT r.id_rk AS idrk,p.* FROM pl p
+		$getCust = $this->db->query("SELECT r.id_rk AS idrk,r.qc_rk,p.* FROM pl p
 		INNER JOIN m_rencana_kirim r ON p.tgl_pl=r.tgl AND p.opl=r.order_pl
 		WHERE qc='proses' AND tgl_pl='$tgl'
 		GROUP BY opl");
 		if($getCust->num_rows() == 0){
-			$html .='';
+			$html .='<div class="notfon">DATA TIDAK DITEMUKAN</div>';
 		}else{
 			$i = 0;
 			foreach($getCust->result() as $cust){
@@ -2121,11 +2119,19 @@ class Master extends CI_Controller
 				}else{
 					$nama = '';
 				}
+
+				// JIKA MASIH RENCANA KIRIM MASIH BISA DIHAPUS TAPI ROLL YANG ADA DI RENCANA KIRIM JUGA HILANG
+				if($cust->qc_rk == 'proses'){
+					$btnHapus = '<button onclick="btnRencanaHapus('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">HAPUS</button>';
+				}else{
+					$btnHapus = '';
+				}
 				$html .='<table class="list-table">
 					<tr>
 						<td style="padding:5px 0;text-align:center">
-							<button onclick="btnRencana('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">PROSES</button>
+							<button onclick="btnRencana('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$pbtnrencana."'".','."'".$i."'".')">PROSES</button>
 							<button onclick="btnRencanaEdit('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">EDIT</button>
+							'.$btnHapus.'
 						</td>
 						<td style="padding:5px;text-align:center">'.$i.'</td>
 						<td style="padding:5px">'.$nama.'</td>
@@ -2156,10 +2162,19 @@ class Master extends CI_Controller
 		));
 	}
 
+	function btnRencanaHapus(){
+		$result = $this->m_master->btnRencanaHapus();
+		echo json_encode(array(
+			'res' => $result,
+			'msg' => 'RENCANA KIRIM BERHASIL DIHAPUS!',
+		));
+	}
+
 	function pListInputSementara(){
 		$id_rk = $_POST['id_rk'];
 		$l = $_POST['i'];
 		$plh = $_POST['plh'];
+		$otorisasi = $_POST['otorisasi'];
 		$html ='';
 
 		$getKer = $this->db->query("SELECT id_rk,nm_ker,g_label,width,COUNT(width) AS jml FROM m_timbangan
@@ -2184,8 +2199,6 @@ class Master extends CI_Controller
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">LABEL</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:20%">AKSI</td>
 			</tr>';
-			// <td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">LABEL</td>
-
 			$totRoll = 0;
 			$totBerat = 0;
 			foreach($getKer->result() as $ker){
@@ -2200,7 +2213,6 @@ class Master extends CI_Controller
 				}else{
 					$bgtrt = 'list-p-putih';
 				}
-
 				$html .='<tr class="'.$bgtrt.'">
 					<td style="padding:5px;font-weight:bold;text-align:left" colspan="12">'.$ker->nm_ker.''.$ker->g_label.' - '.round($ker->width,2).'</td>
 				</tr>';
@@ -2249,10 +2261,16 @@ class Master extends CI_Controller
 					}
 
 					// PILIH OPSI
+					$btnEditBatalListRk = '<button onclick="editRollRk('."'".$w->id."'".','."'".$w->diameter."'".','."'".$w->seset."'".','."'".$w->weight."'".','."'".$l."'".')">EDIT</button> - <button onclick="batalRollRk('."'".$w->id."'".','."'".$l."'".')">BATAL</button>';
+					$cekOk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' AND qc_rk='proses' GROUP BY id_rk");
 					if($plh == 'pl'){
-						$aksi = '-';
+						$aksi = $btnEditBatalListRk;
 					}else{
-						$aksi = '<button onclick="editRollRk('."'".$w->id."'".','."'".$w->diameter."'".','."'".$w->seset."'".','."'".$l."'".')">EDIT</button> - <button onclick="batalRollRk('."'".$w->id."'".','."'".$l."'".')">BATAL</button>';
+						if($cekOk->num_rows() > 0){
+							$aksi = $btnEditBatalListRk;
+						}else{
+							$aksi = '-';
+						}
 					}
 
 					$html .='<tr class="'.$bgtr.'">
@@ -2279,15 +2297,29 @@ class Master extends CI_Controller
 				}
 				$totRoll += $ker->jml;
 			}
+			// TOMBAL CEK OK
+			if($cekOk->num_rows() > 0){
+				$btnCekOk = '<button onclick="cekOkRk('."'".$id_rk."'".','."'".$l."'".')">CEK OK</button>';
+			}else{
+				$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
+			}
 			$html .='<tr style="background:#e9e9e9">
 				<td style="padding:5px;font-weight:bold">'.number_format($totRoll).'</td>
 				<td style="padding:5px;font-weight:bold" colspan="5">TOTAL</td>
 				<td style="padding:5px;font-weight:bold">'.number_format($totBerat).'</td>
-				<td style="padding:5px;font-weight:bold" colspan="5">-</td>
+				<td style="padding:5px;font-weight:bold" colspan="5">'.$btnCekOk.'</td>
 			</tr>';
 			$html .='</table></div>';
 		}
 		echo $html;
+	}
+	
+	function cekOkRk(){
+		$result = $this->m_master->cekOkRk();
+		echo json_encode(array(
+			'res' => $result,
+			'msg' => 'CEK OK! SURAT JALAN SEGERA DIPROSES!',
+		));
 	}
 
 	function editRollRk(){
@@ -2296,6 +2328,8 @@ class Master extends CI_Controller
 			echo json_encode(array('res' => false, 'msg' => 'ISI MASIH SAMA!', ));
 		}else if($_POST['seset'] == '' || $_POST['diameter'] == 0 || $_POST['diameter'] == ''){
 			echo json_encode(array('res' => false, 'msg' => 'SESET / DIAMETER HARUS DI ISI!', ));
+		}else if($_POST['seset'] >= $_POST['vberat']){
+			echo json_encode(array('res' => false, 'msg' => 'SESET TIDAK BOLEH LEBIH BESAR DARI BERAT ASLI!', ));
 		}else{
 			$this->m_master->editRollRk();
 			echo json_encode(array('res' => true, 'msg' => 'BERHASIL!', ));
@@ -2313,7 +2347,7 @@ class Master extends CI_Controller
 	}
 
 	function editListRk(){
-		if($_POST['ljmlroll'] ==  $_POST['ejmlroll']){
+		if($_POST['ljmlroll'] == $_POST['ejmlroll']){
 			echo json_encode(array(
 				'response' => false,
 				'msg' => 'JUMLAH SAMA!',
@@ -2413,6 +2447,7 @@ class Master extends CI_Controller
 		$opl = $_POST['opl'];		
 		$tgl_pl = $_POST['tgl_pl'];
 		$i = $_POST['i'];
+		$otorisasi = $_POST['otorisasi'];
 		$html = '';
 
 		$getUkRencKirim = $this->db->query("SELECT p.id,p.tgl_pl,p.opl,p.nm_ker,p.g_label,width,jml_roll FROM pl p
@@ -2420,7 +2455,7 @@ class Master extends CI_Controller
 		WHERE p.tgl_pl='$tgl_pl' AND p.opl='$opl'
 		GROUP BY p.tgl_pl,p.opl,p.nm_ker,p.g_label");
 		if($getUkRencKirim->num_rows() == 0){
-			$html .= '';
+			$html .= '<div style="notfon">BELUM ADA RENCANA KIRIMAN</div>';
 		}else{
 			$html .='<table class="list-table" style="font-weight:bold;text-align:center" border="1">
 				<tr style="background:#e9e9e9">
@@ -2450,9 +2485,19 @@ class Master extends CI_Controller
 
 				$totjmlroll = 0;
 				foreach($getUk->result() as $uk){
+					// JIKA SUDAH CEK OK TIDAK BISA DITAMBAHKAN
+					// $this->session->userdata('level') == "FG"
+					$btnInputRoll = '<button onclick="btnInputRoll('."'".$i."'".','."'".$uk->nm_ker."'".','."'".$uk->g_label."'".','."'".$uk->width."'".')" style="background:0;border:0">'.$uk->jml_roll.'</button>';
+					if($otorisasi == 'all' || $otorisasi == 'admin'){ // dev / admin masih bisa edit walaupun cek ok
+						$aksi = $btnInputRoll;
+					}else if($uk->qc_rk == 'proses'){
+						$aksi = $btnInputRoll;
+					}else{
+						$aksi = $uk->jml_roll;
+					}
 					$html .='<tr class="'.$bgtr.'">
 						<td style="padding:5px">'.round($uk->width,2).'</td>
-						<td style="padding:5px"><button onclick="btnInputRoll('."'".$i."'".','."'".$uk->nm_ker."'".','."'".$uk->g_label."'".','."'".$uk->width."'".')" style="background:0;border:0">'.$uk->jml_roll.'</button></td>
+						<td style="padding:5px">'.$aksi.'</td>
 					</tr>';
 					$totjmlroll += $uk->jml_roll;
 				}

@@ -131,6 +131,10 @@
 		$otorisasi = 'qc';
 	}else if($this->session->userdata('level') == "FG"){
 		$otorisasi = 'fg';
+	}else if($this->session->userdata('level') == "Finance"){
+		$otorisasi = 'finance';
+	}else if($this->session->userdata('level') == "Office"){
+		$otorisasi = 'office';
 	}else{
 		$otorisasi = 'user';
 	}

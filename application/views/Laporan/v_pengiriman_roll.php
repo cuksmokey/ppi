@@ -97,6 +97,10 @@
 		$otorisasi = 'qc';
 	}else if($this->session->userdata('level') == "FG"){
 		$otorisasi = 'fg';
+	}else if($this->session->userdata('level') == "Finance"){
+		$otorisasi = 'finance';
+	}else if($this->session->userdata('level') == "Office"){
+		$otorisasi = 'office';
 	}else{
 		$otorisasi = 'user';
 	}
@@ -445,6 +449,7 @@
 <script>
 	otorisasi = $("#otorisasi").val();
 	option = '';
+	pilihbtnrencana = '';
 
 	$(document).ready(function(){
 		// alert(otorisasi);
@@ -455,8 +460,8 @@
 		$(".list-btn-rk").hide();
 
 		$(".box-form-rk").hide();
-		kosong();
-		rkkosong();
+		// kosong();
+		// rkkosong();
 
 		if(otorisasi == 'all' || otorisasi == 'admin'){
 			$(".plh-opsi-plrk").show();
@@ -479,7 +484,7 @@
 			$(".list-btn-rk").hide();
 			$(".box-data-pl").show();
 			$(".box-form-pl").hide();
-			kosong()
+			kosong();
 		}else{
 			$(".list-btn-pl").hide();
 			$(".list-btn-rk").show();
@@ -770,12 +775,14 @@
 		plhPlGsm('');
 		$(".show-add-cart-pl").load("<?php echo base_url('Master/dessCartPl') ?>");
 
+		pilihbtnrencana = 'pl';
 		load_data_pl();
 		
 		$(".cek_no_sj").html('');
 		$(".show-edit-cart-pl").html('');
 		pl = 'simpan';
 		vopl = '';
+		
 	}
 
 	function btnAdd(){
@@ -866,28 +873,14 @@
 			type: "POST",
 			data: ({
 				tglpl: tglpl,
+				pilihbtnrencana,
+				otorisasi
 			}),
 			success: function(response){
 				// $("#show-list-pl").html(response)
 				$(".list-pl").html(response);
 			}
 		});
-	}
-
-	function prosesPL(idpt,idrk,tglpl,opl,i){
-		// alert(idpt+' - '+idrk+' - '+tglpl+' - '+opl+' - '+i);
-		$(".cek-pl").html('');
-		hasilInputSementara(idrk,i,'pl');
-		// $.ajax({
-		// 	url: '<?php echo base_url('Master/prosesPL')?>',
-		// 	type: "POST",
-		// 	data: ({
-
-		// 	}),
-		// 	success: function(data){
-		// 		$(".proses-pl-" + i).html();
-		// 	}
-		// })
 	}
 
 	function editPL(idpt,tglpl,opl,i){
@@ -1122,6 +1115,7 @@
 		$(".box-form-rk").hide();
 		$(".show-cart-rk").load("<?php echo base_url('Master/dessCartRk') ?>");
 
+		pilihbtnrencana = 'rk';
 		tgl = $("#tgl-list-rk").val();
 		load_data(tgl);
 
@@ -1412,25 +1406,22 @@
 			url: '<?php echo base_url('Master/pList'); ?>',
 			type: "POST",
 			data: ({
-				tgl: tgl
+				tgl: tgl,
+				pilihbtnrencana
 			}),
 			success: function(response){
-				if(response){
-					$(".list-rk").show().html(response);
-				}else{
-					$(".list-rk").show().html('<div class="notfon">DATA TIDAK DITEMUKAN</div>');
-				}
+				$(".list-rk").show().html(response);
 			}
 		});
 	}
 
-	function btnRencana(id_rk,opl,tgl_pl,i){ // KLIK PROSES
+	function btnRencana(id_rk,opl,tgl_pl,brencana,i){ // KLIK PROSES
 		$("#v-id-pl").val(id_rk);
 		$("#v-opl").val(opl);
 		$("#v-tgl-pl").val(tgl_pl);
 		$("#v-ii").val(i);
 		$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/destroyCartInputRoll') ?>");
-		// alert(id_rk+' - '+opl+' '+tgl_pl+' '+i);
+		// $(".cek-pl").html('');
 		$(".id-cek").html('');
 		$(".t-plist-rencana-" + i).html('Memuat Rencana Kirim . . .');
 		$.ajax({
@@ -1439,15 +1430,12 @@
 			data: ({
 				opl: opl,
 				tgl_pl: tgl_pl,
-				i: i
+				i: i,
+				otorisasi
 			}),
 			success: function(response) {
-				if(response){
-					$(".t-plist-rencana-" + i).html(response);
-					hasilInputSementara(id_rk,i,'rk');
-				}else{
-					$(".t-plist-rencana-" + i).html('<div style="notfon">BELUM ADA RENCANA KIRIMAN</div>');
-				}
+				$(".t-plist-rencana-" + i).html(response);
+				hasilInputSementara(id_rk,i,brencana);
 			}
 		});
 	}
@@ -1479,16 +1467,49 @@
 			}),
 			success: function(json){
 				data = JSON.parse(json);
-				// alert(data.id);
 				$("#rktgl").val(data.tgl).prop('disabled', true);
 				$("#rkpl").val(data.tgl).prop('disabled', true);
 				$('#rkpo').val("").prop('disabled', false);
 				load_rkpo(data.id);
 				showListEditRk(id_rk,opl,tgl_pl,i);
 				option = 'update'
-				
 			}
 		})
+	}
+
+	function btnRencanaHapus(id_rk,opl,tgl_pl,i){
+		// alert(id_rk+' - '+opl+' - '+tgl_pl+' - '+i);
+		swal({
+			title: "Apakah Anda Yakin ?",
+			text: "ID RK : " + id_rk,
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-danger",
+			confirmButtonText: "Ya",
+			cancelButtonText: "Batal",
+			closeOnConfirm: false,
+			closeOnCancel: false
+		},
+		function(isConfirm) {
+			if (isConfirm) {
+				$.ajax({
+					url: '<?php echo base_url('Master/btnRencanaHapus')?>',
+					type: "POST",
+					data: ({
+						id_rk,opl,tgl_pl,i
+					}),
+					success: function(json){
+						data = JSON.parse(json);
+						if(data.res){
+							swal(data.msg, "", "success");
+							rkkosong();
+						}
+					}
+				});
+			}else{
+				swal("BATAL DIHAPUS!", "", "error");
+			}
+		});
 	}
 
 	function showListEditRk(id_rk,opl,tgl_pl,i){
@@ -1560,7 +1581,6 @@
 				swal("BATAL DIHAPUS!", "", "error");
 			}
 		});
-		
 	}
 
 	function hasilInputSementara(id_rk,i,plh) {
@@ -1576,7 +1596,7 @@
 			data: ({
 				id_rk: id_rk,
 				i: i,
-				plh
+				plh,otorisasi
 			}),
 			success: function(response){
 				if(response){
@@ -1589,6 +1609,44 @@
 					$(".t-plist-input-sementara-" + i).html('');
 					$(".proses-pl-" + i).html('');
 				}
+			}
+		});
+	}
+
+	function cekOkRk(idrk,i){
+		// alert(idrk+' - '+i);
+		vidpl = $("#v-id-pl").val();
+		vopl = $("#v-opl").val();
+		vtglpl = $("#v-tgl-pl").val();
+		swal({
+			title: "CEK QC OK ?",
+			text: "ID RK : "+idrk,
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-danger",
+			confirmButtonText: "Ya",
+			cancelButtonText: "Batal",
+			closeOnConfirm: false,
+			closeOnCancel: false
+		},
+		function(isConfirm) {
+			if (isConfirm) {
+				$.ajax({
+					url: '<?php echo base_url('Master/cekOkRk')?>',
+					type: "POST",
+					data: ({
+						idrk,i
+					}),
+					success: function(json){
+						data = JSON.parse(json)
+						if(data.res){
+							swal(data.msg, "", "success");
+							btnRencana(idrk,vopl,vtglpl,i)
+						}
+					}
+				});
+			}else{
+				swal("BATAL CEK OK!", "", "error");
 			}
 		});
 	}
@@ -1643,12 +1701,7 @@
 				i: i,
 			}),
 			success: function(response){
-				json = JSON.parse(response);
-				if(json.data){
-					$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/showCartInputRoll') ?>");
-				}else{
-					$(".t-plist-hasil-input-" + i).html('NOTHING');
-				}
+				$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/showCartInputRoll') ?>");
 			}
 		});
 	}
@@ -1691,13 +1744,13 @@
 		});
 	}
 
-	function editRollRk(id,vdiameter,vseset,i){
+	function editRollRk(id,vdiameter,vseset,vberat,i){
 		// alert(id);
 		$(".plistinputroll").html('');
 		id_rk = $("#v-id-pl").val();
 		seset = $("#his-seset-" + id).val();
 		diameter = $("#his-diameter-" + id).val();
-		// alert(id+' - '+seset);
+		alert(id+' - '+seset+' - '+vberat);
 		$.ajax({
 			url: '<?php echo base_url('Master/editRollRk')?>',
 			type: "POST",
@@ -1705,7 +1758,7 @@
 				id: id,
 				seset: seset,
 				diameter: diameter,
-				vdiameter,vseset,
+				vdiameter,vseset,vberat
 			}),
 			success: function(json){
 				data = JSON.parse(json)

@@ -998,6 +998,12 @@ class M_master extends CI_Model{
 		return $result;
 	}
 
+    function cekOkRk(){
+        $this->db->set('qc_rk', 'ok');
+        $this->db->where('id_rk', $_POST['idrk']);
+        return $this->db->update('m_rencana_kirim');
+    }
+
     function reqLabelRk(){
         $this->db->set('lbl_rk', 'req');
         $this->db->where('id', $_POST['id']);
@@ -1034,6 +1040,7 @@ class M_master extends CI_Model{
 				$jmlroll = $data['options']['jml_roll'];
 				$data = array(
 					'id_rk' => $idrk,
+					'qc_rk' => 'proses',
 					'tgl' => $data['options']['tgl'],
 					'nm_ker' => $data['options']['nm_ker'],
 					'g_label' => $data['options']['g_label'],
@@ -1063,7 +1070,36 @@ class M_master extends CI_Model{
         }
 
         return $result;
-    }    
+    }
+
+    function btnRencanaHapus(){
+        $id_rk = $_POST['id_rk'];
+        $opl = $_POST['opl'];
+        $tgl_pl = $_POST['tgl_pl'];
+        $i = $_POST['i'];
+
+        // UPDATE RENCANA KIRIM ROLL KE NULL
+        $roll = $this->db->query("SELECT*FROM m_timbangan WHERE id_rk='$id_rk'");
+        foreach($roll->result() as $r){
+            $this->db->set('id_rk', null);
+            $this->db->set('lbl_rk', null);
+            $this->db->where('id', $r->id);
+            $result = $this->db->update('m_timbangan');
+        }
+
+        // UPDATE RENCANA KIRIM PACKING LIST KE NULL
+        $getpl = $this->db->query("SELECT*FROM pl WHERE tgl_pl='$tgl_pl' AND opl='$opl'");
+        foreach($getpl->result() as $r){
+            $this->db->set('id_rk', null);
+            $this->db->where('id', $r->id);
+            $result = $this->db->update('pl');
+        }
+
+        // HAPUS RENCANA KIRIM
+        $result = $this->db->query("DELETE FROM m_rencana_kirim WHERE id_rk='$id_rk' AND tgl='$tgl_pl' AND order_pl='$opl'");
+
+        return $result;
+    }
 
 	function simpanCartPl(){
         // CEK OPL RENCANA KIRIM
