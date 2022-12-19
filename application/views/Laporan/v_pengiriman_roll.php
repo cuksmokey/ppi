@@ -1506,10 +1506,17 @@
 				otorisasi
 			}),
 			success: function(response) {
+				if(brencana == 'pl'){
+					prosesPL(id_rk,opl,tgl_pl,brencana,i);
+				}
 				$(".t-plist-rencana-" + i).html(response);
 				hasilInputSementara(id_rk,i,brencana);
 			}
 		});
+	}
+
+	function prosesPL(id_rk,opl,tgl_pl,brencana,i){
+		// alert(id_rk+' - '+opl+' - '+tgl_pl+' - '+brencana+' - '+i);
 	}
 
 	function btnRencanaEdit(id_rk,opl,tgl_pl,i){

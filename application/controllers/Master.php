@@ -1678,10 +1678,7 @@ class Master extends CI_Controller
 				</tr>';
 				$html .='</table>'; //
 
-				// $html .='<div class="id-cek proses-pl-rk-'.$i.'"></div>';
-				// $html .='<div class="id-cek proses-pl-'.$i.'"></div>';
-				// $html .='<div class="id-cek edit-pl-po-'.$i.'"></div>';
-
+				$html .='<div class="id-cek t-plist-proses-pl-'.$i.'"></div>';
 				$html .='<div class="id-cek t-plist-rencana-'.$i.'"></div>';
 				$html .='<div class="id-cek t-plist-input-sementara-'.$i.'"></div>';
 				$html .='<div class="id-cek t-plist-hasil-input-'.$i.'"></div>';
