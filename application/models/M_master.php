@@ -1012,6 +1012,7 @@ class M_master extends CI_Model{
 
 	function batalRollRk(){
 		$this->db->set('id_rk', null);
+		$this->db->set('lbl_rk', null);
 		$this->db->where('id', $_POST['id']);
 		return $this->db->update('m_timbangan');
 	}
@@ -1071,6 +1072,31 @@ class M_master extends CI_Model{
 
         return $result;
     }
+
+	function hapusPL(){
+		// idpt,tglpl,opl
+		$idpt = $_POST['idpt'];
+		$idrk = $_POST['idrk'];
+        $opl = $_POST['opl'];
+        $tgl_pl = $_POST['tglpl'];
+
+		if($idrk != '' || $idrk != null){
+			// UPDATE RENCANA KIRIM ROLL KE NULL
+			$roll = $this->db->query("SELECT*FROM m_timbangan WHERE id_rk='$idrk'");
+			foreach($roll->result() as $r){
+				$this->db->set('id_rk', null);
+				$this->db->set('lbl_rk', null);
+				$this->db->where('id', $r->id);
+				$result = $this->db->update('m_timbangan');
+			}
+
+			// HAPUS RENCANA KIRIM
+			$result = $this->db->query("DELETE FROM m_rencana_kirim WHERE id_rk='$idrk' AND tgl='$tgl_pl' AND order_pl='$opl'");
+		}
+
+		$result = $this->db->query("DELETE FROM pl WHERE id_perusahaan='$idpt' AND tgl_pl='$tgl_pl' AND opl='$opl'");
+        return $result;
+	}
 
     function btnRencanaHapus(){
         $id_rk = $_POST['id_rk'];

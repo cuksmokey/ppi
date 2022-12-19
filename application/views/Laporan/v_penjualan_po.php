@@ -299,8 +299,6 @@
 
 	function back(){
 		kosong();
-		$(".table-cari").show();
-		load_data('open','');
 	}
 
 	$("#fjenis").on({

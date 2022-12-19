@@ -5807,23 +5807,65 @@ class Laporan extends CI_Controller {
         $roll = $_POST['roll'];
         $html ='';
 
-        $html .='<table style="margin:0;padding:0;font-size:12px;color:#000;border-collapse:collapse">
-        <tr>
-            <td style="font-weight:bold" colspan="12">HISTORY EDIT :</td>
-        </tr>';
-        $getData = $this->db->query("SELECT*FROM m_roll_edit
-        WHERE roll='$roll'");
+		$html .='<div style="overflow:auto;white-space:nowrap">';
+        $html .='<table style="margin:0 0 20px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+		$getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE roll='$roll'")->row();
+		$html .='<tr>
+				<td style="font-weight:bold" colspan="12">DATA :</td>
+			</tr>
+			<tr>
+				<td style="padding:5px">no</td>
+				<td style="padding:5px">roll</td>
+				<td style="padding:5px">jenis</td>
+				<td style="padding:5px">gramature</td>
+				<td style="padding:5px">ukuran</td>
+				<td style="padding:5px">diameter</td>
+				<td style="padding:5px">berat</td>
+				<td style="padding:5px">joint</td>
+				<td style="padding:5px">keterangan</td>
+				<td style="padding:5px">seset</td>
+				<td style="padding:5px">status</td>
+			</tr>';
+		if($getRoll->status == 0){
+			$stt = 'STOK';
+		}else if($getRoll->status == 2){
+			$stt = 'PPI';
+		}else if($getRoll->status == 3){
+			$stt = 'BUFFER';
+		}else{
+			$stt = 'STOK';
+		}
+		$html .='<tr>
+			<td style="padding:5px">-</td>
+			<td style="padding:5px">'.$getRoll->roll.'</td>
+			<td style="padding:5px">'.$getRoll->nm_ker.'</td>
+			<td style="padding:5px">'.$getRoll->g_label.'</td>
+			<td style="padding:5px">'.round($getRoll->width,2).'</td>
+			<td style="padding:5px">'.$getRoll->diameter.'</td>
+			<td style="padding:5px">'.$getRoll->weight.'</td>
+			<td style="padding:5px">'.$getRoll->joint.'</td>
+			<td style="padding:5px">'.$getRoll->ket.'</td>
+			<td style="padding:5px">'.$getRoll->seset.'</td>
+			<td style="padding:5px">'.$stt.'</td>
+		</tr>';
+		$html .='</table>';
+
+		$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+        $getData = $this->db->query("SELECT*FROM m_roll_edit WHERE roll='$roll'");
         $i = 0;
 		$html .='<tr>
+				<td style="font-weight:bold" colspan="12">HISTORY EDIT :</td>
+			</tr>
+			<tr>
 			<td style="padding:5px">no</td>
 			<td style="padding:5px">roll</td>
-			<td style="padding:5px">nm_ker</td>
-			<td style="padding:5px">g_label</td>
-			<td style="padding:5px">width</td>
+			<td style="padding:5px">jenis</td>
+			<td style="padding:5px">gramature</td>
+			<td style="padding:5px">ukuran</td>
 			<td style="padding:5px">diameter</td>
-			<td style="padding:5px">weight</td>
+			<td style="padding:5px">berat</td>
 			<td style="padding:5px">joint</td>
-			<td style="padding:5px">ket</td>
+			<td style="padding:5px">keterangan</td>
 			<td style="padding:5px">seset</td>
 			<td style="padding:5px">status</td>
 			<td style="padding:5px">edited_at</td>
@@ -5857,6 +5899,7 @@ class Laporan extends CI_Controller {
             </tr>';
         }
         $html .='</table>';
+		$html .='</div>';
 
 		if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC"){
 			$print = base_url("Master/print_timbangan?id=").$roll;
@@ -5867,7 +5910,6 @@ class Laporan extends CI_Controller {
 				<a type="button" href="'.$print2.'" target="_blank" class="lbl-besar">LABEL KECIL</a>
 			</div>';
 		}
-		
 
         echo $html;
     }

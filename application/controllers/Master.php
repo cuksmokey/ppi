@@ -1635,11 +1635,12 @@ class Master extends CI_Controller
 	function load_pl(){
 		$tglpl = $_POST['tglpl'];
 		$pbtnrencana = $_POST['pilihbtnrencana'];
+		$otorisasi = $_POST['otorisasi'];
 		$html = '';
 
 		$getData = $this->db->query("SELECT * FROM pl
 		WHERE qc='proses' AND tgl_pl='$tglpl'
-		GROUP BY id_perusahaan,tgl_pl,opl");
+		GROUP BY id_perusahaan,tgl_pl,opl,id_rk");
 		
 		if($getData->num_rows() == 0){
 			$html .='<div style="color:#000;padding-top:10px">DATA TIDAK DITEMUKAN</div>';
@@ -1657,31 +1658,46 @@ class Master extends CI_Controller
 					$nama = '';
 				}
 
-				// KALAU BELUM ADA ISI RENCANA KIRIM
-				if($r->id_rk == null || $r->id_rk == ''){
-					$ds = 'disabled';
+				// KALAU RENCANA KIRIM BELUM OK MASIH BISA DIHAPUS
+				$hapus = '<button onclick="hapusPL('."'".$r->id_perusahaan."'".','."'".$r->id_rk."'".','."'".$r->tgl_pl."'".','."'".$r->opl."'".','."'".$i."'".')">HAPUS</button>';
+				$getrk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE qc_rk='ok' AND id_rk='$r->id_rk' AND tgl='$r->tgl_pl' AND order_pl='$r->opl'");
+				if($getrk->num_rows() == 0){
+					$aksiHapus = $hapus;
 				}else{
-					$ds = '';
+					$aksiHapus = '';
 				}
-				// onclick="btnRencana('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$pbtnrencana."'".','."'".$i."'".')"
 				$html .='<table style="font-size:12px;color:#000">';
 				$html .='<tr>
 					<td>
-						<button '.$ds.' onclick="btnRencana('."'".$r->id_rk."'".','."'".$r->opl."'".','."'".$r->tgl_pl."'".','."'".$pbtnrencana."'".','."'".$i."'".')">PROSES</button>
+						<button onclick="btnRencana('."'".$r->id_rk."'".','."'".$r->opl."'".','."'".$r->tgl_pl."'".','."'".$pbtnrencana."'".','."'".$i."'".')">PROSES</button>
 						<button onclick="editPL('."'".$r->id_perusahaan."'".','."'".$r->tgl_pl."'".','."'".$r->opl."'".','."'".$i."'".')">EDIT</button>
+						'.$aksiHapus.'
 					</td>
 					<td style="padding:5px">'.$i.'</td>
 					<td style="padding:5px">'.$nama.'</td>
 				</tr>';
-				$html .='</table>';
+				$html .='</table>'; //
 
-				$html .='<div class="cek-pl proses-pl-rk-'.$i.'"></div>';
-				$html .='<div class="cek-pl proses-pl-'.$i.'"></div>';
-				$html .='<div class="cek-pl edit-pl-po-'.$i.'"></div>';
+				// $html .='<div class="id-cek proses-pl-rk-'.$i.'"></div>';
+				// $html .='<div class="id-cek proses-pl-'.$i.'"></div>';
+				// $html .='<div class="id-cek edit-pl-po-'.$i.'"></div>';
+
+				$html .='<div class="id-cek t-plist-rencana-'.$i.'"></div>';
+				$html .='<div class="id-cek t-plist-input-sementara-'.$i.'"></div>';
+				$html .='<div class="id-cek t-plist-hasil-input-'.$i.'"></div>';
+				$html .='<div class="id-cek t-plist-input-'.$i.'"></div>';
 			}
 		}
 
 		echo $html;
+	}
+
+	function hapusPL(){
+		$result = $this->m_master->hapusPL();
+		echo json_encode(array(
+			'res' => $result,
+			'msg' => 'BERHASIL HAPUS PACKING LIST!'
+		));
 	}
 
 	function editPL(){
@@ -1692,7 +1708,7 @@ class Master extends CI_Controller
 		
 		$getIdCust = $this->db->query("SELECT * FROM pl
 		WHERE qc='proses' AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
-		GROUP BY id_perusahaan,tgl_pl,opl")->row();
+		GROUP BY id_perusahaan,tgl_pl,id_rk,opl")->row();
 		echo json_encode(array(
 			'cust' => $getIdCust->id_perusahaan,
 			'fnmpt' => $getIdCust->nm_perusahaan,
@@ -1714,7 +1730,7 @@ class Master extends CI_Controller
 
 		$getData = $this->db->query("SELECT*FROM pl
 		WHERE qc='proses' AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
-		ORDER BY opl,nm_ker,no_po,g_label");
+		ORDER BY id_rk,opl,nm_ker,no_po,g_label");
 		if($getData->row()->nama == '-' || $getData->row()->nama == ''){
 			$nama = '';
 		}else{
@@ -1735,7 +1751,6 @@ class Master extends CI_Controller
 			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO. PO</td>
 			<td style="padding:5px;font-weight:bold;background:#e9e9e9">JENIS</td>
 			<td style="padding:5px;font-weight:bold;background:#e9e9e9">GRAMATURE</td>
-			<td style="padding:5px;font-weight:bold;background:#e9e9e9">AKSI</td>
 		</tr>';
 		$i = 0;
 		foreach($getData->result() as $r){
@@ -1748,9 +1763,6 @@ class Master extends CI_Controller
 				<td style="padding:5px">'.$r->no_po.'</td>
 				<td style="padding:5px">'.$r->nm_ker.'</td>
 				<td style="padding:5px">'.$r->g_label.'</td>
-				<td style="padding:5px">
-					<button onclick="">HAPUS</button>
-				</td>
 			</tr>';
 		}
 		$html .='</table>';
@@ -2098,6 +2110,7 @@ class Master extends CI_Controller
 	function pList(){
 		$tgl = $_POST['tgl'];
 		$pbtnrencana = $_POST['pilihbtnrencana'];
+		$otorisasi = $_POST['otorisasi'];
 		$html ='';
 
 		$getCust = $this->db->query("SELECT r.id_rk AS idrk,r.qc_rk,p.* FROM pl p
@@ -2121,17 +2134,20 @@ class Master extends CI_Controller
 				}
 
 				// JIKA MASIH RENCANA KIRIM MASIH BISA DIHAPUS TAPI ROLL YANG ADA DI RENCANA KIRIM JUGA HILANG
-				if($cust->qc_rk == 'proses'){
-					$btnHapus = '<button onclick="btnRencanaHapus('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">HAPUS</button>';
+				$edit = '<button onclick="btnRencanaEdit('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">EDIT</button>';
+				$hapus = '<button onclick="btnRencanaHapus('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">HAPUS</button>';
+				if($cust->qc_rk == 'proses' && ($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'fg')){
+					$aksi = $edit.' '.$hapus;
+				}else if($cust->qc_rk == 'ok' && ($otorisasi == 'all' || $otorisasi == 'admin')){
+					$aksi = $edit;
 				}else{
-					$btnHapus = '';
+					$aksi = '';
 				}
 				$html .='<table class="list-table">
 					<tr>
 						<td style="padding:5px 0;text-align:center">
 							<button onclick="btnRencana('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$pbtnrencana."'".','."'".$i."'".')">PROSES</button>
-							<button onclick="btnRencanaEdit('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">EDIT</button>
-							'.$btnHapus.'
+							'.$aksi.'
 						</td>
 						<td style="padding:5px;text-align:center">'.$i.'</td>
 						<td style="padding:5px">'.$nama.'</td>
@@ -2273,9 +2289,17 @@ class Master extends CI_Controller
 						}
 					}
 
+					// JIKA ROLL PERNAH DI EDIT
+					$getRollEdit = $this->db->query("SELECT*FROM m_roll_edit WHERE roll='$w->roll'");
+					if($getRollEdit->num_rows() == 0){
+						$btnEdit = $w->roll;
+					}else{
+						$btnEdit = '<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('."'".$w->roll."'".')">'.$w->roll.'</button>';
+					}
+
 					$html .='<tr class="'.$bgtr.'">
 						<td style="padding:5px">'.$i.'</td>
-						<td style="padding:5px">'.$w->roll.'</td>
+						<td style="padding:5px">'.$btnEdit.'</td>
 						<td style="padding:5px;'.$bgbw.'">'.$w->g_ac.'</td>
 						<td style="padding:5px;'.$bgrct.'">'.$w->rct.'</td>
 						<td style="padding:5px;'.$bgbi.'">'.$w->bi.'</td>
@@ -2560,9 +2584,16 @@ class Master extends CI_Controller
 				}else{
 					$bgtr = 'status-stok';
 				}
+				// JIKA ROLL PERNAH DI EDIT
+				$getRollEdit = $this->db->query("SELECT*FROM m_roll_edit WHERE roll='$r->roll'");
+				if($getRollEdit->num_rows() == 0){
+					$btnEdit = $r->roll;
+				}else{
+					$btnEdit = '<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('."'".$r->roll."'".')">'.$r->roll.'</button>';
+				}
 				$html .='<tr class="'.$bgtr.'">
 					<td style="padding:5px;font-weight:bold">'.$ii.'</td>
-					<td style="padding:5px;text-align:left">'.$r->roll.'</td>
+					<td style="padding:5px;text-align:left">'.$btnEdit.'</td>
 					<td style="padding:5px">'.$r->g_ac.'</td>
 					<td style="padding:5px">'.$r->rct.'</td>
 					<td style="padding:5px">'.$r->bi.'</td>
@@ -3032,6 +3063,8 @@ class Master extends CI_Controller
 			$html .='
 				<option value="SuperAdmin">SuperAdmin</option>
 				<option value="Admin">Admin</option>
+				<option value="Finance">Finance</option>
+				<option value="Office">Office</option>
 				<option value="QC">QC</option>
 				<option value="FG">FG</option>
 				<option value="Rewind1">Rewind1</option>
