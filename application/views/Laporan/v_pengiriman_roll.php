@@ -1506,17 +1506,50 @@
 				otorisasi
 			}),
 			success: function(response) {
+				$(".t-plist-rencana-" + i).html(response);
 				if(brencana == 'pl'){
 					prosesPL(id_rk,opl,tgl_pl,brencana,i);
 				}
-				$(".t-plist-rencana-" + i).html(response);
 				hasilInputSementara(id_rk,i,brencana);
 			}
 		});
 	}
 
 	function prosesPL(id_rk,opl,tgl_pl,brencana,i){
-		// alert(id_rk+' - '+opl+' - '+tgl_pl+' - '+brencana+' - '+i);
+		$(".t-plist-proses-pl-"+i).html('. . .');
+		$.ajax({
+			url: '<?php echo base_url('Master/prosesPL')?>',
+			type: "POST",
+			data: ({
+				id_rk,opl,tgl_pl,brencana,i
+			}),
+			success: function(res){
+				$(".t-plist-proses-pl-"+i).html(res);
+			}
+		})
+	}
+
+	function entryPL(id_rk,opl,tgl_pl,brencana,i,idpl,idroll,rstatus){
+		// alert(idpl);
+		$.ajax({
+			url: '<?php echo base_url('Master/entryPL')?>',
+			type: "POST",
+			data: ({
+				idpl,idroll,rstatus
+			}),
+			success: function(json){
+				data = JSON.parse(json)
+				if(data.res){
+					swal(data.msg, "", "success")
+					btnRencana(id_rk,opl,tgl_pl,brencana,i)
+				}
+			}
+		})
+	}
+
+	function entryPlAllIn(idrk,nm_ker,glabel,width){
+		// '."'".$ker->id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".'
+		alert(idrk+' - '+nm_ker+' - '+glabel+' - '+width);
 	}
 
 	function btnRencanaEdit(id_rk,opl,tgl_pl,i){

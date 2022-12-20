@@ -1244,6 +1244,25 @@ class M_master extends CI_Model{
         return $result;
     }
 
+	function entryPL(){
+		$idpl = $_POST['idpl'];
+		$idroll = $_POST['idroll'];
+		$rstatus = $_POST['rstatus'];
+		// STATUS
+		if($rstatus == 0){
+			$status = 1;
+		}else{
+			$status = $rstatus;
+		}
+
+		$this->db->set('status', $status);
+		$this->db->set('id_pl', $idpl);
+		$this->db->where('id', $idroll);
+		$result = $this->db->update('m_timbangan');
+
+		return $result;
+	}
+
 	function editItemPO(){
 		// id_po id_perusahaan tgl nm_ker g_label width tonase jml_roll no_po harga pajak status ket created_at created_by edited_at edited_by
 		$this->db->set('nm_ker', $_POST['wnmker']);

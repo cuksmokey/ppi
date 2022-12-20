@@ -1301,31 +1301,32 @@ class Master extends CI_Controller
 	function editQCRoll(){
 		$id = $_POST['id'];
 
+		$idOldRoll = $this->m_master->get_data_one("m_timbangan", "id", $id)->row();
+		$data = array(
+			'data' => false,
+			'msg' => 'DATA SUDAH MASUK RENCANA KIRIM!',
+			'id_roll' => $idOldRoll->id,
+			'roll' => $idOldRoll->roll,
+			'tgl' => $idOldRoll->tgl,
+			'g_ac' => $idOldRoll->g_ac,
+			'rct' => $idOldRoll->rct,
+			'bi' => $idOldRoll->bi,
+			'nm_ker' => $idOldRoll->nm_ker,
+			'g_label' => $idOldRoll->g_label,
+			'width' => $idOldRoll->width,
+			'diameter' => $idOldRoll->diameter,
+			'weight' => $idOldRoll->weight,
+			'joint' => $idOldRoll->joint,
+			'ket' => $idOldRoll->ket,
+			'status' => $idOldRoll->status,
+		);
+
 		// CEK JIKA SUDAH MASUK RENCANA KIRIM
 		$cek_rk = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND (id_rk='' OR id_rk IS NULL)");
-
-		if($cek_rk->num_rows() == 0){
-			$idOldRoll = $this->m_master->get_data_one("m_timbangan", "id", $id)->row();
-			echo json_encode(
-				array(
-					'data' => false,
-					'msg' => 'DATA SUDAH MASUK RENCANA KIRIM!',
-					'id_roll' => $idOldRoll->id,
-					'roll' => $idOldRoll->roll,
-					'tgl' => $idOldRoll->tgl,
-					'g_ac' => $idOldRoll->g_ac,
-					'rct' => $idOldRoll->rct,
-					'bi' => $idOldRoll->bi,
-					'nm_ker' => $idOldRoll->nm_ker,
-					'g_label' => $idOldRoll->g_label,
-					'width' => $idOldRoll->width,
-					'diameter' => $idOldRoll->diameter,
-					'weight' => $idOldRoll->weight,
-					'joint' => $idOldRoll->joint,
-					'ket' => $idOldRoll->ket,
-					'status' => $idOldRoll->status,
-				)
-			);
+		if(($_POST['lket'] == $_POST['ket']) && ($_POST['lstatus'] == $_POST['status']) && $_POST['edit'] == 'ListStokGudang' && $cek_rk->num_rows() == 0){
+			echo json_encode($data);
+		}else if(($_POST['lnm_ker'] != $_POST['nm_ker']) || ($_POST['lg_label'] != $_POST['g_label']) || ($_POST['lwidth'] != $_POST['width']) || ($_POST['lweight'] != $_POST['weight']) || ($_POST['ldiameter'] != $_POST['diameter']) || ($_POST['ljoint'] != $_POST['joint']) || ($_POST['lket'] != $_POST['ket']) || ($_POST['lstatus'] != $_POST['status']) && $_POST['edit'] == 'LapQC' && $cek_rk->num_rows() == 0){
+			echo json_encode($data);
 		}else{
 			$this->m_master->updateQCRoll();
 			$idNewRoll = $this->m_master->get_data_one("m_timbangan", "id", $id)->row();
@@ -2198,19 +2199,32 @@ class Master extends CI_Controller
 			$html .='';
 		}else{
 			$html .='<div style="overflow:auto;white-space:nowrap;"><table class="list-table" style="width:100%;text-align:center;margin-top:15px" border="1">';
+			// PL
+			if($plh == 'pl'){
+				$wket = '10%';
+				$waksi = '10%';
+				$cols = '13';
+				$ktd = '<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:25%">P L</td>';
+			}else{
+				$wket = '25%';
+				$waksi = '20%';
+				$cols = '12';
+				$ktd = '';
+			}
 			$html .='<tr>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">NO.</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:10%">NO. ROLL</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:4%">NO.</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:11%">NO. ROLL</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BW</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">RCT</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BI</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">D(CM)</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BERAT</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">JNT</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:25%">KET</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:'.$wket.'">KET</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">SESET</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">LABEL</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:20%">AKSI</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:'.$waksi.'">AKSI</td>
+				'.$ktd.'
 			</tr>';
 			$totRoll = 0;
 			$totBerat = 0;
@@ -2226,13 +2240,15 @@ class Master extends CI_Controller
 				}else{
 					$bgtrt = 'list-p-putih';
 				}
-				$html .='<tr class="'.$bgtrt.'">
-					<td style="padding:5px;font-weight:bold;text-align:left" colspan="12">'.$ker->nm_ker.''.$ker->g_label.' - '.round($ker->width,2).'</td>
-				</tr>';
 
+				// GET UKURAN
 				$getWidth = $this->db->query("SELECT * FROM m_timbangan
 				WHERE id_rk='$ker->id_rk' AND nm_ker='$ker->nm_ker' AND g_label='$ker->g_label' AND width='$ker->width'
 				ORDER BY roll");
+				$html .='<tr class="'.$bgtrt.'">
+					<td style="padding:5px;font-weight:bold;text-align:left" colspan="'.$cols.'">'.$ker->nm_ker.''.$ker->g_label.' - '.round($ker->width,2).'</td>
+				</tr>';
+
 				$i = 0;
 				foreach($getWidth->result() as $w){
 					$i++;
@@ -2274,15 +2290,20 @@ class Master extends CI_Controller
 					}
 
 					// PILIH OPSI
-					$btnEditBatalListRk = '<button onclick="editRollRk('."'".$w->id."'".','."'".$w->diameter."'".','."'".$w->seset."'".','."'".$w->weight."'".','."'".$l."'".')">EDIT</button> - <button onclick="batalRollRk('."'".$w->id."'".','."'".$l."'".')">BATAL</button>';
+					$btnEditBatalListRk = '<button onclick="editRollRk('."'".$w->id."'".','."'".$w->diameter."'".','."'".$w->seset."'".','."'".$w->weight."'".','."'".$l."'".')">EDIT</button> <button onclick="batalRollRk('."'".$w->id."'".','."'".$l."'".')">BATAL</button>';
 					$cekOk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' AND qc_rk='proses' GROUP BY id_rk");
-					if($plh == 'pl'){
-						$aksi = $btnEditBatalListRk;
+					// JIKA SUDAH MASUK PACKING LIST TIDAK BISA DI EDIT / BATAL
+					if($w->status != 0 && $w->id_pl != 0){
+						$aksi = '-';
 					}else{
-						if($cekOk->num_rows() > 0){
+						if($plh == 'pl'){
 							$aksi = $btnEditBatalListRk;
 						}else{
-							$aksi = '-';
+							if($cekOk->num_rows() > 0){
+								$aksi = $btnEditBatalListRk;
+							}else{
+								$aksi = '-';
+							}
 						}
 					}
 
@@ -2312,10 +2333,58 @@ class Master extends CI_Controller
 							<input type="text" id="his-seset-'.$w->id.'" value="'.number_format($w->seset).'" class="inp-abs" maxlength="4" onkeypress="return hanyaAngka(event)">
 						</td>
 						<td style="padding:5px"><button '.$lds.' onclick="reqLabelRk('."'".$w->id."'".','."'".$w->id_rk."'".','."'".$l."'".')">req</button></td>
-						<td style="padding:5px">'.$aksi.'</td>
-					</tr>';
+						<td style="padding:5px">'.$aksi.'</td>';
+
+					// PL
+					if($plh == 'pl'){
+						$html .='<td style="padding:5px">';
+						// ID PL MASIH KOSONG
+						if($w->id_pl == 0){
+							// CEK RENCANA KIRIM BELUM OK
+							$getRk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' AND qc_rk='ok' GROUP BY id_rk");
+							if($getRk->num_rows() == 0){
+								$html .= 'CEK DULU!';
+							}else{
+								$getPl = $this->db->query("SELECT pl.* FROM pl pl
+								INNER JOIN po_master po ON pl.no_po=po.no_po AND pl.nm_ker=po.nm_ker AND pl.g_label=po.g_label
+								WHERE id_rk='$w->id_rk' AND pl.nm_ker='$w->nm_ker' AND pl.g_label='$w->g_label' AND po.width='$w->width'
+								GROUP BY pl.no_po,pl.nm_ker,pl.g_label");
+								foreach($getPl->result() as $pl){
+									$html .= '<div style="display:block">
+										<button class="tmbl-cek-roll" onclick="entryPL('."'".$w->id_rk."'".','."'".$pl->opl."'".','."'".$pl->tgl_pl."'".','."'".$plh."'".','."'".$l."'".','."'".$pl->id."'".','."'".$w->id."'".','."'".$w->status."'".')">'.$pl->id.' - '.$pl->no_po.'</button>
+									</div>';
+								}
+							}
+						}else{
+							$html .= '-';
+						}
+						$html .='</td>';
+					}else{ // RENCANA KIRIM
+						$html .='';
+					}
+					$html .='</tr>';
+					
 					$totBerat += $w->weight - $w->seset;
 				}
+
+				// TOMBOL ALL IN
+				// if($plh == 'pl'){
+				// 	$getPl = $this->db->query("SELECT pl.* FROM pl pl
+				// 	INNER JOIN po_master po ON pl.no_po=po.no_po
+				// 	WHERE id_rk='$ker->id_rk' AND pl.nm_ker='$ker->nm_ker' AND pl.g_label='$ker->g_label' AND po.width='$ker->width'
+				// 	GROUP BY pl.no_po,pl.nm_ker,pl.g_label");
+				// 	if($getPl->num_rows() == 1){
+				// 		$html .='<tr>
+				// 			<td style="padding:5px" colspan="12"></td>
+				// 			<td style="padding:5px">ALL IN</td>
+				// 		</tr>';
+				// 	}else{
+				// 		$html .='';
+				// 	}
+				// }else{
+				// 	$html .='';
+				// }
+
 				$totRoll += $ker->jml;
 			}
 			// TOMBAL CEK OK
@@ -2464,6 +2533,62 @@ class Master extends CI_Controller
 		echo $html;
 	}
 
+	function prosesPL(){
+		$idrk = $_POST['id_rk'];
+		$opl = $_POST['opl'];
+		$tglpl = $_POST['tgl_pl'];
+		$brencana = $_POST['brencana'];
+		$i = $_POST['i'];
+		$html = '';
+		$html .='<table style="margin:15px 0;padding:0;font-size:12px;color:#000" border="1">';
+		$html .='<tr>
+			<td style="padding:5px;font-weight:bold">NO</td>
+			<td style="padding:5px;font-weight:bold">NO. PO</td>
+			<td style="padding:5px;font-weight:bold">NO. SJ</td>
+			<td style="padding:5px;font-weight:bold">JENIS</td>
+			<td style="padding:5px;font-weight:bold">GRAMATURE</td>
+		</tr>';
+
+		$getPl = $this->db->query("SELECT*FROM pl WHERE tgl_pl='$tglpl' AND id_rk='$idrk' AND opl='$opl'
+		GROUP BY tgl_pl,id_rk,opl,nm_ker,no_po,g_label");
+		if($getPl->num_rows() == 0){
+			$html .='';
+		}else{
+			$ii = 0;
+			foreach($getPl->result() as $r){
+				$ii++;
+				$html .='<tr>
+					<td style="padding:5px;font-weight:bold;text-align:center">'.$ii.' - '.$r->id.'</td>
+					<td style="padding:5px;font-weight:bold">'.$r->no_po.'</td>
+					<td style="padding:5px;font-weight:bold">'.trim($r->no_surat).'</td>
+					<td style="padding:5px;font-weight:bold">'.$r->nm_ker.'</td>
+					<td style="padding:5px;font-weight:bold">'.$r->g_label.'</td>
+				</tr>';
+
+				// ROLL MASUK
+				$getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE id_pl='$r->id' ORDER BY roll");
+				foreach($getRoll->result() as $roll){
+					$html .='<tr>
+						<td style="padding:5px">-</td>
+						<td style="padding:5px" colspan="4">'.$roll->roll.'</td>
+					</tr>';
+				}
+			}
+		}
+
+		$html .='</table>';
+
+		echo $html;
+	}
+
+	function entryPL(){
+		$result = $this->m_master->entryPL();
+		echo json_encode(array(
+			'res' => $result,
+			'msg' => 'BERHASIL DITAMBAHKAN KE PL!',
+		));
+	}
+
 	function pListRencana(){
 		$opl = $_POST['opl'];		
 		$tgl_pl = $_POST['tgl_pl'];
@@ -2507,7 +2632,6 @@ class Master extends CI_Controller
 				$totjmlroll = 0;
 				foreach($getUk->result() as $uk){
 					// JIKA SUDAH CEK OK TIDAK BISA DITAMBAHKAN
-					// $this->session->userdata('level') == "FG"
 					$btnInputRoll = '<button onclick="btnInputRoll('."'".$i."'".','."'".$uk->nm_ker."'".','."'".$uk->g_label."'".','."'".$uk->width."'".')" style="background:0;border:0">'.$uk->jml_roll.'</button>';
 					if($otorisasi == 'all' || $otorisasi == 'admin'){ // dev / admin masih bisa edit walaupun cek ok
 						$aksi = $btnInputRoll;
