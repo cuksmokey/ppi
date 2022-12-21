@@ -5036,6 +5036,7 @@ class Laporan extends CI_Controller {
                 INNER JOIN pl b ON a.id_pl=b.id
                 WHERE b.no_po='$pt->no_po'
                 -- AND b.tgl LIKE '%2022-11%'
+				AND b.qc='ok'
                 GROUP BY b.tgl");
 
                 $html .= '<tr>
@@ -5118,7 +5119,7 @@ class Laporan extends CI_Controller {
                         foreach($getTgl->result() as $tTgl){
                             $getIsiUk = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
                             INNER JOIN pl b ON a.id_pl=b.id
-                            AND b.no_po='$ukPO->no_po' AND b.tgl='$tTgl->tgl' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width'
+                            AND b.no_po='$ukPO->no_po' AND b.tgl='$tTgl->tgl' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width' AND b.qc='ok'
                             GROUP BY b.tgl,a.g_label,a.nm_ker,a.width");
                             if($getIsiUk->num_rows() == 0){
                                 $html .= '<td></td><td></td>';
@@ -5132,7 +5133,7 @@ class Laporan extends CI_Controller {
                         // TOTAL PER UKURAN PER GSM
                         $getUkpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
                         INNER JOIN pl b ON a.id_pl=b.id
-                        AND b.no_po='$ukPO->no_po' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width'
+                        AND b.no_po='$ukPO->no_po' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width' AND b.qc='ok'
                         GROUP BY a.nm_ker,a.g_label,a.width");
                         if($getUkpGsm->num_rows() == 0){
                             $html .= '<td style="padding:5px;text-align:center">-</td><td style="padding:5px;text-align:center">-</td>
@@ -5165,7 +5166,7 @@ class Laporan extends CI_Controller {
                         foreach($getTgl->result() as $tTgl){
                             $getTotpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
                             INNER JOIN pl b ON a.id_pl=b.id
-                            AND b.no_po='$rGsm->no_po' AND b.tgl='$tTgl->tgl' AND a.nm_ker='$rGsm->nm_ker' AND a.g_label='$rGsm->g_label'
+                            AND b.no_po='$rGsm->no_po' AND b.tgl='$tTgl->tgl' AND a.nm_ker='$rGsm->nm_ker' AND a.g_label='$rGsm->g_label' AND b.qc='ok'
                             GROUP BY b.tgl,a.g_label,a.nm_ker");
                             if($getTotpGsm->num_rows() == 0){
                                 $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
@@ -5180,7 +5181,7 @@ class Laporan extends CI_Controller {
                         // JUMLAH TOTAL PER GSM
                         $getJmlTotpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
                         INNER JOIN pl b ON a.id_pl=b.id
-                        AND b.no_po='$rGsm->no_po' AND a.nm_ker='$rGsm->nm_ker' AND a.g_label='$rGsm->g_label'
+                        AND b.no_po='$rGsm->no_po' AND a.nm_ker='$rGsm->nm_ker' AND a.g_label='$rGsm->g_label' AND b.qc='ok'
                         GROUP BY a.g_label,a.nm_ker");
                         if($getJmlTotpGsm->num_rows() == 0){
                             $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
@@ -5217,7 +5218,7 @@ class Laporan extends CI_Controller {
                     foreach($getTgl->result() as $tTgl){
                         $getKir = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
                         INNER JOIN pl b ON a.id_pl=b.id
-                        AND b.no_po='$ukPO->no_po' AND b.tgl='$tTgl->tgl'
+                        AND b.no_po='$ukPO->no_po' AND b.tgl='$tTgl->tgl' AND b.qc='ok'
                         GROUP BY b.tgl");
                         if($getKir->num_rows() == 0){
                             $html .= '<td></td><td></td>';
@@ -5832,8 +5833,10 @@ class Laporan extends CI_Controller {
 			$stt = 'PPI';
 		}else if($getRoll->status == 3){
 			$stt = 'BUFFER';
+		}else if($getRoll->status == 1){
+			$stt = 'TERJUAL';
 		}else{
-			$stt = 'STOK';
+			$stt = '-';
 		}
 		$html .='<tr>
 			<td style="padding:5px">-</td>

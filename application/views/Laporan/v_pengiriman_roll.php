@@ -1503,7 +1503,7 @@
 				opl: opl,
 				tgl_pl: tgl_pl,
 				i: i,
-				otorisasi
+				otorisasi,id_rk
 			}),
 			success: function(response) {
 				$(".t-plist-rencana-" + i).html(response);
@@ -1547,9 +1547,65 @@
 		})
 	}
 
-	function entryPlAllIn(idrk,nm_ker,glabel,width){
-		// '."'".$ker->id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".'
-		alert(idrk+' - '+nm_ker+' - '+glabel+' - '+width);
+	function entryPlAllIn(idrk,nm_ker,glabel,width,idpl,plh){
+		// vidpl = $("#v-id-pl").val();
+		vopl = $("#v-opl").val();
+		vtglpl = $("#v-tgl-pl").val();
+		vii = $("#v-ii").val();
+		// btnRencana(id_rk,opl,tgl_pl,brencana,i)
+		// alert(idrk+' - '+nm_ker+' - '+glabel+' - '+width+' || '+idpl+' || '+vopl+' - '+vtglpl+' - '+vii);
+		$.ajax({
+			url: '<?php echo base_url('Master/entryPlAllIn')?>',
+			type: "POST",
+			data: ({
+				idrk,nm_ker,glabel,width,idpl
+			}),
+			success: function(json){
+				data = JSON.parse(json)
+				if(data.res){
+					swal(data.msg, "", "success");
+					btnRencana(idrk,vopl,vtglpl,plh,vii)
+				}
+			}
+		})
+	}
+
+	function entryBatalPL(idroll,rroll,rstatus,idrk,plh){
+		vopl = $("#v-opl").val();
+		vtglpl = $("#v-tgl-pl").val();
+		vii = $("#v-ii").val();
+		// alert(idroll+' - '+rstatus+' - '+idrk+' - '+plh+' || '+vopl+' - '+vtglpl+' - '+vii);
+		swal({
+			title: "Kembalikan ke Rencana Kirim? ?",
+			text: rroll,
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-danger",
+			confirmButtonText: "Ya",
+			cancelButtonText: "Batal",
+			closeOnConfirm: false,
+			closeOnCancel: false
+		},
+		function(isConfirm) {
+			if (isConfirm) {
+				$.ajax({
+					url: '<?php echo base_url('Master/entryBatalPL')?>',
+					type: "POST",
+					data: ({
+						idroll,rstatus,idrk
+					}),
+					success: function(json){
+						data = JSON.parse(json)
+						if(data.res){
+							swal(data.msg, "", "success");
+							btnRencana(idrk,vopl,vtglpl,plh,vii)
+						}
+					}
+				});
+			}else{
+				swal("BATAL DIBATALKAN!", "", "error");
+			}
+		});
 	}
 
 	function btnRencanaEdit(id_rk,opl,tgl_pl,i){
@@ -1715,8 +1771,8 @@
 		});
 	}
 
-	function cekOkRk(idrk,i){
-		// alert(idrk+' - '+i);
+	function cekOkRk(idrk,plh,i,cek){
+		// alert(idrk+' - '+plh+' - '+i+' - '+cek);
 		vidpl = $("#v-id-pl").val();
 		vopl = $("#v-opl").val();
 		vtglpl = $("#v-tgl-pl").val();
@@ -1743,7 +1799,7 @@
 						data = JSON.parse(json)
 						if(data.res){
 							swal(data.msg, "", "success");
-							btnRencana(idrk,vopl,vtglpl,'rk',i)
+							btnRencana(idrk,vopl,vtglpl,plh,i)
 						}
 					}
 				});

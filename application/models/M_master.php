@@ -1257,6 +1257,55 @@ class M_master extends CI_Model{
 
 		$this->db->set('status', $status);
 		$this->db->set('id_pl', $idpl);
+		$this->db->set('packing_at', date("Y-m-d H:i:s"));
+		$this->db->set('packing_by', $this->session->userdata('username'));
+		$this->db->where('id', $idroll);
+		$result = $this->db->update('m_timbangan');
+
+		return $result;
+	}
+
+	function entryPlAllIn(){
+		$idrk = $_POST['idrk'];
+		$nm_ker = $_POST['nm_ker'];
+		$glabel = $_POST['glabel'];
+		$width = $_POST['width'];
+		$idpl = $_POST['idpl'];
+		// CARI ROLL
+		$roll = $this->db->query("SELECT*FROM m_timbangan WHERE id_rk='$idrk' AND nm_ker='$nm_ker' AND g_label='$glabel' AND width='$width'");
+		foreach($roll->result() as $r){
+			if($r->status == 0){
+				$status = 1;
+			}else{
+				$status = $r->status;
+			}
+
+			$this->db->set('status', $status);
+			$this->db->set('id_pl', $idpl);
+			$this->db->set('packing_at', date("Y-m-d H:i:s"));
+			$this->db->set('packing_by', $this->session->userdata('username'));
+			$this->db->where('id', $r->id);
+			$result = $this->db->update('m_timbangan');
+		}
+
+		return $result;
+	}
+
+	function entryBatalPL(){
+		$idroll = $_POST['idroll'];
+		$rstatus = $_POST['rstatus'];
+		$idrk = $_POST['idrk'];
+		if($rstatus == 1){
+			$status = 0;
+		}else{
+			$status = $rstatus;
+		}
+
+		$this->db->set('status', $status);
+		$this->db->set('id_pl', 0);
+		$this->db->set('packing_at', null);
+		$this->db->set('packing_by', null);
+		$this->db->where('id_rk', $idrk);
 		$this->db->where('id', $idroll);
 		$result = $this->db->update('m_timbangan');
 
