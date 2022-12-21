@@ -157,8 +157,10 @@
 						</div>
 
 						<div class="list-btn-pl">
+							<?php if($otorisasi == 'all' || $otorisasi == 'admin'){?>
 							<div style="margin-top:15px;color:#000;font-size:12px"><button onclick="btnAdd()">ADD</button></div>
-							
+							<?php }?>
+
 							<div class="ilist box-data-pl">
 								<div style="color:#000;font-size:12px">
 									<button disabled="disabled">PILIH :</button>
@@ -368,7 +370,9 @@
 						</div>
 						
 						<div class="list-btn-rk">
+							<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'fg'){?>
 							<div style="margin-top:15px;color:#000;font-size:12px"><button onclick="btnAddrk()">ADD</button></div>
+							<?php }?>
 
 							<!-- <div class="ilist box-data-rk">BOX RK</div> -->
 							<div class="ilist box-data-rk">
@@ -1762,11 +1766,7 @@
 				plh,otorisasi
 			}),
 			success: function(response){
-				if(response){
-					$(".t-plist-input-sementara-" + i).html(response);
-				}else{
-					$(".t-plist-input-sementara-" + i).html('');
-				}
+				$(".t-plist-input-sementara-" + i).html(response);
 			}
 		});
 	}

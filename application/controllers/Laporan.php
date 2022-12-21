@@ -386,23 +386,22 @@ class Laporan extends CI_Controller {
         $this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',999);
     }
 
-    function print_surat_jalan(){
+    function print_surat_jalan(){ //
         $jenis = $_GET['jenis'];
         $ctk = $_GET['ctk'];
+        $idrk = $_GET['idrk'];
         $html = '';
 
 		# # # # # # # # # K O P # # # # # # # # # #
 
         // AMBIL DATA KOP
-        $data_kop = $this->db->query("
-        SELECT b.tgl AS tgl_kop,a.nm_ker AS ker,b.nama AS nama,b.nm_perusahaan AS pt,b.no_po AS popo,b.no_pkb AS no_pkb FROM m_timbangan a
+        $data_kop = $this->db->query("SELECT b.tgl AS tgl_kop,a.nm_ker AS ker,b.nama AS nama,b.nm_perusahaan AS pt,b.no_po AS popo,b.no_pkb AS no_pkb FROM m_timbangan a
         INNER JOIN pl b ON a.id_pl=b.id
         WHERE b.no_pkb='$jenis'
         GROUP BY ker LIMIT 1;")->row();
 
         // count data kop
-        $count_kop = $this->db->query("
-        SELECT g_label,a.nm_ker AS ker,width,COUNT(*) AS qty,SUM(weight) AS berat,b.no_po as po FROM m_timbangan a
+        $count_kop = $this->db->query("SELECT g_label,a.nm_ker AS ker,width,COUNT(*) AS qty,SUM(weight) AS berat,b.no_po as po FROM m_timbangan a
         INNER JOIN pl b ON a.id_pl=b.id
         WHERE b.no_pkb='$jenis'
         GROUP BY g_label,width,b.no_po
@@ -491,8 +490,7 @@ class Laporan extends CI_Controller {
 
 		# # # # # # # # # D E T A I L # # # # # # # # # #
 
-        $data_pl = $this->db->query("
-        SELECT DISTINCT * FROM pl WHERE no_pkb='$jenis'
+        $data_pl = $this->db->query("SELECT DISTINCT * FROM pl WHERE no_pkb='$jenis'
         GROUP BY no_pkb")->row();
 
         $html .= '<table cellspacing="0" style="font-size:11px !important;color:#000;border-collapse:collapse;vertical-align:top;width:100%;font-family:Arial !important">
@@ -772,9 +770,7 @@ class Laporan extends CI_Controller {
         if ($ctk == '0' || $ctk == 99) {
             $this->m_fungsi->_mpdf('',$html,10,10,$akeh,'P');
         }else{
-
             ////////////////////////////////// CETAK PACKING LIST ////////////////////////////////////////////
-            
             $html = '';
 
             $data_header = $this->db->query("SELECT DISTINCT a.*,b.nm_ker,COUNT(b.roll) AS roll FROM pl a
@@ -5706,7 +5702,7 @@ class Laporan extends CI_Controller {
                             $oStt = 1;
                             $pStt = '-';
                         }
-                        $opt = '<select name="" id="opt_status-'.$i.'" class="opt_status" '.$fgdiss.'>
+                        $opt = '<select name="" id="opt_status-'.$i.'" class="opt_status" '.$diss.'>
                             <option value="'.$oStt.'">'.$pStt.'</option>
                             <option value="1">-</option>
                             <option value="0">STOK</option>
@@ -5716,7 +5712,7 @@ class Laporan extends CI_Controller {
                         $html .='<td style="border:1px solid #999;text-align:center">'.$opt.'</td>';
                         
                         // TOMBOL EDIT
-                        if($otori == 'user'){
+                        if($otori == 'user' || $otori == 'finance' || $otori == 'office'){
                             $html .='';
                         }else{
                             $html .='<td class="edit-roll" style="padding:3px"><button class="" style="background:#fff;border:0;padding:3px 5px" onclick="editRoll('."'".$i."'".')">EDIT</button></td>';

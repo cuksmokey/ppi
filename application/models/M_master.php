@@ -574,7 +574,7 @@ class M_master extends CI_Model{
     }
 
     function loadRkUkuran($search = "", $opl = "", $tglpl = "", $no_po = "", $nmker = "", $g_label =""){
-        $users = $this->db->query("SELECT tgl_pl,opl,p.no_po,p.nm_ker,p.g_label,m.width FROM pl p
+        $users = $this->db->query("SELECT tgl_pl,opl,p.no_po,p.nm_ker,p.g_label,m.width,p.id_perusahaan FROM pl p
         INNER JOIN po_master m ON p.no_po=m.no_po AND p.id_perusahaan=m.id_perusahaan AND p.nm_ker=m.nm_ker AND p.g_label=m.g_label
         WHERE tgl_pl='$tglpl' AND opl='$opl' AND p.no_po='$no_po' AND p.nm_ker='$nmker' AND p.g_label='$g_label' AND m.width LIKE '%$search%'
         GROUP BY tgl_pl,opl,p.no_po,p.nm_ker,p.g_label,m.width")->result_array();
@@ -582,7 +582,7 @@ class M_master extends CI_Model{
         $data = array();
         foreach($users as $user){
             $data[] = array(
-                "id" => $user['opl'].'_ex_'.$user['tgl_pl'].'_ex_'.$user['no_po'].'_ex_'.$user['nm_ker'].'_ex_'.$user['g_label'].'_ex_'.$user['width'],
+                "id" => $user['opl'].'_ex_'.$user['tgl_pl'].'_ex_'.$user['no_po'].'_ex_'.$user['nm_ker'].'_ex_'.$user['g_label'].'_ex_'.$user['width'].'_ex_'.$user['id_perusahaan'],
                 "text" => round($user['width'],2),
             );
         }
@@ -1026,9 +1026,15 @@ class M_master extends CI_Model{
 	}
 
     function simpanCartRk(){
+        // 2_ex_2022-12-21_ex_AP/TEST/2_ex_MH_ex_125_ex_170.00_ex_6
+        $expuk = explode("_ex_", $_POST['rkukuran']);
+        $tgl = $expuk[1];
+		$order_pl = $expuk[0];
+        $idpt = $expuk[6];
+
         foreach($this->cart->contents() as $data){
 			$exp = explode("-", $data['options']['tgl']);
-			$idrk = 'RK-'.$exp[0].$exp[1].$exp[2].'-'.$data['options']['order_pl'];
+			$idrk = 'RK.'.$idpt.'.'.substr($exp[0],2,2).$exp[1].$exp[2].'.'.$data['options']['order_pl'];
 
 			// JIKA ADA JENIS, GSM, UKURAN YANG SAMA = QTY DITAMBAHKAN SAJA
 			$nm_ker = $data['options']['nm_ker'];
@@ -1059,11 +1065,8 @@ class M_master extends CI_Model{
         }
 
         // UPDATE PL
-        $exp = explode("_ex_", $_POST['rkukuran']);
-		$tgl = $exp[1];
-		$order_pl = $exp[0];
         $updidrkPl = $this->db->query("SELECT*FROM m_rencana_kirim WHERE tgl='$tgl' AND order_pl='$order_pl'");
-        $getpl = $this->db->query("SELECT*FROM pl WHERE tgl_pl='$tgl' AND opl='$order_pl'");
+        $getpl = $this->db->query("SELECT*FROM pl WHERE id_perusahaan='$idpt' AND tgl_pl='$tgl' AND opl='$order_pl'");
         foreach($getpl->result() as $r){
             $this->db->set('id_rk', $updidrkPl->row()->id_rk);
             $this->db->where('id', $r->id);
