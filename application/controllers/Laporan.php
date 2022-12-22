@@ -5558,6 +5558,7 @@ class Laporan extends CI_Controller {
 			}
 		}
 
+		$html .='<div style="overflow:auto;white-space:nowrap;">';
         $html .='<table style="margin:0;padding:0;font-size:12px;color:#000;vertical-align:center;border-collapse:collapse">';
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan
 		WHERE $where
@@ -5603,19 +5604,19 @@ class Laporan extends CI_Controller {
 
 				if(($roll->status == 0 && $roll->id_pl == 0) || ($roll->status == 2 && $roll->id_pl == 0)){ // STOK + PPI
                     $bgStt = 'cek-status-stok';
-					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
-						$diss = 'disabled';
-					}else{
+					if($opsi == 'cekRollStok' || $otori == 'all' || $otori == 'admin' || $otori == 'qc'){
 						$diss = '';
+					}else{
+						$diss = 'disabled';
 					}
 					$oBtn = '';
 					$cBtn = '';
 				}else if($roll->status == 3 && $roll->id_pl == 0){ // BUFFER
                     $bgStt = 'cek-status-buffer';
-					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
-						$diss = 'disabled';
-					}else{
+					if($opsi == 'cekRollStok' || $otori == 'all' || $otori == 'admin' || $otori == 'qc'){
 						$diss = '';
+					}else{
+						$diss = 'disabled';
 					}
 					$oBtn = '';
 					$cBtn = '';
@@ -5626,10 +5627,10 @@ class Laporan extends CI_Controller {
 					$cBtn = '</button>';
 				}else{ // TIDAK TERDETEKSI
                     $bgStt = 'cek-status-stok';
-					if($opsi == 'cekRollStok' || $otori == 'fg' || $otori == 'user'){
-						$diss = 'disabled';
-					}else{
+					if($opsi == 'cekRollStok' || $otori == 'all' || $otori == 'admin' || $otori == 'qc'){
 						$diss = '';
+					}else{
+						$diss = 'disabled';
 					}
 					$oBtn = '';
 					$cBtn = '';
@@ -5722,6 +5723,7 @@ class Laporan extends CI_Controller {
 			}
 		}
 		$html .='</table>';
+		$html .='</div>';
 
         echo $html;
     }

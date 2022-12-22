@@ -1323,9 +1323,10 @@ class Master extends CI_Controller
 
 		// CEK JIKA SUDAH MASUK RENCANA KIRIM
 		$cek_rk = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND (id_rk='' OR id_rk IS NULL)");
-		if(($_POST['lket'] == $_POST['ket']) && ($_POST['lstatus'] == $_POST['status']) && $_POST['edit'] == 'ListStokGudang' && $cek_rk->num_rows() == 0){
-			echo json_encode($data);
-		}else if(($_POST['lnm_ker'] != $_POST['nm_ker']) || ($_POST['lg_label'] != $_POST['g_label']) || ($_POST['lwidth'] != $_POST['width']) || ($_POST['lweight'] != $_POST['weight']) || ($_POST['ldiameter'] != $_POST['diameter']) || ($_POST['ljoint'] != $_POST['joint']) || ($_POST['lket'] != $_POST['ket']) || ($_POST['lstatus'] != $_POST['status']) && $_POST['edit'] == 'LapQC' && $cek_rk->num_rows() == 0){
+		// if(($_POST['lket'] != $_POST['ket']) && $_POST['edit'] == 'ListStokGudang' && $cek_rk->num_rows() == 0){
+		// 	echo json_encode($data);
+		// }else 
+		if((($_POST['lnm_ker'] != $_POST['nm_ker']) || ($_POST['lg_label'] != $_POST['g_label']) || ($_POST['lwidth'] != $_POST['width']) || ($_POST['lweight'] != $_POST['weight']) || ($_POST['ldiameter'] != $_POST['diameter']) || ($_POST['ljoint'] != $_POST['joint']) || ($_POST['lket'] != $_POST['ket']) || ($_POST['lstatus'] != $_POST['status'])) && ($_POST['edit'] == 'LapQC' || $_POST['edit'] == 'ListStokGudang') && $cek_rk->num_rows() == 0){
 			echo json_encode($data);
 		}else{
 			$this->m_master->updateQCRoll();
@@ -1660,19 +1661,24 @@ class Master extends CI_Controller
 				}
 
 				// KALAU RENCANA KIRIM BELUM OK MASIH BISA DIHAPUS
+				$edit = '<button onclick="editPL('."'".$r->id_perusahaan."'".','."'".$r->tgl_pl."'".','."'".$r->opl."'".','."'".$i."'".')">EDIT</button>';
 				$hapus = '<button onclick="hapusPL('."'".$r->id_perusahaan."'".','."'".$r->id_rk."'".','."'".$r->tgl_pl."'".','."'".$r->opl."'".','."'".$i."'".')">HAPUS</button>';
-				$getrk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE qc_rk='ok' AND id_rk='$r->id_rk' AND tgl='$r->tgl_pl' AND order_pl='$r->opl'");
-				if($getrk->num_rows() == 0){
-					$aksiHapus = $hapus;
+				if($otorisasi == 'all' || $otorisasi == 'admin'){
+					$getrk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE qc_rk='ok' AND id_rk='$r->id_rk' AND tgl='$r->tgl_pl' AND order_pl='$r->opl'");
+					if($getrk->num_rows() == 0){
+						$aksi = $hapus;
+					}else{
+						$aksi = '';
+					}
 				}else{
-					$aksiHapus = '';
+					$aksi = '';
 				}
+
 				$html .='<table style="font-size:12px;color:#000">';
 				$html .='<tr>
 					<td>
 						<button onclick="btnRencana('."'".$r->id_rk."'".','."'".$r->opl."'".','."'".$r->tgl_pl."'".','."'".$pbtnrencana."'".','."'".$i."'".')">PROSES</button>
-						<button onclick="editPL('."'".$r->id_perusahaan."'".','."'".$r->tgl_pl."'".','."'".$r->opl."'".','."'".$i."'".')">EDIT</button>
-						'.$aksiHapus.'
+						'.$aksi.'
 					</td>
 					<td style="padding:5px">'.$i.'</td>
 					<td style="padding:5px">'.$nama.'</td>
@@ -2395,7 +2401,7 @@ class Master extends CI_Controller
 								$html .='';
 							}else{
 								$html .='<tr>
-									<td style="padding:5px;text-align:right" colspan="13"><button onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$getPl->row()->id."'".','."'".$plh."'".')">ALL IN</button></td>
+									<td style="padding:5px;font-weight:bold;text-align:right" colspan="13"><button onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$getPl->row()->id."'".','."'".$plh."'".')">ALL IN</button></td>
 								</tr>';
 							}
 						}else{
@@ -2408,6 +2414,7 @@ class Master extends CI_Controller
 
 				$totRoll += $ker->jml;
 			}
+
 			// TOMBAL CEK OK
 			if($cekOk->num_rows() > 0){
 				if($plh == 'pl'){
@@ -2419,19 +2426,32 @@ class Master extends CI_Controller
 						$btnCekOk = 'CEK BELUM OK!';
 					}
 				}
+				$btnplcek = '<div style="display:inline-block;margin:0 20px">
+					<a href="'.base_url('Master/packingListCek').'?idrk='.$id_rk.'" target="_blank" rel="plcek">PACKING LIST CEK</a>
+				</div>';
 			}else{
 				if($plh == 'pl'){
-					// $btnCekOk = '<button onclick="cekOkRk('."'".$id_rk."'".','."'".$plh."'".','."'".$l."'".','."'batal'".')">BATAL OK</button>';
-					$btnCekOk = '<button onclick="">BATAL OK</button>';
+					if($otorisasi == 'all' || $otorisasi == 'admin'){
+						$btnCekOk = '<button onclick="cekOkRk('."'".$id_rk."'".','."'".$plh."'".','."'".$l."'".','."'batal'".')">BATAL OK</button>';
+					}else{
+						$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
+					}
 				}else{
 					$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
 				}
+				$btnplcek = '';
+			}
+			
+			if($plh == 'pl'){
+				$cls = 6;
+			}else{
+				$cls = 5;
 			}
 			$html .='<tr style="background:#e9e9e9">
 				<td style="padding:5px;font-weight:bold">'.number_format($totRoll).'</td>
 				<td style="padding:5px;font-weight:bold" colspan="5">TOTAL</td>
 				<td style="padding:5px;font-weight:bold">'.number_format($totBerat).'</td>
-				<td style="padding:5px;font-weight:bold" colspan="5">'.$btnCekOk.'</td>
+				<td style="padding:5px;font-weight:bold" colspan="'.$cls.'">'.$btnplcek.''.$btnCekOk.'</td>
 			</tr>';
 			$html .='</table></div>';
 		}
@@ -2439,10 +2459,15 @@ class Master extends CI_Controller
 	}
 	
 	function cekOkRk(){
+		if($_POST['cek'] == 'ok'){
+			$msg = 'CEK OK! SURAT JALAN SEGERA DIPROSES!';
+		}else{
+			$msg = 'BERHASIL BATAL! MASUK KE RENCANA KIRIM KEMBALI!';
+		}
 		$result = $this->m_master->cekOkRk();
 		echo json_encode(array(
 			'res' => $result,
-			'msg' => 'CEK OK! SURAT JALAN SEGERA DIPROSES!',
+			'msg' => $msg,
 		));
 	}
 
@@ -2572,6 +2597,7 @@ class Master extends CI_Controller
 		$opl = $_POST['opl'];
 		$tglpl = $_POST['tgl_pl'];
 		$brencana = $_POST['brencana'];
+		$otorisasi = $_POST['otorisasi'];
 		$i = $_POST['i'];
 		$html = '';
 
@@ -2650,7 +2676,14 @@ class Master extends CI_Controller
 								}else{
 									$bg = 'status-stok';
 								}
-								// idrk,nm_ker,glabel,width,idpl,plh
+								
+								// BATAL
+								$batal = '<button onclick="entryBatalPL('."'".$roll->idroll."'".','."'".$roll->roll."'".','."'".$roll->statusroll."'".','."'".$roll->id_rk."'".','."'".$brencana."'".')">Batal</button>';
+								if($otorisasi == 'all' || $otorisasi == 'admin'){
+									$aksi = $batal;
+								}else{
+									$aksi = '-';
+								}
 								$html .='<td style="padding:5px;text-align:left" class="'.$bg.'">'.$roll->roll.'</td>
 									<td style="padding:5px" class="'.$bg.'">'.$roll->diameter.'</td>
 									<td style="padding:5px" class="'.$bg.'">'.number_format($berat).'</td>
@@ -2659,7 +2692,7 @@ class Master extends CI_Controller
 										<textarea disabled class="txt-area-new">'.$ket.'</textarea>
 									</td>
 									<td style="padding:5px" class="'.$bg.'">'.$roll->seset.'</td>
-									<td style="padding:5px" class="'.$bg.'"><button onclick="entryBatalPL('."'".$roll->idroll."'".','."'".$roll->roll."'".','."'".$roll->statusroll."'".','."'".$roll->id_rk."'".','."'".$brencana."'".')">Batal</button></td>';
+									<td style="padding:5px" class="'.$bg.'">'.$aksi.'</td>';
 								$html .='</tr>';
 							}
 							$html .='</tr>';
@@ -3527,5 +3560,242 @@ class Master extends CI_Controller
 	function closePO() {
 		$return = $this->m_master->closePO();
 		echo json_encode(array('res' => $return, 'msg' => $_POST['no_po'].' BERHASIL DI CLOSE!'));
+	}
+
+	function packingListCek(){
+		$idrk = $_GET['idrk'];
+		$html = '';
+		$html .='<table style="width:100%;font-size:11px;border-collapse:collapse;color:#000">
+		<tr>
+			<td style="width:15%"></td>
+			<td style="width:1%"></td>
+			<td style="width:84%"></td>
+		</tr>
+		<tr>
+			<td style="font-weight:bold;text-align:center;text-decoration:underline" colspan="3">PACKING LIST CEK</td>
+		</tr>';
+
+		// HEADER
+		$header = $this->db->query("SELECT a.*,b.nm_ker,COUNT(b.roll) AS roll FROM pl a
+		INNER JOIN m_timbangan b ON a.id_rk=b.id_rk
+		WHERE a.id_rk='$idrk'
+		GROUP BY a.id_rk");
+
+		$html .='<tr>
+			<td style="padding:2px">ID RK</td>
+			<td style="padding:2px">:</td>
+			<td style="padding:2px">'.$header->row()->id_rk.'</td>
+		</tr>
+		<tr>
+			<td style="padding:2px">RENCANA KIRIM</td>
+			<td style="padding:2px">:</td>
+			<td style="padding:2px">'.$header->row()->tgl_pl.'</td>
+		</tr>
+		<tr>
+			<td style="padding:2px">CUSTOMER</td>
+			<td style="padding:2px">:</td>
+			<td style="padding:2px">'.$header->row()->nm_perusahaan.'</td>
+		</tr>
+		<tr>
+			<td style="padding:2px">NAMA</td>
+			<td style="padding:2px">:</td>
+			<td style="padding:2px">'.$header->row()->nama.'</td>
+		</tr>
+		<tr>
+			<td style="padding:2px">ALAMAT</td>
+			<td style="padding:2px">:</td>
+			<td style="padding:2px">'.$header->row()->alamat_perusahaan.'</td>
+		</tr>';
+		$html .='</table>';
+		
+		// ISI
+		$html .='<table style="width:100%;font-size:11px;text-align:center;border-collapse:collapse;color:#000" cellpadding="5" border="1">';
+
+		$kop_detail = $this->db->query("SELECT id_rk,nm_ker,COUNT(*) AS jml_roll,SUM(weight) AS berat,SUM(seset) AS seset FROM m_timbangan
+		WHERE id_rk='$idrk' GROUP BY nm_ker ORDER BY nm_ker DESC");
+
+		if($kop_detail->row()->nm_ker == 'WP'){
+			$html .= '<tr>
+				<th style="border:0;padding:2px 0;width:5%"></th>
+				<th style="border:0;padding:2px 0;width:9%"></th>
+				<th style="border:0;padding:2px 0;width:9%"></th>
+				<th style="border:0;padding:2px 0;width:10%"></th>
+				<th style="border:0;padding:2px 0;width:10%"></th>
+				<th style="border:0;padding:2px 0;width:10%"></th>
+				<th style="border:0;padding:2px 0;width:10%"></th>
+				<th style="border:0;padding:2px 0;width:10%"></th>
+				<th style="border:0;padding:2px 0;width:27%"></th>
+			</tr>';
+			$cs = '4';
+		}else{
+			$html .= '<tr>
+				<th style="border:0;padding:2px 0;width:5%"></th>
+				<th style="border:0;padding:2px 0;width:8%"></th>
+				<th style="border:0;padding:2px 0;width:8%"></th>
+				<th style="border:0;padding:2px 0;width:9%"></th>
+				<th style="border:0;padding:2px 0;width:9%"></th>
+				<th style="border:0;padding:2px 0;width:9%"></th>
+				<th style="border:0;padding:2px 0;width:9%"></th>
+				<th style="border:0;padding:2px 0;width:9%"></th>
+				<th style="border:0;padding:2px 0;width:6%"></th>
+				<th style="border:0;padding:2px 0;width:28%"></th>
+			</tr>';
+			$cs = '5';
+		}
+
+		$totalRoll = 0;
+		$totalBerat = 0;
+		foreach($kop_detail->result() as $kd){
+			if($kd->nm_ker == 'MH' || $kd->nm_ker == 'MI'){
+				$dkop = '<td style="border:1px solid #000;font-weight:bold">RCT</td>';
+				$joint = 'JNT';
+			}else if($kd->nm_ker == 'BK' || $kd->nm_ker == 'BL'){
+				$dkop = '<td style="border:1px solid #000;font-weight:bold">BI</td>';
+				$joint = 'JNT';
+			}else if($kd->nm_ker == 'WP'){
+				$dkop = '';
+				$joint = 'JOINT';
+			}else{
+				$dkop = '<td style="border:1px solid #000;font-weight:bold">-</td>';
+				$joint = 'JNT';
+			}
+
+			$html .= '<tr>
+				<td style="border:1px solid #000;font-weight:bold">NO</td>
+				<td style="border:1px solid #000;font-weight:bold" colspan="2">ROLL - '.$kd->nm_ker.'</td>
+				<td style="border:1px solid #000;font-weight:bold">BW</td>
+				'.$dkop.'
+				<td style="border:1px solid #000;font-weight:bold">GSM</td>
+				<td style="border:1px solid #000;font-weight:bold">WIDTH</td>
+				<td style="border:1px solid #000;font-weight:bold">BERAT</td>
+				<td style="border:1px solid #000;font-weight:bold">'.$joint.'</td>
+				<td style="border:1px solid #000;font-weight:bold">KETERANGAN</td>
+			</tr>';
+
+			// ISI
+			$isiDetail = $this->db->query("SELECT*FROM m_timbangan WHERE id_rk='$kd->id_rk' AND (nm_ker='$kd->nm_ker') ORDER BY nm_ker DESC,g_label ASC,width ASC,roll ASC");
+
+			$no = 1;
+			foreach($isiDetail->result() as $r){
+				if($r->g_ac == 0){
+					$c_g_ac = number_format($r->g_ac);
+				}else{
+					$c_g_ac = $r->g_ac;
+				}
+				
+				if($r->rct == 0){
+					$c_rct = number_format($r->rct);
+				}else{
+					$c_rct = $r->rct;
+				}
+
+				if($r->bi == 0){
+					$c_bi = number_format($r->bi);
+				}else{
+					$c_bi = $r->bi;
+				}
+
+				if($r->nm_ker == 'MH' || $r->nm_ker == 'MI'){
+					$cek = '<td style="border:1px solid #000">'.$c_rct.'</td>';
+				}else if($r->nm_ker == 'BK' || $r->nm_ker == 'BL'){
+					$cek = '<td style="border:1px solid #000">'.$c_bi.'</td>';
+				}else if($r->nm_ker == 'WP'){
+					$cek = '';
+				}else{
+					$cek = '<td style="border:1px solid #000">-</td>';
+				}
+
+				if($r->status == 2){
+					$pKet = '+PPI';
+				}else{
+					$pKet = '';
+				}
+
+				if(($r->nm_ker == 'MH' || $r->nm_ker == 'MN') && ($r->g_label == 105 || $r->g_label == 110)){
+					$bgCrGsm = '#eef';
+				}else if($r->nm_ker == 'MH' && ($r->g_label == 120 || $r->g_label == 125)){
+					$bgCrGsm = '#ffe';
+				}else if(($r->nm_ker == 'MH' || $r->nm_ker == 'MN') && $r->g_label == 150){
+					$bgCrGsm = '#fee';
+				}else if($r->nm_ker == 'WP'){
+					$bgCrGsm = '#efe';
+				}else{
+					$bgCrGsm = '#fff';
+				}
+
+				// SESET ISI LIST
+				if($r->seset == 0 || $r->seset == null){
+					$tBerat = $r->weight;
+					$sesetKet = '';
+				}else{
+					$tBerat = $r->weight - $r->seset;
+					$sesetKet = '- '.$r->seset.'KG. '.$r->weight.'. ';
+				}
+
+				$html .= '<tr>
+					<td style="border:1px solid #000">'.$no.'</td>
+					<td style="border:1px solid #000;letter-spacing:0.5px" colspan="2">'.$r->roll.'</td>
+					<td style="border:1px solid #000">'.$c_g_ac.'</td>
+					'.$cek.'
+					<td style="border:1px solid #000;background-color:'.$bgCrGsm.'">'.$r->g_label.'</td>
+					<td style="border:1px solid #000">'.round($r->width,2).'</td>
+					<td style="border:1px solid #000">'.$tBerat.'</td>
+					<td style="border:1px solid #000">'.$r->joint.'</td>
+					<td style="border:1px solid #000;text-align:left;font-size:10px">'.$sesetKet.''.strtoupper($r->ket).''.$pKet.'</td>
+				</tr>';
+				$no++;
+			}
+
+			// SESET SATU PL
+			if($kd->seset == 0 || $kd->seset == null){
+				$sumBerat = $kd->berat;
+			}else{
+				$sumBerat = $kd->berat - $kd->seset;
+			}
+			$totalRoll += $kd->jml_roll;
+			$totalBerat += $sumBerat;
+		}
+
+		$html .='<tr>
+			<td style="padding:0;border:1px solid #000;font-weight:bold">'.$totalRoll.'</td>
+			<td style="border:1px solid #000;font-weight:bold" colspan="'.$cs.'">-</td>
+			<td style="border:1px solid #000;font-weight:bold">TOTAL</td>
+			<td style="border:1px solid #000;font-weight:bold">'.number_format($totalBerat).'</td>
+			<td style="border:1px solid #000" colspan="2"></td>
+		</tr>';
+
+		$qrTotPL = $this->db->query("SELECT nm_ker,g_label,width,COUNT(roll) AS roll FROM m_timbangan WHERE id_rk='$idrk'
+		GROUP BY nm_ker,g_label,nm_ker,width ORDER BY nm_ker DESC,g_label ASC,width ASC");
+		$html .='<tr>
+			<td style="padding:5px 0 0;border:0;font-weight:normal;text-align:left" colspan="10" >';
+			foreach($qrTotPL->result() as $abc){
+				if(($abc->nm_ker == 'MH' || $abc->nm_ker == 'MN') && ($abc->g_label == 105 || $abc->g_label == 110)){
+					$bcg2 = '#eef';
+				}else if($abc->nm_ker == 'MH' && ($abc->g_label == 120 || $abc->g_label == 125)){
+					$bcg2 = '#ffe';
+				}else if(($abc->nm_ker == 'MH' || $abc->nm_ker == 'MN') && $abc->g_label == 150){
+					$bcg2 = '#fee';
+				}else if($abc->nm_ker == 'WP'){
+					$bcg2 = '#efe';
+				}else{
+					$bcg2 = '#fff';
+				}
+				$html .= '<span style="background-color:'.$bcg2.'">( '.$abc->roll.' - '.round($abc->width,2).' )</span> ';
+			}
+		$html .='</td></tr>';
+		$html .='</table>';
+
+		$count_p_pl = $this->db->query("SELECT*FROM m_timbangan WHERE id_rk='$idrk'")->num_rows();
+		if($count_p_pl >= 38){
+			$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',3);
+		}else if($count_p_pl >= 35){
+			$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',2);
+		}else if($count_p_pl >= 34){
+			$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',1);
+		}else if($count_p_pl < 34){
+			$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',0);
+		}
+
+		// echo $html;
 	}
 }

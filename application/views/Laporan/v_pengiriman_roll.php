@@ -504,7 +504,7 @@
 		// kosong();
 		// rkkosong();
 
-		if(otorisasi == 'all' || otorisasi == 'admin'){
+		if(otorisasi == 'all' || otorisasi == 'admin' || otorisasi == 'office' || otorisasi == 'finance'){
 			$(".plh-opsi-plrk").show();
 			$("#btn-opsi-pl").show();
 			$("#btn-opsi-rk").show();
@@ -1525,7 +1525,7 @@
 			url: '<?php echo base_url('Master/prosesPL')?>',
 			type: "POST",
 			data: ({
-				id_rk,opl,tgl_pl,brencana,i
+				id_rk,opl,tgl_pl,brencana,i,otorisasi
 			}),
 			success: function(res){
 				$(".t-plist-proses-pl-"+i).html(res);
@@ -1776,8 +1776,13 @@
 		vidpl = $("#v-id-pl").val();
 		vopl = $("#v-opl").val();
 		vtglpl = $("#v-tgl-pl").val();
+		if(cek == 'ok'){
+			txt = "CEK QC OK ?";
+		}else{
+			txt = "BATAL OK ?";
+		}
 		swal({
-			title: "CEK QC OK ?",
+			title: txt,
 			text: "ID RK : "+idrk,
 			type: "warning",
 			showCancelButton: true,
@@ -1793,7 +1798,7 @@
 					url: '<?php echo base_url('Master/cekOkRk')?>',
 					type: "POST",
 					data: ({
-						idrk,i
+						idrk,i,cek
 					}),
 					success: function(json){
 						data = JSON.parse(json)

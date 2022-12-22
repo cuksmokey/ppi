@@ -407,7 +407,7 @@
 	function cek(nm_ker,g_label,width,otori){
 		// stat = $("#stat").val();
 		// alert(nm_ker+' '+g_label+' '+width+' '+otori,' '+stat)
-		if(otori == "all" || otori == "admin"){
+		if(otori == "all" || otori == "admin" || otori == "office" || otori == "finance"){
 			cekPenjualan(nm_ker,g_label,width);
 			cekRoll(nm_ker,g_label,width,otori);
 		}else if(otori == "qc" || otori == "fg"){
@@ -509,8 +509,14 @@
 			type: "POST",
 			data: ({
 				id : i,
+				nm_ker: lnm_ker,
+				g_label: lg_label,
+				width: lwidth,
+				weight: lweight,
+				diameter: ldiameter,
+				joint: ljoint,
 				ket : ket,
-				status : status,
+				status : lstatus,
 				lroll: lroll,
 				lnm_ker: lnm_ker,
 				lg_label: lg_label,
@@ -538,6 +544,22 @@
 				$("#ljoint-"+i).val(json.joint);
 				$("#lket-"+i).val(json.ket);
 				$("#lstatus-"+i).val(json.status);
+			}
+		});
+	}
+
+	function cek_roll(id){
+		$(".isi-qc-edit").html('');
+		$(".isi-qc-terjual").html('Tunggu Sebentar . . .');
+		$("#modal-qc-list").modal("show");
+		$.ajax({
+			url: '<?php echo base_url('Laporan/QCRollTerjual') ?>',
+			type: "POST",
+			data: ({
+				id: id
+			}),
+			success: function(response) {
+				$(".isi-qc-terjual").html(response);
 			}
 		});
 	}

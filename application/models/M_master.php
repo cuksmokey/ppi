@@ -901,7 +901,6 @@ class M_master extends CI_Model{
 	function updateQCRoll(){
         if($_POST['edit'] == 'ListStokGudang'){
             $this->db->set('ket', $_POST['ket']);
-            $this->db->set('status', $_POST['status']);
         }else{
             $this->db->set('tgl', $_POST['tgl']);
             $this->db->set('g_ac', $_POST['g_ac']);
@@ -917,12 +916,10 @@ class M_master extends CI_Model{
             $this->db->set('status', $_POST['status']);
         }
         
-        // $this->db->set('packing_at', date("Y-m-d H:i:s"));
-        // $this->db->set('packing_by', $this->session->userdata('username'));
         $this->db->where('id', $_POST['id']);
         $result = $this->db->update('m_timbangan');
 
-		if($_POST['edit'] == 'ListStokGudang' && ($_POST['lket'] == $_POST['ket']) && ($_POST['lstatus'] == $_POST['status'])){
+		if($_POST['edit'] == 'ListStokGudang' && ($_POST['lket'] == $_POST['ket'])){
 			$result = true;
 		}else if($_POST['edit'] == 'LapQC' && ($_POST['lnm_ker'] == $_POST['nm_ker']) && ($_POST['lg_label'] == $_POST['g_label']) && ($_POST['lwidth'] == $_POST['width']) && ($_POST['lweight'] == $_POST['weight']) && ($_POST['ldiameter'] == $_POST['diameter']) && ($_POST['ljoint'] == $_POST['joint']) && ($_POST['lket'] == $_POST['ket']) && ($_POST['lstatus'] == $_POST['status'])){
             $result = true;
@@ -952,8 +949,8 @@ class M_master extends CI_Model{
             // }
             // $this->db->set('id_pl', $data['options']['id_pl']);
             $this->db->set('id_rk', $data['options']['id_rk']);
-            $this->db->set('packing_at', date("Y-m-d H:i:s"));
-            $this->db->set('packing_by', $this->session->userdata('username'));
+            // $this->db->set('packing_at', date("Y-m-d H:i:s"));
+            // $this->db->set('packing_by', $this->session->userdata('username'));
             $this->db->where('id', $data['id']);
             
             $result = $this->db->update('m_timbangan');
@@ -999,9 +996,36 @@ class M_master extends CI_Model{
 	}
 
     function cekOkRk(){
-        $this->db->set('qc_rk', 'ok');
-        $this->db->where('id_rk', $_POST['idrk']);
-        return $this->db->update('m_rencana_kirim');
+		$idrk = $_POST['idrk'];
+
+		if($_POST['cek'] == 'ok'){
+			$this->db->set('qc_rk', 'ok');
+			$this->db->where('id_rk', $idrk);
+			return $this->db->update('m_rencana_kirim');
+		}else{
+			// JIKA SUDAH ADA ROLL YANG MASUK KE PACKING LIST KEMBALIKAN LAGI KE RENCANA KIRIM
+			$getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE id_rk='$idrk'");
+			foreach($getRoll->result() as $r){
+				if($r->status == 1){
+					$status = 0;
+				}else{
+					$status = $r->status;
+				}
+				$this->db->set('status', $status);
+				$this->db->set('id_pl', 0);
+				$this->db->set('packing_at', null);
+				$this->db->set('packing_by', null);
+				$this->db->where('id', $r->id);
+				$result = $this->db->update('m_timbangan');
+			}
+			
+			// UPDATE RENCANA KIRIM KE PROSES KEMBALI
+			$this->db->set('qc_rk', 'proses');
+			$this->db->where('id_rk', $idrk);
+			$result = $this->db->update('m_rencana_kirim');
+
+			return $result;
+		}
     }
 
     function reqLabelRk(){
@@ -1247,7 +1271,7 @@ class M_master extends CI_Model{
         return $result;
     }
 
-	function entryPL(){
+	function entryPL(){ // 
 		$idpl = $_POST['idpl'];
 		$idroll = $_POST['idroll'];
 		$rstatus = $_POST['rstatus'];
