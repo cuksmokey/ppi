@@ -2420,7 +2420,7 @@ class Master extends CI_Controller
 				if($plh == 'pl'){
 					$btnCekOk ='BELUM DICEK OLEH QC!';
 				}else{
-					if($otorisasi == 'qc'){
+					if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'qc'){
 						$btnCekOk = '<button onclick="cekOkRk('."'".$id_rk."'".','."'".$plh."'".','."'".$l."'".','."'ok'".')">CEK OK</button>';
 					}else{
 						$btnCekOk = 'CEK BELUM OK!';

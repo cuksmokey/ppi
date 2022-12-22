@@ -389,7 +389,6 @@ class Laporan extends CI_Controller {
     function print_surat_jalan(){ //
         $jenis = $_GET['jenis'];
         $ctk = $_GET['ctk'];
-        $idrk = $_GET['idrk'];
         $html = '';
 
 		# # # # # # # # # K O P # # # # # # # # # #
