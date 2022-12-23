@@ -1390,4 +1390,42 @@ class M_master extends CI_Model{
             $this->db->update('user');
         }
     }
+
+    function simpanExpedisi(){
+        $no_polisi1 = $_POST['no_polisi1'];
+        $no_polisi2 = $_POST['no_polisi2'];
+        $no_polisi3 = $_POST['no_polisi3'];
+        $mert_type = $_POST['mert_type'];
+        $pt = $_POST['pt'];
+        $nm_supir = $_POST['nm_supir'];
+        $no_hp = $_POST['no_hp'];
+        $status = $_POST['status'];
+
+        // plat merk_type pt supir no_hp
+        if($status == 'insert'){
+            $data = array(
+                'plat' => $no_polisi1.' '.$no_polisi2.' '.$no_polisi3,
+                'merk_type' => $mert_type,
+                'pt' => $pt,
+                'supir' => $nm_supir,
+                'no_telp' => $no_hp,
+                'created_at' => date("Y-m-d H:i:s"),
+                'created_by' => $this->session->userdata('username'),
+            );
+            $result = $this->db->insert('m_expedisi', $data);
+        }else{ // update
+            $nopol = $no_polisi1.' '.$no_polisi2.' '.$no_polisi3;
+            $this->db->set('plat', $nopol);
+            $this->db->set('merk_type', $mert_type);
+            $this->db->set('pt', $pt);
+            $this->db->set('supir', $nm_supir);
+            $this->db->set('no_telp', $no_hp);
+            $this->db->set('edited_at', date("Y-m-d H:i:s"));
+            $this->db->set('edited_by', $this->session->userdata('username'));
+            $this->db->where('id', $_POST['idex']);
+            $result = $this->db->update('m_expedisi');
+        }
+
+        return $result;
+    }
 }

@@ -66,7 +66,8 @@ ADD COLUMN `tgl_pl` DATE NULL AFTER `qc`,
 ADD COLUMN `opl` INT(11) DEFAULT 0 NULL AFTER `tgl_pl`,
 ADD COLUMN `nm_ker` VARCHAR(50) NULL AFTER `opl`,
 ADD COLUMN `g_label` INT(11) NULL AFTER `nm_ker`,
-ADD COLUMN `id_rk` VARCHAR(50) NULL AFTER `g_label`;
+ADD COLUMN `id_rk` VARCHAR(50) NULL AFTER `g_label`
+ADD COLUMN `id_expedisi` INT(11) NULL AFTER `id_rk`;
 
 //////////////////////////////////////
 
@@ -89,3 +90,21 @@ ALTER TABLE `db_ppi`.`po_master`
   ADD COLUMN `created_by` VARCHAR(50) NULL AFTER `created_at`,
   ADD COLUMN `edited_at` TIMESTAMP NULL AFTER `created_by`,
   ADD COLUMN `edited_by` VARCHAR(50) NULL AFTER `edited_at`;
+
+//////////////////////////////////////
+
+TAMBAH TABLE MASTER EXPEDISI
+
+CREATE TABLE `db_ppi`.`m_expedisi`(  
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `plat` VARCHAR(10),
+  `merk_type` VARCHAR(50) NULL,
+  `pt` VARCHAR(50),
+  `supir` VARCHAR(50),
+  `no_hp` VARCHAR(20) NULL,
+  `created_at` TIMESTAMP NULL,
+  `created_by` VARCHAR(50) NULL,
+  `edited_at` TIMESTAMP NULL,
+  `edited_by` VARCHAR(50) NULL,
+  PRIMARY KEY (`id`)
+);

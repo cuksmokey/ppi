@@ -172,13 +172,21 @@
 						</a>
 					</li>
 					<?php } ?>
-                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC") { ?>
+                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG") { ?>
+                        <li>
+                            <a href="<?php echo base_url('Master/Expedisi') ?>">
+                                <!-- <i class="material-icons">list</i> -->
+                                <span>Expedisi</span>
+                            </a>
+                        </li>
                         <li>
                             <a href="<?php echo base_url('Laporan/Pengiriman_Roll') ?>">
                                 <!-- <i class="material-icons">list</i> -->
                                 <span>Pengiriman</span>
                             </a>
                         </li>
+                    <?php } ?>
+                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC") { ?>
                         <li>
                             <a href="<?php echo base_url('Laporan/List_Roll') ?>">
                                 <!-- <i class="material-icons">list</i> -->

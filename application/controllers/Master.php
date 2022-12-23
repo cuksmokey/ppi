@@ -66,6 +66,12 @@ class Master extends CI_Controller
 		$this->load->view('footer');
 	}
 
+	public function Expedisi(){
+		$this->load->view('header');
+		$this->load->view('Master/v_expedisi');
+		$this->load->view('footer');
+	}
+
 	public function Administrator()
 	{
 		$this->load->view('header');
@@ -3655,6 +3661,91 @@ class Master extends CI_Controller
 	function closePO() {
 		$return = $this->m_master->closePO();
 		echo json_encode(array('res' => $return, 'msg' => $_POST['no_po'].' BERHASIL DI CLOSE!'));
+	}
+
+	function loadDataExpedisi(){
+		$cari = $_POST['cari'];
+		$html = '';
+		$getData = $this->db->query("SELECT*FROM m_expedisi
+		WHERE (plat LIKE '%$cari%' OR merk_type LIKE '%$cari%' OR pt LIKE '%$cari%' OR supir LIKE '%$cari%')
+		ORDER BY plat,merk_type,pt,supir");
+
+		$html .='<div style="margin-top:15px;color:#000;font-size:12px;overflow:auto;white-space:nowrap;">';
+		if($getData->num_rows() == 0){
+			$html .='<div style="font-weight:bold">DATA TIDAK DITEMUKAN!</div>';
+		}else{
+			$html .='<table style="width:100%" border="1">';
+			$html .='<tr style="background:#e9e9e9;font-weight:bold;text-align:center">
+				<td style="padding:5px">NO.</td>
+				<td style="padding:5px">NO. POLISI</td>
+				<td style="padding:5px">MERK / TYPE</td>
+				<td style="padding:5px">PT</td>
+				<td style="padding:5px">SUPIR</td>
+				<td style="padding:5px">NO. HP</td>
+				<td style="padding:5px">AKSI</td>
+			</tr>';
+			$i = 0;
+			foreach($getData->result() as $r){
+				$i++;
+				$html .='<tr class="list-table">
+					<td style="padding:5px;text-align:center">'.$i.'</td>
+					<td style="padding:5px">'.$r->plat.'</td>
+					<td style="padding:5px">'.$r->merk_type.'</td>
+					<td style="padding:5px">'.$r->pt.'</td>
+					<td style="padding:5px">'.$r->supir.'</td>
+					<td style="padding:5px">'.$r->no_telp.'</td>';
+				// CEK KALO SUDAH MASUK KE PACKING LIST TIDAK BISA HAPUS
+				$cekNoPol = $this->db->query("SELECT*FROM m_expedisi ex INNER JOIN pl p ON ex.id=p.id_expedisi
+				WHERE ex.id='$r->id'");
+				if($cekNoPol->num_rows() == 0){
+					$aksi = '<button onclick="editExpedisi('."'".$r->id."'".')">Edit</button>
+					<button onclick="hapusExpedisi('."'".$r->id."'".')">Hapus</button>';
+				}else{
+					$aksi = '-';
+				}
+				$html .='<td style="padding:5px;text-align:center">'.$aksi.'</td></tr>';
+			}
+			$html .='</table>';
+		}
+		$html .='</div>';
+		echo $html;
+	}
+
+	function simpanExpedisi(){
+		$no_polisi1 = $_POST['no_polisi1'];
+		$no_polisi2 = $_POST['no_polisi2'];
+		$no_polisi3 = $_POST['no_polisi3'];
+		$pt = $_POST['pt'];
+		$nm_supir = $_POST['nm_supir'];
+		$status = $_POST['status'];
+
+		if(!preg_match("/^[A-Z]*$/",$no_polisi1)){
+			echo json_encode(array('res' => false, 'msg' => 'KODE WILAYAH HANYA BOLEH HURUF!', 'info' => 'error'));
+		}else if(!preg_match("/^[0-9]*$/",$no_polisi2)){
+			echo json_encode(array('res' => false, 'msg' => 'NOMER POLISI HARUS ANGKA!', 'info' => 'error'));
+		}else if(!preg_match("/^[A-Z]*$/",$no_polisi3)){
+			echo json_encode(array('res' => false, 'msg' => 'KODE WILAYAH HANYA BOLEH HURUF!', 'info' => 'error'));
+		}else if(!preg_match("/^[A-Z ]*$/",$pt)){
+			echo json_encode(array('res' => false, 'msg' => 'NAMA PT HANYA BOLEH HURUF!', 'info' => 'error'));
+		}else if(!preg_match("/^[A-Z ]*$/",$nm_supir)){
+			echo json_encode(array('res' => false, 'msg' => 'NAMA SUPIR HANYA BOLEH HURUF!', 'info' => 'error'));
+		}else{ // SIMPAN
+			$return = $this->m_master->simpanExpedisi();
+			echo json_encode(array(
+				'res' => $return,
+				'msg' => 'BERHASIL '.strtoupper($status).' DATA!',
+				'info' => 'success',
+			));
+		}
+	}
+
+	function editExpedisi(){
+		$id = $_POST['id'];
+		$getData = $this->db->query("SELECT*FROM m_expedisi WHERE id='$id'");
+		echo json_encode(array(
+			'res' => true,
+			'data' => $getData->row(),
+		));
 	}
 
 	function packingListCek(){
