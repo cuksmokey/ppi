@@ -400,11 +400,11 @@ class Laporan extends CI_Controller {
         GROUP BY ker LIMIT 1;")->row();
 
         // count data kop
-        $count_kop = $this->db->query("SELECT g_label,a.nm_ker AS ker,width,COUNT(*) AS qty,SUM(weight) AS berat,b.no_po as po FROM m_timbangan a
+        $count_kop = $this->db->query("SELECT a.g_label,a.nm_ker AS ker,width,COUNT(*) AS qty,SUM(weight) AS berat,b.no_po as po FROM m_timbangan a
         INNER JOIN pl b ON a.id_pl=b.id
         WHERE b.no_pkb='$jenis'
-        GROUP BY g_label,width,b.no_po
-        ORDER BY g_label,width,b.no_po ASC")->num_rows();
+        GROUP BY a.g_label,width,b.no_po
+        ORDER BY a.g_label,width,b.no_po ASC")->num_rows();
 
         // pengurangan jarak jika data terlalu banyak
         if($count_kop >= '10' || ($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '7' )){
@@ -584,13 +584,13 @@ class Laporan extends CI_Controller {
         </tr>';
 
         // AMBIL DATA
-        $data_detail = $this->db->query("SELECT g_label,a.nm_ker AS ker,width,COUNT(*) AS qty,SUM(weight) AS berat,SUM(seset) AS seset,b.no_po as po,b.id_perusahaan,b.item_desc FROM m_timbangan a
+        $data_detail = $this->db->query("SELECT a.g_label,a.nm_ker AS ker,width,COUNT(*) AS qty,SUM(weight) AS berat,SUM(seset) AS seset,b.no_po as po,b.id_perusahaan,b.item_desc FROM m_timbangan a
         INNER JOIN pl b ON a.id_pl=b.id
         WHERE b.no_pkb='$jenis'
         -- GROUP BY g_label,width,po
-        GROUP BY nm_ker,g_label,width,po
+        GROUP BY a.nm_ker,a.g_label,width,po
         -- ORDER BY po,g_label ASC,width ASC
-        ORDER BY po,nm_ker DESC,g_label ASC,width ASC
+        ORDER BY po,a.nm_ker DESC,a.g_label ASC,width ASC
         ");
 
         $no = 1;
@@ -776,7 +776,7 @@ class Laporan extends CI_Controller {
                 INNER JOIN m_timbangan b ON a.id=b.id_pl
                 WHERE a.no_pkb='$jenis'
                 GROUP BY a.id
-                ORDER BY no_po DESC,g_label DESC,width DESC");
+                ORDER BY no_po DESC,a.g_label DESC,width DESC");
 
             foreach ($data_header->result() as $data_pl) {
 
@@ -1187,10 +1187,16 @@ class Laporan extends CI_Controller {
 
         // LABEL ROLL
         if($ctk == 'A4' || $ctk == 'a4' || $ctk == 'F4' || $ctk == 'f4'){
-            $data_detail = $this->db->query("SELECT * FROM m_timbangan a
-            INNER JOIN pl b ON a.id_pl=b.id
-            WHERE b.no_pkb='$all' AND (ket LIKE '-%' OR ket LIKE ' %' OR seset > '0')
-            ORDER BY a.nm_ker DESC,a.g_label ASC,a.width ASC,a.roll ASC");
+			if($all != 0){
+				$data_detail = $this->db->query("SELECT * FROM m_timbangan a
+				INNER JOIN pl b ON a.id_pl=b.id
+				WHERE b.no_pkb='$all' AND (ket LIKE '-%' OR ket LIKE ' %' OR seset > '0')
+				ORDER BY a.nm_ker DESC,a.g_label ASC,a.width ASC,a.roll ASC");
+			}else{
+				$data_detail = $this->db->query("SELECT * FROM m_timbangan a
+				WHERE a.id_rk='$jenis' AND (ket LIKE '-%' OR ket LIKE ' %' OR seset > '0' OR lbl_rk='req')
+				ORDER BY a.nm_ker DESC,a.g_label ASC,a.width ASC,a.roll ASC");
+			}
         }else if($jenis != 0 && $all == 0){
             $data_detail = $this->db->query("SELECT * FROM m_timbangan WHERE id_pl='$jenis' ORDER BY nm_ker ASC,g_label ASC,width ASC,roll ASC");
         }else{
@@ -1206,137 +1212,136 @@ class Laporan extends CI_Controller {
 
         $html = '';
 
-        if ($data_detail->num_rows() > 0) {
-        foreach ($data_detail->result() as $data ) {
+        if($data_detail->num_rows() > 0) {
+			foreach ($data_detail->result() as $data ) {
+				if($data->seset == 0 || $data->seset == null){
+						$lWeight = $data->weight;
+					}else{
+						$lWeight = $data->weight - $data->seset;
+					}
+				if($ctk == 0 || $ctk == 2 || $ctk == 'A4' || $ctk == 'F4'){
+					if($data->weight == 0){
+						$html .= '';
+					}else if($data->weight <> 0){
+						// 35PX
+						$html .= '
+						<div style="margin:0;color:#000">
+						<center> 
+							<h1 style="color:#000"> '.$data_perusahaan->nama.' </h1>  '.$data_perusahaan->daerah.' , Email : '.$data_perusahaan->email.'
+						</center>
+						</div>
+						<hr>';
 
-			if($data->seset == 0 || $data->seset == null){
-					$lWeight = $data->weight;
-				}else{
-					$lWeight = $data->weight - $data->seset;
+						// 35PX
+						$html .= '<br><br><br>
+								<table width="100%" cellspacing="0" cellpadding="5" style="font-size:52px;color:#000;margin:0">
+									<tr>
+										<td style="border:1px solid #000" align="left" width="50%">QUALITY</td>
+										<td style="border:1px solid #000" align="center">'.$data->nm_ker.'</td>
+									</tr>
+									<tr>
+										<td style="border:1px solid #000" align="left">GRAMMAGE</td>
+										<td style="border:1px solid #000" align="center">'.$data->g_label.' GSM</td>
+									</tr>
+									<tr>
+										<td style="border:1px solid #000" align="left">WIDTH</b></td>
+										<td style="border:1px solid #000" align="center">'.round($data->width,2).' CM</td>
+									</tr>
+									<tr>
+										<td style="border:1px solid #000" align="left">DIAMETER</td>
+										<td style="border:1px solid #000" align="center">'.$data->diameter.' CM</td>
+									</tr>
+									<tr>
+										<td style="border:1px solid #000" align="left">WEIGHT</td>
+										<td style="border:1px solid #000" align="center">'.$lWeight.' KG</td>
+									</tr>
+									<tr>
+										<td style="border:1px solid #000" align="left">JOINT</td>
+										<td style="border:1px solid #000" align="center">'.$data->joint.' </td>
+									</tr>
+									<tr>
+										<td style="border:1px solid #000" align="left">ROLL NUMBER</td>
+										<td style="border:1px solid #000" align="center">'.$data->roll.' </td>
+									</tr>
+							</table>';
+						}
+				}else if($ctk == 1){
+					if($data->weight == 0){
+						$html .= '';
+					}else if($data->weight <> 0){
+						// <div style="padding-top:100px;display:block;">
+						// <table width="100%" border="1" cellspacing="0" cellpadding="5" style="font-size:37px;margin-bottom:605px">
+						$html .= '
+							<div style="padding-top:30px;display:block;">
+								<table width="100%" border="1" cellspacing="0" cellpadding="5" style="font-size:37px;margin-bottom:120px">
+									<tr>
+										<td align="left">QUALITY</td>
+										<td align="center">'.$data->nm_ker.'</td>
+									</tr>
+									<tr>
+										<td align="left">GRAMMAGE</td>
+										<td align="center">'.$data->g_label.' GSM</td>
+									</tr>
+									<tr>
+										<td align="left">WIDTH</td>
+										<td align="center">'.round($data->width,2).' CM</td>
+									</tr>
+									<tr>
+										<td align="left">DIAMETER</td>
+										<td align="center">'.$data->diameter.' CM</td>
+									</tr>
+									<tr>
+										<td align="left">WEIGHT</td>
+										<td align="center">'.$lWeight.' KG</td>
+									</tr>
+									<tr>
+										<td align="left">JOINT</td>
+										<td align="center">'.$data->joint.' </td>
+									</tr>
+									<tr>
+										<td align="left">ROLL NUMBER</td>
+										<td align="center">'.$data->roll.'</td>
+									</tr>
+								</table>
+							</div>';
+					}
+				}else if($ctk == 3){
+					// <table width="100%" border="1" cellspacing="0" cellpadding="8" style="font-size:37px;margin-bottom:190px">
+						$html .= '
+							<div style="padding-top:30px;display:block;">
+								<table width="100%" border="1" cellspacing="0" cellpadding="8" style="font-size:37px;margin-bottom:165px">
+									<tr>
+										<th style="width:50%;border:0;height:0;padding:0"></th>
+										<th style="width:50%;border:0;height:0;padding:0"></th>
+									</tr>
+									<tr>
+										<td>TANGGAL</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>NAMA CUSTOMER</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>TYPE</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>FLUTE</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>JUMLAH</td>
+										<td></td>
+									</tr>
+									<tr>
+										<td>OPERATOR</td>
+										<td></td>
+									</tr>
+								</table>
+							</div>';
 				}
-            if($ctk == 0 || $ctk == 2 || $ctk == 'A4' || $ctk == 'F4'){
-                if($data->weight == 0){
-                    $html .= '';
-                }else if($data->weight <> 0){
-                    // 35PX
-                    $html .= '
-                    <div style="margin:0;color:#000">
-                    <center> 
-                        <h1 style="color:#000"> '.$data_perusahaan->nama.' </h1>  '.$data_perusahaan->daerah.' , Email : '.$data_perusahaan->email.'
-                    </center>
-                    </div>
-                    <hr>';
-
-                    // 35PX
-                    $html .= '<br><br><br>
-                            <table width="100%" cellspacing="0" cellpadding="5" style="font-size:52px;color:#000;margin:0">
-                                <tr>
-                                    <td style="border:1px solid #000" align="left" width="50%">QUALITY</td>
-                                    <td style="border:1px solid #000" align="center">'.$data->nm_ker.'</td>
-                                </tr>
-                                <tr>
-                                    <td style="border:1px solid #000" align="left">GRAMMAGE</td>
-                                    <td style="border:1px solid #000" align="center">'.$data->g_label.' GSM</td>
-                                </tr>
-                                <tr>
-                                    <td style="border:1px solid #000" align="left">WIDTH</b></td>
-                                    <td style="border:1px solid #000" align="center">'.round($data->width,2).' CM</td>
-                                </tr>
-                                <tr>
-                                    <td style="border:1px solid #000" align="left">DIAMETER</td>
-                                    <td style="border:1px solid #000" align="center">'.$data->diameter.' CM</td>
-                                </tr>
-                                <tr>
-                                    <td style="border:1px solid #000" align="left">WEIGHT</td>
-                                    <td style="border:1px solid #000" align="center">'.$lWeight.' KG</td>
-                                </tr>
-                                <tr>
-                                    <td style="border:1px solid #000" align="left">JOINT</td>
-                                    <td style="border:1px solid #000" align="center">'.$data->joint.' </td>
-                                </tr>
-                                <tr>
-                                    <td style="border:1px solid #000" align="left">ROLL NUMBER</td>
-                                    <td style="border:1px solid #000" align="center">'.$data->roll.' </td>
-                                </tr>
-                        </table>';
-                    }
-            }else if($ctk == 1){
-                if($data->weight == 0){
-                    $html .= '';
-                }else if($data->weight <> 0){
-                    // <div style="padding-top:100px;display:block;">
-                    // <table width="100%" border="1" cellspacing="0" cellpadding="5" style="font-size:37px;margin-bottom:605px">
-                    $html .= '
-                        <div style="padding-top:30px;display:block;">
-                            <table width="100%" border="1" cellspacing="0" cellpadding="5" style="font-size:37px;margin-bottom:120px">
-                                <tr>
-                                    <td align="left">QUALITY</td>
-                                    <td align="center">'.$data->nm_ker.'</td>
-                                </tr>
-                                <tr>
-                                    <td align="left">GRAMMAGE</td>
-                                    <td align="center">'.$data->g_label.' GSM</td>
-                                </tr>
-                                <tr>
-                                    <td align="left">WIDTH</td>
-                                    <td align="center">'.round($data->width,2).' CM</td>
-                                </tr>
-                                <tr>
-                                    <td align="left">DIAMETER</td>
-                                    <td align="center">'.$data->diameter.' CM</td>
-                                </tr>
-                                <tr>
-                                    <td align="left">WEIGHT</td>
-                                    <td align="center">'.$lWeight.' KG</td>
-                                </tr>
-                                <tr>
-                                    <td align="left">JOINT</td>
-                                    <td align="center">'.$data->joint.' </td>
-                                </tr>
-                                <tr>
-                                    <td align="left">ROLL NUMBER</td>
-                                    <td align="center">'.$data->roll.'</td>
-                                </tr>
-                            </table>
-                        </div>';
-                }
-            }else if($ctk == 3){
-                // <table width="100%" border="1" cellspacing="0" cellpadding="8" style="font-size:37px;margin-bottom:190px">
-                    $html .= '
-                        <div style="padding-top:30px;display:block;">
-                            <table width="100%" border="1" cellspacing="0" cellpadding="8" style="font-size:37px;margin-bottom:165px">
-                                <tr>
-                                    <th style="width:50%;border:0;height:0;padding:0"></th>
-                                    <th style="width:50%;border:0;height:0;padding:0"></th>
-                                </tr>
-                                <tr>
-                                    <td>TANGGAL</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>NAMA CUSTOMER</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>TYPE</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>FLUTE</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>JUMLAH</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>OPERATOR</td>
-                                    <td></td>
-                                </tr>
-                            </table>
-                        </div>';
-            }
-        }
+			}
 
             if($ctk == 'A4') {
                 $this->m_fungsi->_mpdf('',$html,10,10,10,'L');
@@ -1349,7 +1354,9 @@ class Laporan extends CI_Controller {
             }else{
                 $this->m_fungsi->_mpdf('',$html,10,10,10,'L');
             }
-        }
+        }else{
+			echo 'kosong ea...';
+		}
     }
 
     function print_invoice_v2(){

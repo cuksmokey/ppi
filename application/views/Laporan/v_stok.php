@@ -157,10 +157,10 @@
 						<input type="hidden" id="otorisasi" value="<?= $otorisasi ?>">
 						<input type="hidden" id="stat" value="">
 
-						<button class="tmbl-plh" onclick="plh_menu('stok')">STOK GUDANG</button>
-						<button class="tmbl-plh" onclick="plh_menu('produksi')">PRODUKSI</button>
+						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('stok')">STOK GUDANG</button>
+						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('produksi')">PRODUKSI</button>
 
-						<div class="menu-stok" style="padding-top:10px">
+						<div class="menu-stok" style="padding-top:10px;font-size:12px">
 							<button disabled>STOK : </button>
 							<button class="tmbl-stok" onclick="load_data('mh','stok')">MEDIUM</button>
 							<button class="tmbl-stok" onclick="load_data('bk','stok')">B - KRAFT</button>
@@ -180,7 +180,7 @@
 							<button class="tmbl-buffer" onclick="load_data('rall','buffer')">SEMUA</button>
 						</div>
 						
-						<div class="menu-produksi" style="padding-top:10px">
+						<div class="menu-produksi" style="padding-top:10px;font-size:12px">
 							<button disabled>PILIH : </button>
 							<button class="tmbl-stok" onclick="p_pm(1)">PM 1</button>
 							<button class="tmbl-stok" onclick="p_pm(2)">PM 2</button>

@@ -1121,7 +1121,7 @@ class M_master extends CI_Model{
 			$result = $this->db->query("DELETE FROM m_rencana_kirim WHERE id_rk='$idrk' AND tgl='$tgl_pl' AND order_pl='$opl'");
 		}
 
-		$result = $this->db->query("DELETE FROM pl WHERE id_perusahaan='$idpt' AND tgl_pl='$tgl_pl' AND opl='$opl'");
+		$result = $this->db->query("DELETE FROM pl WHERE id_perusahaan='$idpt' AND id_rk='$idrk' AND tgl_pl='$tgl_pl' AND opl='$opl'");
         return $result;
 	}
 
@@ -1337,6 +1337,19 @@ class M_master extends CI_Model{
 		$result = $this->db->update('m_timbangan');
 
 		return $result;
+	}
+
+	function pLsJokeY(){
+		$idrk = $_POST['idrk'];
+		$tglpl = $_POST['tglpl'];
+		$opl = $_POST['opl'];
+		$cek = $_POST['cek'];
+
+		$this->db->set('qc', $cek);
+		$this->db->where('id_rk', $idrk);
+		$this->db->where('tgl_pl', $tglpl);
+		$this->db->where('opl', $opl);
+		return $this->db->update('pl');
 	}
 
 	function editItemPO(){

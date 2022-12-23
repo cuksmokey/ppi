@@ -47,7 +47,8 @@
 		background: #fff
 	}
 	.list-p-putih:hover {
-		background: #eee
+		/* background: #eee */
+		background: rgba(233, 233, 233, 0.5);
 	}
 
 	.status-stok {
@@ -1580,7 +1581,7 @@
 		vii = $("#v-ii").val();
 		// alert(idroll+' - '+rstatus+' - '+idrk+' - '+plh+' || '+vopl+' - '+vtglpl+' - '+vii);
 		swal({
-			title: "Kembalikan ke Rencana Kirim? ?",
+			title: "Kembalikan ke Rencana Kirim ?",
 			text: rroll,
 			type: "warning",
 			showCancelButton: true,
@@ -1608,6 +1609,44 @@
 				});
 			}else{
 				swal("BATAL DIBATALKAN!", "", "error");
+			}
+		});
+	}
+
+	function pLsJokeY(idrk,tglpl,opl,plh,cek){
+		vopl = $("#v-opl").val();
+		vtglpl = $("#v-tgl-pl").val();
+		vii = $("#v-ii").val();
+		// alert(idrk+' - '+tglpl+' - '+opl+' |||||| '+vopl+' - '+vtglpl+' - '+vii);
+		swal({
+			title: cek+" kah ?",
+			text: idrk,
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-danger",
+			confirmButtonText: "Ya",
+			cancelButtonText: "Batal",
+			closeOnConfirm: false,
+			closeOnCancel: false
+		},
+		function(isConfirm) {
+			if (isConfirm) {
+				$.ajax({
+					url: '<?php echo base_url('Master/pLsJokeY')?>',
+					type: "POST",
+					data: ({
+						idrk,tglpl,opl,cek
+					}),
+					success: function(json){
+						data = JSON.parse(json);
+						if(data.res){
+							swal(data.msg, "", "success");
+							btnRencana(idrk,vopl,vtglpl,plh,vii)
+						}
+					}
+				})
+			}else{
+				swal("EH GAK JADI", "", "error");
 			}
 		});
 	}
