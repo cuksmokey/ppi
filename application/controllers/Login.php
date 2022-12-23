@@ -41,7 +41,7 @@ class login extends CI_Controller{
 			// $this->session->userdata('level')
 			$ntgl = date("Y-m-d H:i:s");
 			$ktgl = '0000-00-00 00:00:00';
-			$this->db->query("UPDATE USER SET last_login='$ntgl',logout='$ktgl' WHERE username='$username'");
+			$this->db->query("UPDATE user SET last_login='$ntgl',logout='$ktgl' WHERE username='$username'");
 
 			// $this->session->set_flashdata('msg', '<div class="alert alert-success">
 			// 	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -101,7 +101,7 @@ class login extends CI_Controller{
 		$username = $this->session->userdata('username');
 		$ntgl = date("Y-m-d H:i:s");
 		// $ktgl = '0000-00-00 00:00:00';
-		$this->db->query("UPDATE USER SET last_login='$ntgl',logout='$ntgl' WHERE username='$username'");
+		$this->db->query("UPDATE user SET last_login='$ntgl',logout='$ntgl' WHERE username='$username'");
 
 		$this->session->sess_destroy();
 		redirect(base_url('login'));
