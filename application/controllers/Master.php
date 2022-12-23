@@ -3339,7 +3339,7 @@ class Master extends CI_Controller
 		}else{
 			$lvl = "WHERE level='User'";
 		}
-		$getData = $this->db->query("SELECT*FROM USER $lvl ORDER BY level");
+		$getData = $this->db->query("SELECT*FROM user $lvl ORDER BY level");
 		$i = 0;
 		foreach($getData->result() as $r){
 			$i++;
