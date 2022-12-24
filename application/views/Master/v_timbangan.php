@@ -28,26 +28,26 @@
 
 
 							<br><br>
-							<table id="datatable11" class="table table-bordered table-striped table-hover dataTable ">
-								<thead>
-									<tr>
-										<th>ROLL</th>
-										<th>TANGGAL</th>
-										<th>JENIS</th>
-										<!-- <th>Gramage Label</th> -->
-										<th>GSM</th>
-										<th>UKURAN</th>
-										<th>DIAMETER</th>
-										<th>BERAT</th>
-										<th>JOINT</th>
-										<th>KETERANGAN</th>
-										<th width="15%">AKSI</th>
-									</tr>
-								</thead>
-								<tbody>
-
-								</tbody>
-							</table>
+							<div style="margin-top:15px;overflow:auto;white-space:nowrap;">
+								<table id="datatable11" class="table table-bordered table-striped table-hover dataTable ">
+									<thead>
+										<tr>
+											<th>ROLL</th>
+											<th>TANGGAL</th>
+											<th>JENIS</th>
+											<!-- <th>Gramage Label</th> -->
+											<th>GSM</th>
+											<th>UKURAN</th>
+											<th>DIAMETER</th>
+											<th>BERAT</th>
+											<th>JOINT</th>
+											<th>KETERANGAN</th>
+											<th width="15%">AKSI</th>
+										</tr>
+									</thead>
+									<tbody></tbody>
+								</table>
+							</div>
 						</div>
 
 						<!-- box form -->
@@ -395,9 +395,12 @@
 	}
 
 	function simpan() {
+		// BUAT CEK ROLL
 		kodepm = $("#id1kode").val();
-		kodebln = $("#id2bln").val();
-		koderew = $("#id4kode").val();
+		xroll = $("#id11").val();
+		xth = $("#id22").val();
+		xno = $("#id44").val();
+		xkode = $("#id4kode").val();
 
 		if (kodepm == '' || kodepm == null) {
 			roll = $("#id1").val() + "/" + $("#id2").val() + "/" + $("#id3").val() + "/" + $("#id4").val();
@@ -454,9 +457,9 @@
 		}
 
 		if (cstatus == "") {
-				showNotification("alert-info", "HARAP PILIH STATUS ROLL", "bottom", "center", "", "");
-				return;
-			}
+			showNotification("alert-info", "HARAP PILIH STATUS ROLL", "bottom", "center", "", "");
+			return;
+		}
 
 		$("#btn-simpan").prop("disabled", true);
 		$.ajax({
@@ -464,7 +467,6 @@
 			url: '<?php echo base_url(); ?>Master/' + status, // 62
 			data: ({
 				id: roll,
-				kodepm: kodepm,
 				tgl: tgl,
 				nm_ker: nm_ker,
 				g_ac: 0,
@@ -486,13 +488,19 @@
 				lket: lket,
 				lstatus: lstatus,
 				getid: getid,
+				kodepm: kodepm,
+				xroll: xroll,
+				xth: xth,
+				xno: xno,
+				xkode: xkode,
 				jenis: "Timbangan"
 			}),
 			dataType: "json",
 			success: function(data) {
 				$("#btn-simpan").prop("disabled", false);
 				if (data.data == true) {
-					showNotification("alert-success", "BERHASIL", "bottom", "center", "", "");
+					// showNotification("alert-success", "BERHASIL", "bottom", "center", "", "");
+					swal("BERHASIL", "", "success");
 					// $("#btn-print").attr("href", "<?php echo base_url('Master/print_timbangan?id=')?>" + roll);
 					// $("#btn-print").show();
 					// $("#btn-print-kcl").attr("href", "<?php echo base_url('Master/print_timbangan2?id=')?>" + roll);
@@ -502,7 +510,8 @@
 					// alert(data.getid);
 					tampil_edit(data.getid);
 				} else {
-					showNotification("alert-danger", data.msg, "bottom", "center", "", "");
+					// showNotification("alert-danger", data.msg, "bottom", "center", "", "");
+					swal(data.msg, "", "error");
 					status = 'insert';
 				}
 			}
@@ -608,7 +617,6 @@
 					$("#l-ket").val(json.ket);
 					$("#l-status").val(json.status);
 				}
-
 			})
 	}
 

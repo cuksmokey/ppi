@@ -176,7 +176,7 @@
                         <li>
                             <a href="<?php echo base_url('Master/Expedisi') ?>">
                                 <!-- <i class="material-icons">list</i> -->
-                                <span>Expedisi</span>
+                                <span>Ekspedisi</span>
                             </a>
                         </li>
                         <li>

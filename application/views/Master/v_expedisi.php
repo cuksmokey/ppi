@@ -31,7 +31,7 @@
 					<div class="header">
 						<h2>
 							<ol class="breadcrumb">
-								<li style="font-weight:bold">EXPEDISI</li>
+								<li style="font-weight:bold">EKSPEDISI</li>
 							</ol>
 						</h2>
 					</div>
@@ -39,6 +39,8 @@
 					<div class="body">
 						<input type="hidden" name="otorisasi" id="otorisasi" value="<?php echo $otorisasi; ?>">
 						<input type="hidden" name="idex" id="idex" value="">
+						<input type="hidden" name="lsupir" id="lsupir" value="">
+						<input type="hidden" name="lnopol" id="lnopol" value="">
 
 						<div class="btn-add" style="color:#000">
 							<button onclick="btnAdd()">ADD</button>
@@ -60,7 +62,7 @@
 						<div class="box-data"></div>
 
 						<div class="box-form" style="margin-top:15px;overflow:auto;white-space:nowrap;">
-							<table style="width:100%;color:#000" border="1">
+							<table style="width:100%;color:#000">
 								<tr>
 									<td style="padding:5px;width:20%"></td>
 									<td style="padding:5px;width:1%"></td>
@@ -73,11 +75,11 @@
 									<td style="padding:5px">
 										<table style="width:100%">
 											<tr>
-												<td><input type="text" id="no_polisi1" class="form-control" autocomplete="off" placeholder="AD" maxlength="2"></td>
+												<td><input type="text" id="no_polisi1" class="form-control" autocomplete="off" placeholder="AD" maxlength="2" tabindex="1"></td>
 												<td style="padding:5px">-</td>
-												<td><input type="text" id="no_polisi2" class="form-control" autocomplete="off" placeholder="1234" maxlength="4" onkeypress="return hA(event)"></td>
+												<td><input type="text" id="no_polisi2" class="form-control" autocomplete="off" placeholder="1234" maxlength="4" onkeypress="return hA(event)" tabindex="2"></td>
 												<td style="padding:5px">-</td>
-												<td><input type="text" id="no_polisi3" class="form-control" autocomplete="off" placeholder="XXX" maxlength="3"></td>
+												<td><input type="text" id="no_polisi3" class="form-control" autocomplete="off" placeholder="XXX" maxlength="3" tabindex="3"></td>
 											</tr>
 										</table>
 									</td>
@@ -86,35 +88,35 @@
 									<td style="padding:5px;font-weight:bold">MERK / TYPE KENDARAAN</td>
 									<td style="padding:5px;font-weight:bold">:</td>
 									<td style="padding:5px">
-										<input type="text" id="mert_type" class="form-control" autocomplete="off" placeholder="MERK / TYPE" maxlength="20">
+										<input type="text" id="mert_type" class="form-control" autocomplete="off" placeholder="MERK / TYPE" maxlength="20" tabindex="4">
 									</td>
 								</tr>
 								<tr>
 									<td style="padding:5px;font-weight:bold">PT</td>
 									<td style="padding:5px;font-weight:bold">:</td>
 									<td style="padding:5px">
-										<input type="text" id="pt" class="form-control" autocomplete="off" placeholder="P T" maxlength="20">
+										<input type="text" id="pt" class="form-control" autocomplete="off" placeholder="P T" maxlength="20" tabindex="5">
 									</td>
 								</tr>
 								<tr>
 									<td style="padding:5px;font-weight:bold">NAMA SUPIR</td>
 									<td style="padding:5px;font-weight:bold">:</td>
 									<td style="padding:5px">
-										<input type="text" id="nm_supir" class="form-control" autocomplete="off" placeholder="NAMA SUPIR" maxlength="20">
+										<input type="text" id="nm_supir" class="form-control" autocomplete="off" placeholder="NAMA SUPIR" maxlength="20" tabindex="6">
 									</td>
 								</tr>
 								<tr>
 									<td style="padding:5px;font-weight:bold">NO. HP</td>
 									<td style="padding:5px;font-weight:bold">:</td>
 									<td style="padding:5px">
-										<input type="text" id="no_hp" class="form-control" autocomplete="off" placeholder="NO. HP" maxlength="13" onkeypress="return hA(event)">
+										<input type="text" id="no_hp" class="form-control" autocomplete="off" placeholder="-" maxlength="20" tabindex="7">
 									</td>
 								</tr>
 							</table>
 
 							<div style="margin-top:15px;color:#000">
-								<button onclick="kembali()">BACK</button>
-								<button onclick="simpan()">SIMPAN</button>
+								<button onclick="kembali()" tabindex="9">BACK</button>
+								<button onclick="simpan()" tabindex="8">SIMPAN</button>
 							</div>
 						</div>
 					</div>
@@ -149,6 +151,10 @@
 		$("#nm_supir").val("");
 		$("#no_hp").val("");
 
+		// TAMPUNG DATA LAMA
+		$("#lsupir").val("");
+		$("#lnopol").val("");
+
 		status = 'insert';
 		$("#search").val("");
 	}
@@ -181,6 +187,7 @@
 	}
 
 	function load_data(cari){
+		$(".box-data").html('<div style="margin-top:15px">Memuat Data . . .</div>');
 		$.ajax({
 			url: '<?php echo base_url('Master/loadDataExpedisi')?>',
 			type: "POST",
@@ -217,6 +224,9 @@
 					$("#nm_supir").val(data.data.supir);
 					$("#no_hp").val(data.data.no_telp);
 
+					$("#lsupir").val(data.data.supir);
+					$("#lnopol").val(data.data.id);
+
 					$(".box-data").hide();
 					$(".pencarian").hide();
 					$(".box-form").show();
@@ -225,12 +235,47 @@
 		})
 	}
 
-	function hapusExpedisi(id){
-		alert(id);
+	function hapusExpedisi(id,nopol){
+		// alert(id);
+		swal({
+			title: "Apakah Anda Yakin ?",
+			text: nopol,
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-danger",
+			confirmButtonText: "Ya",
+			cancelButtonText: "Batal",
+			closeOnConfirm: false,
+			closeOnCancel: false
+		},
+		function(isConfirm) {
+			if (isConfirm) {
+				$.ajax({
+					url: '<?php echo base_url('Master/hapusExpedisi')?>',
+					type: "POST",
+					data: ({
+						id
+					}),
+					success: function(json){
+						data = JSON.parse(json);
+						if(data.res){
+							swal(data.msg, "", "success")
+							kembali();
+						}
+					}
+				});
+			}else{
+				swal("BATAL DIHAPUS!", "", "error");
+			}
+		});
 	}
 
 	function simpan(){
-		idex = $("#idex").val();;
+		// DATA LAMA
+		idex = $("#idex").val();
+		lsupir = $("#lsupir").val();
+		lnopol = $("#lnopol").val();
+
 		no_polisi1 = $("#no_polisi1").val();
 		no_polisi2 = $("#no_polisi2").val();
 		no_polisi3 = $("#no_polisi3").val();
@@ -248,7 +293,7 @@
 			url : '<?php echo base_url('Master/simpanExpedisi')?>',
 			type: "POST",
 			data: ({
-				no_polisi1,no_polisi2,no_polisi3,mert_type,pt,nm_supir,no_hp,status,idex
+				no_polisi1,no_polisi2,no_polisi3,mert_type,pt,nm_supir,no_hp,status,idex,lsupir,lnopol
 			}),
 			success: function(json){
 				data = JSON.parse(json);

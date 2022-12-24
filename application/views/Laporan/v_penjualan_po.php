@@ -89,9 +89,13 @@
 
 						<!-- TAMPIL DATA LIST -->
 						<div class="ll box-data">
-							<div style="margin:0 5px 10px;font-size:12px;color:#000">
-								<button class="btn-c-po" onclick="add_box('add')">ADD</button>
-							</div>
+
+							<?php if($otorisasi == 'all' || $otorisasi == 'admin') {?>
+								<div style="margin:0 5px 10px;font-size:12px;color:#000">
+									<button class="btn-c-po" onclick="add_box('add')">ADD</button>
+								</div>
+							<?php } ?>
+
 							<div class="box-data-cek"></div>
 							<div class="box-data-list"></div>
 						</div>

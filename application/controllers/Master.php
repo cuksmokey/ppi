@@ -85,14 +85,26 @@ class Master extends CI_Controller
 
 		if ($jenis == "Timbangan") {
 			$id = $this->input->post('id');
-                $cek = $this->m_master->get_data_one("m_timbangan","roll",$id)->num_rows();
-                if ($cek > 0 ) {
-					echo json_encode(array('data' => FALSE, 'msg' => 'ROLL NUMBER SUDAH ADA'));
-                }else{
-					$this->m_master->insert_timbangan();
-					$getId = $this->m_master->get_data_one("m_timbangan","roll",$id)->row();
-                    echo json_encode(array('data' => TRUE, 'getid' => $getId->id));
-                }
+			$kodepm = $this->input->post('kodepm');
+			$xroll = $this->input->post('xroll');
+			$xth = $this->input->post('xth');
+			$xno = $this->input->post('xno');
+			$xkode = $this->input->post('xkode');
+
+			// $cek = $this->m_master->get_data_one("m_timbangan","roll",$id)->num_rows();
+			// CEK ROLL -  HILANGKAN BULAN
+			$r1 = $kodepm.'/'.$xroll.'/'.$xth;
+			$r2 = $xno.$xkode;
+			$cek = $this->db->query("SELECT*FROM m_timbangan WHERE roll LIKE '$r1%' AND roll LIKE '%$r2'");
+			if ($cek->num_rows() > 0 ) {
+				echo json_encode(array('data' => FALSE,'msg' => 'ROLL NUMBER SUDAH TERPAKAI!. '.$cek->row()->roll));
+			}else{
+				$this->m_master->insert_timbangan();
+				$getId = $this->m_master->get_data_one("m_timbangan","roll",$id)->row();
+				echo json_encode(array('data' => TRUE, 'getid' => $getId->id));
+
+				// echo json_encode(array('data' => TRUE,));
+			}
 		} else if ($jenis == "Perusahaan") {
 			$id      = $this->input->post('id');
 			$cek = $this->m_master->get_data_one("m_perusahaan", "nm_perusahaan", $id)->num_rows();
@@ -261,7 +273,7 @@ class Master extends CI_Controller
 							<a type="button" href="'.$print2.'" target="_blank" class="btn bg-green">
 								L KECIL
 							</a>';
-                        }
+                        } //
                     // }
                     $row[] = $aksi;
                     $data[] = $row;
@@ -3699,7 +3711,7 @@ class Master extends CI_Controller
 				WHERE ex.id='$r->id'");
 				if($cekNoPol->num_rows() == 0){
 					$aksi = '<button onclick="editExpedisi('."'".$r->id."'".')">Edit</button>
-					<button onclick="hapusExpedisi('."'".$r->id."'".')">Hapus</button>';
+					<button onclick="hapusExpedisi('."'".$r->id."'".','."'".$r->plat."'".')">Hapus</button>';
 				}else{
 					$aksi = '-';
 				}
@@ -3717,7 +3729,15 @@ class Master extends CI_Controller
 		$no_polisi3 = $_POST['no_polisi3'];
 		$pt = $_POST['pt'];
 		$nm_supir = $_POST['nm_supir'];
+		$no_hp = $_POST['no_hp'];
 		$status = $_POST['status'];
+
+		// DATA LAMA
+		$lsupir = $_POST['lsupir'];
+		$lnopol = $_POST['lnopol'];
+
+		$nopol = $no_polisi1.' '.$no_polisi2.' '.$no_polisi3;
+		$cek = $this->db->query("SELECT*FROM m_expedisi WHERE supir='$nm_supir' AND plat='$nopol'");
 
 		if(!preg_match("/^[A-Z]*$/",$no_polisi1)){
 			echo json_encode(array('res' => false, 'msg' => 'KODE WILAYAH HANYA BOLEH HURUF!', 'info' => 'error'));
@@ -3729,6 +3749,14 @@ class Master extends CI_Controller
 			echo json_encode(array('res' => false, 'msg' => 'NAMA PT HANYA BOLEH HURUF!', 'info' => 'error'));
 		}else if(!preg_match("/^[A-Z ]*$/",$nm_supir)){
 			echo json_encode(array('res' => false, 'msg' => 'NAMA SUPIR HANYA BOLEH HURUF!', 'info' => 'error'));
+		}else if(!preg_match("/^[0-9 +-]*$/",$no_hp)){
+			echo json_encode(array('res' => false, 'msg' => 'TIDAK SESUAI FORMAT NO. HP!', 'info' => 'error'));
+		}else if($status == 'insert' && $cek->num_rows() > 0){
+			// SIMPAN JIKA UBAH GANIT NOPOL SAMA SUPIR
+			echo json_encode(array('res' => false, 'msg' => 'NAMA SUPIR DAN NO. POLISI SUDAH ADA!', 'info' => 'error'));
+		}else if($status == 'update' && ($nm_supir != $lsupir || $nopol != $lnopol) && $cek->num_rows() > 0){
+			// UPDATE JIKA UBAH GANIT NOPOL SAMA SUPIR
+			echo json_encode(array('res' => false, 'msg' => 'NAMA SUPIR DAN NO. POLISI SUDAH TERPAKAI!', 'info' => 'error'));
 		}else{ // SIMPAN
 			$return = $this->m_master->simpanExpedisi();
 			echo json_encode(array(
@@ -3745,6 +3773,15 @@ class Master extends CI_Controller
 		echo json_encode(array(
 			'res' => true,
 			'data' => $getData->row(),
+		));
+	}
+
+	function hapusExpedisi(){
+		$id = $_POST['id'];
+		$result = $this->m_master->delete("m_expedisi", "id", $id);
+		echo json_encode(array(
+			'res' => $result,
+			'msg' => 'BERHASIL HAPUS',
 		));
 	}
 

@@ -101,7 +101,7 @@ CREATE TABLE `db_ppi`.`m_expedisi`(
   `merk_type` VARCHAR(50) NULL,
   `pt` VARCHAR(50),
   `supir` VARCHAR(50),
-  `no_hp` VARCHAR(20) NULL,
+  `no_telp` VARCHAR(20) NULL,
   `created_at` TIMESTAMP NULL,
   `created_by` VARCHAR(50) NULL,
   `edited_at` TIMESTAMP NULL,
