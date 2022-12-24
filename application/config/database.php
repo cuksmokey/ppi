@@ -78,14 +78,14 @@ $db['default'] = array(
 	'hostname' => 'localhost',
 	
 	// LOCAL
-	'username' => 'root',
-	'password' => '',
-	'database' => 'db_ppi',
+	// 'username' => 'root',
+	// 'password' => '',
+	// 'database' => 'db_ppi',
 
 	// WEB
-	// 'username' => 'n1576051_ppiwng',
-	// 'password' => 'primapaper2022',
-	// 'database' => 'n1576051_ppi',
+	'username' => 'n1576051_ppiwng',
+	'password' => 'primapaper2022',
+	'database' => 'n1576051_ppi',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
