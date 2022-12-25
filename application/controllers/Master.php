@@ -816,6 +816,12 @@ class Master extends CI_Controller
 		echo json_encode($response);
 	}
 
+	function loadPlNopol(){
+		$search = $_GET['search'];
+		$response = $this->m_master->loadPlNopol($search);
+		echo json_encode($response);
+	}
+
 	function loadRkPl(){
 		$search = $_GET['search'];
 		$rktgl = $_GET['rktgl'];
@@ -1241,7 +1247,7 @@ class Master extends CI_Controller
 	function loadAllOutstandingPO(){
 		$html = '';
 
-		$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,m.*FROM po_master m INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id WHERE m.status='open' GROUP BY id_perusahaan,STATUS ORDER BY pt.pimpinan,pt.nm_perusahaan");
+		$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,m.*FROM po_master m INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id WHERE m.status='open' GROUP BY id_perusahaan,status ORDER BY pt.pimpinan,pt.nm_perusahaan");
 		$html .='<div style="overflow:auto;white-space:nowrap;"><table style="font-size:12px;color:#000" border="1">';
 		$html .='<tr style="background:#e9e9e9;text-align:center">
 			<td style="padding:5px;font-weight:bold">NO</td>
@@ -1271,13 +1277,13 @@ class Master extends CI_Controller
 				
 				// SISA PO
 				$getTotPO = $this->db->query("SELECT SUM(tonase) AS toton,m.* FROM po_master m
-				WHERE id_perusahaan='$r->id_perusahaan' AND STATUS='open'
+				WHERE id_perusahaan='$r->id_perusahaan' AND status='open'
 				GROUP BY id_perusahaan");
 				$html .='<td style="padding:5px;text-align:right">'.number_format($getTotPO->row()->toton).'</td>';
 
 				// TOTAL KIRIMAN
 				$po = $this->db->query("SELECT * FROM po_master m
-				WHERE id_perusahaan='$r->id_perusahaan' AND STATUS='open'
+				WHERE id_perusahaan='$r->id_perusahaan' AND status='open'
 				GROUP BY id_perusahaan,id_po,no_po");
 				$totkir = 0;
 				foreach($po->result() as $p){
@@ -1686,7 +1692,7 @@ class Master extends CI_Controller
 					if($getrk->num_rows() == 0){
 						$aksi = $edit.' '.$hapus;
 					}else{
-						$aksi = '';
+						$aksi = $edit;
 					}
 				}else{
 					$aksi = '';
@@ -1729,8 +1735,26 @@ class Master extends CI_Controller
 		$i = $_POST['i'];
 		
 		$getIdCust = $this->db->query("SELECT * FROM pl
-		WHERE qc='proses' AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
+		-- WHERE qc='proses' AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
+		WHERE (qc='proses' OR qc='ok') AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
 		GROUP BY id_perusahaan,tgl_pl,id_rk,opl")->row();
+		if($getIdCust->id_rk == null){
+			$idrk = '';
+		}else{
+			$idrk = $getIdCust->id_rk;
+		}
+		
+		// NOPOL
+		$getNopol = $this->db->query("SELECT ex.plat,ex.supir,p.* FROM pl p
+		INNER JOIN m_expedisi ex ON p.id_expedisi=ex.id
+		WHERE (qc='proses' OR qc='ok') AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
+		GROUP BY id_perusahaan,tgl_pl,id_rk,opl");
+		if($getNopol->num_rows() == 0){
+			$nopol = '';
+		}else{
+			$nopol = $getNopol->row()->plat.' - '.$getNopol->row()->supir;
+		}
+
 		echo json_encode(array(
 			'cust' => $getIdCust->id_perusahaan,
 			'fnmpt' => $getIdCust->nm_perusahaan,
@@ -1740,6 +1764,8 @@ class Master extends CI_Controller
 			'ftglrk' => $getIdCust->tgl_pl,
 			'ftgl' => $getIdCust->tgl,
 			'opl' => $getIdCust->opl,
+			'fidrk' => $idrk,
+			'fidexpd' => $nopol,
 		));
 	}
 
@@ -1751,7 +1777,8 @@ class Master extends CI_Controller
 		$html = '';
 
 		$getData = $this->db->query("SELECT*FROM pl
-		WHERE qc='proses' AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
+		-- WHERE qc='proses' AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
+		WHERE (qc='proses' OR qc='ok') AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
 		ORDER BY id_rk,opl,nm_ker,no_po,g_label");
 		if($getData->row()->nama == '-' || $getData->row()->nama == ''){
 			$nama = '';
@@ -1768,28 +1795,72 @@ class Master extends CI_Controller
 		$html .='<tr>
 			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO.</td>
 			<td style="padding:5px;font-weight:bold;background:#e9e9e9">TANGGAL</td>
-			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO. SJ</td>
+			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO. SURAT</td>
 			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO. SO</td>
+			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO. PKB</td>
 			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO. PO</td>
 			<td style="padding:5px;font-weight:bold;background:#e9e9e9">JENIS</td>
-			<td style="padding:5px;font-weight:bold;background:#e9e9e9">GRAMATURE</td>
+			<td style="padding:5px;font-weight:bold;background:#e9e9e9">GSM</td>
+			<td style="padding:5px;font-weight:bold;background:#e9e9e9">AKSI</td>
 		</tr>';
-		$i = 0;
+		$ii = 0;
 		foreach($getData->result() as $r){
-			$i++;
+			$ii++;
 			$html .='<tr>
-				<td style="padding:5px">'.$i.'</td>
+				<td style="padding:5px">'.$ii.'</td>
 				<td style="padding:5px">'.$r->tgl.'</td>
 				<td style="padding:5px">'.trim($r->no_surat).'</td>
 				<td style="padding:5px">'.$r->no_so.'</td>
+				<td style="padding:5px">'.$r->no_pkb.'</td>
 				<td style="padding:5px">'.$r->no_po.'</td>
 				<td style="padding:5px">'.$r->nm_ker.'</td>
-				<td style="padding:5px">'.$r->g_label.'</td>
-			</tr>';
+				<td style="padding:5px">'.$r->g_label.'</td>';
+			// JIKA CUMA ADA 1 PL GAK BISA HAPUS
+			if($getData->num_rows() == 1){
+				$aksi = '-';
+			}else{
+				// JIKA SUDAH OK TIDAK BISA HAPUS PL
+				if($r->qc == 'ok'){
+					$aksi = '-';
+				}else{
+					$aksi = '<button onclick="showEditPlHapus('."'".$idpt."'".','."'".$tglpl."'".','."'".$opl."'".','."'".$i."'".','."'".$r->id_rk."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->id."'".')">Hapus</button>';
+				}
+			}
+			$html .='<td style="padding:5px">'.$aksi.'</td></tr>';
 		}
 		$html .='</table>';
 
 		echo $html;
+	}
+
+	function showEditPlHapus(){
+		$idpt = $_POST['idpt'];
+		$id_rk = $_POST['id_rk'];
+		$tglpl = $_POST['tglpl'];
+		$opl = $_POST['opl'];
+		// CEK JIKA SUDAH OK
+		$getData = $this->db->query("SELECT*FROM pl WHERE qc='ok' AND id_rk='$id_rk' AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl' GROUP BY id_rk");
+		if($getData->num_rows() > 0){
+			echo json_encode(array('res' => true, 'msg' => 'BATALKAN PACKING LIST! SUDAH OK!', 'info' => 'error'));
+		}else{
+			// BATAL KAN CEK OK DI RENCANA KIRIM KEMBALIKAN KE PROSES
+			$getRk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE qc_rk='ok' AND id_rk='$id_rk' GROUP BY id_rk");
+			if($getRk->num_rows() > 0){
+				echo json_encode(array('res' => true, 'msg' => 'BATALKAN RENCANA KIRIM! SUDAH OK!', 'info' => 'error'));
+			}else{
+				$result = $this->m_master->showEditPlHapus();
+				echo json_encode(array('res' => true, 'msg' => 'BERHASIL!', 'info' => 'success'));
+			}
+		}
+	}
+
+	function addPlNopol(){
+		$result = $this->m_master->addPlNopol();
+		echo json_encode(array(
+			'res' => $result,
+			'msg' => 'BERHASIL TAMBAH NOPOL!',
+			'info' => 'success',
+		));
 	}
 
 	function cek_no_sj(){
@@ -2437,7 +2508,7 @@ class Master extends CI_Controller
 
 			// TOMBAL CEK OK
 			// LABEL
-			$lbl = '<div style="display:inline-block;margin:0 20px">
+			$lbl = '<div style="display:inline-block;margin:0">
 				<a href="'.base_url('Laporan/print_lbl_pl').'?jenis='.$id_rk.'&all=0&ctk=F4" target="_blank" rel="plcek">PRINT LABEL</a>
 			</div>';
 			if($cekOk->num_rows() > 0){
@@ -2450,8 +2521,8 @@ class Master extends CI_Controller
 					}else{
 						$btnCekOk = 'CEK BELUM OK!';
 					}
+					$pLabelReq = '';
 				}
-				$pLabelReq = '';
 				$btnplcek = '<div style="display:inline-block;margin:0 20px">
 					<a href="'.base_url('Master/packingListCek').'?idrk='.$id_rk.'" target="_blank" rel="plcek">PACKING LIST CEK</a>
 				</div>';
@@ -2470,8 +2541,8 @@ class Master extends CI_Controller
 					$pLabelReq = $lbl;
 				}else{
 					$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
+					$pLabelReq = '';
 				}
-				$pLabelReq = '';
 				$btnplcek = '';
 			}
 			
@@ -2505,16 +2576,30 @@ class Master extends CI_Controller
 	}
 
 	function editRollRk(){
+		$idrk = $_POST['id_rk'];
+		$plh = $_POST['pilihbtnrencana'];
+
 		// CEK JIKA ADA DIAMETER, SESET MASIH SAMA ATAU ISI KOSONG
 		if($_POST['seset'] == $_POST['vseset'] && $_POST['diameter'] == $_POST['vdiameter']){
-			echo json_encode(array('res' => false, 'msg' => 'ISI MASIH SAMA!', ));
+			echo json_encode(array('res' => true, 'msg' => 'ISI MASIH SAMA!', 'info' => 'error'));
 		}else if($_POST['seset'] == '' || $_POST['diameter'] == 0 || $_POST['diameter'] == ''){
-			echo json_encode(array('res' => false, 'msg' => 'SESET / DIAMETER HARUS DI ISI!', ));
+			echo json_encode(array('res' => true, 'msg' => 'SESET / DIAMETER HARUS DI ISI!', 'info' => 'error'));
 		}else if($_POST['seset'] >= $_POST['vberat']){
-			echo json_encode(array('res' => false, 'msg' => 'SESET TIDAK BOLEH LEBIH BESAR DARI BERAT ASLI!', ));
+			echo json_encode(array('res' => true, 'msg' => 'SESET TIDAK BOLEH LEBIH BESAR DARI BERAT ASLI!', 'info' => 'error'));
 		}else{
-			$this->m_master->editRollRk();
-			echo json_encode(array('res' => true, 'msg' => 'BERHASIL!', ));
+			// JIKA DI PACKING LIST MASIH BISA BATAL
+			if($plh == 'pl'){
+				$this->m_master->editRollRk();
+				echo json_encode(array('res' => true, 'msg' => 'BERHASIL EDIT!', 'info' => 'success'));
+			}else{
+				$cek = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$idrk' AND qc_rk='proses' GROUP BY id_rk");
+				if($cek->num_rows() == 0){
+					echo json_encode(array('res' => true, 'msg' => 'SUDAH DICEK OK! TIDAK BISA EDIT!', 'info' => 'error'));
+				}else{
+					$this->m_master->editRollRk();
+					echo json_encode(array('res' => true, 'msg' => 'BERHASIL EDIT!', 'info' => 'success'));
+				}
+			}
 		}
 	}
 
@@ -2524,8 +2609,28 @@ class Master extends CI_Controller
 	}
 
 	function batalRollRk(){
-		$return = $this->m_master->batalRollRk();
-		echo json_encode(array('res' => $return, 'msg' => 'BERHASIL BATAL!'));
+		// CEK JIKA SUDAH OK!
+		$idrk = $_POST['id_rk'];
+		$plh = $_POST['pilihbtnrencana'];
+
+		// JIKA DI PACKING LIST MASIH BISA BATAL
+		if($plh == 'pl'){
+			$return = $this->m_master->batalRollRk();
+			$msg = 'BERHASIL BATAL!';
+			$info = 'success';
+		}else{
+			$cek = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$idrk' AND qc_rk='proses' GROUP BY id_rk");
+			if($cek->num_rows() == 0){
+				$return = true;
+				$msg = 'SUDAH DICEK OK! TIDAK BISA BATAL';
+				$info = 'error';
+			}else{
+				$return = $this->m_master->batalRollRk();
+				$msg = 'BERHASIL BATAL!';
+				$info = 'success';
+			}
+		}
+		echo json_encode(array('res' => $return, 'msg' => $msg, 'info' => $info));
 	}
 
 	function editListRk(){
@@ -2742,7 +2847,13 @@ class Master extends CI_Controller
 								// BATAL
 								$batal = '<button onclick="entryBatalPL('."'".$roll->idroll."'".','."'".$roll->roll."'".','."'".$roll->statusroll."'".','."'".$roll->id_rk."'".','."'".$brencana."'".')">Batal</button>';
 								if($otorisasi == 'all' || $otorisasi == 'admin'){
-									$aksi = $batal;
+									// JIKA SUDAH OK TIDAK BISA BATAL
+									$cekpLoK = $this->db->query("SELECT*FROM pl WHERE id_rk='$roll->id_rk' AND qc='proses' GROUP BY id_rk");
+									if($cekpLoK->num_rows() == 0){
+										$aksi = '-';
+									}else{
+										$aksi = $batal;
+									}
 								}else{
 									$aksi = '-';
 								}
@@ -2765,20 +2876,33 @@ class Master extends CI_Controller
 				}
 				// TOMBOL PRINT SJ - PACKING LIST MUNCUL JIKA SUDAH OK
 				if($sj->qc == 'ok'){
-					$btnSJ = '<div style="display:inline-block;font-weight:bold;margin:0 5px">
-						<a href="'.base_url('Laporan/print_surat_jalan').'?jenis='.$sj->no_pkb.'&ctk=0" target="_blank" rel="plcek">SURAT JALAN</a>
-					</div>
-					<div style="display:inline-block;font-weight:bold;margin:0 5px">
-						<a href="'.base_url('Laporan/print_surat_jalan').'?jenis='.$sj->no_pkb.'&ctk=1" target="_blank" rel="plcek">PACKING LIST</a>
-					</div>';
+					// TAMBAHKAN NOPOL DULU BARU BISA PRINT SURAT JALAN + PACKING LIST	
+					if($sj->id_expedisi == null || $sj->id_expedisi == ''){
+						$btnSJ = 'TAMBAHKAN NOPOL!';
+					}else{
+						$btnSJ = '<div style="display:inline-block;font-weight:bold;margin:0 5px">
+							<a href="'.base_url('Laporan/print_surat_jalan').'?jenis='.$sj->no_pkb.'&ctk=0" target="_blank" rel="plcek">SURAT JALAN</a>
+						</div>
+						<div style="display:inline-block;font-weight:bold;margin:0 5px">
+							<a href="'.base_url('Laporan/print_surat_jalan').'?jenis='.$sj->no_pkb.'&ctk=1" target="_blank" rel="plcek">PACKING LIST</a>
+						</div>';
+					}
 				}else{
 					$btnSJ = 'CEK YANG BENER! BELUM OK!';
+				}
+
+				// TAMPIL NOPOL + SUPIR
+				if($sj->id_expedisi == null || $sj->id_expedisi == ''){
+					$tmplNopolSiu = '-';
+				}else{
+					$getNopol = $this->db->query("SELECT*FROM m_expedisi WHERE id='$sj->id_expedisi'")->row();
+					$tmplNopolSiu = $getNopol->plat.' - '.$getNopol->supir;
 				}
 
 				// FIX BERAT DIKURANGI SESET
 				$totBerat = $sj->zberat - $sj->zseset;
 				$html .='<tr style="background:#e9e9e9;font-weight:bold">
-					<td style="padding:5px;text-align:center" colspan="3">-</td>
+					<td style="padding:5px;text-align:center" colspan="3">'.$tmplNopolSiu.'</td>
 					<td style="padding:5px">'.number_format($sj->croll).'</td>
 					<td style="padding:5px" colspan="2">TOTAL</td>
 					<td style="padding:5px">'.number_format($totBerat).'</td>
@@ -2932,7 +3056,7 @@ class Master extends CI_Controller
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan
 		WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width' AND roll LIKE '%$roll%'
 		AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
-		AND (STATUS=0 OR STATUS=2 OR STATUS=3) AND id_pl='0' AND (id_rk IS NULL OR id_rk = '')
+		AND (status=0 OR status=2 OR status=3) AND id_pl='0' AND (id_rk IS NULL OR id_rk = '')
 		ORDER BY pm,roll");
 		if($getRoll->num_rows() == 0){
 			$html .='<div class="notfon">DATA TIDAK DITEMUKAN</div>';
@@ -3538,9 +3662,9 @@ class Master extends CI_Controller
 			<td style="padding:5px;font-weight:bold;text-align:center">-/+(ROLL)</td>
 			<td style="padding:5px;font-weight:bold;text-align:center">-/+(BERAT)</td>
 		</tr>';
-		$getDatar = $this->db->query("SELECT id_po,no_po,STATUS,SUM(jml_roll) AS jml_roll,SUM(tonase) AS tonase FROM po_master
-		WHERE id_perusahaan='$id' AND STATUS='$opsi'
-		GROUP BY id_po,no_po,STATUS");
+		$getDatar = $this->db->query("SELECT id_po,no_po,status,SUM(jml_roll) AS jml_roll,SUM(tonase) AS tonase FROM po_master
+		WHERE id_perusahaan='$id' AND status='$opsi'
+		GROUP BY id_po,no_po,status");
 		$i = 0;
 		$tRkpPOJmlRoll = 0;
 		$tRkpPOTonase = 0;

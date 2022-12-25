@@ -473,6 +473,22 @@ class M_master extends CI_Model{
 		return $data;
     }
 
+    function loadPlNopol($search = ""){
+        $users = $this->db->query("SELECT*FROM m_expedisi WHERE (plat LIKE '%$search%' OR merk_type LIKE '%$search%' OR supir LIKE '%$search%')
+        ORDER BY plat,supir")->result_array();
+
+        $data = array();
+        foreach($users as $user){
+            $data[] = array(
+                "id" => $user['id'].'_ex_'.$user['plat'].'_ex_'.$user['supir'],
+                "text" => $user['plat'].' - '.$user['supir'],
+            );
+        }
+        return $data;
+    }
+
+    //
+
     function list_sj($searchTerm=""){
 		// ASLI
 		$users = $this->db->query("SELECT CONCAT(a.tgl, ' - ',
@@ -630,7 +646,7 @@ class M_master extends CI_Model{
 
 	function loadPlPO($searchTerm="", $fid=""){
 		$users = $this->db->query("SELECT*FROM po_master
-		WHERE STATUS='open' AND id_perusahaan='$fid' AND no_po LIKE '%$searchTerm%'
+		WHERE status='open' AND id_perusahaan='$fid' AND no_po LIKE '%$searchTerm%'
 		GROUP BY id_po,no_po,id_perusahaan,status")->result_array();
 
         $data = array();
@@ -1231,6 +1247,77 @@ class M_master extends CI_Model{
         return $result;
     }
 
+    function showEditPlHapus(){
+        $idpt = $_POST['idpt'];
+        $tglpl = $_POST['tglpl'];
+        $opl = $_POST['opl'];
+        $i = $_POST['i'];
+        $id_rk = $_POST['id_rk'];
+        $nm_ker = $_POST['nm_ker'];
+        $g_label = $_POST['g_label'];
+        $idpl = $_POST['idpl'];
+
+        // JIKA MASIH ADA ROLL DIHAPUS DARI RENCANA KIRIM + P L SESUAI PL YANG DIHAPUS JENIS DAN GSM NYA
+        $getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE id_rk='$id_rk'");
+        if($getRoll->num_rows() > 0){
+            foreach($getRoll->result() as $rl){
+                if($rl->status == 1){
+                    $status = 0;
+                }else{
+                    $status = $rl->status;
+                }
+                $this->db->set('status', $status);
+                $this->db->set('id_pl', 0);
+                $this->db->set('lbl_rk', null);
+                $this->db->set('id_rk', null);
+                $this->db->set('packing_at', null);
+                $this->db->set('packing_by', null);
+                $this->db->where('nm_ker', $nm_ker);
+                $this->db->where('g_label', $g_label);
+                $this->db->where('id', $rl->id);
+                $result = $this->db->update('m_timbangan');
+            }
+        }
+
+        // HAPUS RENCANA KIRIM SESUAI JENIS DAN GSMNYA
+        $getRk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' AND tgl='$tglpl' AND nm_ker='$nm_ker' AND g_label='$g_label' AND order_pl='$opl'");
+        if($getRk->num_rows() > 0){
+            foreach($getRk->result() as $rk){
+                $this->db->where('tgl', $tglpl);
+                $this->db->where('id_rk', $id_rk);
+                $this->db->where('nm_ker', $nm_ker);
+                $this->db->where('g_label', $g_label);
+                $this->db->where('order_pl', $opl);
+                $this->db->where('id', $rk->id);
+                $result = $this->db->delete('m_rencana_kirim');
+            }
+        }
+
+        // HAPUS PACKING LISTNYA
+        $result = $this->db->query("DELETE FROM pl WHERE id='$idpl'");
+
+        return $result;
+    }
+
+    function addPlNopol(){
+        // 3_ex_AD 9496 IG_ex_JONO - 6 - 2022-12-25 - 1 - 1
+        $nopol = explode("_ex_", $_POST['fnopol']);
+        $idrk = $_POST['fvidrk'];
+        $idpt = $_POST['fvidpt'];
+        $opl = $_POST['fvopl'];
+        $tglpl = $_POST['fvtglpl'];
+        // $fvii = $_POST['fvii'];
+
+        $getPl = $this->db->query("SELECT*FROM pl WHERE id_rk='$idrk' AND id_perusahaan='$idpt' AND tgl_pl='$tglpl' AND opl='$opl'");
+        foreach($getPl->result() as $pl){
+            $this->db->set('id_expedisi', $nopol[0]);
+            $this->db->where('id', $pl->id);
+            $result = $this->db->update('pl');
+        }
+
+        return $result;
+    }
+
     function simpanCartPO($cekIdPo){
         // $id = $_POST['id'];
 
@@ -1344,7 +1431,9 @@ class M_master extends CI_Model{
 		$tglpl = $_POST['tglpl'];
 		$opl = $_POST['opl'];
 		$cek = $_POST['cek'];
-
+        if($cek == 'proses'){
+            $this->db->set('id_expedisi', null);
+        }
 		$this->db->set('qc', $cek);
 		$this->db->where('id_rk', $idrk);
 		$this->db->where('tgl_pl', $tglpl);

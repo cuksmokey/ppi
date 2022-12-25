@@ -394,7 +394,7 @@ class Laporan extends CI_Controller {
 		# # # # # # # # # K O P # # # # # # # # # #
 
         // AMBIL DATA KOP
-        $data_kop = $this->db->query("SELECT b.tgl AS tgl_kop,a.nm_ker AS ker,b.nama AS nama,b.nm_perusahaan AS pt,b.no_po AS popo,b.no_pkb AS no_pkb FROM m_timbangan a
+        $data_kop = $this->db->query("SELECT b.tgl AS tgl_kop,a.nm_ker AS ker,b.nama AS nama,b.nm_perusahaan AS pt,b.no_po AS popo,b.no_pkb AS no_pkb,b.no_surat FROM m_timbangan a
         INNER JOIN pl b ON a.id_pl=b.id
         WHERE b.no_pkb='$jenis'
         GROUP BY ker LIMIT 1;")->row();
@@ -475,16 +475,26 @@ class Laporan extends CI_Controller {
         </table>';
 
         // KONDISI KOP PADA SURAT JALAN > PPN ATAU NON-PPN
-        if($data_kop->no_pkb == '160/21/WP' || $data_kop->no_pkb == '006/22/MH.' || $data_kop->nama == 'IBU. LANI' || $data_kop->pt == 'EDY NURWIDODO' || $data_kop->no_pkb == '001/22/SM' || $data_kop->nama == 'BP. IMAM'){
-            $html .= $kop_gak_pakai;
-        }else if($data_kop->ker == 'MH' || $data_kop->ker == 'BK' || $data_kop->ker == 'MEDIUM LINER' || $data_kop->popo == '013/KB/RSA-IX/22' || $data_kop->popo == '028/KB/RSA-IX/22' || $data_kop->popo == 'PO.SBB-AGJ/04-300922/2022' || $data_kop->popo == '0016/PHP/09/2022' || $data_kop->popo == '034/KB/RSA-X/22'){
-            $html .= $kop_pakai;
-        }else if($data_kop->ker == 'WP' && ($data_kop->popo == 'PO 03.2006.0004' || $data_kop->popo == 'PO 03.2007.0005' || $data_kop->popo == 'PO 03.2108.0005' || $data_kop->popo == 'PO 03.2109.0029' || $data_kop->popo == 'PO 03.2110.0001' || $data_kop->popo == 'PO 03.2110.0007' || $data_kop->popo == 'PO 03.2202.0003' || $data_kop->popo == 'PO-KP-2210-0007' || $data_kop->popo == 'PO-KP-2211-0004' || $data_kop->pt == 'PT. KEMILAU INDAH PERMANA' || $data_kop->pt == 'PT. QINGDA MASPION PAPER PRODUCTS' || $data_kop->pt == 'PT. WIRAPETRO PLASTINDO' || $data_kop->pt == 'PT. MITRA KEMAS' || $data_kop->pt == 'PT. ALPHA ALTITUDE PAPER' || $data_kop->pt == 'PT. DOMINO MAKMUR PLASTINDO' || $data_kop->pt == 'PT. DOMINO SUKSES BERSAMA' || $data_kop->pt == 'CV. DWI MITRA KEMASINDO')){
-            $html .= $kop_pakai;
-        }else if($data_kop->ker == 'WP' || $data_kop->nama == 'WILLIAM CMBP'){
-            $html .= $kop_gak_pakai;
+        // $nosj = '543/ROLL/XII/22/A/BK';
+        $nosj = explode("/", trim($data_kop->no_surat));
+        if($nosj[4] == 'A' || $nosj[4] == 'B'){
+            if($nosj[4] == 'A'){
+                $html .= $kop_pakai;
+            }else{
+                $html .= $kop_gak_pakai;
+            }
         }else{
-            $html .= $kop_gak_pakai;
+            if($data_kop->no_pkb == '160/21/WP' || $data_kop->no_pkb == '006/22/MH.' || $data_kop->nama == 'IBU. LANI' || $data_kop->pt == 'EDY NURWIDODO' || $data_kop->no_pkb == '001/22/SM' || $data_kop->nama == 'BP. IMAM'){
+                $html .= $kop_gak_pakai;
+            }else if($data_kop->ker == 'MH' || $data_kop->ker == 'BK' || $data_kop->ker == 'MEDIUM LINER' || $data_kop->popo == '013/KB/RSA-IX/22' || $data_kop->popo == '028/KB/RSA-IX/22' || $data_kop->popo == 'PO.SBB-AGJ/04-300922/2022' || $data_kop->popo == '0016/PHP/09/2022' || $data_kop->popo == '034/KB/RSA-X/22'){
+                $html .= $kop_pakai;
+            }else if($data_kop->ker == 'WP' && ($data_kop->popo == 'PO 03.2006.0004' || $data_kop->popo == 'PO 03.2007.0005' || $data_kop->popo == 'PO 03.2108.0005' || $data_kop->popo == 'PO 03.2109.0029' || $data_kop->popo == 'PO 03.2110.0001' || $data_kop->popo == 'PO 03.2110.0007' || $data_kop->popo == 'PO 03.2202.0003' || $data_kop->popo == 'PO-KP-2210-0007' || $data_kop->popo == 'PO-KP-2211-0004' || $data_kop->pt == 'PT. KEMILAU INDAH PERMANA' || $data_kop->pt == 'PT. QINGDA MASPION PAPER PRODUCTS' || $data_kop->pt == 'PT. WIRAPETRO PLASTINDO' || $data_kop->pt == 'PT. MITRA KEMAS' || $data_kop->pt == 'PT. ALPHA ALTITUDE PAPER' || $data_kop->pt == 'PT. DOMINO MAKMUR PLASTINDO' || $data_kop->pt == 'PT. DOMINO SUKSES BERSAMA' || $data_kop->pt == 'CV. DWI MITRA KEMASINDO')){
+                $html .= $kop_pakai;
+            }else if($data_kop->ker == 'WP' || $data_kop->nama == 'WILLIAM CMBP'){
+                $html .= $kop_gak_pakai;
+            }else{
+                $html .= $kop_gak_pakai;
+            }
         }
 
 		# # # # # # # # # D E T A I L # # # # # # # # # #
@@ -514,10 +524,18 @@ class Laporan extends CI_Controller {
             $kett_tgll = $this->m_fungsi->tanggal_format_indonesia($data_pl->tgl);
         }
 
-        if($data_pl->no_kendaraan == '' || $data_pl->no_kendaraan == '-'){
-            $plat = "";
+        // NEW NOPOL
+        if($data_pl->id_expedisi == null || $data_pl->id_expedisi == ''){
+            if($data_pl->no_kendaraan == '' || $data_pl->no_kendaraan == '-'){
+                $plat = "";
+            }else{
+                $plat = $data_pl->no_kendaraan;
+            }
+            $supir = '';
         }else{
-            $plat = $data_pl->no_kendaraan;
+            $nopol = $this->db->query("SELECT*FROM m_expedisi WHERE id='$data_pl->id_expedisi'")->row();
+            $plat = $nopol->plat;
+            $supir = $nopol->supir.'<br>'.$nopol->pt;
         }
 
         $html .= '<tr>
@@ -531,7 +549,7 @@ class Laporan extends CI_Controller {
         <tr>
             <td style="padding:5px 0">NO. SURAT JALAN</td>
             <td style="text-align:center;padding:5px 0">:</td>
-            <td style="padding:5px 0">'.$data_pl->no_surat.'</td>
+            <td style="padding:5px 0">'.trim($data_pl->no_surat).'</td>
             <td style="padding:5px 0">ATTN</td>
             <td style="text-align:center;padding:5px 0">:</td>
             <td style="padding:5px 0">'.$data_pl->nama.'</td>
@@ -731,7 +749,7 @@ class Laporan extends CI_Controller {
                 <td style="border:1px solid #000;padding:5px 0">TITUT <br>SPV GUDANG</td>
                 <td style="border:1px solid #000;padding:5px 0">BP. RIDWAN <br>MGR GUDANG</td>
                 <td style="border:1px solid #000;padding:5px 0">BP. WEINARTO <br>GM</td>
-                <td style="border:1px solid #000"></td>
+                <td style="border:1px solid #000">'.$supir.'</td>
                 <td style="border:1px solid #000"></td>
             </tr>
             <tr>
@@ -779,7 +797,6 @@ class Laporan extends CI_Controller {
                 ORDER BY no_po DESC,a.g_label DESC,width DESC");
 
             foreach ($data_header->result() as $data_pl) {
-
                 if($data_pl->roll >= 38){
                     $e_width = '
                     <th style="border:0;padding:0;width:12%"></th>
@@ -809,10 +826,16 @@ class Laporan extends CI_Controller {
                     $p_tgl = $this->m_fungsi->tanggal_format_indonesia($data_pl->tgl);
                 }
 
-                if($data_pl->no_kendaraan == '' || $data_pl->no_kendaraan == '-'){
-                    $paltPl = "";
+                // NEW NOPOL
+                if($data_pl->id_expedisi == null || $data_pl->id_expedisi == ''){
+                    if($data_pl->no_kendaraan == '' || $data_pl->no_kendaraan == '-'){
+                        $paltPl = "";
+                    }else{
+                        $paltPl = $data_pl->no_kendaraan;
+                    }
                 }else{
-                    $paltPl = $data_pl->no_kendaraan;
+                    $nopolpl = $this->db->query("SELECT*FROM m_expedisi WHERE id='$data_pl->id_expedisi'")->row();
+                    $paltPl = $nopolpl->plat;
                 }
 
                 $html .= '<tr>
@@ -1177,7 +1200,8 @@ class Laporan extends CI_Controller {
         $jenis = $_GET['jenis'];
         $ctk = $_GET['ctk'];
         $all = $_GET['all'];
-
+        $html = '';
+        
         // LABEL CRR
         if($ctk == 3){
             $lmt = 'LIMIT 2';
@@ -1209,9 +1233,6 @@ class Laporan extends CI_Controller {
         }
         
         $data_perusahaan = $this->db->query("SELECT * FROM perusahaan limit 1")->row();
-
-        $html = '';
-
         if($data_detail->num_rows() > 0) {
 			foreach ($data_detail->result() as $data ) {
 				if($data->seset == 0 || $data->seset == null){
@@ -2260,9 +2281,9 @@ class Laporan extends CI_Controller {
                     $datewp = date('Y-m-d');
 
                     $isi_query = "SELECT width,g_label AS gsm,
-                    (SELECT COUNT(*) FROM m_timbangan WHERE width = a.width AND g_label = a.g_label AND nm_ker='WP' AND STATUS='0' AND tgl BETWEEN '2020-11-01' AND '$datewp') AS jml,
+                    (SELECT COUNT(*) FROM m_timbangan WHERE width = a.width AND g_label = a.g_label AND nm_ker='WP' AND status='0' AND tgl BETWEEN '2020-11-01' AND '$datewp') AS jml,
                     SUM(weight) AS all_total
-                    FROM m_timbangan a WHERE (nm_ker='WP' OR nm_ker='wp') AND STATUS='0' AND tgl BETWEEN '2020-11-01' AND '$datewp' AND g_label='$gsm'
+                    FROM m_timbangan a WHERE (nm_ker='WP' OR nm_ker='wp') AND status='0' AND tgl BETWEEN '2020-11-01' AND '$datewp' AND g_label='$gsm'
                     GROUP BY width";
                 }
                 $sql_rekap = $this->db->query($isi_query);
@@ -2344,7 +2365,7 @@ class Laporan extends CI_Controller {
 
             // cetak per ukuran pdf
 
-            $sql_uk_all = $this->db->query("SELECT COUNT(*) AS totalluk FROM m_timbangan WHERE (nm_ker='MH' OR nm_ker='MI') AND STATUS='0' AND width='$jenis'")->row();
+            $sql_uk_all = $this->db->query("SELECT COUNT(*) AS totalluk FROM m_timbangan WHERE (nm_ker='MH' OR nm_ker='MI') AND status='0' AND width='$jenis'")->row();
 
             $html .= '<table style="margin:0;padding:0;text-align:center;font-size:14px;color:'.$ink.';font-weight:bold;width:100%;border-collapse:collapse">
                 <tr>
@@ -2368,7 +2389,7 @@ class Laporan extends CI_Controller {
             }
 
             // query gsm
-            $sql_gsm =  $this->db->query("SELECT g_label, COUNT(g_label) AS totgsm FROM m_timbangan WHERE width='$jenis' AND STATUS='0' AND $where GROUP BY g_label ORDER BY g_label ASC")->result();
+            $sql_gsm =  $this->db->query("SELECT g_label, COUNT(g_label) AS totgsm FROM m_timbangan WHERE width='$jenis' AND status='0' AND $where GROUP BY g_label ORDER BY g_label ASC")->result();
 
             foreach($sql_gsm as $data){
 
@@ -2392,7 +2413,7 @@ class Laporan extends CI_Controller {
                 $gsm_glabel = $data->g_label;
                 
                 // MH
-                $sql_ker_mh = $this->db->query("SELECT nm_ker, COUNT(nm_ker) AS totker FROM m_timbangan WHERE width='$jenis' AND g_label='$gsm_glabel' AND STATUS='0' AND nm_ker='$title1' GROUP BY nm_ker ORDER BY nm_ker ASC")->result();
+                $sql_ker_mh = $this->db->query("SELECT nm_ker, COUNT(nm_ker) AS totker FROM m_timbangan WHERE width='$jenis' AND g_label='$gsm_glabel' AND status='0' AND nm_ker='$title1' GROUP BY nm_ker ORDER BY nm_ker ASC")->result();
 
                 foreach($sql_ker_mh as $data){
                     $html .= '<tr>
@@ -2412,7 +2433,7 @@ class Laporan extends CI_Controller {
                         </tr>';
 
                     $mh = $data->nm_ker;
-                    $sql_roll_mh = $this->db->query("SELECT*FROM m_timbangan WHERE width='$jenis' AND g_label='$gsm_glabel' AND STATUS='0' AND nm_ker='$mh' ORDER BY roll ASC")->result();
+                    $sql_roll_mh = $this->db->query("SELECT*FROM m_timbangan WHERE width='$jenis' AND g_label='$gsm_glabel' AND status='0' AND nm_ker='$mh' ORDER BY roll ASC")->result();
 
                     $no = 1;
                     foreach ($sql_roll_mh as $r ) {
@@ -2431,7 +2452,7 @@ class Laporan extends CI_Controller {
                 }
 
                 // MI
-                $sql_ker_mi = $this->db->query("SELECT nm_ker, COUNT(nm_ker) AS totker FROM m_timbangan WHERE width='$jenis' AND g_label='$gsm_glabel' AND STATUS='0' AND nm_ker='$title2' GROUP BY nm_ker ORDER BY nm_ker ASC")->result();
+                $sql_ker_mi = $this->db->query("SELECT nm_ker, COUNT(nm_ker) AS totker FROM m_timbangan WHERE width='$jenis' AND g_label='$gsm_glabel' AND status='0' AND nm_ker='$title2' GROUP BY nm_ker ORDER BY nm_ker ASC")->result();
 
                 foreach($sql_ker_mi as $data){
                     $html .= '<tr>
@@ -2451,7 +2472,7 @@ class Laporan extends CI_Controller {
                         </tr>';
 
                     $mi = $data->nm_ker;
-                    $sql_roll_mi = $this->db->query("SELECT*FROM m_timbangan WHERE width='$jenis' AND g_label='$gsm_glabel' AND STATUS='0' AND nm_ker='$mi' ORDER BY roll ASC")->result();
+                    $sql_roll_mi = $this->db->query("SELECT*FROM m_timbangan WHERE width='$jenis' AND g_label='$gsm_glabel' AND status='0' AND nm_ker='$mi' ORDER BY roll ASC")->result();
 
                     $no = 1;
                     foreach ($sql_roll_mi as $r ) {
@@ -5496,7 +5517,7 @@ class Laporan extends CI_Controller {
 
 			$getStokGudang = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan
 			WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width'
-			AND STATUS='0' AND id_pl='0'
+			AND status='0' AND id_pl='0'
 			GROUP BY nm_ker,g_label,width")->row();
 			// STOK BERTUAN = STOK GUDANG - STOK ROLL PO
 			$stokRollTuan = $getStokGudang->jml_roll - $sumRollPO;

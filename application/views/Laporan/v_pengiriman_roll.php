@@ -144,8 +144,9 @@
 						</h2>
 					</div>
 
-					<div class="body">
+					<div class="body" style="overflow:auto;white-space:nowrap;">
 						<input type="hidden" id="otorisasi" value="<?php echo $otorisasi; ?>">
+						<input type="hidden" id="v-id-pt" value="">
 						<input type="hidden" id="v-id-pl" value="">
 						<input type="hidden" id="v-opl" value="">
 						<input type="hidden" id="v-tgl-pl" value="">
@@ -157,7 +158,7 @@
 							<button id="btn-opsi-rk" onclick="pilih_opsi('rk')">RENCANA KIRIM</button>
 						</div>
 
-						<div class="list-btn-pl">
+						<div class="list-btn-pl" style="overflow:auto;white-space:nowrap;">
 							<?php if($otorisasi == 'all' || $otorisasi == 'admin'){?>
 							<div style="margin-top:15px;color:#000;font-size:12px"><button onclick="btnAdd()">ADD</button></div>
 							<?php }?>
@@ -175,7 +176,7 @@
 							<div class="ilist box-form-pl" style="overflow:auto;white-space:nowrap;">
 								<!-- BOX FORM PL -->
 								<div class="box-form-pl-cust">
-									<table style="width:100%" border="1">
+									<table style="width:100%">
 										<tr>
 											<td style="width:15%;padding:5px"></td>
 											<td style="width:1%;padding:5px"></td>
@@ -227,8 +228,8 @@
 									</table>
 								</div>
 
-								<div class="box-form-pl-po">
-									<table style="margin-top:15px;width:100%" border="1">
+								<div class="box-form-pl-po" style="overflow:auto;white-space:nowrap;">
+									<table style="margin-top:15px;width:100%">
 										<tr>
 											<td style="width:15%;padding:5px"></td>
 											<td style="width:1%;padding:5px"></td>
@@ -264,8 +265,8 @@
 
 								<div class="cek_no_sj"></div>
 
-								<div class="box-form-pl-no">
-									<table style="margin-top:15px;width:100%" border="1">
+								<div class="box-form-pl-no" style="overflow:auto;white-space:nowrap;">
+									<table style="margin-top:15px;width:100%">
 										<tr>
 											<td style="width:15%;padding:5px"></td>
 											<td style="width:1%;padding:5px"></td>
@@ -361,22 +362,48 @@
 									</table>
 								</div>
 
-								<div class="show-add-cart-pl"></div>
+								<div class="show-add-cart-pl" style="overflow:auto;white-space:nowrap;"></div>
 
-								<div class="show-edit-cart-pl"></div>
+								<div class="show-edit-cart-pl" style="overflow:auto;white-space:nowrap;"></div>
+
+								<div style="overflow:auto;white-space:nowrap;">
+									<table style="margin:15px 0 0;padding:0;width:100%;">
+									<tr>
+										<td style="padding:2px;width:15%"></td>
+										<td style="padding:2px;width:1%"></td>
+										<td style="padding:2px;width:34%"></td>
+										<td style="padding:2px;width:50%"></td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">PILIH</td>
+										<td style="padding:5px;font-weight:bold">:</td>
+										<td style="padding:5px">
+											<select class="form-control" id="plnopol" style="width:100%" autocomplete="off"></select>
+										</td>
+									</tr>
+									<tr>
+										<td style="padding:5px;font-weight:bold">NOPOL</td>
+										<td style="padding:5px;font-weight:bold">:</td>
+										<td style="padding:5px">
+											<input type="text" id="txtnopol" class="form-control" style="background:#e9e9e9" disabled>
+										</td>
+										<td style="padding:5px"></td>
+									</tr>
+									</table>
+								</div>
 
 								<button onclick="btnBack()" style="margin-top:15px">BACK</button>
-								<!-- <button onclick="addCartPl('simpan')">SIMPAN</button> -->
+								<button onclick="addPlNopol()" class="btn-add-nopol" style="display:none;">EDIT NOPOL</button>
 							</div>
 						</div>
 						
-						<div class="list-btn-rk">
+						<div class="list-btn-rk" style="overflow:auto;white-space:nowrap;">
 							<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'fg'){?>
 							<div style="margin-top:15px;color:#000;font-size:12px"><button onclick="btnAddrk()">ADD</button></div>
 							<?php }?>
 
 							<!-- <div class="ilist box-data-rk">BOX RK</div> -->
-							<div class="ilist box-data-rk">
+							<div class="ilist box-data-rk" style="overflow:auto;white-space:nowrap;">
 								<div style="color:#000;font-size:12px">
 									<button disabled="disabled">PILIH :</button>
 									<input type="date" id="tgl-list-rk" value="<?= date('Y-m-d')?>">
@@ -386,8 +413,8 @@
 								<div style="margin-top:15px" class="list-rk"></div>
 							</div>
 
-							<div class="ilist box-form-rk">
-								<table style="width:100%" border="1">
+							<div class="ilist box-form-rk" style="overflow:auto;white-space:nowrap;">
+								<table style="width:100%">
 									<tr>
 										<td style="width:15%;padding:5px"></td>
 										<td style="width:1%;padding:5px"></td>
@@ -465,7 +492,7 @@
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header"></div>
-			<div class="modal-body">
+			<div class="modal-body" style="overflow:auto;white-space:nowrap;">
 				<div class="isi-qc-terjual"></div>
 				<div class="isi-qc-edit"></div>
 			</div>
@@ -783,9 +810,46 @@
 
 	//
 
+	function load_nopol() {
+		$('#plnopol').select2({
+			allowClear: true,
+			placeholder: '- - SELECT - -',
+			ajax: {
+				dataType: 'json',
+				url: '<?php echo base_url(); ?>/Master/loadPlNopol',
+				data: function(params) {
+					if (params.term == undefined) {
+						return {
+							search: "",
+						}
+					} else {
+						return {
+							search: params.term,
+						}
+					}
+				},
+				processResults: function(data, page) {
+					return {
+						results: data
+					};
+				},
+			}
+		});
+	}
+	$('#plnopol').on('change', function() {
+		data = $('#plnopol').select2('data');
+		// alert(data[0].id);
+		// $("#plnopol").val(data[0].id);
+		nopoll = data[0].id.split("_ex_");
+		$("#txtnopol").val(nopoll[1]+' - '+nopoll[2]);
+	});
+
+	//
+
 	function kosong(){ // reset id_pl
 		$(".box-data-pl").show();
 		$(".box-form-pl").hide();
+		$("#v-id-pt").val('');
 		$("#v-id-pl").val('');
 		$("#v-opl").val('');
 		$("#v-tgl-pl").val('');
@@ -824,7 +888,11 @@
 		$(".show-edit-cart-pl").html('');
 		pl = 'simpan';
 		vopl = '';
-		
+
+		load_nopol();
+		$('#plnopol').val("");
+		$("#txtnopol").val("");
+		$(".btn-add-nopol").hide();
 	}
 
 	function btnAdd(){
@@ -965,6 +1033,17 @@
 				pl = 'edit';
 				vopl = data.opl;
 				showEditPl(idpt,tglpl,opl,i);
+
+				$(".btn-add-nopol").show();
+				$("#v-id-pl").val(data.fidrk);
+				$("#v-id-pt").val(idpt);
+				$("#v-opl").val(opl);
+				$("#v-tgl-pl").val(tglpl);
+				$("#v-ii").val(i);
+
+				load_nopol();
+				$('#plnopol').val("");
+				$("#txtnopol").val(data.fidexpd);
 			}
 		})
 	}
@@ -1015,6 +1094,58 @@
 			}),
 			success: function(data){
 				$(".show-edit-cart-pl").html(data);
+			}
+		})
+	}
+
+	function showEditPlHapus(idpt,tglpl,opl,i,id_rk,nm_ker,g_label,idpl){
+		// alert(idpt+' - '+tglpl+' - '+opl+' - '+i+' - '+id_rk+' - '+idpl);
+		$.ajax({
+			url: '<?php echo base_url('Master/showEditPlHapus')?>',
+			type: "POST",
+			data: ({
+				idpt,tglpl,opl,i,id_rk,nm_ker,g_label,idpl
+			}),
+			success: function(json){
+				data = JSON.parse(json);
+				if(data.res){
+					swal(data.msg, "", data.info);
+					editPL(idpt,tglpl,opl,i)
+				}
+			}
+		})
+	}
+
+	function addPlNopol(){
+		fnopol = $('#plnopol').val();
+		fvidrk = $("#v-id-pl").val();
+		fvidpt = $("#v-id-pt").val();
+		fvopl = $("#v-opl").val();
+		fvtglpl = $("#v-tgl-pl").val();
+		fvii = $("#v-ii").val();
+		// alert(fnopol+' - '+fvidrk+' - '+fvidpt+' - '+fvtglpl+' - '+fvopl+' - '+fvii);
+		if(fnopol == '' || fnopol == undefined){
+			swal("NOPOL TIDAK BOLEH KOSONG", "", "error");
+			return;
+		}
+
+		if(fvidrk == ''){
+			swal("CEK DULU BARU BISA TAMBAH NOPOL!", "", "error");
+			return;
+		}
+
+		$.ajax({
+			url: '<?php echo base_url('Master/addPlNopol')?>',
+			type: "POST",
+			data: ({
+				fnopol,fvidrk,fvidpt,fvopl,fvtglpl,fvii
+			}),
+			success: function(json){
+				data = JSON.parse(json);
+				if(data.res){
+					swal(data.msg, "", data.info);
+					editPL(fvidpt,fvtglpl,fvopl,fvii);
+				}
 			}
 		})
 	}
@@ -1949,6 +2080,9 @@
 		// alert(id);
 		$(".plistinputroll").html('');
 		id_rk = $("#v-id-pl").val();
+		opl = $("#v-opl").val();
+		tgl_pl = $("#v-tgl-pl").val();
+
 		seset = $("#his-seset-" + id).val();
 		diameter = $("#his-diameter-" + id).val();
 		// alert(id+' - '+seset+' - '+vberat);
@@ -1959,15 +2093,14 @@
 				id: id,
 				seset: seset,
 				diameter: diameter,
-				vdiameter,vseset,vberat
+				vdiameter,vseset,vberat,id_rk,pilihbtnrencana
 			}),
 			success: function(json){
 				data = JSON.parse(json)
 				if(data.res){
-					swal(data.msg, "", "success");
-					hasilInputSementara(id_rk,i,pilihbtnrencana);
-				}else{
-					swal(data.msg, "", "error");
+					swal(data.msg, "", data.info);
+					// hasilInputSementara(id_rk,i,pilihbtnrencana);
+					btnRencana(id_rk,opl,tgl_pl,pilihbtnrencana,i);
 				}
 			}
 		})
@@ -1993,19 +2126,23 @@
 
 	function batalRollRk(id,i){
 		id_rk = $("#v-id-pl").val();
+		opl = $("#v-opl").val();
+		tgl_pl = $("#v-tgl-pl").val();
+		// $("#v-ii").val();
 		$(".plistinputroll").html('');
 		// alert(id+' - '+i+' - '+id_rk);
 		$.ajax({
 			url: '<?php echo base_url('Master/batalRollRk')?>',
 			type: "POST",
 			data: ({
-				id
+				id,id_rk,pilihbtnrencana
 			}),
 			success: function(json){
 				data = JSON.parse(json);
 				if(data.res){
-					swal(data.msg, "", "success");
-					hasilInputSementara(id_rk,i,pilihbtnrencana);
+					swal(data.msg, "", data.info);
+					btnRencana(id_rk,opl,tgl_pl,pilihbtnrencana,i);
+					// hasilInputSementara(id_rk,i,pilihbtnrencana);
 				}
 			}
 		})

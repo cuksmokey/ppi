@@ -6,7 +6,6 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <title>P P I</title>
     <!-- Favicon-->
-    <!-- <link rel="icon" href="<?php echo base_url(); ?>assets/logo.ico" type="image/x-icon"> -->
     <link rel="icon" href="<?php echo base_url(); ?>assets/logo_ppi.ico" type="image/x-icon">
 
     <!-- Google Fonts -->
@@ -179,14 +178,14 @@
                                 <span>Ekspedisi</span>
                             </a>
                         </li>
+                    <?php } ?>
+                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC") { ?>
                         <li>
                             <a href="<?php echo base_url('Laporan/Pengiriman_Roll') ?>">
                                 <!-- <i class="material-icons">list</i> -->
                                 <span>Pengiriman</span>
                             </a>
                         </li>
-                    <?php } ?>
-                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC") { ?>
                         <li>
                             <a href="<?php echo base_url('Laporan/List_Roll') ?>">
                                 <!-- <i class="material-icons">list</i> -->

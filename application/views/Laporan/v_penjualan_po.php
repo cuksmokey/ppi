@@ -61,7 +61,7 @@
 						</h2>
 					</div>
 
-					<div class="body">
+					<div class="body" style="overflow:auto;white-space:nowrap;">
 						<div style="font-size:12px;color:#000">
 							<button class="btn-c-po" onclick="add_box('open')">OPEN PO</button>
 							<button class="btn-c-po" onclick="add_box('close')">CLOSE PO</button>
