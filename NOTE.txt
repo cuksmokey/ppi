@@ -7,7 +7,8 @@ ALTER TABLE `db_ppi`.`user`
 CHANGE `level` `level` ENUM('Admin','User','SuperAdmin','QC','FG','Finance','Office','Rewind1','Rewind2') CHARSET latin1 COLLATE latin1_swedish_ci NULL;
 
 pass Dev = PrimaPaper2022
-ab434104a6d9b340e634d33d67688ecf
+ab434104a6d9b340e634d33d67688ecf 
+
 
 ////////////////////////////////////
 
