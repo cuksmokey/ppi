@@ -266,6 +266,7 @@ class M_master extends CI_Model{
     }
 
     function update_timbangan(){
+        $this->db->set('tgl', $_POST['tgl']);
         $this->db->set('nm_ker', $_POST['nm_ker']);
         // $this->db->set('g_ac', $_POST['g_ac']);
         $this->db->set('g_label', $_POST['g_label']);

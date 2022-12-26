@@ -308,8 +308,8 @@
 		lstatus = $("#lstatus-"+i).val();
 		// console.log(lroll,lnm_ker,lg_label,lwidth,lweight,ldiameter,ljoint,lket,lstatus);
 
-		if (nm_ker == '' || g_label == '' || width == '' || diameter == '' || weight == '' || joint == '') {
-			showNotification("alert-danger", "DATA JENIS, GSM, UKURAN, DIAMETER, BERAT, JOINT, TIDAK BOLEH KOSONG!!!", "bottom", "center", "", "");
+		if (tgl == '' || nm_ker == '' || g_label == '' || width == '' || diameter == '' || weight == '' || joint == '') {
+			showNotification("alert-danger", "DATA TANGGAL, JENIS, GSM, UKURAN, DIAMETER, BERAT, JOINT, TIDAK BOLEH KOSONG!!!", "bottom", "center", "", "");
 			return;
 		}
 		$.ajax({

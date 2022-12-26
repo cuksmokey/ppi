@@ -1222,11 +1222,13 @@ class Laporan extends CI_Controller {
 				ORDER BY a.nm_ker DESC,a.g_label ASC,a.width ASC,a.roll ASC");
 			}
         }else if($jenis != 0 && $all == 0){
-            $data_detail = $this->db->query("SELECT * FROM m_timbangan WHERE id_pl='$jenis' ORDER BY nm_ker ASC,g_label ASC,width ASC,roll ASC");
+            // $data_detail = $this->db->query("SELECT * FROM m_timbangan WHERE id_pl='$jenis' ORDER BY nm_ker ASC,g_label ASC,width ASC,roll ASC");
+            $data_detail = $this->db->query("SELECT * FROM m_timbangan WHERE id_rk='$jenis' ORDER BY nm_ker ASC,g_label ASC,width ASC,roll ASC");
         }else{
             $data_detail = $this->db->query("SELECT * FROM m_timbangan a
             INNER JOIN pl b ON a.id_pl=b.id
-            WHERE b.no_pkb='$all'
+            -- WHERE b.no_pkb='$all'
+            WHERE b.id_rk='$jenis'
             ORDER BY a.nm_ker DESC,a.g_label ASC,a.width ASC,a.roll ASC $lmt");
             // ORDER BY a.nm_ker ASC,a.g_label ASC,a.width ASC,a.roll ASC
             // ORDER BY a.nm_ker DESC,a.g_label DESC,a.width DESC,a.roll DESC
@@ -1236,96 +1238,149 @@ class Laporan extends CI_Controller {
         if($data_detail->num_rows() > 0) {
 			foreach ($data_detail->result() as $data ) {
 				if($data->seset == 0 || $data->seset == null){
-						$lWeight = $data->weight;
-					}else{
-						$lWeight = $data->weight - $data->seset;
-					}
-				if($ctk == 0 || $ctk == 2 || $ctk == 'A4' || $ctk == 'F4'){
-					if($data->weight == 0){
-						$html .= '';
-					}else if($data->weight <> 0){
-						// 35PX
-						$html .= '
-						<div style="margin:0;color:#000">
-						<center> 
-							<h1 style="color:#000"> '.$data_perusahaan->nama.' </h1>  '.$data_perusahaan->daerah.' , Email : '.$data_perusahaan->email.'
-						</center>
-						</div>
-						<hr>';
+                    $lWeight = $data->weight;
+                }else{
+                    $lWeight = $data->weight - $data->seset;
+                }
 
-						// 35PX
-						$html .= '<br><br><br>
-								<table width="100%" cellspacing="0" cellpadding="5" style="font-size:52px;color:#000;margin:0">
-									<tr>
-										<td style="border:1px solid #000" align="left" width="50%">QUALITY</td>
-										<td style="border:1px solid #000" align="center">'.$data->nm_ker.'</td>
-									</tr>
-									<tr>
-										<td style="border:1px solid #000" align="left">GRAMMAGE</td>
-										<td style="border:1px solid #000" align="center">'.$data->g_label.' GSM</td>
-									</tr>
-									<tr>
-										<td style="border:1px solid #000" align="left">WIDTH</b></td>
-										<td style="border:1px solid #000" align="center">'.round($data->width,2).' CM</td>
-									</tr>
-									<tr>
-										<td style="border:1px solid #000" align="left">DIAMETER</td>
-										<td style="border:1px solid #000" align="center">'.$data->diameter.' CM</td>
-									</tr>
-									<tr>
-										<td style="border:1px solid #000" align="left">WEIGHT</td>
-										<td style="border:1px solid #000" align="center">'.$lWeight.' KG</td>
-									</tr>
-									<tr>
-										<td style="border:1px solid #000" align="left">JOINT</td>
-										<td style="border:1px solid #000" align="center">'.$data->joint.' </td>
-									</tr>
-									<tr>
-										<td style="border:1px solid #000" align="left">ROLL NUMBER</td>
-										<td style="border:1px solid #000" align="center">'.$data->roll.' </td>
-									</tr>
-							</table>';
-						}
+                $ket = 0;
+                $sty = '';
+
+				if($ctk == 0 || $ctk == 2 || $ctk == 'A4' || $ctk == 'F4'){
+                    // if($data->status == 0){
+                    //     $ket = 0;
+                    //     $sty = '';
+                    // }else{
+                    //     if($data->ket == ''){
+                    //         $sty = '';
+                    //         $ket = 'BUFFER';
+                    //     }else{
+                    //         $sty = ';font-weight:bold;font-size:18px';
+                    //         $ket = $data->ket;
+                    //     }
+                    // }
+
+                    $html .= '<h1 style="margin:0;padding:0">'.$data_perusahaan->nama.'</h1>
+                        <div style="margin:8px 0">'.$data_perusahaan->daerah.' , Email : '.$data_perusahaan->email.'</div>
+                        <table style="margin:0;font-size:52px;width:100%" cellspacing="0" border="1">
+                            <tr>
+                                <td style="width:50%">QUALITY</td>
+                                <td style="text-align:center">'.$data->nm_ker.'</td>
+                            </tr>
+                            <tr>
+                                <td>GRAMMAGE</td>
+                                <td style="text-align:center">'.$data->g_label.' GSM</td>
+                            </tr>
+                            <tr>
+                                <td>WIDTH</td>
+                                <td style="text-align:center">'.round($data->width, 2).' CM</td>
+                            </tr>
+                            <tr>
+                                <td>DIAMETER</td>
+                                <td style="text-align:center">'.$data->diameter.' CM</td>
+                            </tr>
+                            <tr>
+                                <td>WEIGHT</td>
+                                <td style="text-align:center">'.($lWeight).' KG</td>
+                            </tr>
+                            <tr>
+                                <td>JOINT</td>
+                                <td style="text-align:center">'.$data->joint.'</td>
+                            </tr>
+                            <tr>
+                                <td>ROLL NUMBER</td>
+                                <td style="text-align:center">'.$data->roll.'</td>
+                            </tr>
+                            <tr>
+                                <td>LOC</td>
+                                <td style="text-align:center'.$sty.'">'.$ket.'</td>
+                            </tr>
+                        </table>';
+						// $html .= '
+						// <div style="margin:0;color:#000">
+						// <center> 
+						// 	<h1 style="color:#000"> '.$data_perusahaan->nama.' </h1>  '.$data_perusahaan->daerah.' , Email : '.$data_perusahaan->email.'
+						// </center>
+						// </div>
+						// <hr>';
+
+						// // 35PX
+						// $html .= '<br><br><br>
+						// 		<table width="100%" cellspacing="0" cellpadding="5" style="font-size:52px;color:#000;margin:0">
+						// 			<tr>
+						// 				<td style="border:1px solid #000" align="left" width="50%">QUALITY</td>
+						// 				<td style="border:1px solid #000" align="center">'.$data->nm_ker.'</td>
+						// 			</tr>
+						// 			<tr>
+						// 				<td style="border:1px solid #000" align="left">GRAMMAGE</td>
+						// 				<td style="border:1px solid #000" align="center">'.$data->g_label.' GSM</td>
+						// 			</tr>
+						// 			<tr>
+						// 				<td style="border:1px solid #000" align="left">WIDTH</b></td>
+						// 				<td style="border:1px solid #000" align="center">'.round($data->width,2).' CM</td>
+						// 			</tr>
+						// 			<tr>
+						// 				<td style="border:1px solid #000" align="left">DIAMETER</td>
+						// 				<td style="border:1px solid #000" align="center">'.$data->diameter.' CM</td>
+						// 			</tr>
+						// 			<tr>
+						// 				<td style="border:1px solid #000" align="left">WEIGHT</td>
+						// 				<td style="border:1px solid #000" align="center">'.$lWeight.' KG</td>
+						// 			</tr>
+						// 			<tr>
+						// 				<td style="border:1px solid #000" align="left">JOINT</td>
+						// 				<td style="border:1px solid #000" align="center">'.$data->joint.' </td>
+						// 			</tr>
+						// 			<tr>
+						// 				<td style="border:1px solid #000" align="left">ROLL NUMBER</td>
+						// 				<td style="border:1px solid #000" align="center">'.$data->roll.' </td>
+						// 			</tr>
+						// 	</table>';
+                    // }
 				}else if($ctk == 1){
-					if($data->weight == 0){
-						$html .= '';
-					}else if($data->weight <> 0){
-						// <div style="padding-top:100px;display:block;">
-						// <table width="100%" border="1" cellspacing="0" cellpadding="5" style="font-size:37px;margin-bottom:605px">
-						$html .= '
-							<div style="padding-top:30px;display:block;">
-								<table width="100%" border="1" cellspacing="0" cellpadding="5" style="font-size:37px;margin-bottom:120px">
-									<tr>
-										<td align="left">QUALITY</td>
-										<td align="center">'.$data->nm_ker.'</td>
-									</tr>
-									<tr>
-										<td align="left">GRAMMAGE</td>
-										<td align="center">'.$data->g_label.' GSM</td>
-									</tr>
-									<tr>
-										<td align="left">WIDTH</td>
-										<td align="center">'.round($data->width,2).' CM</td>
-									</tr>
-									<tr>
-										<td align="left">DIAMETER</td>
-										<td align="center">'.$data->diameter.' CM</td>
-									</tr>
-									<tr>
-										<td align="left">WEIGHT</td>
-										<td align="center">'.$lWeight.' KG</td>
-									</tr>
-									<tr>
-										<td align="left">JOINT</td>
-										<td align="center">'.$data->joint.' </td>
-									</tr>
-									<tr>
-										<td align="left">ROLL NUMBER</td>
-										<td align="center">'.$data->roll.'</td>
-									</tr>
-								</table>
-							</div>';
-					}
+					// if($data->weight == 0){
+					// 	$html .= '';
+					// }else if($data->weight <> 0){
+                    // <div style="padding-top:100px;display:block;">
+                    // <table width="100%" border="1" cellspacing="0" cellpadding="5" style="font-size:37px;margin-bottom:605px">
+                    $html .= '
+                        <div style="padding-top:30px;display:block;">
+                            <table width="100%" border="1" cellspacing="0" cellpadding="5" style="font-size:37px;margin-bottom:100px">
+                                <tr>
+                                    <td align="left">QUALITY</td>
+                                    <td align="center">'.$data->nm_ker.'</td>
+                                </tr>
+                                <tr>
+                                    <td align="left">GRAMMAGE</td>
+                                    <td align="center">'.$data->g_label.' GSM</td>
+                                </tr>
+                                <tr>
+                                    <td align="left">WIDTH</td>
+                                    <td align="center">'.round($data->width,2).' CM</td>
+                                </tr>
+                                <tr>
+                                    <td align="left">DIAMETER</td>
+                                    <td align="center">'.$data->diameter.' CM</td>
+                                </tr>
+                                <tr>
+                                    <td align="left">WEIGHT</td>
+                                    <td align="center">'.$lWeight.' KG</td>
+                                </tr>
+                                <tr>
+                                    <td align="left">JOINT</td>
+                                    <td align="center">'.$data->joint.' </td>
+                                </tr>
+                                <tr>
+                                    <td align="left">ROLL NUMBER</td>
+                                    <td align="center">'.$data->roll.'</td>
+                                </tr>
+                                <tr>
+                                    <td>LOC</td>
+                                    <td style="text-align:center'.$sty.'">'.$ket.'</td>
+                                </tr>
+                            </table>
+                        </div>';
+					// }
 				}else if($ctk == 3){
 					// <table width="100%" border="1" cellspacing="0" cellpadding="8" style="font-size:37px;margin-bottom:190px">
 						$html .= '
@@ -1365,18 +1420,23 @@ class Laporan extends CI_Controller {
 			}
 
             if($ctk == 'A4') {
-                $this->m_fungsi->_mpdf('',$html,10,10,10,'L');
+                // $this->m_fungsi->_mpdf('',$html,10,10,10,'L');
+                $this->m_fungsi->newMpdf($html, 10, 10, 10, 10, 'L', 'A4');
             }else if($ctk == 'F4'){
-                $this->m_fungsi->_mpdfCustom('',$html,10,10,10,'L');
+                // $this->m_fungsi->_mpdfCustom('',$html,10,10,10,'L');
+                $this->m_fungsi->newMpdf($html, 15, 15, 15, 15, 'L', 'F4');
             }else if($ctk == 1 || $ctk == 3){
-                $this->m_fungsi->_mpdf('',$html,10,10,10,'P');
+                // $this->m_fungsi->_mpdf('',$html,10,10,10,'P');
+                $this->m_fungsi->newMpdf($html, 5, 10, 5, 10, 'P', 'A4');
             }else if($ctk == 2){
-                $this->m_fungsi->_mpdfCustom('',$html,10,10,10,'L');
+                // $this->m_fungsi->_mpdfCustom('',$html,10,10,10,'L');
+                $this->m_fungsi->newMpdf($html, 15, 15, 15, 15, 'L', 'F4');
             }else{
-                $this->m_fungsi->_mpdf('',$html,10,10,10,'L');
+                // $this->m_fungsi->_mpdf('',$html,10,10,10,'L');
+                $this->m_fungsi->newMpdf($html, 15, 15, 15, 15, 'L', 'F4');
             }
         }else{
-			echo 'kosong ea...';
+			echo 'KOSONG . . .';
 		}
     }
 
@@ -5741,7 +5801,15 @@ class Laporan extends CI_Controller {
                         
                         // TOMBOL EDIT
                         if($otori == 'all' || $otori == 'admin' || $otori == 'qc'){
-                            $html .='<td class="edit-roll" style="padding:3px"><button class="" style="background:#fff;border:0;padding:3px 5px" onclick="editRoll('."'".$i."'".')">EDIT</button></td>';
+                            $print = base_url("Master/print_timbangan?id=").$roll->roll;
+                            // $print2 = base_url("Master/print_timbangan2?id=").$roll->roll;
+                            $plabel = '<a type="button" href="'.$print.'" target="_blank" style="padding:3px 5px;background:#fff">LABEL</a>';
+                            if($roll->status == 1){
+                                $aksii = '';
+                            }else{
+                                $aksii = $plabel;
+                            }
+                            $html .='<td class="edit-roll" style="padding:3px"><button class="" style="background:#fff;border:0;padding:3px 5px" onclick="editRoll('."'".$i."'".')">EDIT</button> '.$aksii.'</td>';
 						}else{
                             $html .='';
                         }

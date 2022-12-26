@@ -110,6 +110,7 @@
 												} 
 											?>
 											<input type="hidden" id="getid" value="">
+											<input type="hidden" id="l-tgl" value="">
 											<input type="hidden" id="l-nm_ker" value="">
 											<input type="hidden" id="l-g_label" value="">
 											<input type="hidden" id="l-width" value="">
@@ -443,6 +444,7 @@
 		ket = $("textarea#ket").val();
 
 		// get data lama
+		ltgl = $("#l-tgl").val();
 		lnm_ker = $("#l-nm_ker").val();
 		lg_label = $("#l-g_label").val();
 		lwidth = $("#l-width").val();
@@ -501,6 +503,7 @@
 				bi: 0,
 				// cstatus: cstatus,
 				cstatus: 1,
+				ltgl: ltgl,
 				lnm_ker: lnm_ker,
 				lg_label: lg_label,
 				lwidth: lwidth,
@@ -554,7 +557,7 @@
 			.done(function(data) {
 				json = JSON.parse(data);
 
-				if(json.status == 0){
+				if(json.status == 0 || json.status == 2 || json.status == 3){
 					$(".box-data").show();
 					$(".box-form").hide();
 					swal("ROLL SUDAH DICEK OK!, TIDAL BISA EDIT DATA ROLL, HARAP HUB. QC", "", "error");
@@ -635,6 +638,7 @@
 					$("textarea#ket").val(json.ket);
 
 					// cocok data lama
+					$("#l-tgl").val(json.tgl);
 					$("#l-nm_ker").val(json.nm_ker);
 					$("#l-g_label").val(json.g_label);
 					$("#l-width").val(json.width);
@@ -674,12 +678,12 @@
 								// reloadTable();
 								load_data();
 							} else {
-								swal("ROLL SUDAH DICETAK, TIDAL BISA HAPUS DATA ROLL, HARAP HUB. QC", "", "error");
+								swal("ROLL SUDAH DICEK/DICETAK, TIDAL BISA HAPUS DATA ROLL, HARAP HUB. QC", "", "error");
 							}
 						}
 					});
 				} else {
-					swal("", "DATA BATAL DIHAPUS", "error");
+					swal("DATA BATAL DIHAPUS", "", "error");
 				}
 			});
 	}
@@ -725,6 +729,7 @@
 		$("#ket").val("");
 
 		$("#getid").val("");
+		$("#l-tgl").val("");
 		$("#l-nm_ker").val("");
 		$("#l-g_label").val("");
 		$("#l-width").val("");

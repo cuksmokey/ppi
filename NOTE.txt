@@ -6,6 +6,9 @@ admin > 123
 ALTER TABLE `db_ppi`.`user`
 CHANGE `level` `level` ENUM('Admin','User','SuperAdmin','QC','FG','Finance','Office','Rewind1','Rewind2') CHARSET latin1 COLLATE latin1_swedish_ci NULL;
 
+pass Dev = PrimaPaper2022
+ab434104a6d9b340e634d33d67688ecf
+
 ////////////////////////////////////
 
 TAMBAH TABLE BUAT HISTORY EDIT ROLL
@@ -108,3 +111,11 @@ CREATE TABLE `db_ppi`.`m_expedisi`(
   `edited_by` VARCHAR(50) NULL,
   PRIMARY KEY (`id`)
 );
+
+
+INSERT INTO `m_timbangan` (`id`, `roll`, `tgl`, `nm_ker`, `g_ac`, `g_label`, `width`, `diameter`, `weight`, `joint`, `ket`, `status`, `id_pl`, `created_at`, `created_by`, `packing_at`, `packing_by`, `rct`, `ctk`, `bi`, `pm`) VALUES
+(NULL, '2/08131/22L/2B', '2022-12-19', 'MH', '121.00', '125', '140.00', 120, 1042, 0, '', 0, 0, '2022-12-20 02:18:52', NULL, NULL, NULL, '11.40', 0, '0.00', 2),
+(NULL, '2/08132/22L/1F', '2022-12-19', 'MH', '128.20', '125', '165.00', 120, 1202, 0, '', 0, 0, '2022-12-20 02:18:52', NULL, NULL, NULL, '10.40', 0, '0.00', 2),
+(NULL, '2/08132/22L/1B', '2022-12-19', 'MH', '127.00', '125', '140.00', 120, 1027, 0, '', 0, 0, '2022-12-20 02:18:52', NULL, NULL, NULL, '11.00', 0, '0.00', 2),
+(NULL, '2/08132/22L/2F', '2022-12-19', 'MH', '126.30', '125', '165.00', 120, 1189, 0, '', 0, 0, '2022-12-20 02:18:52', NULL, NULL, NULL, '11.40', 0, '0.00', 2),
+(NULL, '2/08132/22L/2B', '2022-12-19', 'MH', '122.30', '125', '140.00', 120, 1017, 0, '', 0, 0, '2022-12-20 02:18:52', NULL, NULL, NULL, '11.20', 0, '0.00', 2);

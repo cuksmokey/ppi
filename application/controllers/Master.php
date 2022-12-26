@@ -220,65 +220,46 @@ class Master extends CI_Controller
 				foreach ($query->result() as $r) {
 					$id = "'$r->id'";
 
-						$print = base_url("Master/print_timbangan?id=").$r->roll;
-						$print2 = base_url("Master/print_timbangan2?id=").$r->roll;
+					$print = base_url("Master/print_timbangan?id=").$r->roll;
+					$print2 = base_url("Master/print_timbangan2?id=").$r->roll;
 
-						$row = array();
-						$row[] = $r->roll;
-						$row[] = $r->tgl;
-						$row[] = $r->nm_ker;
-						$row[] = $r->g_label;
-						// $row[] = $r->g_ac;
-						$row[] = round($r->width,2);
-						$row[] = $r->diameter;
-						$row[] = $r->weight;
-						$row[] = $r->joint;
-						$row[] = $r->ket;
-						// $row[] = $r->ctk;
+					$row = array();
+					$row[] = $r->roll;
+					$row[] = $r->tgl;
+					$row[] = $r->nm_ker;
+					$row[] = $r->g_label;
+					// $row[] = $r->g_ac;
+					$row[] = round($r->width,2);
+					$row[] = $r->diameter;
+					$row[] = $r->weight;
+					$row[] = $r->joint;
+					$row[] = $r->ket;
+					$aksi ="";
+					// #FF9800 - #fff edit
+					// #FB483A - #fff hapus
+					// #fff - #333333 kcl
+					// #4CAF50 - besar
+					if($r->ctk == 1){
+						$aksi .='SUDAH CETAK LABEL!';
+					}else if($r->ctk == 0){
+						// CEK OLEH QC DULU
+						$edit = '<button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange">EDIT</button>';
+						$hapus = '<button type="button" onclick="deleteData('.$id.','."'".$r->roll."'".')" class="btn btn-danger">HAPUS</button>';
+						if($r->status == 1){
+							$aksi .='STATUS CEK QC! '.$edit.' '.$hapus;
+						}else{
+							$aksi = '
+							<a type="button" href="'.$print.'" target="_blank" class="btn btn-default">
+								L BESAR
+							</a>
+							<a type="button" href="'.$print2.'" target="_blank" class="btn bg-green">
+								L KECIL
+							</a>';
+						}
+					}
 
-						$aksi ="";
-						// if ($this->session->userdata('level') == "Admin") {
-						
-                        // $aksi = '
-                        // <button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange btn-circle waves-effect waves-circle waves-float">
-                        //     <i class="material-icons">edit</i>
-                        // </button>
-						// <button type="button" onclick="deleteData('.$id.','."".')" class="btn btn-danger btn-circle waves-effect waves-circle waves-float">
-                        //     <i class="material-icons">delete</i>
-                        // </button>
-                        // <a type="button" href="'.$print.'" target="blank" class="btn btn-default btn-circle waves-effect waves-circle waves-float">
-                        //     <i class="material-icons">print</i>
-                        // </a>
-                        // <a type="button" href="'.$print2.'" target="blank" class="btn bg-green btn-circle waves-effect waves-circle waves-float">
-                        //     <i class="material-icons">print</i>
-                        // </a>';
-
-						// #FF9800 - #fff edit
-						// #FB483A - #fff hapus
-						// #fff - #333333 kcl
-						// #4CAF50 - besar
-                        if($r->ctk == 1){
-                            $aksi .='SUDAH CETAK LABEL!';
-                        }else if($r->ctk == 0){
-							// CEK OLEH QC DULU
-							$edit = '<button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange">EDIT</button>';
-							$hapus = '<button type="button" onclick="deleteData('.$id.','."".')" class="btn btn-danger">HAPUS</button>';
-							if($r->status == 1){
-								$aksi .='STATUS CEK QC! '.$edit.' '.$hapus;
-							}else{
-								$aksi = '
-								<a type="button" href="'.$print.'" target="_blank" class="btn btn-default">
-									L BESAR
-								</a>
-								<a type="button" href="'.$print2.'" target="_blank" class="btn bg-green">
-									L KECIL
-								</a>';
-							}
-                        } //
-                    // }
                     $row[] = $aksi;
                     $data[] = $row;
-                    // $i++;
 				}
 			}
 
@@ -930,11 +911,13 @@ class Master extends CI_Controller
 		if ($jenis == "Timbangan") {
 			$id = $this->input->post('getid');
 			$getid = $this->m_master->get_data_one("m_timbangan", "id" ,$id)->row();
-			if($getid->status == 0 || $getid->id_pl == 0){
+			if(($getid->status == 0 || $getid->status == 2 || $getid->status == 3) && $getid->id_pl == 0){
+				echo json_encode(array('data' => false, 'msg' => 'DATA ROLL SUDAH DICEK QC! TIDAK BISA EDIT!'));
+			}else if($getid->status == 1 && $getid->id_pl == 0){
 				$this->m_master->update_timbangan();
 				echo json_encode(array('data' => TRUE, 'getid' => $getid->id));
 			}else{
-				echo json_encode(array('data' => TRUE, 'msg' => 'DATA ROLL SUDAH TERJUAL'));
+				echo json_encode(array('data' => false, 'msg' => 'DATA ROLL SUDAH TERJUAL'));
 			}
 		} else if ($jenis == "Perusahaan") {
 			$id      = $this->input->post('nm_perusahaan');
@@ -1378,14 +1361,26 @@ class Master extends CI_Controller
 		}
 	}
 
-	function print_timbangan() {
+	function print_timbangan() { //
 		$id = $_GET['id'];
 		$data = $this->db->query("SELECT * FROM m_timbangan WHERE roll = '$id'")->row();
+		if($data->status == 0){
+			$ket = 0;
+			$sty = '';
+		}else{
+			if($data->ket == ''){
+				$sty = '';
+				$ket = 'BUFFER';
+			}else{
+				$sty = ';font-weight:bold;font-size:18px';
+				$ket = $data->ket;
+			}
+		}
+
 		$data_perusahaan = $this->db->query("SELECT * FROM perusahaan limit 1")->row();
 		$html = '';
-		$html .= '<h1> ' . $data_perusahaan->nama . ' </h1>  ' . $data_perusahaan->daerah . ' , Email : ' . $data_perusahaan->email . '
-			<hr>
-			<br><br><br>
+		$html .= '<h1 style="margin:0;padding:0">'.$data_perusahaan->nama.'</h1>
+			<div style="margin:8px 0">'.$data_perusahaan->daerah.' , Email : '.$data_perusahaan->email.'</div>
 			<table style="margin:0;font-size:52px;width:100%" cellspacing="0" border="1">
 				<tr>
 					<td style="width:50%">QUALITY</td>
@@ -1415,13 +1410,17 @@ class Master extends CI_Controller
 					<td>ROLL NUMBER</td>
 					<td style="text-align:center">'.$data->roll.'</td>
 				</tr>
+				<tr>
+					<td>LOC</td>
+					<td style="text-align:center'.$sty.'">'.$ket.'</td>
+				</tr>
 			</table>';
 		
+		$this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
 		if($data->ctk == 0){
-			$this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
-			$this->m_fungsi->_mpdfCustom('', $html, 10, 10, 10, 'L');
+			$this->m_fungsi->newMpdf($html, 15, 15, 15, 15, 'L', 'F4');
 		}else if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC"){
-			$this->m_fungsi->_mpdfCustom('', $html, 10, 10, 10, 'L');
+			$this->m_fungsi->newMpdf($html, 15, 15, 15, 15, 'L', 'F4');
 		}else{
 			redirect(base_url("Master"));
 		}
@@ -1430,11 +1429,24 @@ class Master extends CI_Controller
 	function print_timbangan2() {
 		$id = $_GET['id'];
 		$data = $this->db->query("SELECT * FROM m_timbangan WHERE roll = '$id'")->row();
+		if($data->status == 0){
+			$ket = 0;
+			$sty = '';
+		}else{
+			if($data->ket == ''){
+				$sty = '';
+				$ket = 'BUFFER';
+			}else{
+				$sty = ';font-weight:bold;font-size:12px';
+				$ket = $data->ket;
+			}
+		}
+
 		$html = '';
-		$html .= '<br><br><br><br><br><br>
+		$html .= '<br><br>
 			<table cellspacing="0" cellpadding="5" style="font-size:37px;width:100%" border="1">
 				<tr>
-					<td>QUALITY</td>
+					<td style="width:50%">QUALITY</td>
 					<td style="text-align:center">'.$data->nm_ker.'</td>
 				</tr>
 				<tr>
@@ -1462,13 +1474,16 @@ class Master extends CI_Controller
 					<td style="text-align:center">'.$data->roll.'</td>
 				</tr>
 				<tr>
+					<td>LOC</td>
+					<td style="text-align:center'.$sty.'">'.$ket.'</td>
+				</tr>
 			</table>';
 		
+		$this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
 		if($data->ctk == 0){
-			$this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
-			$this->m_fungsi->_mpdf('', $html, 10, 10, 10, 'P');
-		}else if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level')){
-			$this->m_fungsi->_mpdf('', $html, 10, 10, 10, 'P');
+			$this->m_fungsi->newMpdf($html, 10, 10, 10, 10, 'P', 'F4');
+		}else if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC"){
+			$this->m_fungsi->newMpdf($html, 10, 10, 10, 10, 'P', 'F4');
 		}else{
 			redirect(base_url("Master"));
 		}

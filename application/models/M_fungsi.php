@@ -278,9 +278,29 @@ class M_fungsi extends CI_Model {
         
         if (!empty($judul)) $this->mpdf->writeHTML($judul);
         $this->mpdf->writeHTML($isi);         
-        $this->mpdf->Output();
-               
+        $this->mpdf->Output();   
     }
+
+	function newMpdf($html,$top,$right,$left,$bottom,$orientasi,$kertas){
+		// ini_set("memory_limit","512M");
+		$this->load->library('mpdf');
+
+		if($kertas == 'F4'){
+			$orr = array(210, 330);
+		}else{ // A4
+			$orr = array(210, 297);
+		}
+		$this->mpdf->AddPageByArray(array(
+			'orientation' => $orientasi,
+			'margin-top' => $top,
+			'margin-right' => $right,
+			'margin-bottom' => $left,
+			'margin-left' => $bottom,
+			'sheet-size' => $orr,
+		));
+		$this->mpdf->writeHTML($html);         
+        $this->mpdf->Output();
+	}
 
 	function _mpdf2($judul='',$isi='',$lMargin='',$rMargin='',$font=0,$orientasi='',$title='PL',$print=0) {
         
