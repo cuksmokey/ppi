@@ -160,6 +160,8 @@ class M_master extends CI_Model{
 
 	function getMasterRoll(){
 		$tgl = date('Y-m-d');
+		$tgl_k = date('Y-m-d', strtotime('-1 days', strtotime($tgl)));
+
 		if($this->session->userdata('level') == "Rewind1"){
 			$pm = "AND pm='1'";
 		}else if($this->session->userdata('level') == "Rewind2"){
@@ -167,9 +169,9 @@ class M_master extends CI_Model{
 		}else{
 			$pm = '';
 		}
-		$query = "SELECT * FROM m_timbangan WHERE (status = '0' OR status = '2' OR status = '3') AND id_pl='0' $pm
-		AND tgl='$tgl' 
-		-- AND tgl BETWEEN '2022-11-25' AND '2022-11-28' 
+		$query = "SELECT * FROM m_timbangan WHERE (status = '0' OR status = '1' OR status = '2' OR status = '3') AND id_pl='0' $pm
+		-- AND tgl='$tgl'
+		AND tgl BETWEEN '$tgl_k' AND '$tgl'
         -- LIMIT 5
 		";
         return $this->db->query($query);
@@ -915,8 +917,10 @@ class M_master extends CI_Model{
     }
 
 	function updateQCRoll(){
+		// UPDATE ROLL
         if($_POST['edit'] == 'ListStokGudang'){
             $this->db->set('ket', $_POST['ket']);
+            $this->db->set('status', $_POST['status']);
         }else{
             $this->db->set('tgl', $_POST['tgl']);
             $this->db->set('g_ac', $_POST['g_ac']);
@@ -935,25 +939,37 @@ class M_master extends CI_Model{
         $this->db->where('id', $_POST['id']);
         $result = $this->db->update('m_timbangan');
 
+		// TAMPUNG DATA UNTUK INSERT KE HISTORY EDIT
+		$data = array(
+			'roll' => $_POST['lroll'],
+			'nm_ker' => $_POST['lnm_ker'],
+			'g_label' => $_POST['lg_label'],
+			'width' => $_POST['lwidth'],
+			'diameter' => $_POST['ldiameter'],
+			'weight' => $_POST['lweight'],
+			'joint' => $_POST['ljoint'],
+			'status' => $_POST['lstatus'],
+			'ket' => $_POST['lket'],
+			'edited_at' => date("Y-m-d H:i:s"),
+			'edited_by' => $this->session->userdata('username'),
+		);
+
 		if($_POST['edit'] == 'ListStokGudang' && ($_POST['lket'] == $_POST['ket'])){
 			$result = true;
 		}else if($_POST['edit'] == 'LapQC' && ($_POST['lnm_ker'] == $_POST['nm_ker']) && ($_POST['lg_label'] == $_POST['g_label']) && ($_POST['lwidth'] == $_POST['width']) && ($_POST['lweight'] == $_POST['weight']) && ($_POST['ldiameter'] == $_POST['diameter']) && ($_POST['ljoint'] == $_POST['joint']) && ($_POST['lket'] == $_POST['ket']) && ($_POST['lstatus'] == $_POST['status'])){
             $result = true;
-        }else{
-            $data = array(
-                'roll' => $_POST['lroll'],
-                'nm_ker' => $_POST['lnm_ker'],
-                'g_label' => $_POST['lg_label'],
-                'width' => $_POST['lwidth'],
-                'diameter' => $_POST['ldiameter'],
-                'weight' => $_POST['lweight'],
-                'joint' => $_POST['ljoint'],
-                'status' => $_POST['lstatus'],
-                'ket' => $_POST['lket'],
-                'edited_at' => date("Y-m-d H:i:s"),
-                'edited_by' => $this->session->userdata('username'),
-            );
-            $result= $this->db->insert("m_roll_edit",$data);
+        }else if($_POST['lstatus'] == 1){
+			// CEK STATUS QC BILA BELUM ADA HISTORY EDIT GAK MASUK KE HISTORY
+			// KALAU CUMA EDIT STATUSNYA SAJA KALAU YANG LAIN JUGA DI UBAH MASUK KE HISTORY
+			$lrol = $_POST['lroll'];
+			$cekhistory = $this->db->query("SELECT*FROM m_roll_edit WHERE roll='$lrol'");
+			if($cekhistory->num_rows() == 0 && ($_POST['lnm_ker'] == $_POST['nm_ker']) && ($_POST['lg_label'] == $_POST['g_label']) && ($_POST['lwidth'] == $_POST['width']) && ($_POST['lweight'] == $_POST['weight']) && ($_POST['ldiameter'] == $_POST['diameter']) && ($_POST['ljoint'] == $_POST['joint'])){
+				$result = true;
+			}else{
+				$result = $this->db->insert("m_roll_edit",$data);
+			}
+		}else{
+            $result = $this->db->insert("m_roll_edit",$data);
         }
 		return $result;
 	}

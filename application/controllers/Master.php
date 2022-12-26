@@ -258,21 +258,22 @@ class Master extends CI_Controller
 						// #fff - #333333 kcl
 						// #4CAF50 - besar
                         if($r->ctk == 1){
-                            $aksi .='-';
+                            $aksi .='SUDAH CETAK LABEL!';
                         }else if($r->ctk == 0){
-							$aksi = '
-							<button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange">
-								EDIT
-							</button>
-							<button type="button" onclick="deleteData('.$id.','."".')" class="btn btn-danger">
-								HAPUS
-							</button>
-							<a type="button" href="'.$print.'" target="_blank" class="btn btn-default">
-								L BESAR
-							</a>
-							<a type="button" href="'.$print2.'" target="_blank" class="btn bg-green">
-								L KECIL
-							</a>';
+							// CEK OLEH QC DULU
+							$edit = '<button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange">EDIT</button>';
+							$hapus = '<button type="button" onclick="deleteData('.$id.','."".')" class="btn btn-danger">HAPUS</button>';
+							if($r->status == 1){
+								$aksi .='STATUS CEK QC! '.$edit.' '.$hapus;
+							}else{
+								$aksi = '
+								<a type="button" href="'.$print.'" target="_blank" class="btn btn-default">
+									L BESAR
+								</a>
+								<a type="button" href="'.$print2.'" target="_blank" class="btn bg-green">
+									L KECIL
+								</a>';
+							}
                         } //
                     // }
                     $row[] = $aksi;
@@ -1108,7 +1109,7 @@ class Master extends CI_Controller
 		$id      = $_POST['id'];
 
 		if ($jenis == "Timbangan") {
-			$getId = $this->db->query("SELECT * FROM m_timbangan WHERE id='$id' AND ctk='1'");
+			$getId = $this->db->query("SELECT * FROM m_timbangan WHERE id='$id' AND (status='0' OR ctk='1')");
 			if($getId->num_rows() == 0){
 				$this->m_master->delete("m_timbangan", "id", $id);
 				echo "1";

@@ -254,19 +254,6 @@ class M_fungsi extends CI_Model {
         $this->mpdf->Output();
     }
 
-	function mpdfSJ($html,$akeh,$orientasi){
-		// require_once __DIR__ . '/vendor/autoload.php';
-		$mpdf = new \Mpdf\Mpdf([
-			'margin_top' => 0,
-			'margin_left' => 10,
-			'margin_right' => 10,
-			'orientation' => $orientasi,
-		]);
-		$mpdf->WriteHTML($html);
-		$mpdf->Output();
-
-	}
-
     function _mpdfCustom($judul='',$isi='',$lMargin='',$rMargin='',$font=0,$orientasi='') {
         
         ini_set("memory_limit","512M");

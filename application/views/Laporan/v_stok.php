@@ -516,7 +516,7 @@
 				diameter: ldiameter,
 				joint: ljoint,
 				ket : ket,
-				status : lstatus,
+				status : status,
 				lroll: lroll,
 				lnm_ker: lnm_ker,
 				lg_label: lg_label,
@@ -531,6 +531,16 @@
 			success: function(data) {
 				json = JSON.parse(data);
 				showNotification("alert-success", "BERHASIL!!!", "top", "center", "", "");
+				$("#etgl-"+i).val(json.tgl).animateCss('fadeInRight');
+				$("#eg_ac-"+i).val(json.g_ac).animateCss('fadeInRight');
+				$("#erct-"+i).val(json.rct).animateCss('fadeInRight');
+				$("#ebi-"+i).val(json.bi).animateCss('fadeInRight');
+				$("#enm_ker-"+i).val(json.nm_ker).animateCss('fadeInRight');
+				$("#eg_label-"+i).val(json.g_label).animateCss('fadeInRight');
+				$("#ewidth-"+i).val(json.width).animateCss('fadeInRight');
+				$("#ediameter-"+i).val(json.diameter).animateCss('fadeInRight');
+				$("#eweight-"+i).val(json.weight).animateCss('fadeInRight');
+				$("#ejoint-"+i).val(json.joint).animateCss('fadeInRight');
 				$("#eket-"+i).val(json.ket).animateCss('fadeInRight');
 				$("#opt_status-"+i).val(json.status).animateCss('fadeInRight');
 		

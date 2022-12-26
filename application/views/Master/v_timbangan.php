@@ -1,3 +1,22 @@
+<?php
+	// SuperAdmin, Admin, QC, FG, User
+	if($this->session->userdata('level') == "SuperAdmin"){
+		$otorisasi = 'all';
+	}else if($this->session->userdata('level') == "Admin"){
+		$otorisasi = 'admin';
+	}else if($this->session->userdata('level') == "QC"){
+		$otorisasi = 'qc';
+	}else if($this->session->userdata('level') == "FG"){
+		$otorisasi = 'fg';
+	}else if($this->session->userdata('level') == "Finance"){
+		$otorisasi = 'finance';
+	}else if($this->session->userdata('level') == "Office"){
+		$otorisasi = 'office';
+	}else{
+		$otorisasi = 'user';
+	}
+?>
+
 <section class="content">
 	<div class="container-fluid">
 		<!-- Exportable Table -->
@@ -230,6 +249,7 @@
 										<input type="text" class="angka form-control" placeholder="0" id="joint" maxlength="3" autocomplete="off">
 									</td>
 								</tr>
+								<?php if($otorisasi == 'all' || $otorisasi == 'admin') { ?>
 								<tr>
 									<td style="padding:3px 0;font-weight:bold">STATUS</td>
 									<td style="padding:3px 5px">:</td>
@@ -242,6 +262,7 @@
 										</select>
 									</td>
 								</tr>
+								<?php } ?>
 								<tr>
 									<td style="padding:3px 0;font-weight:bold">KETERANGAN</td>
 									<td style="padding:3px 5px">:</td>
@@ -456,10 +477,10 @@
 			return;
 		}
 
-		if (cstatus == "") {
-			showNotification("alert-info", "HARAP PILIH STATUS ROLL", "bottom", "center", "", "");
-			return;
-		}
+		// if (cstatus == "") {
+		// 	showNotification("alert-info", "HARAP PILIH STATUS ROLL", "bottom", "center", "", "");
+		// 	return;
+		// }
 
 		$("#btn-simpan").prop("disabled", true);
 		$.ajax({
@@ -478,7 +499,8 @@
 				ket: ket,
 				rct: 0,
 				bi: 0,
-				cstatus: cstatus,
+				// cstatus: cstatus,
+				cstatus: 1,
 				lnm_ker: lnm_ker,
 				lg_label: lg_label,
 				lwidth: lwidth,
@@ -532,7 +554,12 @@
 			.done(function(data) {
 				json = JSON.parse(data);
 
-				if(json.ctk == 1){
+				if(json.status == 0){
+					$(".box-data").show();
+					$(".box-form").hide();
+					swal("ROLL SUDAH DICEK OK!, TIDAL BISA EDIT DATA ROLL, HARAP HUB. QC", "", "error");
+					load_data();
+				}else if(json.ctk == 1){
 					$(".box-data").show();
 					$(".box-form").hide();
 					swal("ROLL SUDAH DICETAK, TIDAL BISA EDIT DATA ROLL, HARAP HUB. QC", "", "error");
@@ -551,12 +578,12 @@
 					$(".old_roll").hide();
 					$("#judul").html('<h3>FORM EDIT DATA</h3>');
 					status = "update";
-					if(json.ctk == 0){	
-						$("#btn-print").attr("href", "<?php echo base_url('Master/print_timbangan?id=')  ?>" + json.roll);
-						$("#btn-print").show();
-						$("#btn-print-kcl").attr("href", "<?php echo base_url('Master/print_timbangan2?id=')  ?>" + json.roll);
-						$("#btn-print-kcl").show();
-					}
+					// if(json.ctk == 0){
+					// 	$("#btn-print").attr("href", "<?php echo base_url('Master/print_timbangan?id=')  ?>" + json.roll);
+					// 	$("#btn-print").show();
+					// 	$("#btn-print-kcl").attr("href", "<?php echo base_url('Master/print_timbangan2?id=')  ?>" + json.roll);
+					// 	$("#btn-print-kcl").show();
+					// }
 
 					a = json.roll.split("/");
 
@@ -620,7 +647,7 @@
 			})
 	}
 
-	function deleteData(id, nm) {
+	function deleteData(id, nm) { //
 		swal({
 				title: "Apakah Anda Yakin ?",
 				text: nm,

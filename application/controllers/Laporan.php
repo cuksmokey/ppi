@@ -786,7 +786,6 @@ class Laporan extends CI_Controller {
 
         if ($ctk == '0' || $ctk == 99) {
             $this->m_fungsi->_mpdf('',$html,10,10,$akeh,'P');
-            // $this->m_fungsi->mpdfSJ($html,$akeh,'P');
         }else{
             ////////////////////////////////// CETAK PACKING LIST ////////////////////////////////////////////
             $html = '';
@@ -5702,17 +5701,17 @@ class Laporan extends CI_Controller {
                 $html .= '<td style="border:1px solid #999;text-align:center">'.$oBtn.''.$optKer.''.$cBtn.'</td>';
                 
                 // khusus ket dan status
-                if($otori == 'user' || ($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
-                    $fgdiss = 'disabled';
-                }else{
-                    $fgdiss = '';
-                }
+                // if($otori == 'user' || ($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
+                //     $fgdiss = 'disabled';
+                // }else{
+                //     $fgdiss = '';
+                // }
                 $html .='<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_label-'.$i.'" value="'.$roll->g_label.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ewidth-'.$i.'" value="'.round($roll->width,2).'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ediameter-'.$i.'" value="'.$roll->diameter.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eweight-'.$i.'" value="'.$roll->weight.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" onkeypress="return hanyaAngka(event)" maxlength="5" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ejoint-'.$i.'" value="'.$roll->joint.'" '.$diss.' onkeypress="return aK(event)" maxlength="2" onkeypress="return hanyaAngka(event)" maxlength="3" style="width:30px;text-align:center">'.$cBtn.'</td>
-					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$fgdiss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
+					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
 
                     // PILIH STATUS
                     if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
@@ -5741,10 +5740,10 @@ class Laporan extends CI_Controller {
                         $html .='<td style="border:1px solid #999;text-align:center">'.$opt.'</td>';
                         
                         // TOMBOL EDIT
-                        if($otori == 'user' || $otori == 'finance' || $otori == 'office'){
-                            $html .='';
-                        }else{
+                        if($otori == 'all' || $otori == 'admin' || $otori == 'qc'){
                             $html .='<td class="edit-roll" style="padding:3px"><button class="" style="background:#fff;border:0;padding:3px 5px" onclick="editRoll('."'".$i."'".')">EDIT</button></td>';
+						}else{
+                            $html .='';
                         }
                     }
                 $html .='</tr>';
