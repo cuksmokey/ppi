@@ -242,24 +242,30 @@ class M_fungsi extends CI_Model {
         $this->mpdf->defaultfooterline = 1; 
         $this->mpdf->SetLeftMargin = $lMargin;
         $this->mpdf->SetRightMargin = $rMargin;
-        // $this->mpdf->SetHeader('SIMAKDA');
-        $jam = date("H:i:s");
-        // $this->mpdf->SetFooter('Printed on @ {DATE j-m-Y H:i:s} |Simakda| Page {PAGENO} of {nb}');
-        // $this->mpdf->SetFooter('Printed on @ {DATE j-m-Y H:i:s} |Halaman {PAGENO} / {nb}| ');
-        // $this->mpdf->SetFooter('|Halaman {PAGENO} / {nb}| ');
 
         if($font == 1){
-	        $this->mpdf->AddPage($orientasi,'','','','',$lMargin,$rMargin,4,2);
+			$this->mpdf->AddPage($orientasi,'','','','',$lMargin,$rMargin,4,2);
         }else{
-	        $this->mpdf->AddPage($orientasi,'','','','',$lMargin,$rMargin);
+			$this->mpdf->AddPage($orientasi,'','','','',$lMargin,$rMargin);
         }
         
         if (!empty($judul)) $this->mpdf->writeHTML($judul);
-        // $this->mpdf->AddPage($orientasi,'','','','',$lMargin,$rMargin,4,2);
         $this->mpdf->writeHTML($isi);         
         $this->mpdf->Output();
-               
     }
+
+	function mpdfSJ($html,$akeh,$orientasi){
+		// require_once __DIR__ . '/vendor/autoload.php';
+		$mpdf = new \Mpdf\Mpdf([
+			'margin_top' => 0,
+			'margin_left' => 10,
+			'margin_right' => 10,
+			'orientation' => $orientasi,
+		]);
+		$mpdf->WriteHTML($html);
+		$mpdf->Output();
+
+	}
 
     function _mpdfCustom($judul='',$isi='',$lMargin='',$rMargin='',$font=0,$orientasi='') {
         

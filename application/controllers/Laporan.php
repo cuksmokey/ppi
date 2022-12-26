@@ -786,6 +786,7 @@ class Laporan extends CI_Controller {
 
         if ($ctk == '0' || $ctk == 99) {
             $this->m_fungsi->_mpdf('',$html,10,10,$akeh,'P');
+            // $this->m_fungsi->mpdfSJ($html,$akeh,'P');
         }else{
             ////////////////////////////////// CETAK PACKING LIST ////////////////////////////////////////////
             $html = '';
