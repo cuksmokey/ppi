@@ -5809,7 +5809,7 @@ class Laporan extends CI_Controller {
                             }else{
                                 $aksii = $plabel;
                             }
-                            $html .='<td class="edit-roll" style="padding:3px"><button class="" style="background:#fff;border:0;padding:3px 5px" onclick="editRoll('."'".$i."'".')">EDIT</button> '.$aksii.'</td>';
+                            $html .='<td class="edit-roll" style="padding:3px"><button id="btnn-edit-roll-'.$i.'" style="background:#fff;border:0;padding:3px 5px" onclick="editRoll('."'".$i."'".')">EDIT</button> '.$aksii.'</td>';
 						}else{
                             $html .='';
                         }

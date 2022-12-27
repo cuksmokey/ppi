@@ -144,7 +144,7 @@
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header"></div>
-			<div class="modal-body">
+			<div class="modal-body" style="overflow:auto;white-space:nowrap;">
 				<div class="isi-qc-terjual"></div>
 				<div class="isi-qc-edit"></div>
 			</div>
@@ -312,6 +312,8 @@
 			showNotification("alert-danger", "DATA TANGGAL, JENIS, GSM, UKURAN, DIAMETER, BERAT, JOINT, TIDAK BOLEH KOSONG!!!", "bottom", "center", "", "");
 			return;
 		}
+		// $(".edit-roll").prop("disabled", true);
+		$("#btnn-edit-roll-"+i).prop("disabled", true);
 		$.ajax({
 			url: '<?php echo base_url('Master/editQCRoll') ?>',
 			type: "POST",
@@ -371,6 +373,8 @@
 				$("#ljoint-"+i).val(json.joint);
 				$("#lket-"+i).val(json.ket);
 				$("#lstatus-"+i).val(json.status);
+
+				$("#btnn-edit-roll-"+i).prop("disabled", false);
 			}
 		});
 	}

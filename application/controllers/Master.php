@@ -1367,6 +1367,9 @@ class Master extends CI_Controller
 		if($data->status == 0){
 			$ket = 0;
 			$sty = '';
+		}else if($data->status == 2){
+			$ket = 'PPI';
+			$sty = '';
 		}else{
 			if($data->ket == ''){
 				$sty = '';
@@ -1431,6 +1434,9 @@ class Master extends CI_Controller
 		$data = $this->db->query("SELECT * FROM m_timbangan WHERE roll = '$id'")->row();
 		if($data->status == 0){
 			$ket = 0;
+			$sty = '';
+		}else if($data->status == 2){
+			$ket = 'PPI';
 			$sty = '';
 		}else{
 			if($data->ket == ''){
@@ -3591,7 +3597,7 @@ class Master extends CI_Controller
 				<option value="Rewind2">Rewind2</option>
 			';
 		}else{
-			$getLevel = $this->db->query("SELECT level FROM USER $lvl GROUP BY level");
+			$getLevel = $this->db->query("SELECT level FROM user $lvl GROUP BY level");
 			foreach($getLevel->result() as $lvl){
 				$html .='<option value="'.$lvl->level.'">'.$lvl->level.'</option>';
 			}
