@@ -85,7 +85,8 @@ $db['default'] = array(
 	// WEB
 	'username' => 'n1576051_ppiwng',
 	'password' => 'primapaper2022',
-	'database' => 'n1576051_ppi',
+	// 'database' => 'n1576051_ppi',
+	'database' => 'n1576051_ppi_bk',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

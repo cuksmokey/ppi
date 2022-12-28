@@ -70,7 +70,7 @@ ADD COLUMN `tgl_pl` DATE NULL AFTER `qc`,
 ADD COLUMN `opl` INT(11) DEFAULT 0 NULL AFTER `tgl_pl`,
 ADD COLUMN `nm_ker` VARCHAR(50) NULL AFTER `opl`,
 ADD COLUMN `g_label` INT(11) NULL AFTER `nm_ker`,
-ADD COLUMN `id_rk` VARCHAR(50) NULL AFTER `g_label`
+ADD COLUMN `id_rk` VARCHAR(50) NULL AFTER `g_label`,
 ADD COLUMN `id_expedisi` INT(11) NULL AFTER `id_rk`;
 
 //////////////////////////////////////

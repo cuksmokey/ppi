@@ -47,9 +47,9 @@
 
 						<button onclick="btn_add()" style="font-weight:bold" class="btn btn-default btn-sm waves-effect">ADD</button>
 
-						<div class="box-data"></div>
+						<div class="box-data" style="overflow:auto;white-space:nowrap;"></div>
 
-						<div class="box-form">
+						<div class="box-form" style="overflow:auto;white-space:nowrap;">
 							<table style="width:100%" border="1">
 								<tr>
 									<td style="width:15%;padding:5px"></td>
