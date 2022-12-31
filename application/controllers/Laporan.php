@@ -5356,7 +5356,8 @@ class Laporan extends CI_Controller {
 
 		$html = "";
 		$html .='<style>#i{mso-number-format:\@}</style>';
-		$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;text-align:center;vertical-align:middle;border-collapse:collapse" border="1">';
+		$html .='<div style="overflow:auto;white-space:nowrap;">
+			<table style="margin:0;padding:0;font-size:12px;color:#000;text-align:center;vertical-align:middle;border-collapse:collapse" border="1">';
 
         if($stat == 'produksi'){
             if($vpm == 1){
@@ -5505,7 +5506,7 @@ class Laporan extends CI_Controller {
 				}
 			$html .='</tr>';
         }
-		$html .='</table>';
+		$html .='</table></div>';
 
 		echo $html;
 	}
