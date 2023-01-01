@@ -3426,7 +3426,7 @@ class Master extends CI_Controller
 				<td style="position:relative"><input type="text" id="wwidth-'.$i.'" value="'.round($r->width, 2).'" class="inp-abs" onkeypress="return aKt(event)" maxlength="6" '.$dis.'></td>
 				<td style="position:relative"><input type="text" id="etonase-'.$i.'" value="'.$r->tonase.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="8"></td>
 				<td style="position:relative"><input type="text" id="ejmlroll-'.$i.'" value="'.$r->jml_roll.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="3"></td>
-				<td style="position:relative"><input type="text" id="eharga-'.$i.'" value="'.$r->harga.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="8" '.$dis.'></td>
+				<td style="position:relative"><input type="text" id="eharga-'.$i.'" value="'.$r->harga.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="8"></td>
 				'.$btn.'';
 			$html .='</tr>';
 		}
