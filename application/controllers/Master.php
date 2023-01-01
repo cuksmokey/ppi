@@ -1234,7 +1234,7 @@ class Master extends CI_Controller
 
 		$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,m.* FROM po_master m INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id
 		WHERE m.status='open'
-		-- AND m.id_perusahaan='171'
+		-- AND m.id_perusahaan='189'
 		GROUP BY id_perusahaan,status ORDER BY pt.pimpinan,pt.nm_perusahaan");
 		$html .='<div style="overflow:auto;white-space:nowrap;"><table style="font-size:12px;color:#000" border="1">';
 		$html .='<tr style="background:#e9e9e9;text-align:center">
@@ -1264,12 +1264,17 @@ class Master extends CI_Controller
 				<td style="padding:5px;text-align:center">'.$i.'</td>
 				<td style="padding:5px">'.$nama.$nmpt.'</td>';
 
+			// SISA PO
+			$getTotPO = $this->db->query("SELECT SUM(tonase) AS toton,m.* FROM po_master m
+			WHERE id_perusahaan='$r->id_perusahaan' AND status='open'
+			GROUP BY id_perusahaan");
+			$html .='<td style="padding:5px;text-align:right">'.number_format($getTotPO->row()->toton).'</td>';
+
 			$getKiriman = $this->db->query("SELECT po.id_po,po.no_po,po.id_perusahaan,po.nm_ker,po.g_label,po.width,po.tonase,po.jml_roll,COUNT(t.roll) AS pjmlroll,SUM(t.weight - t.seset) AS totkirpseset FROM po_master po
 			INNER JOIN pl p ON po.no_po=p.no_po AND po.id_perusahaan=p.id_perusahaan
 			INNER JOIN m_timbangan t ON p.id=t.id_pl AND po.nm_ker=t.nm_ker AND po.g_label=t.g_label AND po.width=t.width
 			WHERE po.id_perusahaan='$r->id_perusahaan' AND po.status='open'
 			GROUP BY po.id_po,po.no_po,po.id_perusahaan,po.nm_ker,po.g_label,po.width");
-			$poBerat = 0;
 			$kirBerat = 0;
 			$pminBerat = 0;
 			foreach($getKiriman->result() as $kir){
@@ -1282,16 +1287,15 @@ class Master extends CI_Controller
 					$fxBerat = $kurangBerat;
 				}
 
-				$poBerat += $kir->tonase;
 				$kirBerat += $kir->totkirpseset;
 				$pminBerat += $fxBerat;
 			}
-			$html .='<td class="str" style="padding:5px;text-align:right">'.number_format($poBerat).'</td>
+			$html .='
 				<td class="str" style="padding:5px;text-align:right">'.number_format($kirBerat).'</td>
 				<td class="str" style="padding:5px;text-align:right">'.number_format($pminBerat).'</td>
 			</tr>';
 
-			$totPoBerat += $poBerat;
+			$totPoBerat += $getTotPO->row()->toton;
 			$totKirBerat += $kirBerat;
 			$totPminBerat += $pminBerat;
 		}
