@@ -1234,7 +1234,7 @@ class Master extends CI_Controller
 
 		$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,m.* FROM po_master m INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id
 		WHERE m.status='open'
-		AND m.id_perusahaan='171'
+		-- AND m.id_perusahaan='171'
 		GROUP BY id_perusahaan,status ORDER BY pt.pimpinan,pt.nm_perusahaan");
 		$html .='<div style="overflow:auto;white-space:nowrap;"><table style="font-size:12px;color:#000" border="1">';
 		$html .='<tr style="background:#e9e9e9;text-align:center">
