@@ -5171,6 +5171,8 @@ class Laporan extends CI_Controller {
                 $ii = 0;
                 $allTotRoll = 0;
                 $allTotTonn = 0;
+                $allSumPlusMinRoll = 0;
+                $allSumPlusMinBerat = 0;
                 foreach($getGsm->result() as $rGsm){
                     $ii++;
                     if(($rGsm->nm_ker == 'MH' || $rGsm->nm_ker == 'MN') && ($rGsm->g_label == 105 || $rGsm->g_label == 110)){
@@ -5193,6 +5195,8 @@ class Laporan extends CI_Controller {
                     $getUkPO = $this->db->query("SELECT*FROM po_master
                     WHERE no_po='$rGsm->no_po' AND nm_ker='$rGsm->nm_ker' AND g_label='$rGsm->g_label'
                     ORDER BY width");
+                    $sumPlusMinRoll = 0;
+                    $sumPlusMinBerat = 0;
                     foreach($getUkPO->result() as $ukPO){
                         $html .= '<td style="padding:5px;text-align:center;font-weight:bold" id="i">'.round($ukPO->width,2).'</td>
                             <td style="padding:5px;text-align:center;font-weight:bold" id="i">'.number_format($ukPO->jml_roll).'</td>
@@ -5221,18 +5225,35 @@ class Laporan extends CI_Controller {
                         if($getUkpGsm->num_rows() == 0){
                             $html .= '<td style="padding:5px;text-align:center">-</td><td style="padding:5px;text-align:center">-</td>
                                 <td style="padding:5px;text-align:center">-</td><td style="padding:5px;text-align:center">-</td>';
+                            $plusMinRoll = 0;
+                            $plusMinBerat = 0;
                         }else{
                             $ukGsmFixBerat = $getUkpGsm->row()->berat - $getUkpGsm->row()->seset;
                             $html .= '<td style="padding:5px;font-weight:bold;text-align:center" id="i">'.number_format($getUkpGsm->row()->jumlah).'</td>
                             <td style="padding:5px;font-weight:bold;text-align:center" id="i">'.number_format($ukGsmFixBerat).'</td>';
                             
                             // + -
-                            $plusMinRoll = $getUkpGsm->row()->jumlah - $ukPO->jml_roll;
-                            $plusMinBerat = $ukGsmFixBerat - $ukPO->tonase;
+                            // JIKA JUMLAH ROLL LEBIH DARI PO DI NOL KAN!
+                            if($getUkpGsm->row()->jumlah >= $ukPO->jml_roll){
+                                $plusMinRoll = 0;
+                            }else{
+                                $plusMinRoll = $getUkpGsm->row()->jumlah - $ukPO->jml_roll;
+                            }
+                            // JIKA QTY BERAT LEBIH DARI PO DI NOL KAN!
+                            if($ukGsmFixBerat >= $ukPO->tonase){
+                                $plusMinBerat = 0;
+                            }else{
+                                $plusMinBerat = $ukGsmFixBerat - $ukPO->tonase;
+                            }
+                            // $plusMinRoll = $getUkpGsm->row()->jumlah - $ukPO->jml_roll;
+                            // $plusMinBerat = $ukGsmFixBerat - $ukPO->tonase;
                             $html .= '<td style="padding:5px;text-align:center;font-weight:bold" id="i">'.number_format($plusMinRoll).'</td>
                                 <td style="padding:5px;text-align:center;font-weight:bold" id="i">'.number_format($plusMinBerat).'</td>';
                         }
                         $html .= '</tr>';
+
+                        $sumPlusMinRoll += $plusMinRoll;
+                        $sumPlusMinBerat += $plusMinBerat;
                     }
 
                     // JIKA CUMA SATU GSM YANG ADA DI PO
@@ -5277,16 +5298,18 @@ class Laporan extends CI_Controller {
                             <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($jmlTotGsmFixBerat).'</td>';
 
                             // + -
-                            $plusMinSumRoll = $getJmlTotpGsm->row()->jumlah - $rGsm->jmll;
-                            $plusMinSumBerat = $jmlTotGsmFixBerat - $rGsm->tonn;
-                            $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($plusMinSumRoll).'</td>
-                            <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($plusMinSumBerat).'</td>';
+                            // $plusMinSumRoll = $getJmlTotpGsm->row()->jumlah - $rGsm->jmll;
+                            // $plusMinSumBerat = $jmlTotGsmFixBerat - $rGsm->tonn;
+                            $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($sumPlusMinRoll).'</td>
+                            <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($sumPlusMinBerat).'</td>';
                         }
                         $html .= '</tr>';
                     }
 
                     $allTotRoll += $rGsm->jmll;
                     $allTotTonn += $rGsm->tonn;
+                    $allSumPlusMinRoll += $sumPlusMinRoll;
+                    $allSumPlusMinBerat += $sumPlusMinBerat;
                 }
 
                 // ===========================================================================================================================================
@@ -5315,12 +5338,12 @@ class Laporan extends CI_Controller {
                         $sumTon += $fixTotBerat;
                     }
                 
-                $plusMinTottSumRoll = $sumRoll - $allTotRoll;
-                $plusMinTottSumBerat = $sumTon - $allTotTonn;
+                // $plusMinTottSumRoll = $sumRoll - $allTotRoll;
+                // $plusMinTottSumBerat = $sumTon - $allTotTonn;
                 $html .= '<td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($sumRoll).'</td>
                 <td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($sumTon).'</td>
-                <td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($plusMinTottSumRoll).'</td>
-                <td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($plusMinTottSumBerat).'</td>';
+                <td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($allSumPlusMinRoll).'</td>
+                <td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($allSumPlusMinBerat).'</td>';
                 $html .= '</tr>';
 
                 $html .= '</table></div>';
@@ -5517,6 +5540,7 @@ class Laporan extends CI_Controller {
 		$width = $_POST['width'];
 
 		$html = '';
+        $html .= '<div style="overflow:auto;white-space:nowrap;">';
 		$html .= '<div style="color:#000;font-weight:bold">CEK PENJUALAN BERDASARKAN PO</div><br/>';
 		$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;vertical-align:middle;border-collapse:collapse">';
 
@@ -5597,15 +5621,9 @@ class Laporan extends CI_Controller {
 				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">'.number_format($stokRollTuan).'</td>
 			</tr>';
 		}
-		$html .='</table>';
+		$html .='</table></div>';
 		
-
-		$html .='</table>';
-
-		echo $html;
-		// echo json_encode(array(
-		// 	'html1' => $html,
-		// ));
+        echo $html;
 	}
 
     function QCCariRoll(){

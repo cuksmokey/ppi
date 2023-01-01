@@ -103,7 +103,7 @@
 						<!-- TAMPIL DATA FORM -->
 						<div class="ll box-form">
 							<div class="box-form-cus" style="overflow:auto;white-space:nowrap;">
-								<table style="width:100%" border="1">
+								<table style="width:100%">
 									<tr>
 										<td style="width:15%;padding:5px"></td>
 										<td style="width:1%;padding:5px"></td>
@@ -172,7 +172,7 @@
 
 							<div class="box-form-po-load"></div>
 							<div class="box-form-po">
-								<table style="width:100%;margin-top:15px" border="1">
+								<table style="width:100%;margin-top:15px">
 									<tr>
 										<td style="width:15%;padding:5px"></td>
 										<td style="width:1%;padding:5px"></td>
@@ -437,6 +437,7 @@
 	}
 
 	function loadAllOutstandingPO(){
+		$(".btn-c-po").prop("disabled", true);
 		$(".box-outstanding-po").html('Memuat data . . .');
 		$.ajax({
 			url: '<?php echo base_url('Master/loadAllOutstandingPO')?>',
@@ -444,6 +445,7 @@
 			// data: ({
 			// }),
 			success: function(res){
+				$(".btn-c-po").prop("disabled", false);
 				$(".box-outstanding-po").html(res);
 			}
 		})
