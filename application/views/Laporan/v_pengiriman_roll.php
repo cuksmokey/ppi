@@ -151,6 +151,7 @@
 						<input type="hidden" id="v-opl" value="">
 						<input type="hidden" id="v-tgl-pl" value="">
 						<input type="hidden" id="v-ii" value="">
+						<input type="hidden" id="v-roll-cari" value="">
 						<!-- <input type="text" id="v-id-pl" value=""> -->
 
 						<div class="ilist plh-opsi-plrk" style="color:#000;font-size:12px">
@@ -2034,7 +2035,11 @@
 				i: i,
 			}),
 			success: function(response){
-				$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/showCartInputRoll') ?>");
+				data = JSON.parse(response);
+				if(data){
+					swal(data.isi.options.roll, "", "success");
+					$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/showCartInputRoll') ?>");
+				}
 			}
 		});
 	}
@@ -2056,7 +2061,7 @@
 
 	function cariRoll(i,nm_ker,g_label,width,xroll='',cari){
 		// alert(i+' - '+nm_ker+' - '+g_label+' - '+width+' - '+xroll+' - '+cari);
-		xroll = $('#roll').val();
+		xroll = $('#vcariroll-'+i).val();
 		btnInputRoll(i,nm_ker,g_label,width,xroll,cari);
 	}
 

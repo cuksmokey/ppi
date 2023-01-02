@@ -3076,14 +3076,14 @@ class Master extends CI_Controller
 		$html .='<div class="plistinputroll">
 		<div style="padding:10px 0 0">
 			<button style="padding:5px;font-weight:bold" disabled>'.$nm_ker.''.$g_label.' - '.round($width,2).' :</button>
-			<input type="text" name="roll" id="roll" maxlength="14" style="border:1px solid #ccc;padding:7px;border-radius:5px" autocomplete="off" placeholder="ROLL">
+			<input type="text" name="roll" id="vcariroll-'.$i.'" value="'.$roll.'" maxlength="14" style="border:1px solid #ccc;padding:7px;border-radius:5px" autocomplete="off" placeholder="ROLL">
 			<button class="btn-cari-inp-roll" onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".','."'".$key."'".')">CARI</button>
 		</div>';
 		
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan
 		WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width' AND roll LIKE '%$roll%'
 		AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
-		AND (status=0 OR status=2 OR status=3) AND id_pl='0' AND (id_rk IS NULL OR id_rk = '')
+		AND (status='0' OR status='2' OR status='3') AND id_pl='0' AND (id_rk IS NULL OR id_rk = '')
 		ORDER BY pm,roll");
 		if($getRoll->num_rows() == 0){
 			$html .='<div class="notfon">DATA TIDAK DITEMUKAN</div>';
