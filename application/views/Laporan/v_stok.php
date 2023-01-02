@@ -81,6 +81,8 @@
 	}
 
 	.tmbl-stok {
+		display: inline-block;
+		margin-bottom: 3px;
 		background: #f44336;
 		padding: 5px 7px;
 		color: #fff;
@@ -95,6 +97,8 @@
 	}
 
 	.tmbl-buffer {
+		display: inline-block;
+		margin-bottom: 3px;
 		background: #555;
 		padding: 5px 7px;
 		color: #fff;
@@ -158,6 +162,7 @@
 						<input type="hidden" id="stat" value="">
 
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('stok')">STOK GUDANG</button>
+						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofg')">OUTSTANDING FG</button>
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('produksi')">PRODUKSI</button>
 
 						<div class="menu-stok" style="padding-top:10px;font-size:12px">
@@ -178,6 +183,18 @@
 							<button class="tmbl-buffer" onclick="load_data('rwp','buffer')">W P</button>
 							<button class="tmbl-buffer" onclick="load_data('rmhc','buffer')">MH COLOR</button>
 							<button class="tmbl-buffer" onclick="load_data('rall','buffer')">SEMUA</button>
+						</div>
+
+						<div class="menu-out-fg" style="padding-top:10px;font-size:12px">
+							<!-- load_data_o_fg -->
+							<button disabled>STOK : </button>
+							<button class="tmbl-stok" onclick="loadDataOFG('mh')">MEDIUM</button>
+							<button class="tmbl-stok" onclick="loadDataOFG('bk')">B - KRAFT</button>
+							<button class="tmbl-stok" onclick="loadDataOFG('mhbk')">MEDIUM - B-KRAFT</button>
+							<button class="tmbl-stok" onclick="loadDataOFG('nonspek')">MEDIUM NON SPEK</button>
+							<button class="tmbl-stok" onclick="loadDataOFG('wp')">W P</button>
+							<button class="tmbl-stok" onclick="loadDataOFG('all')">SEMUA</button>
+							<div class="clear"></div>
 						</div>
 						
 						<div class="menu-produksi" style="padding-top:10px;font-size:12px">
@@ -249,6 +266,7 @@
 		$(".box-data").html('').hide();
 		$(".tmpl-roll").html('').hide();
 		$(".menu-stok").hide();
+		$(".menu-out-fg").hide();
 		$(".menu-produksi").hide();
 		kosong();
 	});
@@ -269,9 +287,16 @@
 		$(".tmpl-roll").html('').hide();
 		if(plh == 'stok'){
 			$(".menu-stok").show();
+			$(".menu-out-fg").hide();
+			$(".menu-produksi").hide();
+		}else if(plh == 'ofg'){
+			// tmbl-out-fg
+			$(".menu-out-fg").show();
+			$(".menu-stok").hide();
 			$(".menu-produksi").hide();
 		}else{
 			$(".menu-stok").hide();
+			$(".menu-out-fg").hide();
 			$(".menu-produksi").show();
 		}
 	}
@@ -404,10 +429,34 @@
 		});
 	}
 
+	function loadDataOFG(jenis){
+		otorisasi = $("#otorisasi").val();
+		// alert(jenis);
+		$(".tmbl-plh").prop("disabled", true);
+		$(".tmbl-stok").prop("disabled", true).attr('style', 'background:#ccc');
+		$(".tmbl-buffer").prop("disabled", true).attr('style', 'background:#ccc');
+		$(".box-data").show().html(`Memuat data ROLL Tunggu Sebentar . . .`);
+		$.ajax({
+			url: '<?php echo base_url('Master/loadDataOFG')?>',
+			type: "POST",
+			data: ({
+				jenis,otorisasi
+			}),
+			success: function(res){
+				$(".tmbl-plh").prop("disabled", false);
+				$(".tmbl-stok").prop("disabled", false).removeAttr( "style");
+				$(".tmbl-buffer").prop("disabled", false).removeAttr( "style");
+				$(".box-data").show().html(res);
+			}
+		})
+	}
+
 	function cek(nm_ker,g_label,width,otori){
 		// stat = $("#stat").val();
 		// alert(nm_ker+' '+g_label+' '+width+' '+otori,' '+stat)
-		if(otori == "all" || otori == "admin" || otori == "office" || otori == "finance"){
+		if(otori == "office"){
+			cekPenjualan(nm_ker,g_label,width);
+		}else if(otori == "all" || otori == "admin" || otori == "finance"){
 			cekPenjualan(nm_ker,g_label,width);
 			cekRoll(nm_ker,g_label,width,otori);
 		}else if(otori == "qc" || otori == "fg"){

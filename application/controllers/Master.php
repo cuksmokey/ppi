@@ -4182,10 +4182,128 @@ class Master extends CI_Controller
 		// 	$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',2);
 		// }else if($count_p_pl >= 34){
 		// 	$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',1);
-		// }else if($count_p_pl < 34){
+		// }else if($count_p_pl <tr 34){
 		// 	$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',0);
 		// }
 
 		// echo $html;
+	}
+
+	function loadDataOFG(){
+		$jenis = $_POST['jenis'];
+		$otorisasi = $_POST['otorisasi'];
+		$html = '';
+
+		// mh bk mhbk nonspek wp all
+		if($jenis == 'mh'){
+			$nmKer = "AND nm_ker='MH'";
+		}else if($jenis == 'bk'){
+			$nmKer = "AND nm_ker='BK'";
+		}else if($jenis == 'mhbk'){
+			$nmKer = "AND (nm_ker='MH' OR nm_ker='BK')";
+		}else if($jenis == 'nonspek'){
+			$nmKer = "AND nm_ker='MN'";
+		}else if($jenis == 'wp'){
+			$nmKer = "AND nm_ker='WP'";
+		}else{
+			$nmKer = "";
+		}
+
+		$html .='<table style="font-size:12px;color:#000;text-align:center" border="1">';
+		// INTI DATA
+		$getNmKer = $this->db->query("SELECT nm_ker FROM po_master
+		WHERE status='open' $nmKer
+		GROUP BY nm_ker");
+		if($getNmKer->num_rows() == 0){
+			$html .='<td style="padding:5px">TIDAK ADA DATA</td>';
+		}else{
+			$html .='<tr style="background:#e9e9e9;font-weight:bold">
+			<td style="padding:5px" rowspan="2">NO</td>
+			<td style="padding:5px" rowspan="2">Ukuran</td>';
+
+			// TAMPIL JENIS KERTAS
+			foreach($getNmKer->result() as $ker){
+				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM po_master
+				WHERE status='open' AND nm_ker='$ker->nm_ker'
+				GROUP BY nm_ker,g_label");
+				$html .='<td style="padding:5px" colspan="'.$getgLabel->num_rows().'">'.$ker->nm_ker.'</td>';
+			}
+			$html .='</tr>';
+			
+			// TAMPIL GSM
+			$html .='<tr>';
+			foreach($getNmKer->result() as $ker){
+				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM po_master
+				WHERE status='open' AND nm_ker='$ker->nm_ker'
+				GROUP BY nm_ker,g_label");
+				foreach($getgLabel->result() as $glabel){
+					$html .='<td style="padding:5px">'.$glabel->g_label.'</td>';
+				}
+			}
+			$html .='</tr>';
+			
+			// TAMPIL UKURANNYA
+			$html .='<tr>';
+			$getUkuran = $this->db->query("SELECT width FROM po_master
+			WHERE status='open' $nmKer
+			-- AND width between '95' AND '105'
+			GROUP BY width;");
+			$i = 0;
+			foreach($getUkuran->result() as $uk){
+				$i++;
+				$html .='<td style="padding:5px">'.$i.'</td><td style="padding:5px">'.round($uk->width,2).'</td>';
+
+				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM po_master
+				WHERE status='open' AND nm_ker='$ker->nm_ker'
+				GROUP BY nm_ker,g_label");
+				foreach($getgLabel->result() as $lbl){
+					// GET PO
+					$getPO = $this->db->query("SELECT*FROM po_master
+					WHERE status='open' AND nm_ker='$lbl->nm_ker' AND g_label='$lbl->g_label' AND width='$uk->width'
+					GROUP BY no_po");
+					$jmlRoll = 0;
+					foreach($getPO->result() as $nopo){
+						// GET KIRIMAN
+						$getKiriman = $this->db->query("SELECT COUNT(t.roll) AS kroll FROM m_timbangan t
+						INNER JOIN pl p ON t.id_pl=p.id
+						WHERE no_po='$nopo->no_po' AND t.nm_ker='$nopo->nm_ker' AND t.g_label='$nopo->g_label' AND width='$nopo->width'
+						GROUP BY no_po,t.nm_ker,t.g_label,width");
+						if($getKiriman->num_rows() == 0){
+							$jmlroll = $nopo->jml_roll;
+						}else{
+							foreach($getKiriman->result() as $qk){
+								if($qk->kroll >= $nopo->jml_roll){
+									$jmlroll = 0;
+								}else{
+									$jmlroll = $nopo->jml_roll - $qk->kroll;
+								}
+							}
+						}
+						$jmlRoll += $jmlroll;
+					}
+					if(($lbl->nm_ker == 'MH' || $lbl->nm_ker == 'MI' || $lbl->nm_ker == 'ML') && $jmlRoll == 0 ){
+						$gbLbl = '#ffc';
+					}else if($lbl->nm_ker == 'MN' && $jmlRoll == 0){
+						$gbLbl = '#fcc';
+					}else if(($lbl->nm_ker == 'BK' || $lbl->nm_ker == 'BL') && $jmlRoll == 0){
+						$gbLbl = '#ccc';
+					}else if($lbl->nm_ker == 'WP' && $jmlRoll == 0){
+						$gbLbl = '#cfc';
+					}else if($lbl->nm_ker == 'MH COLOR' && $jmlRoll == 0){
+						$gbLbl = '#ccf';
+					}else{
+						$gbLbl = '#fff';
+					}
+					$html .= '<td style="padding:5px;background:'.$gbLbl.'">
+						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".')">'.$jmlRoll.'</button>
+					</td>';
+				}
+				$html .='</tr>';
+			}
+
+			$html .='</table>';
+		}
+
+		echo $html;
 	}
 }
