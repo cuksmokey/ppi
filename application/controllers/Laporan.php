@@ -5606,9 +5606,14 @@ class Laporan extends CI_Controller {
 			$getStokGudang = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan
 			WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width'
 			AND status='0' AND id_pl='0'
-			GROUP BY nm_ker,g_label,width")->row();
+			GROUP BY nm_ker,g_label,width");
 			// STOK BERTUAN = STOK GUDANG - STOK ROLL PO
-			$stokRollTuan = $getStokGudang->jml_roll - $sumRollPO;
+			if($getStokGudang->num_rows() == 0){
+				$nsJmlRoll = 0;
+			}else{
+				$nsJmlRoll = $getStokGudang->row()->jml_roll;
+			}
+			$stokRollTuan = $nsJmlRoll - $sumRollPO;
 
 			// tototot
 			$html .='<tr>
@@ -5617,7 +5622,7 @@ class Laporan extends CI_Controller {
 			</tr>
 			<tr>
 				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">STOK ROLL GUDANG</td>
-				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">'.number_format($getStokGudang->jml_roll).'</td>
+				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">'.number_format($nsJmlRoll).'</td>
 			</tr>
 			<tr>
 				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">SISA STOK ROLL GUDANG</td>
