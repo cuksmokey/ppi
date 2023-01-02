@@ -229,7 +229,7 @@
 
 							<div class="ll">
 								<button onclick="back()">BACK</button>
-								<button onclick="simpanCart()">SIMPAN</button>
+								<button class="btn-simpan-po" onclick="simpanCart()">SIMPAN</button>
 							</div>
 						</div>
 					</div>
@@ -415,6 +415,7 @@
 			$("#pilihan-cari").val(opsi);
 			load_data(opsi,'');
 			$(".box-data").show();
+			$(".box-form").hide();
 			$(".box-outstanding-po").hide();
 			$(".box-close-po").hide();
 		}else if(opsi == 'close'){
@@ -423,6 +424,7 @@
 			$("#pilihan-cari").val(opsi);
 			load_data(opsi,'');
 			$(".box-data").hide();
+			$(".box-form").hide();
 			$(".box-outstanding-po").hide();
 			$(".box-close-po").show();
 		}else if(opsi == 'routpo'){
@@ -698,6 +700,7 @@
 		eharga = $("#eharga-" + i).val();
 		// alert(enopo);
 		// alert(id+' - '+id_pt+' - '+id_po+' - '+no_po+' - '+nm_ker+' - '+g_label+' - '+width+' - '+i+' = '+wnmker+' - '+wglabel+' - '+wwidth+' - '+etonase+' - '+ejmlroll+' - '+eharga);
+		$(".btn-item-po-"+i).prop("disabled", true);
 		$.ajax({
 			url: '<?php echo base_url('Master/editItemPO')?>',
 			type: "POST",
@@ -708,10 +711,9 @@
 				data = JSON.parse(json);
 				// alert(data.response+' - '+data.msg);
 				if(data.response){
-					swal(data.msg, "", "success");
+					swal(data.msg, "", data.info);
 					loadItemPO(id_pt,id_po,no_po,i);
-				}else{
-					swal(data.msg, "", "error");
+					$(".btn-item-po-"+i).prop("disabled", false);
 				}
 			}
 		})
@@ -839,6 +841,7 @@
 		update_idpo = $("#update-idpo").val();
 		update_nopo = $("#update-nopo").val();
 
+		$('.btn-simpan-po').prop("disabled", true);
 		$.ajax({
 			url: '<?php echo base_url('Master/simpanCartPO')?>',
 			type: "POST",
@@ -855,8 +858,10 @@
 				if(data.response){
 					swal(data.msg, "", "success");
 					kosong();
+					$('.btn-simpan-po').prop("disabled", false);
 				}else{
 					swal(data.msg, "", "error");
+					$('.btn-simpan-po').prop("disabled", false);
 				}
 			}
 		});

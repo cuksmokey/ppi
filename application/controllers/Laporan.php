@@ -16,7 +16,7 @@ class Laporan extends CI_Controller {
     }
 
     function Timbangan(){
-    	$this->load->view('header');
+		$this->load->view('header');
         $this->load->view('Laporan/v_lap_timbangan');
         $this->load->view('footer');
     }
@@ -5502,10 +5502,13 @@ class Laporan extends CI_Controller {
                             $gbGsm = '#fff';
                         }
                         if($getWidth->num_rows() == 0){
-                            $html .='<td style="padding:5px;background:'.$gbGsm.'">0</td>';
+                            $html .='<td style="padding:5px;background:'.$gbGsm.'">
+                                <button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".')">0</button>
+                            </td>';
                         }else{
                             $html .='<td style="padding:5px">
-                            <button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".')">'.$getWidth->row()->jml.'</button></td>';
+                                <button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".')">'.$getWidth->row()->jml.'</button>
+                            </td>';
                         }
                     }
                 }

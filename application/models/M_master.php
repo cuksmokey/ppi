@@ -1340,22 +1340,40 @@ class M_master extends CI_Model{
 
         foreach($this->cart->contents() as $data){
             // id_po id_perusahaan tgl nm_ker g_label width tonase jml_roll no_po harga pajak
-            $data = array(
-                'id_po' => $cekIdPo,
-                'id_perusahaan' => $_POST['fid'],
-                'tgl' => $_POST['ftgl'],
-                'nm_ker' => $data['options']['fjenis'],
-                'g_label' => $data['options']['fgsm'],
-                'width' => $data['options']['fukuran'],
-                'tonase' => $data['options']['ftonase'],
-                'jml_roll' => $data['options']['fjmlroll'],
-                'no_po' => $_POST['fno_po'],
-                'harga' => $data['options']['fharga'],
-                'pajak' => $_POST['fpajak'],
-                'created_at' => date("Y-m-d H:i:s"),
-                'created_by' => $this->session->userdata('username'),
-            );
-            $result = $this->db->insert('po_master',$data);
+
+			// JIKA ADD JENIS GSM UKURAN SAMA CUMA UPDATE TONASE DAN JML ROLL
+			$idpt = $_POST['fid'];
+			$fjenis = $data['options']['fjenis'];
+			$fgsm = $data['options']['fgsm'];
+			$fukuran = $data['options']['fukuran'];
+			$getPO = $this->db->query("SELECT*FROM po_master
+			WHERE id_po='$cekIdPo' AND id_perusahaan='$idpt' AND nm_ker='$fjenis' AND g_label='$fgsm' AND width='$fukuran'");
+			if($getPO->num_rows() > 0){
+				$uTonase = $getPO->row()->tonase + $data['options']['ftonase'];
+				$uJmlRoll = $getPO->row()->jml_roll + $data['options']['fjmlroll'];
+
+				$this->db->set('tonase', $uTonase);
+				$this->db->set('jml_roll', $uJmlRoll);
+				$this->db->where('id', $getPO->row()->id);
+				$this->db->update('po_master');
+			}else{
+				$data = array(
+					'id_po' => $cekIdPo,
+					'id_perusahaan' => $_POST['fid'],
+					'tgl' => $_POST['ftgl'],
+					'nm_ker' => $data['options']['fjenis'],
+					'g_label' => $data['options']['fgsm'],
+					'width' => $data['options']['fukuran'],
+					'tonase' => $data['options']['ftonase'],
+					'jml_roll' => $data['options']['fjmlroll'],
+					'no_po' => $_POST['fno_po'],
+					'harga' => $data['options']['fharga'],
+					'pajak' => $_POST['fpajak'],
+					'created_at' => date("Y-m-d H:i:s"),
+					'created_by' => $this->session->userdata('username'),
+				);
+				$result = $this->db->insert('po_master',$data);
+			}
         }
 
 		// JIKA UPDATE PO DIUBAH

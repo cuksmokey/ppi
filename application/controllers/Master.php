@@ -3412,7 +3412,7 @@ class Master extends CI_Controller
 			INNER JOIN m_timbangan m ON p.id=m.id_pl
 			WHERE p.id_perusahaan='$id' AND p.no_po='$no_po' AND m.nm_ker='$r->nm_ker' AND m.g_label='$r->g_label' AND m.width='$r->width' AND p.qc='ok'
 			GROUP BY p.id_perusahaan,p.no_po,p.qc,m.nm_ker,m.g_label,width");
-			$edit = '<button onclick="editItemPO('."'".$r->id."'".','."'".$id."'".','."'".$id_po."'".','."'".$no_po."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->width."'".','."'".$i."'".')">EDIT</button>';
+			$edit = '<button class="btn-item-po-'.$i.'" onclick="editItemPO('."'".$r->id."'".','."'".$id."'".','."'".$id_po."'".','."'".$no_po."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->width."'".','."'".$i."'".')">EDIT</button>';
 			if($cek->num_rows() == 0){
 				$dis = '';
 				$btn ='<td style="padding:5px">
@@ -3459,14 +3459,15 @@ class Master extends CI_Controller
 		WHERE id_perusahaan='$id_pt' AND id_po='$id_po' AND no_po='$no_po' AND nm_ker='$wnmker' AND g_label='$wglabel' AND width='$wwidth'
 		GROUP BY id_perusahaan,id_po,nm_ker,g_label,width");
 		if(($nm_ker != $wnmker || $g_label != $wglabel || $width != $wwidth) && $cek1->num_rows() > 0){
-				echo json_encode(array('response' => false,'msg' => 'JENIS / GSM / UKURAN SUDAH ADA!',));
+				echo json_encode(array('response' => true, 'msg' => 'JENIS / GSM / UKURAN SUDAH ADA!', 'info' => 'error',));
 		}else if($wnmker == '' ||$wglabel == '' ||$wwidth == '' ||$etonase == '' ||$ejmlroll == '' ||$eharga == ''){
-			echo json_encode(array('response' => false,'msg' => 'TIDAK BOLEH ADA YANG KOSONG!',));
+			echo json_encode(array('response' => true, 'msg' => 'TIDAK BOLEH ADA YANG KOSONG!', 'info' => 'error',));
 		}else{
 			$this->m_master->editItemPO();
 			echo json_encode(array(
 				'response' => true,
 				'msg' => 'BERHASIL EDIT!',
+				'info' => 'success',
 			));
 		}
 	}
