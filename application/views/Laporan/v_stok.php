@@ -80,6 +80,10 @@
 		outline: none;
 	}
 
+	.tmbl-plh {
+		margin-bottom: 2px;
+	}
+
 	.tmbl-stok {
 		display: inline-block;
 		margin-bottom: 3px;
@@ -117,7 +121,7 @@
 	}
 
 	.clear{
-		display:block;padding:2px
+		display:block;padding:4px
 	}
 
 	.new-stok-gg:hover {
@@ -160,10 +164,13 @@
 					<div class="body">
 						<input type="hidden" id="otorisasi" value="<?= $otorisasi ?>">
 						<input type="hidden" id="stat" value="">
+						<input type="hidden" id="otfg" value="">
 
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('stok')">STOK GUDANG</button>
 						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'office') {?>
 							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofg')">OUTSTANDING FG</button>
+							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtuan')">STOK FG BERTUAN</button>
+							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtdktuan')">STOK FG TIDAK BERTUAN</button>
 						<?php } ?>
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('produksi')">PRODUKSI</button>
 
@@ -189,7 +196,7 @@
 
 						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'office') {?>
 							<div class="menu-out-fg" style="padding-top:10px;font-size:12px">
-								<button disabled>STOK : </button>
+								<button class="txt-ofg" disabled></button>
 								<button class="tmbl-stok" onclick="loadDataOFG('mh')">MEDIUM</button>
 								<button class="tmbl-stok" onclick="loadDataOFG('bk')">B - KRAFT</button>
 								<button class="tmbl-stok" onclick="loadDataOFG('mhbk')">MEDIUM - B-KRAFT</button>
@@ -292,8 +299,16 @@
 			$(".menu-stok").show();
 			$(".menu-out-fg").hide();
 			$(".menu-produksi").hide();
-		}else if(plh == 'ofg'){
-			// tmbl-out-fg
+		}else if(plh == 'ofg' || plh == 'ofgtuan' || plh == 'ofgtdktuan'){
+			if(plh == 'ofg'){
+				txtplh = 'SISA OS : '; 
+			}else if(plh == 'ofgtuan'){
+				txtplh = 'STOK BERTUAN : '; 
+			}else{
+				txtplh = 'STOK TIDAK BERTUAN : '; 
+			}
+			$("#otfg").val(plh);
+			$(".txt-ofg").html(txtplh);
 			$(".menu-out-fg").show();
 			$(".menu-stok").hide();
 			$(".menu-produksi").hide();
@@ -434,7 +449,8 @@
 
 	function loadDataOFG(jenis){
 		otorisasi = $("#otorisasi").val();
-		// alert(jenis);
+		otfg = $("#otfg").val();
+		// alert(jenis+' - '+otorisasi+' - '+otfg);
 		$(".tmbl-plh").prop("disabled", true);
 		$(".tmbl-stok").prop("disabled", true).attr('style', 'background:#ccc');
 		$(".tmbl-buffer").prop("disabled", true).attr('style', 'background:#ccc');
@@ -443,7 +459,7 @@
 			url: '<?php echo base_url('Master/loadDataOFG')?>',
 			type: "POST",
 			data: ({
-				jenis,otorisasi
+				jenis,otfg,otorisasi
 			}),
 			success: function(res){
 				$(".tmbl-plh").prop("disabled", false);
