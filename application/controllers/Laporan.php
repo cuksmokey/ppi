@@ -5407,7 +5407,7 @@ class Laporan extends CI_Controller {
         }else if($jenis == 'rmhc'){
             $where = "AND nm_ker='mh color' $pm";
         }else{
-            $where = "AND (nm_ker='mh' OR nm_ker='mi' OR nm_ker='bk' OR nm_ker='bl' OR nm_ker='mn' OR nm_ker='wp' OR nm_ker='mh color')";
+            $where = "AND (nm_ker='mh' OR nm_ker='mi' OR nm_ker='bk' OR nm_ker='bl' OR nm_ker='mn' OR nm_ker='wp' OR nm_ker='mh color') $pm";
         }
         
 		if($stat == 'buffer'){
