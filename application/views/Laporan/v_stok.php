@@ -162,7 +162,9 @@
 						<input type="hidden" id="stat" value="">
 
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('stok')">STOK GUDANG</button>
-						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofg')">OUTSTANDING FG</button>
+						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'office') {?>
+							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofg')">OUTSTANDING FG</button>
+						<?php } ?>
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('produksi')">PRODUKSI</button>
 
 						<div class="menu-stok" style="padding-top:10px;font-size:12px">
@@ -185,17 +187,18 @@
 							<button class="tmbl-buffer" onclick="load_data('rall','buffer')">SEMUA</button>
 						</div>
 
-						<div class="menu-out-fg" style="padding-top:10px;font-size:12px">
-							<!-- load_data_o_fg -->
-							<button disabled>STOK : </button>
-							<button class="tmbl-stok" onclick="loadDataOFG('mh')">MEDIUM</button>
-							<button class="tmbl-stok" onclick="loadDataOFG('bk')">B - KRAFT</button>
-							<button class="tmbl-stok" onclick="loadDataOFG('mhbk')">MEDIUM - B-KRAFT</button>
-							<button class="tmbl-stok" onclick="loadDataOFG('nonspek')">MEDIUM NON SPEK</button>
-							<button class="tmbl-stok" onclick="loadDataOFG('wp')">W P</button>
-							<button class="tmbl-stok" onclick="loadDataOFG('all')">SEMUA</button>
-							<div class="clear"></div>
-						</div>
+						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'office') {?>
+							<div class="menu-out-fg" style="padding-top:10px;font-size:12px">
+								<button disabled>STOK : </button>
+								<button class="tmbl-stok" onclick="loadDataOFG('mh')">MEDIUM</button>
+								<button class="tmbl-stok" onclick="loadDataOFG('bk')">B - KRAFT</button>
+								<button class="tmbl-stok" onclick="loadDataOFG('mhbk')">MEDIUM - B-KRAFT</button>
+								<button class="tmbl-stok" onclick="loadDataOFG('nonspek')">MEDIUM NON SPEK</button>
+								<button class="tmbl-stok" onclick="loadDataOFG('wp')">W P</button>
+								<button class="tmbl-stok" onclick="loadDataOFG('all')">SEMUA</button>
+								<div class="clear"></div>
+							</div>
+						<?php } ?>
 						
 						<div class="menu-produksi" style="padding-top:10px;font-size:12px">
 							<button disabled>PILIH : </button>
