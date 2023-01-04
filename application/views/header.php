@@ -119,6 +119,12 @@
                             <span>Dashboard</span>
                         </a>
                     </li> -->
+					<li>
+						<a href="<?php echo base_url('Master/RPK') ?>">
+							<!-- <i class="material-icons">list</i> -->
+							<span>R P K</span>
+						</a>
+					</li>
                     <?php } ?>
                     <li>
                         <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2") { ?>

@@ -79,6 +79,13 @@ class Master extends CI_Controller
 		$this->load->view('footer');
 	}
 
+	public function RPK()
+	{
+		$this->load->view('header');
+		$this->load->view('Master/v_rpk');
+		$this->load->view('footer');
+	}
+
 	function Insert()
 	{
 		$jenis      = $_POST['jenis'];
