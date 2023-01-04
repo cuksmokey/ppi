@@ -178,6 +178,7 @@
 											<option value="70">70</option>
 											<option value="105">105</option>
 											<option value="110">110</option>
+											<option value="115">115</option>
 											<option value="125">125</option>
 											<option value="120">120</option>
 											<option value="140">140</option>
