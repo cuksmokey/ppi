@@ -2551,29 +2551,30 @@ class Master extends CI_Controller
 			$lbl = '<div style="display:inline-block;margin:0">
 				<a href="'.base_url('Laporan/print_lbl_pl').'?jenis='.$id_rk.'&all=0&ctk=F4" target="_blank" rel="plcek">PRINT LABEL</a>
 			</div>';
+			// PACKING LIST CEK
+			$listPlCek = '<div style="display:inline-block;margin:0 20px">
+				<a href="'.base_url('Master/packingListCek').'?idrk='.$id_rk.'" target="_blank" rel="plcek">PACKING LIST CEK</a>
+			</div>';
 			if($cekOk->num_rows() > 0){
 				if($plh == 'pl'){
-					$btnCekOk ='BELUM DICEK OLEH QC!';
+					$btnCekOk = $listPlCek.' '.'BELUM DICEK OLEH QC!';
 					$pLabelReq = $lbl;
 				}else{
 					if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'qc'){
-						$btnCekOk = '<button onclick="cekOkRk('."'".$id_rk."'".','."'".$plh."'".','."'".$l."'".','."'ok'".')">CEK OK</button>';
+						$btnCekOk = $listPlCek.' '.'<button onclick="cekOkRk('."'".$id_rk."'".','."'".$plh."'".','."'".$l."'".','."'ok'".')">CEK OK</button>';
 					}else{
 						$btnCekOk = 'CEK BELUM OK!';
 					}
 					$pLabelReq = '';
 				}
-				$btnplcek = '<div style="display:inline-block;margin:0 20px">
-					<a href="'.base_url('Master/packingListCek').'?idrk='.$id_rk.'" target="_blank" rel="plcek">PACKING LIST CEK</a>
-				</div>';
 			}else{
 				if($plh == 'pl'){
 					if($otorisasi == 'all' || $otorisasi == 'admin'){
 						$cSj = $this->db->query("SELECT*FROM pl WHERE id_rk='$id_rk' AND qc='ok' GROUP BY id_rk");
 						if($cSj->num_rows() == 0){
-							$btnCekOk = '<button onclick="cekOkRk('."'".$id_rk."'".','."'".$plh."'".','."'".$l."'".','."'batal'".')">BATAL OK</button>';
+							$btnCekOk = $listPlCek.' '.'<button onclick="cekOkRk('."'".$id_rk."'".','."'".$plh."'".','."'".$l."'".','."'batal'".')">BATAL OK</button>';
 						}else{
-							$btnCekOk = 'SURAT JALAN SUDAH OK!';
+							$btnCekOk = $listPlCek.' '.'SURAT JALAN SUDAH OK!';
 						}
 					}else{
 						$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
@@ -2583,7 +2584,6 @@ class Master extends CI_Controller
 					$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
 					$pLabelReq = '';
 				}
-				$btnplcek = '';
 			}
 			
 			if($plh == 'pl'){
@@ -2595,7 +2595,7 @@ class Master extends CI_Controller
 				<td style="padding:5px;font-weight:bold">'.number_format($totRoll).'</td>
 				<td style="padding:5px;font-weight:bold" colspan="5">TOTAL</td>
 				<td style="padding:5px;font-weight:bold">'.number_format($totBerat).'</td>
-				<td style="padding:5px;font-weight:bold" colspan="'.$cls.'">'.$pLabelReq.' '.$btnplcek.''.$btnCekOk.'</td>
+				<td style="padding:5px;font-weight:bold" colspan="'.$cls.'">'.$pLabelReq.' '.$btnCekOk.'</td>
 			</tr>';
 			$html .='</table></div>';
 		}
