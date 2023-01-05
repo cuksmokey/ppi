@@ -2335,7 +2335,7 @@ class Master extends CI_Controller
 				$wket = '10%';
 				$waksi = '10%';
 				$cols = '13';
-				$ktd = '<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:25%">P L</td>';
+				$ktd = '<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:25%">ID PL</td>';
 			}else{
 				$wket = '25%';
 				$waksi = '20%';
@@ -2488,10 +2488,10 @@ class Master extends CI_Controller
 								$getPl = $this->db->query("SELECT pl.* FROM pl pl
 								INNER JOIN po_master po ON pl.no_po=po.no_po AND pl.nm_ker=po.nm_ker AND pl.g_label=po.g_label
 								WHERE id_rk='$w->id_rk' AND pl.nm_ker='$w->nm_ker' AND pl.g_label='$w->g_label' AND po.width='$w->width'
-								GROUP BY pl.no_po,pl.nm_ker,pl.g_label");
+								GROUP BY pl.id,pl.no_po,pl.nm_ker,pl.g_label");
 								foreach($getPl->result() as $pl){
 									$html .= '<div style="display:block">
-										<button class="tmbl-cek-roll" onclick="entryPL('."'".$w->id_rk."'".','."'".$pl->opl."'".','."'".$pl->tgl_pl."'".','."'".$plh."'".','."'".$l."'".','."'".$pl->id."'".','."'".$w->id."'".','."'".$w->status."'".')">'.$pl->id.' - '.$pl->no_po.'</button>
+										<button class="tmbl-cek-roll" onclick="entryPL('."'".$w->id_rk."'".','."'".$pl->opl."'".','."'".$pl->tgl_pl."'".','."'".$plh."'".','."'".$l."'".','."'".$pl->id."'".','."'".$w->id."'".','."'".$w->status."'".')">'.$pl->id.'</button>
 									</div>';
 								}
 							}
@@ -2516,21 +2516,27 @@ class Master extends CI_Controller
 						$getPl = $this->db->query("SELECT pl.* FROM pl pl
 						INNER JOIN po_master po ON pl.no_po=po.no_po AND pl.nm_ker=po.nm_ker AND pl.g_label=po.g_label
 						WHERE id_rk='$ker->id_rk' AND pl.nm_ker='$ker->nm_ker' AND pl.g_label='$ker->g_label' AND po.width='$ker->width'
-						GROUP BY pl.no_po,pl.nm_ker,pl.g_label");
-						if($getPl->num_rows() == 1){
-							// CEK JIKA SUDAH MASUK DI PACKING LIST
-							$getrolldpl = $this->db->query("SELECT id_rk,nm_ker,g_label,width FROM m_timbangan
-							WHERE id_rk='$id_rk' AND id_pl='0' AND nm_ker='$ker->nm_ker' AND g_label='$ker->g_label' AND width='$ker->width'
-							GROUP BY nm_ker,g_label,width");
-							if($getrolldpl->num_rows() == 0){
-								$html .='';
-							}else{
-								$html .='<tr>
-									<td style="padding:5px;font-weight:bold;text-align:right" colspan="13"><button onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$getPl->row()->id."'".','."'".$plh."'".')">ALL IN</button></td>
-								</tr>';
-							}
-						}else{
+						GROUP BY pl.id,pl.no_po,pl.nm_ker,pl.g_label");
+						// CEK JIKA SUDAH MASUK DI PACKING LIST
+						$getrolldpl = $this->db->query("SELECT id_rk,nm_ker,g_label,width FROM m_timbangan
+						WHERE id_rk='$id_rk' AND id_pl='0' AND nm_ker='$ker->nm_ker' AND g_label='$ker->g_label' AND width='$ker->width'
+						GROUP BY nm_ker,g_label,width");
+						if($getrolldpl->num_rows() == 0){
 							$html .='';
+						}else{
+							// CUMA SATU PL
+							if($getPl->num_rows() == 1){
+								$html .='<tr>
+									<td style="padding:5px;font-weight:bold;text-align:right" colspan="13"><button onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$getPl->row()->id."'".','."'".$plh."'".')">'.$getPl->row()->id.'</button></td>
+								</tr>';
+							}else{
+								// ALL IN ID PL TERTENTU
+								$html .='<tr><td style="padding:5px;font-weight:bold;text-align:right" colspan="13">';
+								foreach($getPl->result() as $idpl){
+									$html .='<button style="margin-left:5px" onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$idpl->id."'".','."'".$plh."'".')">'.$idpl->id.'</button>';
+								}
+								$html .='</td></tr>';
+							}
 						}
 					}
 				}else{
@@ -2776,7 +2782,7 @@ class Master extends CI_Controller
 		// CUMA TAMPIL PACKING LISTNYA
 		$qgetPL = $this->db->query("SELECT*FROM pl
 		WHERE id_rk='$idrk' AND tgl_pl='$tglpl' AND opl='$opl'
-		GROUP BY id_rk,tgl_pl,opl,no_pkb,nm_ker,no_po,g_label");
+		GROUP BY id_rk,tgl_pl,opl,id,nm_ker,no_po,no_pkb,g_label");
 		$html .='<div style="overflow:auto;white-space:nowrap;">';
 		$html .='<table style="margin:15px 0;font-size:12px;color:#000" border="1">';
 		$html .='<tr style="background:#e9e9e9;text-align:center">
