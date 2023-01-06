@@ -2455,12 +2455,33 @@ class Master extends CI_Controller
 						$btnEdit = '<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('."'".$w->roll."'".')">'.$w->roll.'</button>';
 					}
 
+					// G AC
+					if($w->g_ac == 0 || $w->g_ac == ''){
+						$txtGac = 0;
+					}else{
+						$txtGac = $w->g_ac;
+					}
+
+					// RCT
+					if($w->rct == 0 || $w->rct == ''){
+						$txtRct = 0;
+					}else{
+						$txtRct = $w->rct;
+					}
+
+					// BI
+					if($w->bi == 0 || $w->bi == ''){
+						$txtBi = 0;
+					}else{
+						$txtBi = $w->bi;
+					}
+
 					$html .='<tr class="'.$bgtr.'">
 						<td style="padding:5px">'.$i.'</td>
 						<td style="padding:5px">'.$btnEdit.'</td>
-						<td style="padding:5px;'.$bgbw.'">'.$w->g_ac.'</td>
-						<td style="padding:5px;'.$bgrct.'">'.$w->rct.'</td>
-						<td style="padding:5px;'.$bgbi.'">'.$w->bi.'</td>
+						<td style="padding:5px;'.$bgbw.'">'.$txtGac.'</td>
+						<td style="padding:5px;'.$bgrct.'">'.$txtRct.'</td>
+						<td style="padding:5px;'.$bgbi.'">'.$txtBi.'</td>
 						<td style="position:relative">
 							<input type="text" id="his-diameter-'.$w->id.'" value="'.$w->diameter.'" class="inp-abs" maxlength="3" onkeypress="return hanyaAngka(event)">
 						</td>
