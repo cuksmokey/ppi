@@ -2574,14 +2574,18 @@ class Master extends CI_Controller
 						if($cSj->num_rows() == 0){
 							$btnCekOk = $listPlCek.' '.'<button onclick="cekOkRk('."'".$id_rk."'".','."'".$plh."'".','."'".$l."'".','."'batal'".')">BATAL OK</button>';
 						}else{
-							$btnCekOk = $listPlCek.' '.'SURAT JALAN SUDAH OK!';
+							$btnCekOk = 'SURAT JALAN SUDAH OK!';
 						}
 					}else{
 						$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
 					}
 					$pLabelReq = $lbl;
 				}else{
-					$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
+					if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'qc'){
+						$btnCekOk = $listPlCek.' '.'SURAT JALAN SEDANG DIPROSES';
+					}else{
+						$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
+					}
 					$pLabelReq = '';
 				}
 			}
