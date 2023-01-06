@@ -1221,7 +1221,7 @@ class M_master extends CI_Model{
 
 			// JIKA PL NON PPN UPDATE NO PKB " . "
 			$expSJ = explode("/", $data['options']['no_surat']);
-			if($expSJ[4] == 'B'){
+			if($expSJ[4] == 'A'){
 				$p = '.';
 			}else{
 				$p = '';
