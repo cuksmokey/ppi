@@ -264,7 +264,7 @@
 		});
 	}
 
-	function cekRollEdit(roll){
+	function cekRollEdit(idroll,roll){
 		$(".isi-qc-terjual").html('');
 		$(".isi-qc-edit").html('Tunggu Sebentar . . .');
 		$("#modal-qc-list").modal("show");
@@ -272,7 +272,7 @@
 			url: '<?php echo base_url('Laporan/QCShowEditRoll')?>',
 			type: "POST",
 			data: ({
-				roll: roll,
+				idroll,roll
 			}),
 			success: function(response){
 				$(".isi-qc-edit").html(response);

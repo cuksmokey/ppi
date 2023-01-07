@@ -5704,14 +5704,19 @@ class Laporan extends CI_Controller {
                 $getRollEdit = $this->db->query("SELECT*FROM m_roll_edit e
                 WHERE e.roll='$roll->roll'");
                 if($getRollEdit->num_rows() == 0){
-                    $oBre = '';
-					$cBre = '';
+					if($otori == 'all' || $otori == 'admin' || $otori == 'qc'){
+						$oBre = '<button class="tmbl-cek-roll" onclick="cekRollEdit('."'".$roll->id."'".','."'".$roll->roll."'".')">';
+                        $cBre = '</button>';
+					}else{
+						$oBre = '';
+						$cBre = '';
+					}
                 }else{
                     if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
                         $oBre = '';
                         $cBre = '';
                     }else{
-                        $oBre = '<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('."'".$roll->roll."'".')">';
+                        $oBre = '<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('."'".$roll->id."'".','."'".$roll->roll."'".')">';
                         $cBre = '</button>';
                     }
                 }
@@ -5925,12 +5930,13 @@ class Laporan extends CI_Controller {
     }
 
     function QCShowEditRoll(){
+        $id = $_POST['idroll'];
         $roll = $_POST['roll'];
         $html ='';
 
 		$html .='<div style="overflow:auto;white-space:nowrap">';
         $html .='<table style="margin:0 0 20px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
-		$getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE roll='$roll'")->row();
+		$getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll'")->row();
 		$html .='<tr>
 				<td style="font-weight:bold" colspan="12">DATA :</td>
 			</tr>
@@ -5946,14 +5952,16 @@ class Laporan extends CI_Controller {
 				<td style="padding:5px">keterangan</td>
 				<td style="padding:5px">seset</td>
 				<td style="padding:5px">status</td>
+				<td style="padding:5px">created_at</td>
+				<td style="padding:5px">created_by</td>
 			</tr>';
-		if($getRoll->status == 0){
+		if($getRoll->status == 0 && $getRoll->id_pl == 0){
 			$stt = 'STOK';
 		}else if($getRoll->status == 2){
 			$stt = 'PPI';
 		}else if($getRoll->status == 3){
 			$stt = 'BUFFER';
-		}else if($getRoll->status == 1){
+		}else if($getRoll->status == 1 && $getRoll->id_pl != 0){
 			$stt = 'TERJUAL';
 		}else{
 			$stt = '-';
@@ -5970,58 +5978,64 @@ class Laporan extends CI_Controller {
 			<td style="padding:5px">'.$getRoll->ket.'</td>
 			<td style="padding:5px">'.$getRoll->seset.'</td>
 			<td style="padding:5px">'.$stt.'</td>
+			<td style="padding:5px">'.$getRoll->created_at.'</td>
+			<td style="padding:5px">'.$getRoll->created_by.'</td>
 		</tr>';
 		$html .='</table>';
 
-		$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
         $getData = $this->db->query("SELECT*FROM m_roll_edit WHERE roll='$roll'");
-        $i = 0;
-		$html .='<tr>
-				<td style="font-weight:bold" colspan="12">HISTORY EDIT :</td>
-			</tr>
-			<tr>
-			<td style="padding:5px">no</td>
-			<td style="padding:5px">roll</td>
-			<td style="padding:5px">jenis</td>
-			<td style="padding:5px">gramature</td>
-			<td style="padding:5px">ukuran</td>
-			<td style="padding:5px">diameter</td>
-			<td style="padding:5px">berat</td>
-			<td style="padding:5px">joint</td>
-			<td style="padding:5px">keterangan</td>
-			<td style="padding:5px">seset</td>
-			<td style="padding:5px">status</td>
-			<td style="padding:5px">edited_at</td>
-			<td style="padding:5px">edited_by</td>
-		</tr>';
-        foreach($getData->result() as $ser){
-            $i++;
-			if($ser->status == 0){
-				$stt = 'STOK';
-			}else if($ser->status == 2){
-				$stt = 'PPI';
-			}else if($ser->status == 3){
-				$stt = 'BUFFER';
-			}else{
-				$stt = 'STOK';
+		if($getData->num_rows() == 0){
+			$html .='';
+		}else{
+			$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+			$i = 0;
+			$html .='<tr>
+					<td style="font-weight:bold" colspan="12">HISTORY EDIT :</td>
+				</tr>
+				<tr>
+				<td style="padding:5px">no</td>
+				<td style="padding:5px">roll</td>
+				<td style="padding:5px">jenis</td>
+				<td style="padding:5px">gramature</td>
+				<td style="padding:5px">ukuran</td>
+				<td style="padding:5px">diameter</td>
+				<td style="padding:5px">berat</td>
+				<td style="padding:5px">joint</td>
+				<td style="padding:5px">keterangan</td>
+				<td style="padding:5px">seset</td>
+				<td style="padding:5px">status</td>
+				<td style="padding:5px">edited_at</td>
+				<td style="padding:5px">edited_by</td>
+			</tr>';
+			foreach($getData->result() as $ser){
+				$i++;
+				if($ser->status == 0){
+					$stt = 'STOK';
+				}else if($ser->status == 2){
+					$stt = 'PPI';
+				}else if($ser->status == 3){
+					$stt = 'BUFFER';
+				}else{
+					$stt = 'STOK';
+				}
+				$html .='<tr>
+					<td style="padding:5px">'.$i.'</td>
+					<td style="padding:5px">'.$ser->roll.'</td>
+					<td style="padding:5px">'.$ser->nm_ker.'</td>
+					<td style="padding:5px">'.$ser->g_label.'</td>
+					<td style="padding:5px">'.round($ser->width,2).'</td>
+					<td style="padding:5px">'.$ser->diameter.'</td>
+					<td style="padding:5px">'.$ser->weight.'</td>
+					<td style="padding:5px">'.$ser->joint.'</td>
+					<td style="padding:5px">'.$ser->ket.'</td>
+					<td style="padding:5px">'.$ser->seset.'</td>
+					<td style="padding:5px">'.$stt.'</td>
+					<td style="padding:5px">'.$ser->edited_at.'</td>
+					<td style="padding:5px">'.$ser->edited_by.'</td>
+				</tr>';
 			}
-            $html .='<tr>
-                <td style="padding:5px">'.$i.'</td>
-                <td style="padding:5px">'.$ser->roll.'</td>
-                <td style="padding:5px">'.$ser->nm_ker.'</td>
-                <td style="padding:5px">'.$ser->g_label.'</td>
-                <td style="padding:5px">'.round($ser->width,2).'</td>
-                <td style="padding:5px">'.$ser->diameter.'</td>
-                <td style="padding:5px">'.$ser->weight.'</td>
-                <td style="padding:5px">'.$ser->joint.'</td>
-                <td style="padding:5px">'.$ser->ket.'</td>
-                <td style="padding:5px">'.$ser->seset.'</td>
-                <td style="padding:5px">'.$stt.'</td>
-                <td style="padding:5px">'.$ser->edited_at.'</td>
-                <td style="padding:5px">'.$ser->edited_by.'</td>
-            </tr>';
-        }
-        $html .='</table>';
+			$html .='</table>';
+		}
 		$html .='</div>';
 
 		if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC"){

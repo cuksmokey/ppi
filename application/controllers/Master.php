@@ -2452,7 +2452,7 @@ class Master extends CI_Controller
 					if($getRollEdit->num_rows() == 0){
 						$btnEdit = $w->roll;
 					}else{
-						$btnEdit = '<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('."'".$w->roll."'".')">'.$w->roll.'</button>';
+						$btnEdit = '<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('."'".$w->id."'".','."'".$w->roll."'".')">'.$w->roll.'</button>';
 					}
 
 					// G AC
@@ -3155,7 +3155,7 @@ class Master extends CI_Controller
 				if($getRollEdit->num_rows() == 0){
 					$btnEdit = $r->roll;
 				}else{
-					$btnEdit = '<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('."'".$r->roll."'".')">'.$r->roll.'</button>';
+					$btnEdit = '<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('."'".$r->id."'".','."'".$r->roll."'".')">'.$r->roll.'</button>';
 				}
 				$html .='<tr class="'.$bgtr.'">
 					<td style="padding:5px;font-weight:bold">'.$ii.'</td>
