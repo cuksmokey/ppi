@@ -161,14 +161,14 @@ class Laporan extends CI_Controller {
 
         $html .= '<table width="100%" border="0" style="font-size:'.$fsz.'">
                     <tr>
-                        <td colspan="12" align="center">
+                        <td colspan="13" align="center">
 							<b><u><font style="font-size:18px">'.$titleLap.'</font></u> <br> 
-                             '.$tmplTgl.'</b>
+							'.$tmplTgl.'</b>
                         </td>
                     </tr>
-                 </table>
-                 <br>
-                 <table width="100%" border="1" cellspacing="0" cellpadding="5" style="font-size:'.$fsz.'">
+					</table>
+					<br>
+					<table width="100%" border="1" cellspacing="0" cellpadding="5" style="font-size:'.$fsz.'">
                     <tr bgcolor="#CCCCCC">
                         <td align="center">No</td>
                         <td align="center">Roll Number</td>
@@ -181,6 +181,7 @@ class Laporan extends CI_Controller {
                         <td align="center">Joint</td>
                         <td align="center">Rct</td>
                         <td align="center">BI</td>
+                        <td align="center">Status</td>
                         ';
                         // if ($jenis != "1") {
                         //     $html .= '<td align="center">Quality</td>';
@@ -196,48 +197,56 @@ class Laporan extends CI_Controller {
                     $no = 1;
                     $tot_weight = 0 ;
 
-                    if ($data_detail->num_rows() > 0) {
-                        # code...
+                    if($data_detail->num_rows() > 0) {
                         foreach ($data_detail->result() as $r ) {
-                            
+                            if($r->status == 0){
+								$stat = 'STOK';
+							}else if($r->status == 2){
+								$stat = 'PPI';
+							}else if($r->status == 3){
+								$stat = 'BUFFER';
+							}else{
+								$stat = '-';
+							}
                             $html .= '<tr>
-                                        <td align="center">'.$no.'</td>
-                                        <td align="center">'.$r->roll.'</td>
-                                        <td align="center">'.$r->nm_ker.'</td>
-                                        <td align="center">'.$r->g_label.'</td>
-                                        <td align="center">'.$r->g_ac.'</td>
-                                        <td align="center">'.$r->width.'</td>
-                                        <td align="center">'.$r->diameter.'</td>
-                                        <td align="center">'.$r->weight.'</td>
-                                        <td align="center">'.$r->joint.'</td>
-                                        <td align="center">'.$r->rct.'</td>
-                                        <td align="center">'.$r->bi.'</td>
-                                        ';
-                                        // if ($jenis != "1") {
-                                        //     $html .= '<td align="center"></td>';
-                                        // }
-                                        if ($jenis == "2") {
-                                            $html .= '
-												<td align="center"></td>
-												<td align="center">'.$r->created_by.'</td>';
-                                        }
-                                        $html .= '
-                                        <td align="center">'.$r->ket.'</td>
-                                    </tr>';
-                         $no++;
-                         $tot_weight += $r->weight;
+								<td align="center">'.$no.'</td>
+								<td align="center">'.$r->roll.'</td>
+								<td align="center">'.$r->nm_ker.'</td>
+								<td align="center">'.$r->g_label.'</td>
+								<td align="center">'.$r->g_ac.'</td>
+								<td align="center">'.$r->width.'</td>
+								<td align="center">'.$r->diameter.'</td>
+								<td align="center">'.$r->weight.'</td>
+								<td align="center">'.$r->joint.'</td>
+								<td align="center">'.$r->rct.'</td>
+								<td align="center">'.$r->bi.'</td>
+								<td align="center">'.$stat.'</td>
+								';
+								// if ($jenis != "1") {
+								//     $html .= '<td align="center"></td>';
+								// }
+								if ($jenis == "2") {
+									$html .= '
+										<td align="center"></td>
+										<td align="center">'.$r->created_by.'</td>';
+								}
+								$html .= '
+								<td align="center">'.$r->ket.'</td>
+							</tr>';
+						$no++;
+						$tot_weight += $r->weight;
                         }
                     }
 
                     if ($jenis == "1" || $jenis == "4") {
 						$html .= '<tr bgcolor="#CCCCCC">
-								<td align="center" colspan="7">TOTAL BERAT</td>
-								<td align="center">'.number_format($tot_weight).'</td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-							</tr>';
+							<td align="center" colspan="7">TOTAL BERAT</td>
+							<td align="center">'.number_format($tot_weight).'</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>';
                     }
 
                     $html .='</table>';
