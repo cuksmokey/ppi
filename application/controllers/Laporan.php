@@ -242,10 +242,7 @@ class Laporan extends CI_Controller {
 						$html .= '<tr bgcolor="#CCCCCC">
 							<td align="center" colspan="7">TOTAL BERAT</td>
 							<td align="center">'.number_format($tot_weight).'</td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
+							<td coslpan="5"></td>
 						</tr>';
                     }
 
