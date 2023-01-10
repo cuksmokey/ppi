@@ -155,9 +155,15 @@
 						<!-- <input type="text" id="v-id-pl" value=""> -->
 
 						<div class="ilist plh-opsi-plrk" style="color:#000;font-size:12px">
-							<button id="btn-opsi-pl" onclick="pilih_opsi('pl')">PACKING LIST</button>
-							<button id="btn-opsi-rk" onclick="pilih_opsi('rk')">RENCANA KIRIM</button>
-							<button id="btn-opsi-lap" onclick="pilih_opsi('lap')">LAPORAN KIRIMAN</button>
+							<?php if($otorisasi == 'all' || $otorisasi == 'admin'){?>
+								<button id="btn-opsi-pl" onclick="pilih_opsi('pl')">PACKING LIST</button>
+							<?php } ?>
+							<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'qc' || $otorisasi == 'fg'){?>
+								<button id="btn-opsi-rk" onclick="pilih_opsi('rk')">RENCANA KIRIM</button>
+							<?php } ?>
+							<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'fg' || $otorisasi == 'office'){?>
+								<button id="btn-opsi-lap" onclick="pilih_opsi('lap')">LAPORAN KIRIMAN</button>
+							<?php } ?>
 						</div>
 
 						<div class="list-btn-pl" style="overflow:auto;white-space:nowrap;">
@@ -515,19 +521,17 @@
 	</div>
 </div>
 
-<!-- DETAIL LIST PO -->
-<!-- <div class="modal fade bd-example-modal-lg" id="modal-stok-list" tabindex="-1" role="dialog">
+<div class="modal fade bd-example-modal-lg" id="modal-lap-kiriman" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content">
+		<div class="modal-content" >
 			<div class="modal-header"></div>
-			<div class="modal-body">
-				<div class="isi-stok-list"></div>
-				<div class="isi-stok-tuan"></div>
+			<div class="modal-body" style="overflow:auto;white-space:nowrap;">
+				<div class="isi-lap-kiriman"></div>
 			</div>
 			<div class="modal-footer"></div>
 		</div>
 	</div>
-</div> -->
+</div>
 
 <script>
 	otorisasi = $("#otorisasi").val();
@@ -552,10 +556,14 @@
 			$("#btn-opsi-pl").show();
 			$("#btn-opsi-rk").show();
 			$("#btn-opsi-lap").show();
-		}else if(otorisasi == 'qc' || otorisasi == 'fg'){
+		}else if(otorisasi == 'qc'){
 			$(".plh-opsi-plrk").show();
 			$("#btn-opsi-pl").hide();
 			$("#btn-opsi-lap").hide();
+		}else if(otorisasi == 'fg'){
+			$(".plh-opsi-plrk").show();
+			$("#btn-opsi-lap").show();
+			$("#btn-opsi-pl").hide();
 		}else{
 			$(".plh-opsi-plrk").hide();
 		}
@@ -609,6 +617,22 @@
 			}),
 			success: function(res){
 				$(".list-lap").html(res);
+			}
+		})
+	}
+
+	function cekLapKiriman(tgl,idpt,idex){
+		// $(".modal-body").html('');
+		$(".isi-lap-kiriman").html('Memuat Data . . .');
+		$("#modal-lap-kiriman").modal("show");
+		$.ajax({
+			url: '<?php echo base_url('Master/cekLapKiriman')?>',
+			type: "POST",
+			data: ({
+				tgl,idpt,idex
+			}),
+			success: function(res){
+				$(".isi-lap-kiriman").html(res);
 			}
 		})
 	}
