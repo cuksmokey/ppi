@@ -4366,22 +4366,22 @@ class Master extends CI_Controller
 							$tuanOrTidak = 0;
 						}
 					}else{ // ofgtdktuan
-						if($vWidth >= $jmlRoll){
+						// if($vWidth >= $jmlRoll){
 							$tuanOrTidak = $vWidth - $jmlRoll;
-						}else{
-							$tuanOrTidak = 0;
-						}
+						// }else{
+						// 	$tuanOrTidak = 0;
+						// }
 					}
 
-					if(($lbl->nm_ker == 'MH' || $lbl->nm_ker == 'MI' || $lbl->nm_ker == 'ML') && $tuanOrTidak == 0 ){
+					if(($lbl->nm_ker == 'MH' || $lbl->nm_ker == 'MI' || $lbl->nm_ker == 'ML') && ($tuanOrTidak == 0 || $tuanOrTidak <= 0) ){
 						$gbLbl = '#ffc';
-					}else if($lbl->nm_ker == 'MN' && $tuanOrTidak == 0){
+					}else if($lbl->nm_ker == 'MN' && ($tuanOrTidak == 0 || $tuanOrTidak <= 0)){
 						$gbLbl = '#fcc';
-					}else if(($lbl->nm_ker == 'BK' || $lbl->nm_ker == 'BL') && $tuanOrTidak == 0){
+					}else if(($lbl->nm_ker == 'BK' || $lbl->nm_ker == 'BL') && ($tuanOrTidak == 0 || $tuanOrTidak <= 0)){
 						$gbLbl = '#ccc';
-					}else if($lbl->nm_ker == 'WP' && $tuanOrTidak == 0){
+					}else if($lbl->nm_ker == 'WP' && ($tuanOrTidak == 0 || $tuanOrTidak <= 0)){
 						$gbLbl = '#cfc';
-					}else if($lbl->nm_ker == 'MH COLOR' && $tuanOrTidak == 0){
+					}else if($lbl->nm_ker == 'MH COLOR' && ($tuanOrTidak == 0 || $tuanOrTidak <= 0)){
 						$gbLbl = '#ccf';
 					}else{
 						$gbLbl = '#fff';
@@ -4397,6 +4397,29 @@ class Master extends CI_Controller
 			$html .='</table>';
 		}
 
+		echo $html;
+	}
+
+	function LoadLaporanPengiriman(){
+		$tgl1 = $_POST['tgl1'];
+		$tgl2 = $_POST['tgl2'];
+		$html = '';
+
+		$html .='<table border="1">';
+		$html .='<tr style="background:#e9e9e9;font-weight:bold">
+			<td style="padding:5px">NO</td>
+			<td style="padding:5px">HARI TANGGAL</td>
+			<td style="padding:5px">CUSTOMER</td>
+			<td style="padding:5px">TONASE</td>
+			<td style="padding:5px">GSM</td>
+			<td style="padding:5px">UKURAN ROLL</td>
+			<td style="padding:5px">JUMLAH ROLL</td>
+			<td style="padding:5px">EKSPEDISI</td>
+			<td style="padding:5px">NOPOL</td>
+			<td style="padding:5px">DRIVER</td>
+		</tr>';
+		$html .='</table>';
+		// getHariIni
 		echo $html;
 	}
 }

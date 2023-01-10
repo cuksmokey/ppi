@@ -157,6 +157,7 @@
 						<div class="ilist plh-opsi-plrk" style="color:#000;font-size:12px">
 							<button id="btn-opsi-pl" onclick="pilih_opsi('pl')">PACKING LIST</button>
 							<button id="btn-opsi-rk" onclick="pilih_opsi('rk')">RENCANA KIRIM</button>
+							<button id="btn-opsi-lap" onclick="pilih_opsi('lap')">LAPORAN KIRIMAN</button>
 						</div>
 
 						<div class="list-btn-pl" style="overflow:auto;white-space:nowrap;">
@@ -484,6 +485,18 @@
 								<button onclick="btnBackRk()" style="margin-top:15px">BACK</button>
 							</div>
 						</div>
+
+						<div class="list-btn-lap" style="overflow:auto;white-space:nowrap;">
+							<div class="ilist box-data-lap" style="color:#000;font-size:12px">
+								<button disabled="disabled">PILIH :</button>
+								<input type="date" id="tgl-list-lap" value="<?= date('Y-m-d')?>">
+								s/d
+								<input type="date" id="tgl-list-lap2" value="<?= date('Y-m-d')?>">
+								<button onclick="load_data_lap()">CARI</button>
+
+								<div style="margin-top:15px" class="list-lap"></div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -528,18 +541,21 @@
 		$(".plh-opsi-plrk").hide();
 		$(".list-btn-pl").hide();
 		$(".list-btn-rk").hide();
+		$(".list-btn-lap").hide();
 
 		$(".box-form-rk").hide();
 		// kosong();
 		// rkkosong();
 
-		if(otorisasi == 'all' || otorisasi == 'admin' || otorisasi == 'office' || otorisasi == 'finance'){
+		if(otorisasi == 'all' || otorisasi == 'admin' || otorisasi == 'office'){
 			$(".plh-opsi-plrk").show();
 			$("#btn-opsi-pl").show();
 			$("#btn-opsi-rk").show();
+			$("#btn-opsi-lap").show();
 		}else if(otorisasi == 'qc' || otorisasi == 'fg'){
 			$(".plh-opsi-plrk").show();
 			$("#btn-opsi-pl").hide();
+			$("#btn-opsi-lap").hide();
 		}else{
 			$(".plh-opsi-plrk").hide();
 		}
@@ -552,16 +568,49 @@
 		if(plrk == 'pl'){
 			$(".list-btn-pl").show();
 			$(".list-btn-rk").hide();
+			$(".list-btn-lap").hide();
 			$(".box-data-pl").show();
 			$(".box-form-pl").hide();
 			kosong();
-		}else{
+		}else if(plrk == 'rk'){
 			$(".list-btn-pl").hide();
 			$(".list-btn-rk").show();
+			$(".list-btn-lap").hide();
 			$(".box-data-rk").show();
 			$(".box-form-rk").hide();
 			rkkosong();
+		}else{
+			$(".list-btn-pl").hide();
+			$(".list-btn-rk").hide();
+			$(".list-btn-lap").show();
+			$(".box-data-lap").show();
+			// rkkosong();
+			$(".list-lap").hide();
 		}
+	}
+
+	// LAPORAN PENGIRIMAN
+
+	function load_data_lap(){
+		tgl1 = $("#tgl-list-lap").val();
+		tgl2 = $("#tgl-list-lap2").val();
+		// alert(tgl1+' - '+tgl2);
+		if(tgl1 == '' || tgl2 == ''){
+			swal("HARAP PILIH TANGGAL!", "", "error");
+			return;
+		}
+
+		$(".list-lap").show().html('Memuat Data . . .');
+		$.ajax({
+			url: '<?php echo base_url('Master/LoadLaporanPengiriman')?>',
+			type: "POST",
+			data: ({
+				tgl1, tgl2
+			}),
+			success: function(res){
+				$(".list-lap").html(res);
+			}
+		})
 	}
 
 	//
