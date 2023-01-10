@@ -5357,7 +5357,7 @@ class Laporan extends CI_Controller {
         }
 
         // CETAK
-        $judul = $getPT->row()->nm_perusahaan;
+        // $judul = $getPT->row()->nm_perusahaan;
         if ($ctk == '0') {
             echo $html;
         }
@@ -5366,7 +5366,7 @@ class Laporan extends CI_Controller {
         // }
         else{
             header("Content-type: application/octet-stream");
-            header("Content-Disposition: attachment; filename=$judul.xls");
+            header("Content-Disposition: attachment; filename=excel.xls");
             header("Pragma: no-cache");
             header("Expires: 0");
             $data2['prev']= $html;

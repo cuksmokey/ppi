@@ -1241,7 +1241,7 @@ class Master extends CI_Controller
 
 		$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,m.* FROM po_master m INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id
 		WHERE m.status='open'
-		-- AND m.id_perusahaan='189'
+		-- AND m.id_perusahaan='169'
 		GROUP BY id_perusahaan,status ORDER BY pt.pimpinan,pt.nm_perusahaan");
 		$html .='<div style="overflow:auto;white-space:nowrap;"><table style="font-size:12px;color:#000" border="1">';
 		$html .='<tr style="background:#e9e9e9;text-align:center">
@@ -1253,8 +1253,8 @@ class Master extends CI_Controller
 		</tr>';
 		$i = 0;
 		$totPoBerat = 0;
-		$totKirBerat = 0;
-		$totPminBerat = 0;
+		$totSKirBerat = 0;
+		$totSPminBerat = 0;
 		foreach($getData->result() as $r){
 			$i++;
 			if($r->pimpinan == '-' || $r->pimpinan == ''){
@@ -1271,49 +1271,59 @@ class Master extends CI_Controller
 				<td style="padding:5px;text-align:center">'.$i.'</td>
 				<td style="padding:5px">'.$nama.$nmpt.'</td>';
 
-			// SISA PO
-			$getTotPO = $this->db->query("SELECT SUM(tonase) AS toton,m.* FROM po_master m
+			$getDatar = $this->db->query("SELECT id_po,no_po,status,SUM(jml_roll) AS jml_roll,SUM(tonase) AS tonase FROM po_master
 			WHERE id_perusahaan='$r->id_perusahaan' AND status='open'
-			GROUP BY id_perusahaan");
-			$html .='<td style="padding:5px;text-align:right">'.number_format($getTotPO->row()->toton).'</td>';
-
-			$getKiriman = $this->db->query("SELECT po.id_po,po.no_po,po.id_perusahaan,po.nm_ker,po.g_label,po.width,po.tonase,po.jml_roll,COUNT(t.roll) AS pjmlroll,SUM(t.weight - t.seset) AS totkirpseset FROM po_master po
-			INNER JOIN pl p ON po.no_po=p.no_po AND po.id_perusahaan=p.id_perusahaan
-			INNER JOIN m_timbangan t ON p.id=t.id_pl AND po.nm_ker=t.nm_ker AND po.g_label=t.g_label AND po.width=t.width
-			WHERE po.id_perusahaan='$r->id_perusahaan' AND po.status='open'
-			GROUP BY po.id_po,po.no_po,po.id_perusahaan,po.nm_ker,po.g_label,po.width");
-			$kirBerat = 0;
-			$pminBerat = 0;
-			foreach($getKiriman->result() as $kir){
-				$kurangBerat = $kir->totkirpseset - $kir->tonase;
-
-				// JIKA LEBIH DARI PO HILANGKAN
-				if($kir->totkirpseset >= $kir->tonase){
-					$fxBerat = 0;
-				}else{
-					$fxBerat = $kurangBerat;
+			GROUP BY id_po,no_po,status");
+			$totBerat = 0;
+			$totKirBerat = 0;
+			$totPminBerat = 0;
+			foreach($getDatar->result() as $rdua){
+				$getKiriman = $this->db->query("SELECT po.id_po,po.no_po,po.id_perusahaan,po.nm_ker,po.g_label,po.width,po.tonase,po.jml_roll,COUNT(t.roll) AS pjmlroll,SUM(t.weight - t.seset) AS totkirpseset FROM po_master po
+				INNER JOIN pl p ON po.no_po=p.no_po AND po.id_perusahaan=p.id_perusahaan
+				INNER JOIN m_timbangan t ON p.id=t.id_pl AND po.nm_ker=t.nm_ker AND po.g_label=t.g_label AND po.width=t.width
+				WHERE po.id_perusahaan='$r->id_perusahaan' AND po.no_po='$rdua->no_po' AND po.status='open'
+				GROUP BY po.id_po,po.no_po,po.id_perusahaan,po.nm_ker,po.g_label,po.width");
+				$kirBerat = 0;
+				$pminBerat = 0;
+				foreach($getKiriman->result() as $kir){
+					$kurangBerat = $kir->totkirpseset - $kir->tonase;
+					// JIKA LEBIH DARI PO HILANGKAN
+					if($kir->totkirpseset >= $kir->tonase){
+						$fxBerat = 0;
+					}else{
+						$fxBerat = $kurangBerat;
+					}
+					$kirBerat += $kir->totkirpseset;
+					$pminBerat += $fxBerat;
 				}
-
-				$kirBerat += $kir->totkirpseset;
-				$pminBerat += $fxBerat;
+				// JIKA BELUM ADA KIRIMAN
+				if($getKiriman->num_rows() == 0){
+					$kTonn = $rdua->tonase;
+				}else{	
+					$kTonn = 0;
+				}
+				$totBerat += $rdua->tonase;
+				$totKirBerat += $kirBerat;
+				$totPminBerat += $pminBerat - $kTonn;
 			}
-			$html .='
-				<td class="str" style="padding:5px;text-align:right">'.number_format($kirBerat).'</td>
-				<td class="str" style="padding:5px;text-align:right">'.number_format($pminBerat).'</td>
-			</tr>';
 
-			$totPoBerat += $getTotPO->row()->toton;
-			$totKirBerat += $kirBerat;
-			$totPminBerat += $pminBerat;
+			$totPoBerat += $totBerat;
+			$totSKirBerat += $totKirBerat;
+			$totSPminBerat += $totPminBerat;
+			$html .='
+				<td class="str" style="padding:5px;text-align:right">'.number_format($totBerat).'</td>
+				<td class="str" style="padding:5px;text-align:right">'.number_format($totKirBerat).'</td>
+				<td class="str" style="padding:5px;text-align:right">'.number_format($totPminBerat).'</td>
+			</tr>';
 		}
 		// TOTAL KIRIMAN
 		$html .='<tr style="background:#e9e9e9;font-weight:bold;text-align:center">
 			<td style="padding:5px" colspan="2">TOTAL</td>
 			<td class="str" style="padding:5px">'.number_format($totPoBerat).'</td>
-			<td class="str" style="padding:5px">'.number_format($totKirBerat).'</td>
-			<td class="str" style="padding:5px">'.number_format($totPminBerat).'</td>
+			<td class="str" style="padding:5px">'.number_format($totSKirBerat).'</td>
+			<td class="str" style="padding:5px">'.number_format($totSPminBerat).'</td>
 		</tr>';
-		$html .='</table></div>';
+		$html .='</tr></table></div>';
 
 		echo $html;
 	}
@@ -3776,18 +3786,26 @@ class Master extends CI_Controller
 				$pminRoll += $fxRoll;
 				$pminBerat += $fxBerat;
 			}
+			// JIKA BELUM ADA KIRIMAN
+			if($getKiriman->num_rows() == 0){
+				$kRoll = $r->jml_roll;
+				$kTonn = $r->tonase;
+			}else{	
+				$kRoll = 0;
+				$kTonn = 0;
+			}
 			$html .='<td style="padding:5px;text-align:right">'.number_format($kirRoll).'</td>
 				<td style="padding:5px;text-align:right">'.number_format($kirBerat).'</td>
-				<td style="padding:5px;text-align:right">'.number_format($pminRoll).'</td>
-				<td style="padding:5px;text-align:right">'.number_format($pminBerat).'</td>
+				<td style="padding:5px;text-align:right">'.number_format($pminRoll - $kRoll).'</td>
+				<td style="padding:5px;text-align:right">'.number_format($pminBerat - $kTonn).'</td>
 			</tr>';
 
 			$totRoll += $r->jml_roll;
 			$totBerat += $r->tonase;
 			$totKirRoll += $kirRoll;
 			$totKirBerat += $kirBerat;
-			$totPminRoll += $pminRoll;
-			$totPminBerat += $pminBerat;
+			$totPminRoll += $pminRoll - $kRoll;
+			$totPminBerat += $pminBerat - $kTonn;
 		}
 		// TOTAL
 		$html .='<tr style="background:#e9e9e9;text-align:center;font-weight:bold">
