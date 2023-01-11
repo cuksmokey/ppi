@@ -279,11 +279,11 @@ class Laporan extends CI_Controller {
         $data_detail = $this->db->query("SELECT * FROM m_timbangan WHERE tgl BETWEEN '$tgl1' AND '$tgl2' ORDER BY id ASC");        
         $html = '';
 
-                    if ($data_detail->num_rows() > 0) {
-                        foreach ($data_detail->result() as $r ) {
-                            $html .= '\N,"'.$r->roll.'","'.$r->tgl.'","'.$r->nm_ker.'","'.$r->g_ac.'","'.$r->g_label.'","'.$r->width.'","'.$r->diameter.'","'.$r->weight.'","'.$r->joint.'","'.$r->ket.'","'.$r->status.'","'.$r->id_pl.'",\N,\N,\N,\N,"'.$r->rct.'","0","'.$r->bi.'"<br>';
-                        }
-                    }
+		if ($data_detail->num_rows() > 0) {
+			foreach ($data_detail->result() as $r ) {
+				$html .= '\N,"'.$r->roll.'","'.$r->tgl.'","'.$r->nm_ker.'","'.$r->g_ac.'","'.$r->g_label.'","'.$r->width.'","'.$r->diameter.'","'.$r->weight.'","'.$r->joint.'","'.$r->ket.'","'.$r->seset.'","'.$r->status.'","'.$r->id_pl.'",\N,\N,\N,\N,\N,\N,\N,\N,"'.$r->rct.'","'.$r->ctk.'","'.$r->bi.'","'.$r->bi.'"<br>';
+			}
+		}
 
         $ctk = $_GET['ctk'];
 
