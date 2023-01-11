@@ -4405,21 +4405,152 @@ class Master extends CI_Controller
 		$tgl2 = $_POST['tgl2'];
 		$html = '';
 
-		$html .='<table border="1">';
+		$html .='<table style="text-align:center" border="1">';
 		$html .='<tr style="background:#e9e9e9;font-weight:bold">
 			<td style="padding:5px">NO</td>
-			<td style="padding:5px">HARI TANGGAL</td>
+			<td style="padding:5px">HARI / TANGGAL</td>
 			<td style="padding:5px">CUSTOMER</td>
 			<td style="padding:5px">TONASE</td>
 			<td style="padding:5px">GSM</td>
 			<td style="padding:5px">UKURAN ROLL</td>
-			<td style="padding:5px">JUMLAH ROLL</td>
+			<td style="padding:5px">JML ROLL</td>
 			<td style="padding:5px">EKSPEDISI</td>
 			<td style="padding:5px">NOPOL</td>
 			<td style="padding:5px">DRIVER</td>
 		</tr>';
+		$getTgl = $this->db->query("SELECT tgl FROM pl
+		WHERE qc='ok' AND tgl BETWEEN '$tgl1' AND '$tgl2'
+		GROUP BY tgl;");
+		$sumI = 0;
+		foreach($getTgl->result() as $tgl){
+			$getData = $this->db->query("SELECT p.tgl,p.id_expedisi,plat,pt,supir,p.id_perusahaan,p.nama,p.nm_perusahaan,COUNT(t.roll) AS roll,SUM(t.weight - t.seset) AS kiriman FROM m_timbangan t
+			INNER JOIN pl p ON t.id_pl=p.id
+			INNER JOIN m_expedisi ex ON p.id_expedisi=ex.id
+			WHERE p.tgl='$tgl->tgl' AND p.nm_perusahaan!='LAMINASI PPI' AND p.nm_perusahaan!='CORRUGATED PPI' AND p.qc='ok'
+			GROUP BY p.tgl,p.nama,p.nm_perusahaan,p.id_expedisi,p.id_perusahaan");
+			$i = 0;
+			$sumKiriman = 0;
+			$sumRoll = 0;
+			foreach($getData->result() as $r){
+				$i++;
+				$expTgl = explode("-", $r->tgl); //getHariIni
+
+				if($r->id_perusahaan == 31){
+					$dtl = '(TGR)';
+				}else if($r->id_perusahaan == 32){
+					$dtl = '(KRW)';
+				}else if($r->id_perusahaan == 33){
+					$dtl = '(CBT)';
+				}else{
+					$dtl = '';
+				}
+				if($r->nama != '-' && $r->nm_perusahaan == '-'){
+					$nmpt = $r->nama;
+				}else if($r->nama == '-' && $r->nm_perusahaan != '-'){
+					$nmpt = $r->nm_perusahaan.$dtl;
+				}else{
+					$nmpt = $r->nm_perusahaan.$dtl.'<br>'.$r->nama;
+				}
+
+				$bo = '<button class="tmbl-cek-roll" onclick="cekLapKiriman('."'".$r->tgl."'".','."'".$r->id_perusahaan."'".','."'".$r->id_expedisi."'".')">'; // 
+				$bc = '</button>';
+				$html .='<tr class="list-p-putih" style="vertical-align:top">
+					<td style="padding:5px">'.$bo.$i.$bc.'</td>
+					<td style="padding:5px">'.$bo.strtoupper($this->m_fungsi->getHariIni($r->tgl)).', '.$expTgl[2].'/'.$expTgl[1].'/'.$expTgl[0].$bc.'</td>
+					<td style="padding:5px">'.$bo.$nmpt.$bc.'</td>
+					<td style="padding:5px">'.$bo.number_format($r->kiriman).$bc.'</td>';
+					
+				$getGsm = $this->db->query("SELECT t.nm_ker,t.g_label FROM m_timbangan t
+				INNER JOIN pl p ON t.id_pl=p.id
+				WHERE p.tgl='$r->tgl' AND p.id_perusahaan='$r->id_perusahaan' AND p.id_expedisi='$r->id_expedisi'
+				GROUP BY t.nm_ker,t.g_label");
+				$html .='<td style="padding:5px">'.$bo;
+				foreach($getGsm->result() as $gsmL){
+					$html .= $gsmL->nm_ker.$gsmL->g_label.'/';
+				}
+				$html .= $bc.'</td>';
+
+				$getUk = $this->db->query("SELECT t.width FROM m_timbangan t
+				INNER JOIN pl p ON t.id_pl=p.id
+				WHERE p.tgl='$r->tgl' AND p.id_perusahaan='$r->id_perusahaan' AND p.id_expedisi='$r->id_expedisi'
+				GROUP BY t.width");
+				$html .='<td style="padding:5px">'.$bo;
+				foreach($getUk->result() as $uk){
+					$html .= round($uk->width,2).'/';
+				}
+				$html .= $bc.'</td>';
+				$html .='<td style="padding:5px">'.$bo.number_format($r->roll).$bc.'</td>
+					<td style="padding:5px">'.$bo.$r->pt.$bc.'</td>
+					<td style="padding:5px">'.$bo.$r->plat.$bc.'</td>
+					<td style="padding:5px">'.$bo.$r->supir.$bc.'</td>
+				</tr>';
+			
+				$sumKiriman += $r->kiriman;
+				$sumRoll += $r->roll;
+			}
+			// $sumI += $i;
+			// TOTAL
+			$html .='<tr style="background:#e9e9e9;font-weight:bold">
+				<td style="padding:5px" colspan="3">TOTAL</td>
+				<td style="padding:5px">'.number_format($sumKiriman).'</td>
+				<td style="padding:5px" colspan="2"></td>
+				<td style="padding:5px">'.number_format($sumRoll).'</td>
+				<td style="padding:5px" colspan="3"></td>
+			</tr>';
+		}
+
 		$html .='</table>';
-		// getHariIni
+		echo $html;
+	}
+
+	function cekLapKiriman(){
+		$tgl = $_POST['tgl'];
+		$idpt = $_POST['idpt'];
+		$idex = $_POST['idex'];
+		$html = '';
+
+		$getData = $this->db->query("SELECT p.tgl,p.nama,p.nm_perusahaan,p.id_perusahaan,p.id_expedisi,p.no_po,t.nm_ker,COUNT(t.roll) AS roll,SUM(t.weight - t.seset) AS kiriman FROM m_timbangan t
+		INNER JOIN pl p ON t.id_pl=p.id
+		WHERE p.tgl='$tgl' AND p.id_perusahaan='$idpt' AND p.id_expedisi='$idex'
+		GROUP BY p.tgl,p.id_perusahaan,p.id_expedisi,p.no_po,t.nm_ker");
+		if($getData->row()->nama != '-' && $getData->row()->nm_perusahaan == '-'){
+			$nmpt = $getData->row()->nama;
+		}else if($getData->row()->nama == '-' && $getData->row()->nm_perusahaan != '-'){
+			$nmpt = $getData->row()->nm_perusahaan;
+		}else{
+			$nmpt = $getData->row()->nama.' - '.$getData->row()->nm_perusahaan;
+		}
+		$expTgl = explode("-", $tgl); //getHariIni
+		$html .='<div style="color:#000;font-weight:bold">'.strtoupper($this->m_fungsi->getHariIni($tgl)).', '.$expTgl[2].'/'.$expTgl[1].'/'.$expTgl[0].' - '.$nmpt.'</div>';
+
+		$html .='<table style="margin-top:15px;font-size:12px;color:#000">';
+		$html .='<tr style="text-align:center;font-weight:bold">
+			<td style="padding:5px">JENIS</td>
+			<td style="padding:5px">NO. PO</td>
+			<td style="padding:5px">JML. ROLL</td>
+			<td style="padding:5px">KIRIMAN</td>
+		</tr>';
+
+		$sumRoll = 0;
+		$sumKiriman = 0;
+		foreach($getData->result() as $r){
+			$html .='<tr>
+				<td style="padding:5px">'.$r->nm_ker.'</td>
+				<td style="padding:5px">'.$r->no_po.'</td>
+				<td style="padding:5px;text-align:right">'.number_format($r->roll).'</td>
+				<td style="padding:5px;text-align:right">'.number_format($r->kiriman).'</td>
+			</tr>';
+			$sumRoll += $r->roll;
+			$sumKiriman += $r->kiriman;
+		}
+		// TOTAL
+		$html .='<tr style="font-weight:bold">
+			<td style="padding:5px" colspan="2"></td>
+			<td style="padding:5px;text-align:right">'.number_format($sumRoll).'</td>
+			<td style="padding:5px;text-align:right">'.number_format($sumKiriman).'</td>
+		</tr>';
+		$html .='</table>';
+
 		echo $html;
 	}
 }
