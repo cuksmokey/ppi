@@ -281,7 +281,7 @@ class Laporan extends CI_Controller {
 
 		if ($data_detail->num_rows() > 0) {
 			foreach ($data_detail->result() as $r ) {
-				$html .= '\N,"'.$r->roll.'","'.$r->tgl.'","'.$r->nm_ker.'","'.$r->g_ac.'","'.$r->g_label.'","'.$r->width.'","'.$r->diameter.'","'.$r->weight.'","'.$r->joint.'","'.$r->ket.'","'.$r->seset.'","'.$r->status.'","'.$r->id_pl.'",\N,\N,\N,\N,\N,\N,\N,\N,"'.$r->rct.'","'.$r->ctk.'","'.$r->bi.'","'.$r->bi.'"<br>';
+				$html .= '\N,"'.$r->roll.'","'.$r->tgl.'","'.$r->nm_ker.'","'.$r->g_ac.'","'.$r->g_label.'","'.$r->width.'","'.$r->diameter.'","'.$r->weight.'","'.$r->joint.'","'.$r->ket.'","'.$r->seset.'","'.$r->status.'","'.$r->id_pl.'",\N,\N,\N,\N,\N,\N,\N,\N,"'.$r->rct.'","'.$r->ctk.'","'.$r->bi.'","'.$r->pm.'"<br>';
 			}
 		}
 
