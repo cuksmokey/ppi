@@ -275,7 +275,7 @@ class Laporan extends CI_Controller {
         $tgl1 = $_GET['tgl1'];
         $tgl2 = $_GET['tgl2'];
         $jenis = $_GET['jenis'];
-
+		//
         $data_detail = $this->db->query("SELECT * FROM m_timbangan WHERE tgl BETWEEN '$tgl1' AND '$tgl2' ORDER BY id ASC");        
         $html = '';
 
