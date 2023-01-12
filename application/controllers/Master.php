@@ -3132,7 +3132,7 @@ class Master extends CI_Controller
 		WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width' AND roll LIKE '%$roll%'
 		AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
 		AND (status='0' OR status='3') AND id_pl='0' AND (id_rk IS NULL OR id_rk = '')
-		ORDER BY pm,roll");
+		ORDER BY YEAR(tgl),pm,roll");
 		if($getRoll->num_rows() == 0){
 			$html .='<div class="notfon">DATA TIDAK DITEMUKAN</div>';
 		}else{
