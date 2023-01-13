@@ -5229,10 +5229,12 @@ class Laporan extends CI_Controller {
                         AND b.no_po='$ukPO->no_po' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width' AND b.qc='ok'
                         GROUP BY a.nm_ker,a.g_label,a.width");
                         if($getUkpGsm->num_rows() == 0){
-                            $html .= '<td style="padding:5px;text-align:center">-</td><td style="padding:5px;text-align:center">-</td>
-                                <td style="padding:5px;text-align:center">-</td><td style="padding:5px;text-align:center">-</td>';
-                            $plusMinRoll = 0;
-                            $plusMinBerat = 0;
+							$plusMinRoll = 0 - $ukPO->jml_roll;
+                            $plusMinBerat = 0 - $ukPO->tonase;
+                            $html .= '<td style="padding:5px;text-align:center">-</td>
+								<td style="padding:5px;text-align:center">-</td>
+                                <td style="padding:5px;font-weight:bold;text-align:center">'.number_format($plusMinRoll).'</td>
+								<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($plusMinBerat).'</td>';
                         }else{
                             $ukGsmFixBerat = $getUkpGsm->row()->berat - $getUkpGsm->row()->seset;
                             $html .= '<td style="padding:5px;font-weight:bold;text-align:center" id="i">'.number_format($getUkpGsm->row()->jumlah).'</td>
@@ -5296,8 +5298,8 @@ class Laporan extends CI_Controller {
                         if($getJmlTotpGsm->num_rows() == 0){
                             $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
                                 <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
-                                <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
-                                <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>';
+                                <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">'.number_format($sumPlusMinRoll).'</td>
+                                <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">'.number_format($sumPlusMinBerat).'</td>';
                         }else{
                             $jmlTotGsmFixBerat = $getJmlTotpGsm->row()->berat - $getJmlTotpGsm->row()->seset;
                             $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($getJmlTotpGsm->row()->jumlah).'</td>

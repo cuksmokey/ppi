@@ -1279,21 +1279,26 @@ class Master extends CI_Controller
 			$totPminBerat = 0;
 			foreach($getDatar->result() as $rdua){
 				$getKiriman = $this->db->query("SELECT po.id_po,po.no_po,po.id_perusahaan,po.nm_ker,po.g_label,po.width,po.tonase,po.jml_roll,COUNT(t.roll) AS pjmlroll,SUM(t.weight - t.seset) AS totkirpseset FROM po_master po
-				INNER JOIN pl p ON po.no_po=p.no_po AND po.id_perusahaan=p.id_perusahaan
-				INNER JOIN m_timbangan t ON p.id=t.id_pl AND po.nm_ker=t.nm_ker AND po.g_label=t.g_label AND po.width=t.width
+				LEFT JOIN pl p ON po.no_po=p.no_po AND po.id_perusahaan=p.id_perusahaan
+				LEFT JOIN m_timbangan t ON p.id=t.id_pl AND po.nm_ker=t.nm_ker AND po.g_label=t.g_label AND po.width=t.width
 				WHERE po.id_perusahaan='$r->id_perusahaan' AND po.no_po='$rdua->no_po' AND po.status='open'
 				GROUP BY po.id_po,po.no_po,po.id_perusahaan,po.nm_ker,po.g_label,po.width");
 				$kirBerat = 0;
 				$pminBerat = 0;
 				foreach($getKiriman->result() as $kir){
-					$kurangBerat = $kir->totkirpseset - $kir->tonase;
+					if($kir->totkirpseset == null){
+						$totkirpseset = 0;
+					}else{
+						$totkirpseset = $kir->totkirpseset;
+					}
+					$kurangBerat = $totkirpseset - $kir->tonase;
 					// JIKA LEBIH DARI PO HILANGKAN
-					if($kir->totkirpseset >= $kir->tonase){
+					if($totkirpseset >= $kir->tonase){
 						$fxBerat = 0;
 					}else{
 						$fxBerat = $kurangBerat;
 					}
-					$kirBerat += $kir->totkirpseset;
+					$kirBerat += $totkirpseset;
 					$pminBerat += $fxBerat;
 				}
 				// JIKA BELUM ADA KIRIMAN
@@ -3757,8 +3762,8 @@ class Master extends CI_Controller
 				<td style="padding:5px;text-align:right">'.number_format($r->jml_roll).'</td>
 				<td style="padding:5px;text-align:right">'.number_format($r->tonase).'</td>';
 			$getKiriman = $this->db->query("SELECT po.id_po,po.no_po,po.id_perusahaan,po.nm_ker,po.g_label,po.width,po.tonase,po.jml_roll,COUNT(t.roll) AS pjmlroll,SUM(t.weight - t.seset) AS totkirpseset FROM po_master po
-			INNER JOIN pl p ON po.no_po=p.no_po AND po.id_perusahaan=p.id_perusahaan
-			INNER JOIN m_timbangan t ON p.id=t.id_pl AND po.nm_ker=t.nm_ker AND po.g_label=t.g_label AND po.width=t.width
+			LEFT JOIN pl p ON po.no_po=p.no_po AND po.id_perusahaan=p.id_perusahaan
+			LEFT JOIN m_timbangan t ON p.id=t.id_pl AND po.nm_ker=t.nm_ker AND po.g_label=t.g_label AND po.width=t.width
 			WHERE po.id_perusahaan='$id' AND po.no_po='$r->no_po' AND po.status='$opsi'
 			GROUP BY po.id_po,po.no_po,po.id_perusahaan,po.nm_ker,po.g_label,po.width");
 			$kirRoll = 0;
@@ -3766,8 +3771,13 @@ class Master extends CI_Controller
 			$pminRoll = 0;
 			$pminBerat = 0;
 			foreach($getKiriman->result() as $kir){
+				if($kir->totkirpseset == null){
+					$totkirpseset = 0;
+				}else{
+					$totkirpseset = $kir->totkirpseset;
+				}
 				$kurangRoll = $kir->pjmlroll - $kir->jml_roll;
-				$kurangBerat = $kir->totkirpseset - $kir->tonase;
+				$kurangBerat = $totkirpseset - $kir->tonase;
 
 				// JIKA LEBIH DARI PO HILANGKAN
 				if($kir->pjmlroll >= $kir->jml_roll){
@@ -3775,14 +3785,14 @@ class Master extends CI_Controller
 				}else{
 					$fxRoll = $kurangRoll;
 				}
-				if($kir->totkirpseset >= $kir->tonase){
+				if($totkirpseset >= $kir->tonase){
 					$fxBerat = 0;
 				}else{
 					$fxBerat = $kurangBerat;
 				}
 
 				$kirRoll += $kir->pjmlroll;
-				$kirBerat += $kir->totkirpseset;
+				$kirBerat += $totkirpseset;
 				$pminRoll += $fxRoll;
 				$pminBerat += $fxBerat;
 			}
