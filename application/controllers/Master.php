@@ -3961,7 +3961,7 @@ class Master extends CI_Controller
 		</tr>';
 		
 		$getData = $this->db->query("SELECT p.id_rk,id_expedisi,p.tgl,nm_perusahaan,nama,COUNT(t.roll) AS roll,SUM(weight - seset) AS kiriman FROM pl p
-		INNER JOIN m_timbangan t ON p.id=t.id_pl AND p.id_rk=t.id_rk
+		INNER JOIN m_timbangan t ON p.id=t.id_pl
 		WHERE id_expedisi='$idex'
 		GROUP BY id_expedisi,p.id_perusahaan
 		ORDER BY p.tgl;");
