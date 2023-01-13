@@ -21,6 +21,10 @@
 	.list-table:hover {
 		background: #eee;
 	}
+
+	.tmbl-cek-roll {
+		background:transparent;margin:0;padding:0;border:0
+	}
 </style>
 
 <section class="content">
@@ -126,6 +130,18 @@
 	</div>
 </section>
 
+<div class="modal fade bd-example-modal-lg" id="modal-ekspedisi" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header"></div>
+			<div class="modal-body" style="font-size:12px;overflow:auto;white-space:nowrap;">
+				<div class="isi-ekspedisi"></div>
+			</div>
+			<div class="modal-footer"></div>
+		</div>
+	</div>
+</div>
+
 <script>
 	status = '';
 	otorisasi = $("#otorisasi").val();
@@ -196,6 +212,22 @@
 			}),
 			success: function(res){
 				$(".box-data").html(res);
+			}
+		})
+	}
+
+	function cekEkspedisiKirim(idex){
+		// alert(plat+' - '+supir);
+		$("#modal-ekspedisi").modal("show");
+		$(".isi-ekspedisi").html('Memuat Data . . .');
+		$.ajax({
+			url: '<?php echo base_url('Master/cekEkspedisiKirim')?>',
+			type: "POST",
+			data: ({
+				idex
+			}),
+			success: function(res){
+				$(".isi-ekspedisi").html(res);
 			}
 		})
 	}

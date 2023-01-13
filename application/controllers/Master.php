@@ -3922,13 +3922,15 @@ class Master extends CI_Controller
 			$i = 0;
 			foreach($getData->result() as $r){
 				$i++;
+				$bO = '<button class="tmbl-cek-roll" onclick="cekEkspedisiKirim('."'".$r->id."'".')">';
+				$bC = '</button>';
 				$html .='<tr class="list-table">
-					<td style="padding:5px;text-align:center">'.$i.'</td>
-					<td style="padding:5px">'.$r->plat.'</td>
-					<td style="padding:5px">'.$r->merk_type.'</td>
-					<td style="padding:5px">'.$r->pt.'</td>
-					<td style="padding:5px">'.$r->supir.'</td>
-					<td style="padding:5px">'.$r->no_telp.'</td>';
+					<td style="padding:5px;text-align:center">'.$bO.$i.$bC.'</td>
+					<td style="padding:5px">'.$bO.$r->plat.$bC.'</td>
+					<td style="padding:5px">'.$bO.$r->merk_type.$bC.'</td>
+					<td style="padding:5px">'.$bO.$r->pt.$bC.'</td>
+					<td style="padding:5px">'.$bO.$r->supir.$bC.'</td>
+					<td style="padding:5px">'.$bO.$r->no_telp.$bC.'</td>';
 				// CEK KALO SUDAH MASUK KE PACKING LIST TIDAK BISA HAPUS
 				$cekNoPol = $this->db->query("SELECT*FROM m_expedisi ex INNER JOIN pl p ON ex.id=p.id_expedisi
 				WHERE ex.id='$r->id'");
@@ -3943,6 +3945,47 @@ class Master extends CI_Controller
 			$html .='</table>';
 		}
 		$html .='</div>';
+		echo $html;
+	}
+
+	function cekEkspedisiKirim(){
+		$idex = $_POST['idex'];
+		$html = '';
+		$html .='<table style="color:#000;font-size:12px">';
+		$html .='<tr style="font-weight:bold">
+			<td style="padding:5px">NO</td>
+			<td style="padding:5px">TANGGAL</td>
+			<td style="padding:5px">CUSTOMER</td>
+			<td style="padding:5px">JML. ROLL</td>
+			<td style="padding:5px">TONASE</td>
+		</tr>';
+		
+		$getData = $this->db->query("SELECT p.id_rk,id_expedisi,p.tgl,nm_perusahaan,nama,COUNT(t.roll) AS roll,SUM(weight - seset) AS kiriman FROM pl p
+		INNER JOIN m_timbangan t ON p.id=t.id_pl AND p.id_rk=t.id_rk
+		WHERE id_expedisi='$idex'
+		GROUP BY id_expedisi,p.id_perusahaan
+		ORDER BY p.tgl;");
+		$i = 0;
+		foreach($getData->result() as $r){
+			$i++;
+
+			if($r->nama != '-' && $r->nm_perusahaan == '-'){
+				$nmpt = $r->nama;
+			}else if($r->nama == '-' && $r->nm_perusahaan != '-'){
+				$nmpt = $r->nm_perusahaan;
+			}else{
+				$nmpt = $r->nama.' - '.$r->nm_perusahaan;
+			}
+			$html .='<tr>
+				<td style="padding:5px;text-align:center">'.$i.'</td>
+				<td style="padding:5px">'.strtoupper($this->m_fungsi->tglInd_skt($r->tgl)).'</td>
+				<td style="padding:5px">'.$nmpt.'</td>
+				<td style="padding:5px;text-align:right">'.number_format($r->roll).'</td>
+				<td style="padding:5px;text-align:right">'.number_format($r->kiriman).'</td>
+			</tr>';
+		}
+
+		$html .='</table>';
 		echo $html;
 	}
 
