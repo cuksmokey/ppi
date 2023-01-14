@@ -195,7 +195,7 @@
 									<td style="padding:3px 0;font-weight:bold">UKURAN</td>
 									<td style="padding:3px 5px">:</td>
 									<td style="padding:3px 0">
-										<input type="text" class="angka form-control" placeholder="0" id="width" maxlength="5" autocomplete="off">
+										<input type="text" onkeypress="return aK(event)" class="form-control" placeholder="0" id="width" maxlength="5" autocomplete="off">
 									</td>
 									<td style="padding:3px 5px">
 										CM
@@ -315,6 +315,14 @@
 			return /\d/.test(String.fromCharCode(event.keyCode));
 		});
 	});
+
+	function aK(evt) {
+		var charCode = (evt.which) ? evt.which : event.keyCode
+		// alert(charCode);
+		if (charCode > 31 && (charCode < 46 || charCode > 57))
+			return false;
+		return true;
+	}
 
 	$(".btn-add").click(function() {
 		status = 'insert';
