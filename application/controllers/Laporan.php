@@ -1427,19 +1427,19 @@ class Laporan extends CI_Controller {
 
             if($ctk == 'A4') {
                 // $this->m_fungsi->_mpdf('',$html,10,10,10,'L');
-                $this->m_fungsi->newMpdf($html, 10, 10, 10, 10, 'L', 'A4');
+                $this->m_fungsi->newMpdf($html, 10, 10, 5, 10, 'L', 'A4');
             }else if($ctk == 'F4'){
                 // $this->m_fungsi->_mpdfCustom('',$html,10,10,10,'L');
-                $this->m_fungsi->newMpdf($html, 15, 15, 15, 15, 'L', 'F4');
+                $this->m_fungsi->newMpdf($html, 15, 15, 5, 15, 'L', 'F4');
             }else if($ctk == 1 || $ctk == 3){
                 // $this->m_fungsi->_mpdf('',$html,10,10,10,'P');
                 $this->m_fungsi->newMpdf($html, 5, 10, 5, 10, 'P', 'A4');
             }else if($ctk == 2){
                 // $this->m_fungsi->_mpdfCustom('',$html,10,10,10,'L');
-                $this->m_fungsi->newMpdf($html, 15, 15, 15, 15, 'L', 'F4');
+                $this->m_fungsi->newMpdf($html, 15, 15, 5, 15, 'L', 'F4');
             }else{
                 // $this->m_fungsi->_mpdf('',$html,10,10,10,'L');
-                $this->m_fungsi->newMpdf($html, 15, 15, 15, 15, 'L', 'F4');
+                $this->m_fungsi->newMpdf($html, 15, 15, 5, 15, 'L', 'F4');
             }
         }else{
 			echo 'KOSONG . . .';

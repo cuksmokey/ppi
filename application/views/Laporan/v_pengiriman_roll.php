@@ -110,6 +110,13 @@
 	.lbl-besar:hover{
 		color:#000;
 	}
+
+	.btn-req-lbl {
+		background: #2C74B3;
+		border: 1px solid #0A2647;
+		border-radius: 3px;
+		color: #fff;
+	}
 </style>
 
 <?php

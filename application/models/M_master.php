@@ -1154,7 +1154,9 @@ class M_master extends CI_Model{
 			$result = $this->db->query("DELETE FROM m_rencana_kirim WHERE id_rk='$idrk' AND tgl='$tgl_pl' AND order_pl='$opl'");
 		}
 
-		$result = $this->db->query("DELETE FROM pl WHERE id_perusahaan='$idpt' AND id_rk='$idrk' AND tgl_pl='$tgl_pl' AND opl='$opl'");
+		// $result = $this->db->query("DELETE FROM pl WHERE id_perusahaan='$idpt' AND id_rk='$idrk' AND tgl_pl='$tgl_pl' AND opl='$opl'");
+		$result = $this->db->query("DELETE FROM pl WHERE id_perusahaan='$idpt' AND tgl_pl='$tgl_pl' AND opl='$opl'");
+
         return $result;
 	}
 

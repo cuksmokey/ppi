@@ -281,7 +281,7 @@ class M_fungsi extends CI_Model {
         $this->mpdf->Output();   
     }
 
-	function newMpdf($html,$top,$right,$left,$bottom,$orientasi,$kertas){
+	function newMpdf($html,$top,$right,$bottom,$left,$orientasi,$kertas){
 		// ini_set("memory_limit","512M");
 		$this->load->library('mpdf');
 
@@ -294,8 +294,8 @@ class M_fungsi extends CI_Model {
 			'orientation' => $orientasi,
 			'margin-top' => $top,
 			'margin-right' => $right,
-			'margin-bottom' => $left,
-			'margin-left' => $bottom,
+			'margin-bottom' => $bottom,
+			'margin-left' => $left,
 			'sheet-size' => $orr,
 		));
 		$this->mpdf->writeHTML($html);         

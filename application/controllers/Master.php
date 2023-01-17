@@ -1402,7 +1402,12 @@ class Master extends CI_Controller
 				$sty = '';
 				$ket = 'BUFFER';
 			}else{
-				$sty = ';font-weight:bold;font-size:18px';
+				if(strlen($data->ket) <= 50){
+					$sz = 30;
+				}else{
+					$sz = 18;
+				}
+				$sty = ';font-weight:bold;font-size:'.$sz.'';
 				$ket = $data->ket;
 			}
 		}
@@ -1448,9 +1453,9 @@ class Master extends CI_Controller
 		
 		$this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
 		if($data->ctk == 0){
-			$this->m_fungsi->newMpdf($html, 15, 15, 15, 15, 'L', 'F4');
+			$this->m_fungsi->newMpdf($html, 15, 15, 5, 15, 'L', 'F4');
 		}else if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC"){
-			$this->m_fungsi->newMpdf($html, 15, 15, 15, 15, 'L', 'F4');
+			$this->m_fungsi->newMpdf($html, 15, 15, 5, 15, 'L', 'F4');
 		}else{
 			redirect(base_url("Master"));
 		}
@@ -2431,7 +2436,7 @@ class Master extends CI_Controller
 					// REQ PRINT LABEL
 					if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'fg'){
 						if($w->lbl_rk == 'req'){
-							$lds = 'disabled';
+							$lds = 'disabled class="btn-req-lbl"';
 						}else{
 							$lds = '';
 						}
