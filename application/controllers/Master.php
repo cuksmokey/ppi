@@ -2352,10 +2352,10 @@ class Master extends CI_Controller
 			$html .='<div style="overflow:auto;white-space:nowrap;"><table class="list-table" style="width:100%;text-align:center;margin-top:15px" border="1">';
 			// PL
 			if($plh == 'pl'){
-				$wket = '10%';
+				$wket = '25%';
 				$waksi = '10%';
 				$cols = '13';
-				$ktd = '<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:25%">ID PL</td>';
+				$ktd = '<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:10%">ID PL</td>';
 			}else{
 				$wket = '25%';
 				$waksi = '20%';
@@ -2586,6 +2586,17 @@ class Master extends CI_Controller
 
 				$totRoll += $ker->jml;
 			}
+
+			// TOMBOL SAKTI
+			// if($plh == 'pl'){
+			// 	if($otorisasi == 'all' || $otorisasi == 'admin'){
+			// 		$html .='<tr><td style="padding:5px;font-weight:bold;text-align:right" colspan="13">';
+			// 		foreach($getPl->result() as $idpl){
+			// 			$html .='<button style="margin-left:5px" onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$idpl->id."'".','."'".$plh."'".')">'.$idpl->id.'</button>';
+			// 		}
+			// 		$html .='</td></tr>';
+			// 	}
+			// }
 
 			// TOMBAL CEK OK
 			// LABEL
