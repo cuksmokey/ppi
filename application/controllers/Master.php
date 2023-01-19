@@ -1754,8 +1754,8 @@ class Master extends CI_Controller
 
 				$html .='<table style="font-size:12px;color:#000">';
 				$html .='<tr>
-					<td>
-						<button onclick="btnRencana('."'".$r->id_rk."'".','."'".$r->opl."'".','."'".$r->tgl_pl."'".','."'".$pbtnrencana."'".','."'".$i."'".')">PROSES</button>
+					<td style="padding:5px 0">
+						<button onclick="btnRencana('."'".$r->id_rk."'".','."'".$r->opl."'".','."'".$r->tgl_pl."'".','."'".$pbtnrencana."'".','."'".$i."'".')">'.strtoupper($r->qc).'</button>
 						'.$aksi.'
 					</td>
 					<td style="padding:5px">'.$i.'</td>
@@ -2349,7 +2349,7 @@ class Master extends CI_Controller
 		if($getKer->num_rows() == 0){
 			$html .='';
 		}else{
-			$html .='<div style="overflow:auto;white-space:nowrap;"><table class="list-table" style="width:100%;text-align:center;margin-top:15px" border="1">';
+			$html .='<div style="overflow:auto;white-space:nowrap;"><table class="list-table" style="width:100%;text-align:center;margin:15px 0" border="1">';
 			// PL
 			if($plh == 'pl'){
 				$wket = '25%';
@@ -2588,15 +2588,31 @@ class Master extends CI_Controller
 			}
 
 			// TOMBOL SAKTI
-			// if($plh == 'pl'){
-			// 	if($otorisasi == 'all' || $otorisasi == 'admin'){
-			// 		$html .='<tr><td style="padding:5px;font-weight:bold;text-align:right" colspan="13">';
-			// 		foreach($getPl->result() as $idpl){
-			// 			$html .='<button style="margin-left:5px" onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$idpl->id."'".','."'".$plh."'".')">'.$idpl->id.'</button>';
-			// 		}
-			// 		$html .='</td></tr>';
-			// 	}
-			// }
+			if($plh == 'pl'){
+				if($otorisasi == 'all' || $otorisasi == 'admin'){
+					$getRkSakti = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' AND qc_rk='ok' GROUP BY id_rk");
+					if($getRkSakti->num_rows() == 0){
+						$html .= '';
+					}else{
+						// CEK JIKA SUDAH MASUK DI PACKING LIST
+						$getSaktis = $this->db->query("SELECT id_rk,nm_ker,g_label,width FROM m_timbangan
+						WHERE id_rk='$id_rk' AND id_pl='0' GROUP BY nm_ker,g_label,width");
+						if($getSaktis->num_rows() == 0){
+							$html .= '';
+						}else{
+							$idPlSakti = $this->db->query("SELECT pl.* FROM pl pl
+							INNER JOIN po_master po ON pl.no_po=po.no_po AND pl.nm_ker=po.nm_ker AND pl.g_label=po.g_label
+							WHERE pl.id_rk='$id_rk'
+							GROUP BY pl.id,pl.no_po,pl.nm_ker,pl.g_label");
+							$html .='<tr style="background:#144272"><td style="padding:5px;font-weight:bold;text-align:right" colspan="13">';
+							foreach($idPlSakti->result() as $idpls){
+								$html .='<button style="margin-left:5px" onclick="entryPlAllIn('."'".$id_rk."'".','."'".$idpls->nm_ker."'".','."'".$idpls->g_label."'".',0,'."'".$idpls->id."'".','."'".$plh."'".')">'.$idpls->nm_ker.''.$idpls->g_label.' - '.$idpls->id.'</button>';
+							}
+							$html .='</td></tr>';
+						}
+					}
+				}
+			}
 
 			// TOMBAL CEK OK
 			// LABEL
@@ -2839,31 +2855,35 @@ class Master extends CI_Controller
 		$qgetPL = $this->db->query("SELECT*FROM pl
 		WHERE id_rk='$idrk' AND tgl_pl='$tglpl' AND opl='$opl'
 		GROUP BY id_rk,tgl_pl,opl,id,nm_ker,no_po,no_pkb,g_label");
-		$html .='<div style="overflow:auto;white-space:nowrap;">';
-		$html .='<table style="margin:15px 0;font-size:12px;color:#000" border="1">';
-		$html .='<tr style="background:#e9e9e9;text-align:center">
-			<td style="padding:5px;font-weight:bold">ID PL</td>
-			<td style="padding:5px;font-weight:bold">NO. SURAT</td>
-			<td style="padding:5px;font-weight:bold">NO. SO</td>
-			<td style="padding:5px;font-weight:bold">NO. PKB</td>
-			<td style="padding:5px;font-weight:bold">NO. PO</td>
-			<td style="padding:5px;font-weight:bold">JENIS</td>
-			<td style="padding:5px;font-weight:bold">GSM</td>
-		</tr>';
-
-		foreach($qgetPL->result() as $qpl){
-			$html .='<tr class="list-p-putih">
-				<td style="padding:5px;font-weight:bold;text-align:center">'.$qpl->id.'</td>
-				<td style="padding:5px">'.$qpl->no_surat.'</td>
-				<td style="padding:5px">'.$qpl->no_so.'</td>
-				<td style="padding:5px">'.$qpl->no_pkb.'</td>
-				<td style="padding:5px">'.$qpl->no_po.'</td>
-				<td style="padding:5px">'.$qpl->nm_ker.'</td>
-				<td style="padding:5px">'.$qpl->g_label.'</td>
+		if($qgetPL->num_rows() == 0){
+			$html .= '';
+		}else{
+			$html .='<div style="overflow:auto;white-space:nowrap;">';
+			$html .='<table style="margin:15px 0;font-size:12px;color:#000" border="1">';
+			$html .='<tr style="background:#e9e9e9;text-align:center">
+				<td style="padding:5px;font-weight:bold">ID PL</td>
+				<td style="padding:5px;font-weight:bold">NO. SURAT</td>
+				<td style="padding:5px;font-weight:bold">NO. SO</td>
+				<td style="padding:5px;font-weight:bold">NO. PKB</td>
+				<td style="padding:5px;font-weight:bold">NO. PO</td>
+				<td style="padding:5px;font-weight:bold">JENIS</td>
+				<td style="padding:5px;font-weight:bold">GSM</td>
 			</tr>';
+
+			foreach($qgetPL->result() as $qpl){
+				$html .='<tr class="list-p-putih">
+					<td style="padding:5px;font-weight:bold;text-align:center">'.$qpl->id.'</td>
+					<td style="padding:5px">'.$qpl->no_surat.'</td>
+					<td style="padding:5px">'.$qpl->no_so.'</td>
+					<td style="padding:5px">'.$qpl->no_pkb.'</td>
+					<td style="padding:5px">'.$qpl->no_po.'</td>
+					<td style="padding:5px">'.$qpl->nm_ker.'</td>
+					<td style="padding:5px">'.$qpl->g_label.'</td>
+				</tr>';
+			}
+			$html .='</table>';
+			$html .='</div>';
 		}
-		$html .='</table>';
-		$html .='</div>';
 
 		// TAMPIL ROLL KE PACKING LIST
 		// GET NO SURAT JALAN
@@ -3084,8 +3104,10 @@ class Master extends CI_Controller
 					<td style="padding:5px">JENIS</td>
 					<td style="padding:5px">UKURAN</td>
 					<td style="padding:5px">JUMLAH</td>
+					<td style="padding:5px">INPUT</td>
 				</tr>';
 			$sumjrll = 0;
+			$sumjIrll = 0;
 			foreach($getUkRencKirim->result() as $ukRenc){
 				if(($ukRenc->nm_ker == 'MH' || $ukRenc->nm_ker == 'MN') && ($ukRenc->g_label == 105 || $ukRenc->g_label == 110)){
 					$bgtr = 'list-p-biru';
@@ -3106,9 +3128,10 @@ class Master extends CI_Controller
 					<td style="padding:5px" rowspan="'.$rowsp.'">'.$ukRenc->nm_ker.' '.$ukRenc->g_label.'</td></tr>';
 
 				$totjmlroll = 0;
+				$totIjmlroll = 0;
 				foreach($getUk->result() as $uk){
 					// JIKA SUDAH CEK OK TIDAK BISA DITAMBAHKAN
-					$btnInputRoll = '<button onclick="btnInputRoll('."'".$i."'".','."'".$uk->nm_ker."'".','."'".$uk->g_label."'".','."'".$uk->width."'".')" style="background:0;border:0">'.$uk->jml_roll.'</button>';
+					$btnInputRoll = '<button onclick="btnInputRoll('."'".$i."'".','."'".$uk->nm_ker."'".','."'".$uk->g_label."'".','."'".$uk->width."'".')" style="background:0;border:0;padding:5px 15px">'.$uk->jml_roll.'</button>';
 					if($otorisasi == 'all' || $otorisasi == 'admin'){ // dev / admin masih bisa edit walaupun cek ok
 						$aksi = $btnInputRoll;
 					}else if(($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'fg') && $uk->qc_rk == 'proses'){
@@ -3116,17 +3139,30 @@ class Master extends CI_Controller
 					}else{
 						$aksi = $uk->jml_roll;
 					}
+					// GET ROLL
+					$getRoll = $this->db->query("SELECT COUNT(roll) AS jmlRoll FROM m_timbangan WHERE id_rk='$uk->id_rk' AND nm_ker='$uk->nm_ker' AND g_label='$uk->g_label' AND width='$uk->width'");
+					if($getRoll->row()->jmlRoll == '' || $getRoll->row()->jmlRoll == 0){
+						$jmlRoll = 0;
+					}else{
+						$jmlRoll = $getRoll->row()->jmlRoll;
+					}
 					$html .='<tr class="'.$bgtr.'">
 						<td style="padding:5px">'.round($uk->width,2).'</td>
-						<td style="padding:5px">'.$aksi.'</td>
+						<td >'.$aksi.'</td>
+						<td style="background:#fff;padding:5px">'.$jmlRoll.'</td>
 					</tr>';
+
 					$totjmlroll += $uk->jml_roll;
+					$totIjmlroll += $jmlRoll;
 				}
+
 				$sumjrll += $totjmlroll;
+				$sumjIrll += $totIjmlroll;
 			}
 			$html .='<tr style="background:#e9e9e9">
 				<td style="padding:5px;font-weight:bold" colspan="2">TOTAL</td>
 				<td style="padding:5px;font-weight:bold">'.number_format($sumjrll).'</td>
+				<td style="padding:5px;font-weight:bold">'.number_format($sumjIrll).'</td>
 			</tr>';
 			$html .='</table>';
 		}

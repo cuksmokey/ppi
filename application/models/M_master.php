@@ -1422,8 +1422,15 @@ class M_master extends CI_Model{
 		$glabel = $_POST['glabel'];
 		$width = $_POST['width'];
 		$idpl = $_POST['idpl'];
+
 		// CARI ROLL
-		$roll = $this->db->query("SELECT*FROM m_timbangan WHERE id_pl='0' AND id_rk='$idrk' AND nm_ker='$nm_ker' AND g_label='$glabel' AND width='$width'");
+		if($width == 0){ 
+			// SAKTI
+			$roll = $this->db->query("SELECT*FROM m_timbangan WHERE id_pl='0' AND id_rk='$idrk' AND nm_ker='$nm_ker' AND g_label='$glabel'");
+		}else{
+			// BIASA
+			$roll = $this->db->query("SELECT*FROM m_timbangan WHERE id_pl='0' AND id_rk='$idrk' AND nm_ker='$nm_ker' AND g_label='$glabel' AND width='$width'");
+		}
 		foreach($roll->result() as $r){
 			if($r->status == 0){
 				$status = 1;

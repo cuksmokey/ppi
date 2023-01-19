@@ -2007,7 +2007,7 @@
 	}
 
 	function hasilInputSementara(id_rk,i,plh) {
-		$(".t-plist-input-sementara-" + i).html('<div style="margin-top:15px;color:#000">MEMUAT DATA . . .</div>');
+		$(".t-plist-input-sementara-" + i).html('<div style="margin:15px 0;color:#000">. . .</div>');
 		$.ajax({
 			url: '<?php echo base_url('Master/pListInputSementara')?>',
 			type: "POST",
