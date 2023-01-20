@@ -5659,9 +5659,9 @@ class Laporan extends CI_Controller {
 
 		if($opsi == 'cekRollStok'){
 			if($stat == 'stok'){
-				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='0' AND id_pl='0'";
+				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='0' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
 			}else if($stat == 'buffer'){
-				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='3' AND id_pl='0'";
+				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='3' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01";
 			}else{ // PRODUKSI
                 if($pm == 1){
                     $tpm = "AND pm='1' AND tgl BETWEEN '$vtgl' AND '$vtgl2'";
