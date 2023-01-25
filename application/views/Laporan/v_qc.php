@@ -40,6 +40,16 @@
 	.ttggll, .ipt-txt {
 		background:transparent;margin:0;padding:0;border:0
 	}
+
+	.cek-status-rk {
+		background-color: #eef;
+	}
+	.cek-status-rk:hover {
+		background-color: #dde;
+	}
+	.cek-status-rk:hover .edit-roll {
+		background-color: #dde;
+	}
 	
 	.cek-status-stok {
 		background-color: #fff;

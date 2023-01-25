@@ -999,7 +999,11 @@ class M_master extends CI_Model{
 
 		$cek = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id'")->row();
 		if($cek->seset == $seset){
-            $result = true;
+            $this->db->set('diameter', $diameter);
+			$this->db->set('edited_at', date("Y-m-d H:i:s"));
+			$this->db->set('edited_by', $this->session->userdata('username'));
+			$this->db->where('id', $id);
+			$result = $this->db->update('m_timbangan');
         }else{
             $data = array(
                 'roll' => $cek->roll,

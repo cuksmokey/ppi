@@ -40,6 +40,16 @@
 	.ttggll, .ipt-txt {
 		background:transparent;margin:0;padding:0;border:0
 	}
+
+	.cek-status-rk {
+		background-color: #eef;
+	}
+	.cek-status-rk:hover {
+		background-color: #dde;
+	}
+	.cek-status-rk:hover .edit-roll {
+		background-color: #dde;
+	}
 	
 	.cek-status-stok {
 		background-color: #fff;
@@ -598,7 +608,12 @@
 			}),
 			success: function(data) {
 				json = JSON.parse(data);
-				showNotification("alert-success", "BERHASIL!!!", "top", "center", "", "");
+				if(json.data){
+					showNotification("alert-success", "BERHASIL!!!", "top", "center", "", "");
+				}else{
+					swal(json.msg, "", "error");
+				}
+				// showNotification("alert-success", "BERHASIL!!!", "top", "center", "", "");
 				$("#etgl-"+i).val(json.tgl).animateCss('fadeInRight');
 				$("#eg_ac-"+i).val(json.g_ac).animateCss('fadeInRight');
 				$("#erct-"+i).val(json.rct).animateCss('fadeInRight');

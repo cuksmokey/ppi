@@ -5712,7 +5712,7 @@ class Laporan extends CI_Controller {
                 $getRollEdit = $this->db->query("SELECT*FROM m_roll_edit e
                 WHERE e.roll='$roll->roll'");
                 if($getRollEdit->num_rows() == 0){
-					if($otori == 'all' || $otori == 'admin' || $otori == 'qc'){
+					if($otori == 'all' || $otori == 'admin' || $otori == 'qc' || $otori == 'fg'){
 						$oBre = '<button class="tmbl-cek-roll" onclick="cekRollEdit('."'".$roll->id."'".','."'".$roll->roll."'".')">';
                         $cBre = '</button>';
 					}else{
@@ -5729,7 +5729,16 @@ class Laporan extends CI_Controller {
                     }
                 }
 
-				if(($roll->status == 0 && $roll->id_pl == 0) || ($roll->status == 2 && $roll->id_pl == 0)){ // STOK + PPI
+				if((($roll->status == 0 && $roll->id_pl == 0) || ($roll->status == 2 && $roll->id_pl == 0)) && ($roll->id_rk != null || $roll->id_rk != '')){ // MASUK RENCANA KIRIM
+                    $bgStt = 'cek-status-rk';
+					if($opsi == 'cekRollStok' || $otori == 'all' || $otori == 'admin' || $otori == 'qc'){
+						$diss = '';
+					}else{
+						$diss = 'disabled';
+					}
+					$oBtn = '';
+					$cBtn = '';
+				}else if(($roll->status == 0 && $roll->id_pl == 0) || ($roll->status == 2 && $roll->id_pl == 0)){ // STOK + PPI
                     $bgStt = 'cek-status-stok';
 					if($opsi == 'cekRollStok' || $otori == 'all' || $otori == 'admin' || $otori == 'qc'){
 						$diss = '';
@@ -5814,7 +5823,9 @@ class Laporan extends CI_Controller {
 					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
 
                     // PILIH STATUS
-                    if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
+                    if($roll->status == 2 && $roll->id_pl != 0){
+                        $html .='<td style="border:1px solid #999;text-align:center">'.$oBtn.'PPI'.$cBtn.'</td>';
+                    }else if(($roll->status == 1 || $roll->status == 3) && $roll->id_pl != 0){
                         $html .='<td style="border:1px solid #999;text-align:center">'.$oBtn.'TERJUAL'.$cBtn.'</td>';
                     }else{
                         if($roll->status == 0 && $roll->id_pl == 0){
@@ -5863,44 +5874,123 @@ class Laporan extends CI_Controller {
         echo $html;
     }
 
-    function QCRollTerjual(){
+    function QCRollTerjual(){ //
         $id = $_POST['id'];
         $html='';
         
-        $getId = $this->db->query("SELECT p.tgl AS tgl_pl,p.no_surat,p.no_po,p.nama,p.nm_perusahaan,p.alamat_perusahaan,r.* FROM m_timbangan r
+        $html .='<table style="margin:0 0 20px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+		$getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id'")->row();
+		$html .='<tr>
+				<td style="font-weight:bold" colspan="12">DATA :</td>
+			</tr>
+			<tr>
+				<td style="padding:5px">no</td>
+				<td style="padding:5px">roll</td>
+				<td style="padding:5px">jenis</td>
+				<td style="padding:5px">gramature</td>
+				<td style="padding:5px">ukuran</td>
+				<td style="padding:5px">diameter</td>
+				<td style="padding:5px">berat</td>
+				<td style="padding:5px">joint</td>
+				<td style="padding:5px">keterangan</td>
+				<td style="padding:5px">seset</td>
+				<td style="padding:5px">status</td>
+				<td style="padding:5px">created_at</td>
+				<td style="padding:5px">created_by</td>
+			</tr>';
+		if($getRoll->status == 0 && $getRoll->id_pl == 0){
+			$stt = 'STOK';
+		}else if($getRoll->status == 2){
+			$stt = 'PPI';
+		}else if($getRoll->status == 3){
+			$stt = 'BUFFER';
+		}else if($getRoll->status == 1 && $getRoll->id_pl != 0){
+			$stt = 'TERJUAL';
+		}else{
+			$stt = '-';
+		}
+		$html .='<tr>
+			<td style="padding:5px">-</td>
+			<td style="padding:5px">'.$getRoll->roll.'</td>
+			<td style="padding:5px">'.$getRoll->nm_ker.'</td>
+			<td style="padding:5px">'.$getRoll->g_label.'</td>
+			<td style="padding:5px">'.round($getRoll->width,2).'</td>
+			<td style="padding:5px">'.$getRoll->diameter.'</td>
+			<td style="padding:5px">'.$getRoll->weight.'</td>
+			<td style="padding:5px">'.$getRoll->joint.'</td>
+			<td style="padding:5px">'.$getRoll->ket.'</td>
+			<td style="padding:5px">'.$getRoll->seset.'</td>
+			<td style="padding:5px">'.$stt.'</td>
+			<td style="padding:5px">'.$getRoll->created_at.'</td>
+			<td style="padding:5px">'.$getRoll->created_by.'</td>
+		</tr>';
+		$html .='</table>';
+
+        $getData = $this->db->query("SELECT*FROM m_roll_edit WHERE roll='$getRoll->roll'");
+		if($getData->num_rows() == 0){
+			$html .='';
+		}else{
+			$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+			$i = 0;
+			$html .='<tr>
+					<td style="font-weight:bold" colspan="12">HISTORY EDIT :</td>
+				</tr>
+				<tr>
+				<td style="padding:5px">no</td>
+				<td style="padding:5px">roll</td>
+				<td style="padding:5px">jenis</td>
+				<td style="padding:5px">gramature</td>
+				<td style="padding:5px">ukuran</td>
+				<td style="padding:5px">diameter</td>
+				<td style="padding:5px">berat</td>
+				<td style="padding:5px">joint</td>
+				<td style="padding:5px">keterangan</td>
+				<td style="padding:5px">seset</td>
+				<td style="padding:5px">status</td>
+				<td style="padding:5px">edited_at</td>
+				<td style="padding:5px">edited_by</td>
+			</tr>';
+			foreach($getData->result() as $ser){
+				$i++;
+				if($ser->status == 0){
+					$stt = 'STOK';
+				}else if($ser->status == 2){
+					$stt = 'PPI';
+				}else if($ser->status == 3){
+					$stt = 'BUFFER';
+				}else{
+					$stt = 'STOK';
+				}
+				$html .='<tr>
+					<td style="padding:5px">'.$i.'</td>
+					<td style="padding:5px">'.$ser->roll.'</td>
+					<td style="padding:5px">'.$ser->nm_ker.'</td>
+					<td style="padding:5px">'.$ser->g_label.'</td>
+					<td style="padding:5px">'.round($ser->width,2).'</td>
+					<td style="padding:5px">'.$ser->diameter.'</td>
+					<td style="padding:5px">'.$ser->weight.'</td>
+					<td style="padding:5px">'.$ser->joint.'</td>
+					<td style="padding:5px">'.$ser->ket.'</td>
+					<td style="padding:5px">'.$ser->seset.'</td>
+					<td style="padding:5px">'.$stt.'</td>
+					<td style="padding:5px">'.$ser->edited_at.'</td>
+					<td style="padding:5px">'.$ser->edited_by.'</td>
+				</tr>';
+			}
+			$html .='</table><br/>';
+		}
+
+		$getId = $this->db->query("SELECT p.tgl AS tgl_pl,p.no_surat,p.no_po,p.nama,p.nm_perusahaan,p.alamat_perusahaan,ex.plat,ex.supir,ex.pt,r.* FROM m_timbangan r
         INNER JOIN pl p ON r.id_pl=p.id
+		LEFT JOIN m_expedisi ex ON p.id_expedisi=ex.id
         WHERE r.id='$id'");
         $roll = $getId->row();
-        $html.='<table style="margin:0;font-size:12px;color:#000;text-align:center;border-color:#ccc;border-collapse:collapse">
-            <tr>
-                <td style="padding:5px 10px;font-weight:bold">TANGGAL</td>
-                <td style="padding:5px 10px;font-weight:bold">ROLL</td>
-                <td style="padding:5px 10px;font-weight:bold">BW</td>
-                <td style="padding:5px 10px;font-weight:bold">RCT</td>
-                <td style="padding:5px 10px;font-weight:bold">BI</td>
-                <td style="padding:5px 10px;font-weight:bold">JENIS</td>
-                <td style="padding:5px 10px;font-weight:bold">GSM</td>
-                <td style="padding:5px 10px;font-weight:bold">UKURAN</td>
-                <td style="padding:5px 10px;font-weight:bold">DIAMETER</td>
-                <td style="padding:5px 10px;font-weight:bold">BERAT</td>
-                <td style="padding:5px 10px;font-weight:bold">JOINT</td>
-                <td style="padding:5px 10px;font-weight:bold">KETERANGAN</td>
-            </tr>
-            <tr>
-                <td style="padding:5px 10px">'.$roll->tgl.'</td>
-                <td style="padding:5px 10px">'.$roll->roll.'</td>
-                <td style="padding:5px 10px">'.$roll->g_ac.'</td>
-                <td style="padding:5px 10px">'.$roll->rct.'</td>
-                <td style="padding:5px 10px">'.$roll->bi.'</td>
-                <td style="padding:5px 10px">'.$roll->nm_ker.'</td>
-                <td style="padding:5px 10px">'.$roll->g_label.'</td>
-                <td style="padding:5px 10px">'.$roll->width.'</td>
-                <td style="padding:5px 10px">'.$roll->diameter.'</td>
-                <td style="padding:5px 10px">'.$roll->weight.'</td>
-                <td style="padding:5px 10px">'.$roll->joint.'</td>
-                <td style="padding:5px 10px;text-align:left">'.$roll->ket.'</td>
-            </tr>
-        </table><br/>';
+
+		if($roll->plat == null || $roll->plat == ''){
+			$exp = '-';
+		}else{
+			$exp = $roll->plat.' - '.$roll->supir.' ( '.$roll->pt.' )';
+		}
         $html.='<table style="margin:0;font-size:12px;color:#000;border-collapse:collapse">
             <tr>
                 <td style="padding:8px 5px;font-weight:bold">TANGGAL KIRIM</td>
@@ -5911,6 +6001,11 @@ class Laporan extends CI_Controller {
                 <td style="padding:8px 5px;font-weight:bold">NO. SURAT JALAN</td>
                 <td>:</td>
                 <td style="padding:8px 5px">'.trim($roll->no_surat).'</td>
+            </tr>
+			<tr>
+                <td style="padding:8px 5px;font-weight:bold">EKSPEDISI</td>
+                <td>:</td>
+                <td style="padding:8px 5px">'.$exp.'</td>
             </tr>
             <tr>
                 <td style="padding:8px 5px;font-weight:bold">NO. PO</td>
@@ -5943,6 +6038,32 @@ class Laporan extends CI_Controller {
         $html ='';
 
 		$html .='<div style="overflow:auto;white-space:nowrap">';
+		$getRollRk = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll' AND (status='0' OR status='2') AND id_pl='0' AND id_rk!=''");
+		if($getRollRk->num_rows() > 0){
+			$html .='<table style="margin:0 0 20px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+			$rollRk = $getRollRk->row();
+			$header = $this->db->query("SELECT a.* FROM pl a
+			INNER JOIN m_timbangan b ON a.id_rk=b.id_rk
+			WHERE a.id_rk='$rollRk->id_rk'
+			GROUP BY a.id_rk");
+			$html .='<tr>
+				<td style="font-weight:bold" colspan="5">RENCANA KIRIM :</td>
+			</tr>
+			<tr>
+				<td style="padding:5px">id rk</td>
+				<td style="padding:5px">tgl rk</td>
+				<td style="padding:5px">customer</td>
+				<td style="padding:5px">nama</td>
+			</tr>
+			<tr>
+				<td style="padding:5px">'.$header->row()->id_rk.'</td>
+				<td style="padding:5px">'.$header->row()->tgl_pl.'</td>
+				<td style="padding:5px">'.$header->row()->nm_perusahaan.'</td>
+				<td style="padding:5px">'.$header->row()->nama.'</td>
+			</tr>';
+			$html .='</table>';
+		}
+
         $html .='<table style="margin:0 0 20px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll'")->row();
 		$html .='<tr>
@@ -6046,14 +6167,16 @@ class Laporan extends CI_Controller {
 		}
 		$html .='</div>';
 
-		if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC"){
-			$print = base_url("Master/print_timbangan?id=").$roll;
-			$print2 = base_url("Master/print_timbangan2?id=").$roll;
-			$html .='<div style="margin-top:15px;color:#000;font-size:12px">
-				PRINT LABEL :
-				<a type="button" href="'.$print.'" target="_blank" class="lbl-besar">LABEL BESAR</a> - 
-				<a type="button" href="'.$print2.'" target="_blank" class="lbl-besar">LABEL KECIL</a>
-			</div>';
+		if($getRollRk->num_rows() == 0){
+			if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC"){
+				$print = base_url("Master/print_timbangan?id=").$roll;
+				$print2 = base_url("Master/print_timbangan2?id=").$roll;
+				$html .='<div style="margin-top:15px;color:#000;font-size:12px">
+					PRINT LABEL :
+					<a type="button" href="'.$print.'" target="_blank" class="lbl-besar">LABEL BESAR</a> - 
+					<a type="button" href="'.$print2.'" target="_blank" class="lbl-besar">LABEL KECIL</a>
+				</div>';
+			}
 		}
 
         echo $html;

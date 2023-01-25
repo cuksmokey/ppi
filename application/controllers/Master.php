@@ -1358,10 +1358,9 @@ class Master extends CI_Controller
 
 		// CEK JIKA SUDAH MASUK RENCANA KIRIM
 		$cek_rk = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND (id_rk='' OR id_rk IS NULL)");
-		// if(($_POST['lket'] != $_POST['ket']) && $_POST['edit'] == 'ListStokGudang' && $cek_rk->num_rows() == 0){
-		// 	echo json_encode($data);
-		// }else 
-		if((($_POST['lnm_ker'] != $_POST['nm_ker']) || ($_POST['lg_label'] != $_POST['g_label']) || ($_POST['lwidth'] != $_POST['width']) || ($_POST['lweight'] != $_POST['weight']) || ($_POST['ldiameter'] != $_POST['diameter']) || ($_POST['ljoint'] != $_POST['joint']) || ($_POST['lket'] != $_POST['ket']) || ($_POST['lstatus'] != $_POST['status'])) && ($_POST['edit'] == 'LapQC' || $_POST['edit'] == 'ListStokGudang') && $cek_rk->num_rows() == 0){
+		if($_POST['edit'] == 'ListStokGudang' && $cek_rk->num_rows() == 0){
+			echo json_encode($data);
+		}else if((($_POST['lnm_ker'] != $_POST['nm_ker']) || ($_POST['lg_label'] != $_POST['g_label']) || ($_POST['lwidth'] != $_POST['width']) || ($_POST['lweight'] != $_POST['weight']) || ($_POST['ldiameter'] != $_POST['diameter']) || ($_POST['ljoint'] != $_POST['joint']) || ($_POST['lket'] != $_POST['ket']) || ($_POST['lstatus'] != $_POST['status'])) && $_POST['edit'] == 'LapQC' && $cek_rk->num_rows() == 0){
 			echo json_encode($data);
 		}else{
 			$this->m_master->updateQCRoll();
@@ -1383,6 +1382,7 @@ class Master extends CI_Controller
 					'joint' => $idNewRoll->joint,
 					'ket' => $idNewRoll->ket,
 					'status' => $idNewRoll->status,
+					'msg' => 'BERHASIL!!!',
 				)
 			);
 		}
