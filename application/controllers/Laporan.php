@@ -937,22 +937,28 @@ class Laporan extends CI_Controller {
                         if($kd->nm_ker == 'MH' || $kd->nm_ker == 'MI'){
                             $dkop = '<td style="border:1px solid #000;font-weight:bold">RCT</td>';
                             $joint = 'JNT';
+                            $txtk = $kd->nm_ker;
                         }else if($kd->nm_ker == 'BK' || $kd->nm_ker == 'BL'){
                             $dkop = '<td style="border:1px solid #000;font-weight:bold">BI</td>';
                             $joint = 'JNT';
-                        // }else if($kd->nm_ker == 'WP' || $kd->nm_ker == 'MN'){
+                            $txtk = $kd->nm_ker;
+                        }else if($kd->nm_ker == 'MH COLOR'){
+                            $dkop = '<td style="border:1px solid #000;font-weight:bold">-</td>';
+                            $joint = 'JNT';
+                            $txtk = 'MHC';
                         }else if($kd->nm_ker == 'WP'){
                             $dkop = '';
                             $joint = 'JOINT';
+                            $txtk = $kd->nm_ker;
                         }else{
-                            // $dkop = '';
                             $dkop = '<td style="border:1px solid #000;font-weight:bold">-</td>';
                             $joint = 'JNT';
+                            $txtk = $kd->nm_ker;
                         }
 
                         $html .= '<tr>
                             <td style="border:1px solid #000;font-weight:bold">NO</td>
-                            <td style="border:1px solid #000;font-weight:bold" colspan="2">ROLL - '.$kd->nm_ker.'</td>
+                            <td style="border:1px solid #000;font-weight:bold" colspan="2">ROLL - '.$txtk.'</td>
                             <td style="border:1px solid #000;font-weight:bold">BW</td>
                             '.$dkop.'
                             <td style="border:1px solid #000;font-weight:bold">GSM</td>
