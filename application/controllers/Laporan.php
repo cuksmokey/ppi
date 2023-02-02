@@ -1003,12 +1003,6 @@ class Laporan extends CI_Controller {
                                 $cek = '<td style="border:1px solid #000">-</td>';
                             }
 
-                            if($r->status == 2){
-                                $pKet = '+PPI';
-                            }else{
-                                $pKet = '';
-                            }
-
 							if(($r->nm_ker == 'MH' || $r->nm_ker == 'MN') && ($r->g_label == 105 || $r->g_label == 110)){
 								$bgCrGsm = '#eef';
 							}else if($r->nm_ker == 'MH' && ($r->g_label == 120 || $r->g_label == 125)){
@@ -1039,7 +1033,7 @@ class Laporan extends CI_Controller {
                                 <td style="border:1px solid #000">'.round($r->width,2).'</td>
                                 <td style="border:1px solid #000">'.$tBerat.'</td>
                                 <td style="border:1px solid #000">'.$r->joint.'</td>
-                                <td style="border:1px solid #000;text-align:left;font-size:10px">'.$sesetKet.''.strtoupper($r->ket).''.$pKet.'</td>
+                                <td style="border:1px solid #000;text-align:left;font-size:10px">'.$sesetKet.''.strtoupper($r->ket).'</td>
                             </tr>';
                             $no++;
                         }
