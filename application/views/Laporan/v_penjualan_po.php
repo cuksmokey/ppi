@@ -12,6 +12,8 @@
 		$otorisasi = 'finance';
 	}else if($this->session->userdata('level') == "Office"){
 		$otorisasi = 'office';
+	}else if($this->session->userdata('level') == "Corrugated"){
+		$otorisasi = 'cor';
 	}else{
 		$otorisasi = 'user';
 	}
@@ -62,24 +64,32 @@
 					</div>
 
 					<div class="body" style="overflow:auto;white-space:nowrap;">
+						<input type="hidden" id="otorisasi" value="<?php echo $otorisasi ?>">
+						
 						<div style="font-size:12px;color:#000">
 							<button class="btn-c-po" onclick="add_box('open')">OPEN PO</button>
 							<button class="btn-c-po" onclick="add_box('close')">CLOSE PO</button>
-							<button class="btn-c-po" onclick="add_box('routpo')">REKAP OUTSTANDING PO</button>
+							<?php if($otorisasi != 'cor') { ?>
+								<button class="btn-c-po" onclick="add_box('routpo')">REKAP OUTSTANDING PO</button>
+							<?php } ?>
 						</div>
 
-						<!-- FORM PENCARIAN -->
-						<input type="hidden" id="pilihan-cari" value="">
-						<div class="table-cari" style="margin-top:15px">
-							<table style="width:100%">
-								<tr>
-									<td style="width:50%">
-										<input type="text" name="cari_po" id="cari_po" class="form-control" autocomplete="off" placeholder="CARI">
-									</td>
-									<td><button class="btn-c-po" onclick="caripo()">CARI</button></td>
-								</tr>
-							</table>
-						</div>
+						<?php if($otorisasi != 'cor') { ?>
+							<!-- FORM PENCARIAN -->
+							<input type="hidden" id="pilihan-cari" value="">
+							<div class="table-cari" style="margin-top:15px">
+								<table style="width:100%">
+									<tr>
+										<td style="width:50%">
+											<input type="text" name="cari_po" id="cari_po" class="form-control" autocomplete="off" placeholder="CARI">
+										</td>
+										<td><button class="btn-c-po" onclick="caripo()">CARI</button></td>
+									</tr>
+								</table>
+							</div>
+						<?php }else{ ?>
+							<input type="hidden" id="cari_po" value="">
+						<?php } ?>
 
 						<!-- TAMPIL DATA CLOSE PO -->
 						<div class="ll box-close-po"></div>
@@ -185,6 +195,16 @@
 										<td style="width:auto;padding:5px"></td>
 									</tr>
 									<tr>
+										<td style="padding:5px;font-weight:bold">AMBIL</td>
+										<td style="padding:5px">:</td>
+										<td style="padding:5px">
+											<select name="select-ambil-cor" id="select-ambil-cor" class="form-control">
+												<option value="0">STOK</option>
+												<option value="3">BUFFER</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
 										<td style="padding:5px;font-weight:bold">NO. PO</td>
 										<td style="padding:5px">:</td>
 										<td style="padding:5px" colspan="7">
@@ -196,7 +216,7 @@
 										<td style="padding:5px;font-weight:bold">ITEMS</td>
 										<td style="padding:5px">:</td>
 										<td style="padding:5px">
-											<input type="text" id="fjenis" class="form-control" style="text-align:center" maxlength="2" placeholder="JENIS" onkeypress="return hHuruf(event)" autocomplete="off">
+											<input type="text" id="fjenis" class="form-control" style="text-align:center" maxlength="3" placeholder="JENIS" onkeypress="return hHuruf(event)" autocomplete="off">
 										</td>
 										<td style="padding:5px">
 											<input type="text" id="fgsm" class="form-control" style="text-align:center" maxlength="3" placeholder="GSM" onkeypress="return hAngka(event)" autocomplete="off">
@@ -219,7 +239,11 @@
 											<input type="hidden" id="update-nopo" value="">
 											<button onclick="addCartPO()">ADD</button>
 										</td>
-									</tr>							
+									</tr>
+									<tr>
+										<td></td>
+										<td style="color:#f00;font-size:11px;font-style:italic" colspan="8">* MH COLOR : MHC</td>
+									</tr>
 								</table>
 							</div>
 
@@ -252,6 +276,7 @@
 </div> -->
 
 <script>
+	otorisasi = $("#otorisasi").val();
 	option = '';
 
 	$(document).ready(function(){
@@ -263,6 +288,7 @@
 	// ftgl fpajak fkepada fnama falamat ftelp
  	// fjenis fgsm fukuran ftonase fjmlroll fharga
 	function kosong(){
+		$("#select-ambil-cor").val(0).prop('disabled', true).attr('style', 'background:#e9e9e9');
 		$("#fno-po").val("").prop('disabled', false).removeAttr('stylr');
 		$("#lno-po").val("");
 		$("#fid").val("");
@@ -396,6 +422,13 @@
 		$("#fnama").val(data[0].pimpinan);
 		$("#falamat").val(data[0].alamat);
 		$("#ftelp").val(data[0].no_telp);
+
+		// TAMPIL AMBIL STOK / BUFFER PPI COR
+		if(data[0].id == 210){
+			$("#select-ambil-cor").val(3).prop('disabled', false).removeAttr('style');
+		}else{
+			$("#select-ambil-cor").val(0).prop('disabled', true).attr('style', 'background:#e9e9e9');
+		}
 	});
 
 	function add_box(opsi){
@@ -462,6 +495,7 @@
 	//
 
 	function load_data(opsi,caripo){
+		// alert(otorisasi);
 		// alert(caripo)
 		if(opsi == 'open'){
 			box = '.box-data-list';
@@ -475,6 +509,7 @@
 			data: ({
 				opsi: opsi,
 				caripo: caripo,
+				otorisasi,
 			}),
 			success: function(response){
 				if(opsi == 'open'){
@@ -645,6 +680,12 @@
 				$(".box-data").hide();
 				$(".box-form").show();
 				$(".box-form-po").hide();
+
+				if(id == 210){
+					$("#select-ambil-cor").val(3).prop('disabled', false).removeAttr('style');
+				}else{
+					$("#select-ambil-cor").val(0).prop('disabled', true).attr('style', 'background:#e9e9e9');
+				}
 				cekEditPO(id,id_po,no_po,i);
 				option = 'update';
 			}
@@ -692,6 +733,7 @@
 	}
 
 	function editItemPO(id,id_pt,id_po,no_po,nm_ker,g_label,width,i){
+		wambil = $("#wambil-" + i).val();
 		wnmker = $("#wnmker-" + i).val();
 		wglabel = $("#wglabel-" + i).val();
 		wwidth = $("#wwidth-" + i).val();
@@ -705,7 +747,7 @@
 			url: '<?php echo base_url('Master/editItemPO')?>',
 			type: "POST",
 			data: ({
-				id,id_pt,id_po,no_po,nm_ker,g_label,width,i,wnmker,wglabel,wwidth,etonase,ejmlroll,eharga
+				id,id_pt,id_po,no_po,nm_ker,g_label,width,i,wambil,wnmker,wglabel,wwidth,etonase,ejmlroll,eharga
 			}),
 			success: function(json){
 				data = JSON.parse(json);
@@ -765,6 +807,7 @@
 		ftonase = $("#ftonase").val().split('.').join('');
 		fjmlroll = $("#fjmlroll").val();
 		fharga = $("#fharga").val().split('.').join('');
+		status_roll = $("#select-ambil-cor").val();
 		// alert(fjenis+' - '+fgsm+' - '+fukuran+' - '+ftonase+' - '+fjmlroll+' - '+fharga);
 		if (fjenis == '' || fgsm == '' || fukuran == '' || ftonase == '' || fjmlroll == '' || fharga == '') {
 			swal("HARAP LENGKAPI FORM ITEMS ! ! !", "", "error");
@@ -785,7 +828,7 @@
 				ftonase: ftonase,
 				fjmlroll: fjmlroll,
 				fharga: fharga,
-				option,update_idpt,update_idpo,update_nopo,
+				option,update_idpt,update_idpo,update_nopo,status_roll
 			}),
 			success: function(json){
 				data = JSON.parse(json);
@@ -813,14 +856,13 @@
 	}
 
 	function simpanCart(){
-		// alert('simpanCart');
 		fkepada = $("#fkepada").val();
 		lno_po = $("#lno-po").val();
 		fno_po = $("#fno-po").val();
 		fid = $("#fid").val();
 		ftgl = $("#ftgl").val();
 		fpajak = $("#fpajak").val();
-		// alert(option);
+		status_roll = $("#select-ambil-cor").val();
 
 		if (fkepada == '') {
 			swal("PILIH CUSTOMER !", "", "error"); return;
@@ -838,9 +880,15 @@
 			swal("HARAP PILIH JENIS PAJAK !", "", "error"); return;
 		}
 
+		sipo = $(".cart-po").html();
+		if(sipo == ""){
+			swal("HARAP TAMBAH ITEMS PO TERLEBIH DAHULU!", "", "error"); return;
+		}
+
 		update_idpo = $("#update-idpo").val();
 		update_nopo = $("#update-nopo").val();
 
+		// alert(fkepada+" - "+lno_po+" - "+fno_po+" - "+fid+" - "+ftgl+" - "+fpajak+" - "+status_roll);
 		$('.btn-simpan-po').prop("disabled", true);
 		$.ajax({
 			url: '<?php echo base_url('Master/simpanCartPO')?>',
@@ -851,7 +899,7 @@
 				fno_po: fno_po,
 				ftgl: ftgl,
 				fpajak: fpajak,
-				option,update_idpo,update_nopo,
+				option,update_idpo,update_nopo,status_roll,
 			}),
 			success: function(json){
 				data = JSON.parse(json);

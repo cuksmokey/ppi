@@ -5432,6 +5432,13 @@ class Laporan extends CI_Controller {
             $tTgl = "tgl BETWEEN '$tgl' AND '$tgl2'";
         }
 
+		// KHUSUS CORR
+		if($stat == 'buffer'){
+			$statStatCor = 3;
+		}else{
+			$statStatCor = 0;
+		}
+
         // GET PRODUKSI
         $getProduksi = $this->db->query("SELECT nm_ker,g_label,width FROM m_timbangan
         WHERE $tTgl $where $statusIdPl
@@ -5478,7 +5485,7 @@ class Laporan extends CI_Controller {
 			// TAMPIL SEMUA DATA UKURAN
             $getWidth = $this->db->query("SELECT width FROM m_timbangan
             WHERE $Btgl $statusIdPl $where
-            -- AND width BETWEEN '110' AND '130' # TESTING
+            -- AND width BETWEEN '80' AND '100' # TESTING
             GROUP BY width");
             $i = 0;
             foreach($getWidth->result() as $width){
@@ -5511,11 +5518,12 @@ class Laporan extends CI_Controller {
                         }
                         if($getWidth->num_rows() == 0){
                             $html .='<td style="padding:5px;background:'.$gbGsm.'">
-                                <button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".')">0</button>
+                                <button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".','."'".$statStatCor."'".')">0</button>
                             </td>';
+							// $statStatCor
                         }else{
                             $html .='<td style="padding:5px">
-                                <button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".')">'.$getWidth->row()->jml.'</button>
+                                <button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".','."'".$statStatCor."'".')">'.$getWidth->row()->jml.'</button>
                             </td>';
                         }
                     }
@@ -5549,6 +5557,7 @@ class Laporan extends CI_Controller {
 		$nm_ker = $_POST['nm_ker'];
 		$g_label = $_POST['g_label'];
 		$width = $_POST['width'];
+		$statcor = $_POST['statcor'];
 
 		$html = '';
         $html .= '<div style="overflow:auto;white-space:nowrap;">';
@@ -5558,6 +5567,7 @@ class Laporan extends CI_Controller {
 		$getMasPO = $this->db->query("SELECT a.*,b.nm_perusahaan FROM po_master a
 		INNER JOIN m_perusahaan b ON a.id_perusahaan=b.id
 		WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width' AND status='open'
+		AND status_roll='$statcor'
 		GROUP BY nm_ker,g_label,width,b.nm_perusahaan,tgl,no_po,a.status");		
 		if($getMasPO->num_rows() == 0){
 			$html .='<tr>
@@ -5595,6 +5605,16 @@ class Laporan extends CI_Controller {
                     </tr>';
 					$sumRollKiriman += $kirim->jml_roll;
                 }
+
+				$pKir = $masPO->jml_roll - $sumRollKiriman;
+				if($pKir <= 0){
+					$html .='';
+				}else{
+					$html .='<tr>
+						<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">-</td>
+						<td style="padding:5px;font-weight:bold;text-align:right">'.$pKir.'</td>
+					</tr>';
+				}
 				$html .='<tr><td style="padding:5px" coslpan="4"></td></tr>';
 				
 				// PERHITUHANG STOK PO
@@ -5613,7 +5633,7 @@ class Laporan extends CI_Controller {
 
 			$getStokGudang = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan
 			WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width'
-			AND status='0' AND id_pl='0'
+			AND status='$statcor' AND id_pl='0'
 			GROUP BY nm_ker,g_label,width");
 			// STOK BERTUAN = STOK GUDANG - STOK ROLL PO
 			if($getStokGudang->num_rows() == 0){
@@ -5623,17 +5643,24 @@ class Laporan extends CI_Controller {
 			}
 			$stokRollTuan = $nsJmlRoll - $sumRollPO;
 
+			// BUFFER
+			if($statcor == 0){
+				$txtStat = 'STOK';
+			}else{
+				$txtStat = 'BUFFER';
+			}
+
 			// tototot
 			$html .='<tr>
 				<td style="padding:10px 5px 5px;font-weight:bold;text-align:right;border-top:3px solid #333" colspan="3">JUMLAH ROLL PO - PENJUALAN</td>
 				<td style="padding:10px 5px 5px;font-weight:bold;text-align:right;border-top:3px solid #333" colspan="3">'.number_format($sumRollPO).'</td>
 			</tr>
 			<tr>
-				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">STOK ROLL GUDANG</td>
+				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">'.$txtStat.' ROLL GUDANG</td>
 				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">'.number_format($nsJmlRoll).'</td>
 			</tr>
 			<tr>
-				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">SISA STOK ROLL GUDANG</td>
+				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">SISA '.$txtStat.' ROLL GUDANG</td>
 				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">'.number_format($stokRollTuan).'</td>
 			</tr>';
 		}

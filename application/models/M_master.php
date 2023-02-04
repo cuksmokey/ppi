@@ -670,7 +670,7 @@ class M_master extends CI_Model{
         $data = array();
         foreach($users as $user){
             $data[] = array(
-                "id" => $user['id_po'].'_ex_'.$user['no_po'].'_ex_'.$user['nm_ker'].'_ex_'.$user['pajak'],
+                "id" => $user['id_po'].'_ex_'.$user['no_po'].'_ex_'.$user['nm_ker'].'_ex_'.$user['pajak'].'_ex_'.$user['id_perusahaan'],
                 "text" => $user['nm_ker'],
             );
         }
@@ -1342,14 +1342,14 @@ class M_master extends CI_Model{
     }
 
     function simpanCartPO($cekIdPo){
-        // $id = $_POST['id'];
-
         foreach($this->cart->contents() as $data){
-            // id_po id_perusahaan tgl nm_ker g_label width tonase jml_roll no_po harga pajak
-
 			// JIKA ADD JENIS GSM UKURAN SAMA CUMA UPDATE TONASE DAN JML ROLL
 			$idpt = $_POST['fid'];
-			$fjenis = $data['options']['fjenis'];
+			if($data['options']['fjenis'] == 'MHC'){
+				$fjenis = 'MH COLOR';
+			}else{
+				$fjenis = $data['options']['fjenis'];
+			}
 			$fgsm = $data['options']['fgsm'];
 			$fukuran = $data['options']['fukuran'];
 			$getPO = $this->db->query("SELECT*FROM po_master
@@ -1367,7 +1367,7 @@ class M_master extends CI_Model{
 					'id_po' => $cekIdPo,
 					'id_perusahaan' => $_POST['fid'],
 					'tgl' => $_POST['ftgl'],
-					'nm_ker' => $data['options']['fjenis'],
+					'nm_ker' => $fjenis,
 					'g_label' => $data['options']['fgsm'],
 					'width' => $data['options']['fukuran'],
 					'tonase' => $data['options']['ftonase'],
@@ -1375,6 +1375,7 @@ class M_master extends CI_Model{
 					'no_po' => $_POST['fno_po'],
 					'harga' => $data['options']['fharga'],
 					'pajak' => $_POST['fpajak'],
+					'status_roll' => $data['options']['status_roll'],
 					'created_at' => date("Y-m-d H:i:s"),
 					'created_by' => $this->session->userdata('username'),
 				);
@@ -1491,12 +1492,19 @@ class M_master extends CI_Model{
 
 	function editItemPO(){
 		// id_po id_perusahaan tgl nm_ker g_label width tonase jml_roll no_po harga pajak status ket created_at created_by edited_at edited_by
+		if($_POST['wambil'] == 'STOK'){
+			$statusRoll = 0;
+		}else{
+			$statusRoll = 3;
+		}
+
 		$this->db->set('nm_ker', $_POST['wnmker']);
 		$this->db->set('g_label', $_POST['wglabel']);
 		$this->db->set('width', $_POST['wwidth']);
 		$this->db->set('tonase', $_POST['etonase']);
 		$this->db->set('jml_roll', $_POST['ejmlroll']);
 		$this->db->set('harga', $_POST['eharga']);
+		$this->db->set('status_roll', $statusRoll);
 		$this->db->set('edited_at', date("Y-m-d H:i:s"));
 		$this->db->set('edited_by', $this->session->userdata('username'));
 		$this->db->where('id', $_POST['id']);

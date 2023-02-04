@@ -153,6 +153,8 @@
 		$otorisasi = 'finance';
 	}else if($this->session->userdata('level') == "Office"){
 		$otorisasi = 'office';
+	}else if($this->session->userdata('level') == "Corrugated"){
+		$otorisasi = 'cor';
 	}else{
 		$otorisasi = 'user';
 	}
@@ -182,7 +184,9 @@
 							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtuan')">STOK FG BERTUAN</button>
 							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtdktuan')">STOK FG TIDAK BERTUAN</button>
 						<?php } ?>
-						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('produksi')">PRODUKSI</button>
+						<?php if($otorisasi != 'cor') {?>
+							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('produksi')">PRODUKSI</button>
+						<?php } ?>
 
 						<div class="menu-stok" style="padding-top:10px;font-size:12px">
 							<button disabled>STOK : </button>
@@ -480,22 +484,21 @@
 		})
 	}
 
-	function cek(nm_ker,g_label,width,otori){
-		// stat = $("#stat").val();
-		// alert(nm_ker+' '+g_label+' '+width+' '+otori,' '+stat)
+	function cek(nm_ker,g_label,width,otori,statcor){
+		// alert(nm_ker+' '+g_label+' '+width+' '+otori+' '+statcor);
 		if(otori == "office"){
-			cekPenjualan(nm_ker,g_label,width);
+			cekPenjualan(nm_ker,g_label,width,statcor);
 		}else if(otori == "all" || otori == "admin" || otori == "finance"){
-			cekPenjualan(nm_ker,g_label,width);
+			cekPenjualan(nm_ker,g_label,width,statcor);
 			cekRoll(nm_ker,g_label,width,otori);
-		}else if(otori == "qc" || otori == "fg"){
+		}else if(otori == "qc" || otori == "fg" || otori == "cor"){
 			cekRoll(nm_ker,g_label,width,otori);
 		}else{
-			'';
+			alert('anda belum beruntung');
 		}
 	}
 
-	function cekPenjualan(nm_ker,g_label,width){
+	function cekPenjualan(nm_ker,g_label,width,statcor){
 		$(".isi-stok-tuan").html('');
 		$("#modal-stok-list").modal("show");
 		$(".isi-stok-list").html('Tunggu Sebentar . . .');
@@ -507,6 +510,7 @@
 				nm_ker: nm_ker,
 				g_label: g_label,
 				width: width,
+				statcor: statcor,
 			}),
 			success: function(response){
 				$(".isi-stok-list").html('');
@@ -520,7 +524,7 @@
 		tgl = $("#tgl").val();
 		vtgl2 = $("#tgl2").val();
 		pm = $("#p-pm-v").val();
-		$(".tmpl-roll").show().html('Mencari Data . . .');
+		$(".tmpl-roll").show().html('Memuat Data . . .');
 		$.ajax({
 			url: '<?php echo base_url('Laporan/QCCariRoll'); ?>',
 			type: "POST",

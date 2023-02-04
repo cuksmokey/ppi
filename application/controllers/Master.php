@@ -22,7 +22,7 @@ class Master extends CI_Controller
 		if($this->session->userdata('level') == "SuperAdmin"){
 			// $this->load->view('home');
 			$this->load->view('Laporan/v_stok');
-		}else if($this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "Office" || $this->session->userdata('level') == "Finance"){
+		}else if($this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "Office" || $this->session->userdata('level') == "Finance" || $this->session->userdata('level') == "Corrugated"){
 			$this->load->view('Laporan/v_stok');
 		}else{
 			$this->load->view('Master/v_timbangan');
@@ -1938,11 +1938,28 @@ class Master extends CI_Controller
 				$kpjk = '';
 			}
 		}
+
+		if($jenis == 'MH COLOR'){
+			$tJenis = 'MC';
+		}else{
+			$tJenis = $jenis;
+		}
+
+		// COR
+		// 86_ex_PPI/FG/01/02/23_ex_MH_ex_ppn_ex_210
+		$jnsCor = explode("_ex_", $_POST['id']);
+		if($jnsCor[4] == 210){
+			$whereNoSj = $syear."/".$kpjk."/C".$tJenis;
+			$whereCor = "AND id_perusahaan='210'";
+		}else{
+			$whereNoSj = $syear."/".$kpjk."/".$tJenis;
+			$whereCor = "AND id_perusahaan!='210'";
+		}
 		
 		// PACKING LIST OK
 		$getData = $this->db->query("SELECT p.tgl,no_surat,nama,nm_perusahaan,qc FROM pl p
 		INNER JOIN m_timbangan t ON p.id=t.id_pl
-		WHERE p.tgl LIKE '%$fyear%' AND no_surat LIKE '%$syear/$kpjk/$jenis%' AND qc='ok'
+		WHERE p.tgl LIKE '%$fyear%' AND no_surat LIKE '%$whereNoSj%' AND qc='ok' $whereCor
 		GROUP BY p.tgl DESC,no_pkb DESC,qc LIMIT 10");
 		if($_POST['tgl'] == '' || $_POST['id'] == '' || $_POST['pjk'] == '' || $getData->num_rows() == 0){
 			$html .= '';
@@ -1977,7 +1994,7 @@ class Master extends CI_Controller
 
 		// PACKING LIST PROSES
 		$getData = $this->db->query("SELECT tgl,no_surat,nama,nm_perusahaan,qc FROM pl
-		WHERE tgl LIKE '%$fyear%' AND no_surat LIKE '%$syear/$kpjk/$jenis%' AND qc='proses'
+		WHERE tgl LIKE '%$fyear%' AND no_surat LIKE '%$whereNoSj%' AND qc='proses' $whereCor
 		GROUP BY tgl DESC,no_pkb DESC,qc");
 		if($_POST['tgl'] == '' || $_POST['id'] == '' || $_POST['pjk'] == '' || $getData->num_rows() == 0){
 			$html .= '';
@@ -2015,7 +2032,19 @@ class Master extends CI_Controller
 
 	function loadNmKerSj(){
 		$id = explode("_ex_", $_POST['id']);
-		echo json_encode(array('nm_ker' => $id[2]));
+		if($id[2] == 'MH COLOR'){
+			$tKer = 'MHC';
+		}else{
+			$tKer = $id[2];
+		}
+		
+		// COR
+		if($id[4] == 210){
+			$nmKer = 'C'.$tKer;
+		}else{
+			$nmKer = $id[2];
+		}
+		echo json_encode(array('nm_ker' => $nmKer));
 	}
 
 	function addCartPl(){
@@ -2888,7 +2917,7 @@ class Master extends CI_Controller
 		// TAMPIL ROLL KE PACKING LIST
 		// GET NO SURAT JALAN
 		$getSj = $this->db->query("SELECT COUNT(m.roll) AS croll,SUM(m.weight) AS zberat,SUM(m.seset) AS zseset,p.* FROM pl p
-		INNER JOIN m_timbangan m ON p.id=m.id_pl WHERE p.id_rk='$idrk' AND p.tgl_pl='$tglpl' AND opl='$opl' GROUP BY p.id_rk,p.nm_ker");
+		INNER JOIN m_timbangan m ON p.id=m.id_pl WHERE p.id_rk='$idrk' AND p.tgl_pl='$tglpl' AND opl='$opl' GROUP BY p.id_rk,p.nm_ker,p.no_pkb");
 		if($getSj->num_rows() == 0){
 			$html .='';
 		}else{
@@ -2912,13 +2941,13 @@ class Master extends CI_Controller
 				// GET NO PO
 				$getNoPO = $this->db->query("SELECT COUNT(m.roll) AS jnopo,p.* FROM pl p
 				INNER JOIN m_timbangan m ON p.id=m.id_pl
-				WHERE p.id_rk='$sj->id_rk' AND p.nm_ker='$sj->nm_ker'
+				WHERE p.id_rk='$sj->id_rk' AND p.nm_ker='$sj->nm_ker' AND p.no_pkb='$sj->no_pkb'
 				GROUP BY p.id_rk,p.nm_ker,p.no_po");
 				foreach($getNoPO->result() as $nopo){
 					$html .='<td style="padding:5px;font-weight:bold" class="list-p-putih" rowspan="'.$nopo->jnopo.'">'.$nopo->no_po.'</td>';
 					// GET JENIS KERTAS DAN GSM
 					$getJKnGSM = $this->db->query("SELECT COUNT(m.roll) AS jkroll,p.* FROM pl p INNER JOIN m_timbangan m ON p.id=m.id_pl
-					WHERE p.id_rk='$nopo->id_rk' AND p.nm_ker='$nopo->nm_ker' AND p.no_po='$nopo->no_po'
+					WHERE p.id_rk='$nopo->id_rk' AND p.nm_ker='$nopo->nm_ker' AND p.no_pkb='$nopo->no_pkb' AND p.no_po='$nopo->no_po'
 					GROUP BY p.id_rk,p.nm_ker,p.g_label");
 					foreach($getJKnGSM->result() as $jkGsm){
 						if(($jkGsm->nm_ker == 'MH' || $jkGsm->nm_ker == 'MN') && ($jkGsm->g_label == 105 || $jkGsm->g_label == 110)){
@@ -2932,7 +2961,7 @@ class Master extends CI_Controller
 						}else{
 							$bgkk = 'list-p-putih';
 						}
-						$html .='<td style="padding:5px;font-weight:bold" class="'.$bgkk.'" rowspan="'.$jkGsm->jkroll.'">'.$jkGsm->nm_ker.''.$jkGsm->g_label.'<br/>'.$jkGsm->id.'</td>';
+						$html .='<td style="padding:5px;font-weight:bold" class="'.$bgkk.'" rowspan="'.$jkGsm->jkroll.'">'.$jkGsm->nm_ker.''.$jkGsm->g_label.'<br/>('.$jkGsm->id.')</td>';
 						// GET UKURAN
 						$getWidth = $this->db->query("SELECT COUNT(m.roll) AS ukroll,m.width,p.* FROM pl p INNER JOIN m_timbangan m ON p.id=m.id_pl
 						WHERE p.id_rk='$jkGsm->id_rk' AND p.nm_ker='$jkGsm->nm_ker' AND p.g_label='$jkGsm->g_label' AND p.no_po='$jkGsm->no_po'
@@ -3321,6 +3350,11 @@ class Master extends CI_Controller
 	function addCartPO(){
 		$id = $_POST['fjenis'].'_'.$_POST['fgsm'].'_'.$_POST['fukuran'];
 		$nama = $_POST['fjenis'].'-'.$_POST['fgsm'].'-'.$_POST['fukuran'];
+		if($_POST['status_roll'] == 0){
+			$txtStat = 'STOK';
+		}else{
+			$txtStat = 'BUFFER';
+		}
 		$data = array(
 			'id' => $id,
 			'name' => $nama,
@@ -3333,12 +3367,19 @@ class Master extends CI_Controller
 				'ftonase' => $_POST['ftonase'],
 				'fjmlroll' => $_POST['fjmlroll'],
 				'fharga' => $_POST['fharga'],
+				'txt_status_roll' => $txtStat,
+				'status_roll' => $_POST['status_roll'],
 			),
 		);
 		$uidpt = $_POST['update_idpt'];
 		$uidpo = $_POST['update_idpo'];
 		$unopo = $_POST['update_nopo'];
-		$nmker = $_POST['fjenis'];
+		// $nmker = $_POST['fjenis'];
+		if($_POST['fjenis'] == 'MHC'){
+			$nmker = 'MH COLOR';
+		}else{
+			$nmker = $_POST['fjenis'];
+		}
 		$glabel = $_POST['fgsm'];
 		$width = $_POST['fukuran'];
 
@@ -3405,19 +3446,19 @@ class Master extends CI_Controller
 
 	function showCartPO(){
 		$html = '';
-
-		$html .= '<table style="width:100%;text-align:center;font-size:12px;color:#000;margin-top:15px" border="1">';
 		if($this->cart->total_items() != 0){
+			$html .= '<table style="width:100%;text-align:center;font-size:12px;color:#000;margin-top:15px">';
 			$html .='<tr><td style="text-align:left;font-weight:bold" colspan="8">ADD ITEMS :</td></tr>
 			<tr style="background:#e9e9e9">
-				<td style="width:5%;padding:5px;font-weight:bold">NO</td>
-				<td style="width:10%;padding:5px;font-weight:bold">JENIS</td>
-				<td style="width:10%;padding:5px;font-weight:bold">GSM</td>
-				<td style="width:10%;padding:5px;font-weight:bold">UKURAN</td>
-				<td style="width:10%;padding:5px;font-weight:bold">TONASE</td>
-				<td style="width:10%;padding:5px;font-weight:bold">JML ROLL</td>
-				<td style="width:10%;padding:5px;font-weight:bold">HARGA</td>
-				<td style="width:auto;padding:5px;font-weight:bold">AKSI</td>
+				<td style="border:1px solid #888;width:5%;padding:5px;font-weight:bold">NO</td>
+				<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">AMBIL</td>
+				<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">JENIS</td>
+				<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">GSM</td>
+				<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">UKURAN</td>
+				<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">TONASE</td>
+				<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">JML ROLL</td>
+				<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">HARGA</td>
+				<td style="border:1px solid #888;width:25%;padding:5px;font-weight:bold">AKSI</td>
 			</tr>';
 		}
 
@@ -3425,22 +3466,21 @@ class Master extends CI_Controller
 		foreach($this->cart->contents() as $r){
 			$i++;
 			$html .='<tr>
-				<td style="padding:5px;text-align:center">'.$i.'</td>
-				<td style="padding:5px">'.$r['options']['fjenis'].'</td>
-				<td style="padding:5px">'.$r['options']['fgsm'].'</td>
-				<td style="padding:5px">'.round($r['options']['fukuran'], 2).'</td>
-				<td style="padding:5px">'.number_format($r['options']['ftonase']).'</td>
-				<td style="padding:5px">'.$r['options']['fjmlroll'].'</td>
-				<td style="padding:5px">Rp. '.number_format($r['options']['fharga']).'</td>
-				<td style="padding:5px"><button onclick="hapusCartPO('."'".$r['rowid']."'".')">Batal</button></td>
+				<td style="border:1px solid #888;padding:5px;text-align:center">'.$i.'</td>
+				<td style="border:1px solid #888;padding:5px">'.$r['options']['txt_status_roll'].'</td>
+				<td style="border:1px solid #888;padding:5px">'.$r['options']['fjenis'].'</td>
+				<td style="border:1px solid #888;padding:5px">'.$r['options']['fgsm'].'</td>
+				<td style="border:1px solid #888;padding:5px">'.round($r['options']['fukuran'], 2).'</td>
+				<td style="border:1px solid #888;padding:5px">'.number_format($r['options']['ftonase']).'</td>
+				<td style="border:1px solid #888;padding:5px">'.$r['options']['fjmlroll'].'</td>
+				<td style="border:1px solid #888;padding:5px">Rp. '.number_format($r['options']['fharga']).'</td>
+				<td style="border:1px solid #888;padding:5px"><button onclick="hapusCartPO('."'".$r['rowid']."'".')">Batal</button></td>
 			</tr>';
 		}
-		// if($this->cart->total_items() != 0){
-		// 	$html .='<tr>
-		// 		<td style="padding:5px;text-align:right" colspan="8"><button onclick="simpanCart()">SIMPAN</button></td>
-		// 	</tr>';
-		// }
-		$html .= '</table>';
+		
+		if($this->cart->total_items() != 0){
+			$html .= '</table>';
+		}
 
 		echo $html;
 	}
@@ -3497,45 +3537,73 @@ class Master extends CI_Controller
 		$getData = $this->db->query("SELECT*FROM po_master
 		WHERE id_perusahaan='$id' AND id_po='$id_po' AND no_po='$no_po'
 		ORDER BY nm_ker,g_label,width");
-		$html .= '<table style="width:100%;font-size:12px;color:#000;text-align:center;margin-top:15px" border="1">';
+		$html .= '<table style="width:100%;font-size:12px;color:#000;text-align:center;margin-top:15px">';
 		$html .='<tr><td style="text-align:left;font-weight:bold" colspan="8">LIST ITEMS :</td></tr>
 		<tr style="background:#e9e9e9">
-			<td style="width:5%;padding:5px;font-weight:bold">NO</td>
-			<td style="width:10%;padding:5px;font-weight:bold">JENIS</td>
-			<td style="width:10%;padding:5px;font-weight:bold">GSM</td>
-			<td style="width:10%;padding:5px;font-weight:bold">WIDTH</td>
-			<td style="width:10%;padding:5px;font-weight:bold">TON</td>
-			<td style="width:10%;padding:5px;font-weight:bold">ROLL</td>
-			<td style="width:10%;padding:5px;font-weight:bold">HARGA</td>
-			<td style="width:auto;padding:5px;font-weight:bold">AKSI</td>
+			<td style="border:1px solid #888;width:5%;padding:5px;font-weight:bold">NO</td>
+			<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">AMBIL</td>
+			<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">JENIS</td>
+			<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">GSM</td>
+			<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">WIDTH</td>
+			<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">TON</td>
+			<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">ROLL</td>
+			<td style="border:1px solid #888;width:10%;padding:5px;font-weight:bold">HARGA</td>
+			<td style="border:1px solid #888;width:25%;padding:5px;font-weight:bold">AKSI</td>
 		</tr>';
 		$i = 0;
 		foreach($getData->result() as $r){
 			$i++;
-			// cek jika ukuran sudah terjual tidak bisa diedit / hapus
+			// CEK JIKA UKURAN SUDAH TERJUAL TIDAK BISA DIEDIT / HAPUS
 			$cek = $this->db->query("SELECT*FROM pl p
 			INNER JOIN m_timbangan m ON p.id=m.id_pl
 			WHERE p.id_perusahaan='$id' AND p.no_po='$no_po' AND m.nm_ker='$r->nm_ker' AND m.g_label='$r->g_label' AND m.width='$r->width' AND p.qc='ok'
 			GROUP BY p.id_perusahaan,p.no_po,p.qc,m.nm_ker,m.g_label,width");
 			$edit = '<button class="btn-item-po-'.$i.'" onclick="editItemPO('."'".$r->id."'".','."'".$id."'".','."'".$id_po."'".','."'".$no_po."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->width."'".','."'".$i."'".')">EDIT</button>';
 			if($cek->num_rows() == 0){
+				if($r->id_perusahaan == 210){
+					$disA = '';
+				}else{
+					$disA = 'disabled';
+				}
 				$dis = '';
-				$btn ='<td style="padding:5px">
+				$btn ='<td style="border:1px solid #888;padding:5px">
 					'.$edit.'
 					<button onclick="hapusItemPO('."'".$r->id."'".','."'".$id."'".','."'".$id_po."'".','."'".$no_po."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->width."'".','."'".$i."'".')">HAPUS</button>
 				</td>';
 			}else{
+				$disA = 'disabled';
 				$dis ='disabled';
-				$btn ='<td style="padding:5px">'.$edit.'</td>';
+				$btn ='<td style="border:1px solid #888;padding:5px">'.$edit.'</td>';
+			}
+
+			if($r->status_roll == 0){
+				$statusRoll = 'STOK';
+			}else{
+				$statusRoll = 'BUFFER';
 			}
 			$html .='<tr class="itr">
-				<td style="padding:5px">'.$i.'</td>
-				<td style="position:relative"><input type="text" id="wnmker-'.$i.'" value="'.$r->nm_ker.'" class="inp-abs" onkeypress="return hHuruf(event)" maxlength="2" '.$dis.'></td>
-				<td style="position:relative"><input type="text" id="wglabel-'.$i.'" value="'.$r->g_label.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="3" '.$dis.'></td>
-				<td style="position:relative"><input type="text" id="wwidth-'.$i.'" value="'.round($r->width, 2).'" class="inp-abs" onkeypress="return aKt(event)" maxlength="6" '.$dis.'></td>
-				<td style="position:relative"><input type="text" id="etonase-'.$i.'" value="'.$r->tonase.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="8"></td>
-				<td style="position:relative"><input type="text" id="ejmlroll-'.$i.'" value="'.$r->jml_roll.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="3"></td>
-				<td style="position:relative"><input type="text" id="eharga-'.$i.'" value="'.$r->harga.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="8"></td>
+				<td style="border:1px solid #888;padding:5px">'.$i.'</td>
+				<td style="border:1px solid #888;position:relative">
+					<input type="text" id="wambil-'.$i.'" value="'.$statusRoll.'" class="inp-abs" onkeypress="return hHuruf(event)" maxlength="6" '.$disA.'>
+				</td>
+				<td style="border:1px solid #888;position:relative">
+					<input type="text" id="wnmker-'.$i.'" value="'.$r->nm_ker.'" class="inp-abs" onkeypress="return hHuruf(event)" maxlength="2" '.$dis.'>
+				</td>
+				<td style="border:1px solid #888;position:relative">
+					<input type="text" id="wglabel-'.$i.'" value="'.$r->g_label.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="3" '.$dis.'>
+				</td>
+				<td style="border:1px solid #888;position:relative">
+					<input type="text" id="wwidth-'.$i.'" value="'.round($r->width, 2).'" class="inp-abs" onkeypress="return aKt(event)" maxlength="6" '.$dis.'>
+				</td>
+				<td style="border:1px solid #888;position:relative">
+					<input type="text" id="etonase-'.$i.'" value="'.$r->tonase.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="8">
+				</td>
+				<td style="border:1px solid #888;position:relative">
+					<input type="text" id="ejmlroll-'.$i.'" value="'.$r->jml_roll.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="3">
+				</td>
+				<td style="border:1px solid #888;position:relative">
+					<input type="text" id="eharga-'.$i.'" value="'.$r->harga.'" class="inp-abs" onkeypress="return hAngka(event)" maxlength="8">
+				</td>
 				'.$btn.'';
 			$html .='</tr>';
 		}
@@ -3553,6 +3621,7 @@ class Master extends CI_Controller
 		$g_label = $_POST['g_label'];
 		$width = $_POST['width'];
 		$i = $_POST['i'];
+		$wambil = $_POST['wambil'];
 		$wnmker = $_POST['wnmker'];
 		$wglabel = $_POST['wglabel'];
 		$wwidth = $_POST['wwidth'];
@@ -3565,7 +3634,7 @@ class Master extends CI_Controller
 		GROUP BY id_perusahaan,id_po,nm_ker,g_label,width");
 		if(($nm_ker != $wnmker || $g_label != $wglabel || $width != $wwidth) && $cek1->num_rows() > 0){
 				echo json_encode(array('response' => true, 'msg' => 'JENIS / GSM / UKURAN SUDAH ADA!', 'info' => 'error',));
-		}else if($wnmker == '' ||$wglabel == '' ||$wwidth == '' ||$etonase == '' ||$ejmlroll == '' ||$eharga == ''){
+		}else if($wambil == '' || $wnmker == '' || $wglabel == '' || $wwidth == '' || $etonase == '' || $ejmlroll == '' || $eharga == ''){
 			echo json_encode(array('response' => true, 'msg' => 'TIDAK BOLEH ADA YANG KOSONG!', 'info' => 'error',));
 		}else{
 			$this->m_master->editItemPO();
@@ -3612,6 +3681,8 @@ class Master extends CI_Controller
 			$lvl = "WHERE level='Office'";
 		}else if($otorisasi == 'finance'){
 			$lvl = "WHERE level='Finance'";
+		}else if($otorisasi == 'cor'){
+			$lvl = "WHERE level='Corrugated'";
 		}else{
 			$lvl = "WHERE level='User'";
 		}
@@ -3692,6 +3763,8 @@ class Master extends CI_Controller
 			$lvl = "WHERE (level='QC' OR level='Rewind1' OR level='Rewind2')";
 		}else if($otorisasi == 'fg'){
 			$lvl = "WHERE level='FG'";
+		}else if($otorisasi == 'cor'){ 
+			$lvl = "WHERE level='Corrugated'";
 		}else{
 			$lvl = "WHERE level='User'";
 		}
@@ -3707,6 +3780,7 @@ class Master extends CI_Controller
 				<option value="FG">FG</option>
 				<option value="Rewind1">Rewind1</option>
 				<option value="Rewind2">Rewind2</option>
+				<option value="Corrugated">Corrugated</option>
 			';
 		}else{
 			$getLevel = $this->db->query("SELECT level FROM user $lvl GROUP BY level");
@@ -3740,13 +3814,24 @@ class Master extends CI_Controller
 	function loadDataPO(){
 		$opsi = $_POST['opsi'];
 		$caripo = $_POST['caripo'];
+		$otorisasi = $_POST['otorisasi'];
 		$html = '';
 		
-		$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,pt.alamat,m.* FROM po_master m
-		INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id
-		WHERE status='$opsi' AND (pt.pimpinan LIKE '%$caripo%' OR pt.nm_perusahaan LIKE '%$caripo%')
-		GROUP BY id_perusahaan
-		ORDER BY pt.pimpinan,pt.nm_perusahaan");
+		// KHUSUS COR
+		if($otorisasi == 'cor'){
+			$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,pt.alamat,m.* FROM po_master m
+			INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id
+			WHERE status='$opsi' AND m.id_perusahaan='210'
+			GROUP BY id_perusahaan
+			ORDER BY pt.pimpinan,pt.nm_perusahaan");
+		}else{
+			$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,pt.alamat,m.* FROM po_master m
+			INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id
+			WHERE status='$opsi' AND (pt.pimpinan LIKE '%$caripo%' OR pt.nm_perusahaan LIKE '%$caripo%')
+			GROUP BY id_perusahaan
+			ORDER BY pt.pimpinan,pt.nm_perusahaan");
+		}
+
 		if($getData->num_rows() == 0){
 			$html .='<div style="padding:5px">DATA TIDAK ADA!</div>';
 		}else{

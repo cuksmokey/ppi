@@ -123,3 +123,27 @@ INSERT INTO `m_timbangan` (`id`, `roll`, `tgl`, `nm_ker`, `g_ac`, `g_label`, `wi
 (NULL, '2/00002/23A/1F', '2023-01-02', 'MH', '0.00', '150', '100.00', 120, 715, 0, '', 0, 0, 0, NULL, NULL, '2023-01-02 07:45:00', 'rewindpm2', NULL, NULL, NULL, NULL, '0.00', 1, '0.00', 2),
 (NULL, '2/00002/23A/1M', '2023-01-02', 'MH', '0.00', '150', '100.00', 120, 725, 0, '', 0, 0, 0, NULL, NULL, '2023-01-02 07:46:37', 'rewindpm2', NULL, NULL, NULL, NULL, '0.00', 1, '0.00', 2),
 (NULL, '2/00002/23A/1B', '2023-01-02', 'MH', '0.00', '150', '100.00', 120, 722, 0, '', 0, 0, 0, NULL, NULL, '2023-01-02 07:47:02', 'rewindpm2', NULL, NULL, NULL, NULL, '0.00', 1, '0.00', 2);
+
+============================================================================================================================
+
+ALTER TABLE `n1576051_db_ppi_fix`.`user`   
+CHANGE `level` `level` ENUM('Admin','User','SuperAdmin','QC','FG','Finance','Office','Rewind1','Rewind2','Corrugated') CHARSET latin1 COLLATE latin1_swedish_ci NULL;
+
+
+CREATE TABLE `n1576051_db_ppi_fix`.`m_rpk`(  
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `id_rpk` VARCHAR(50) NOT NULL,
+  `id_po` INT(11),
+  `tgl` DATE,
+  `nm_ker` VARCHAR(50),
+  `g_label` INT(11),
+  `pm` INT(2),
+  `w_1` DECIMAL(8,2),
+  `w_2` DECIMAL(8,2),
+  `w_3` DECIMAL(8,2),
+  `w_4` DECIMAL(8,2),
+  `w_5` DECIMAL(8,2),
+  `times` INT(11),
+  `ref` TEXT,
+  PRIMARY KEY (`id`, `id_rpk`)
+);

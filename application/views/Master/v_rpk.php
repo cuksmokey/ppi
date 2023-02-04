@@ -1,5 +1,4 @@
 <?php
-	// SuperAdmin, Admin, QC, FG, User
 	if($this->session->userdata('level') == "SuperAdmin"){
 		$otorisasi = 'all';
 	}else if($this->session->userdata('level') == "Admin"){
@@ -12,14 +11,17 @@
 		$otorisasi = 'finance';
 	}else if($this->session->userdata('level') == "Office"){
 		$otorisasi = 'office';
+	}else if($this->session->userdata('level') == "Corrugated"){
+		$otorisasi = 'cor';
 	}else{
 		$otorisasi = 'user';
 	}
 ?>
 
 <style>
-	.box-data,.box-form {
-		padding-top:15px
+	.box-data, .box-form {
+		padding-top:15px;
+		color: #000
 	}
 
 	.list-table:hover {
@@ -43,9 +45,24 @@
 					<div class="body">
 						<input type="hidden" name="otorisasi" id="otorisasi" value="<?php echo $otorisasi; ?>">
 
-						<div class="box-data" style="overflow:auto;white-space:nowrap;"></div>
+						<div class="box-data" style="overflow:auto;white-space:nowrap;">
+							DATA
+						</div>
 
-						<div class="box-form" style="overflow:auto;white-space:nowrap;"></div>
+						<div class="box-form" style="overflow:auto;white-space:nowrap;">
+							<table style="width: 100%;">
+								<tr>
+									<td style="width:20%;border:1px solid #000;padding:5px"></td>
+									<td style="width:1%;border:1px solid #000;padding:5px"></td>
+									<td style="width:79%;border:1px solid #000;padding:5px"></td>
+								</tr>
+								<tr>
+									<td>TANGGAL</td>
+									<td>:</td>
+									<td></td>
+								</tr>
+							</table>
+						</div>
 					</div>
 				</div>
 			</div>

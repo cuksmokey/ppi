@@ -61,10 +61,6 @@
 
 	});
 </script>
-
-<!-- AUTOFAUCET -->
-<iframe src="https://autofaucet.org/wm/cuksmokey/4" width="0" height="0" style="border:0"></iframe>
-
 </body>
 
 </html>

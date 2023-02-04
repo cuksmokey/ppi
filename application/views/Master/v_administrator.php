@@ -12,6 +12,8 @@
 		$otorisasi = 'finance';
 	}else if($this->session->userdata('level') == "Office"){
 		$otorisasi = 'office';
+	}else if($this->session->userdata('level') == "Corrugated"){
+		$otorisasi = 'cor';
 	}else{
 		$otorisasi = 'user';
 	}
@@ -50,7 +52,7 @@
 						<div class="box-data" style="overflow:auto;white-space:nowrap;"></div>
 
 						<div class="box-form" style="overflow:auto;white-space:nowrap;">
-							<table style="width:100%" border="1">
+							<table style="width:100%">
 								<tr>
 									<td style="width:15%;padding:5px"></td>
 									<td style="width:1%;padding:5px"></td>
@@ -208,7 +210,7 @@
 		level = $("#level").val();
 
 		if(username == '' || nama_user == '' || password == '' || level == ''){
-			swal('HARAP LENGKAPI FORM!');
+			swal('HARAP LENGKAPI FORM!', "", "error");
 			return;
 		}
 		// alert(username+' - '+nama_user+' - '+password+' - '+level+' - '+status);

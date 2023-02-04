@@ -133,6 +133,8 @@
 		$otorisasi = 'finance';
 	}else if($this->session->userdata('level') == "Office"){
 		$otorisasi = 'office';
+	}else if($this->session->userdata('level') == "Corrugated"){
+		$otorisasi = 'cor';
 	}else{
 		$otorisasi = 'user';
 	}
@@ -165,7 +167,7 @@
 							<?php if($otorisasi == 'all' || $otorisasi == 'admin'){?>
 								<button id="btn-opsi-pl" onclick="pilih_opsi('pl')">PACKING LIST</button>
 							<?php } ?>
-							<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'qc' || $otorisasi == 'fg'){?>
+							<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'qc' || $otorisasi == 'fg' || $otorisasi == 'cor'){?>
 								<button id="btn-opsi-rk" onclick="pilih_opsi('rk')">RENCANA KIRIM</button>
 							<?php } ?>
 							<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'fg' || $otorisasi == 'office'){?>
@@ -563,7 +565,7 @@
 			$("#btn-opsi-pl").show();
 			$("#btn-opsi-rk").show();
 			$("#btn-opsi-lap").show();
-		}else if(otorisasi == 'qc'){
+		}else if(otorisasi == 'qc' || otorisasi == 'cor'){
 			$(".plh-opsi-plrk").show();
 			$("#btn-opsi-pl").hide();
 			$("#btn-opsi-lap").hide();
