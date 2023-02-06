@@ -2202,9 +2202,13 @@ class Master extends CI_Controller
 	}
 
 	function addCartRk(){
-		// 5_ex_2022-12-08_ex_TESET/RENCANA/KIRIM_ex_MH_ex_150_ex_190.00
-		#tgl nm_ker g_label width jml_roll order_pl
+		// 7_ex_2023-02-04_ex_PPI/FG/01/02/23_ex_MH+COLOR_ex_125_ex_110.00_ex_210
 		$exp = explode("_ex_", $_POST['rkukuran']);
+		if($exp[3] == 'MH COLOR'){
+			$tnmKer = 'MHC';
+		}else{
+			$tnmKer = $exp[3];
+		}
 		$tgl = $exp[1];
 		$nm_ker = $exp[3];
 		$g_label = $exp[4];
@@ -2213,8 +2217,8 @@ class Master extends CI_Controller
 		$order_pl = $exp[0];
 
 		$data = array(
-			'id' => $nm_ker.$g_label.'_'.$width.$order_pl,
-			'name' => $nm_ker.$g_label.'_'.$width.$order_pl,
+			'id' => $tnmKer.$g_label.'_'.$width.$order_pl,
+			'name' => $tnmKer.$g_label.'_'.$width.$order_pl,
 			'price' => 0,
 			'qty' => 1,
 			'options' => array(
@@ -2289,9 +2293,15 @@ class Master extends CI_Controller
 		$otorisasi = $_POST['otorisasi'];
 		$html ='';
 
+		if($otorisasi == 'cor'){
+			$whereCor = "AND p.id_perusahaan='210'";
+		}else{
+			$whereCor = "";
+		}
+
 		$getCust = $this->db->query("SELECT r.id_rk AS idrk,r.qc_rk,p.* FROM pl p
-		INNER JOIN m_rencana_kirim r ON p.tgl_pl=r.tgl AND p.opl=r.order_pl
-		WHERE qc='proses' AND tgl_pl='$tgl'
+		INNER JOIN m_rencana_kirim r ON p.tgl_pl=r.tgl AND p.opl=r.order_pl $whereCor
+		WHERE (qc='proses' OR qc='ok') AND tgl_pl='$tgl'
 		GROUP BY opl");
 		if($getCust->num_rows() == 0){
 			$html .='<div class="notfon">DATA TIDAK DITEMUKAN</div>';
@@ -2321,10 +2331,16 @@ class Master extends CI_Controller
 				}else{
 					$aksi = '';
 				}
+
+				if($cust->qc == 'ok'){
+					$btnRenc = 'VIEW';
+				}else{
+					$btnRenc = 'PROSES';
+				}
 				$html .='<table class="list-table">
 					<tr>
 						<td style="padding:5px 0;text-align:center">
-							<button onclick="btnRencana('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$pbtnrencana."'".','."'".$i."'".')">PROSES</button>
+							<button onclick="btnRencana('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$pbtnrencana."'".','."'".$i."'".')">'.$btnRenc.'</button>
 							'.$aksi.'
 						</td>
 						<td style="padding:5px;text-align:center">'.$i.'</td>
@@ -2462,34 +2478,56 @@ class Master extends CI_Controller
 						$ketSeset = $w->ket;
 					}
 
+					// CEK JIKA SUDAH OK
+					$cekOk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' AND qc_rk='proses' GROUP BY id_rk");
+
 					// REQ PRINT LABEL
-					if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'fg'){
-						if($w->lbl_rk == 'req'){
-							$lds = 'disabled class="btn-req-lbl"';
+					if($w->lbl_rk == 'req'){
+						$lds = 'disabled class="btn-req-lbl"';
+					}else{
+						$lds = '';
+					}
+					$lblReq = '<button '.$lds.' onclick="reqLabelRk('."'".$w->id."'".','."'".$w->id_rk."'".','."'".$l."'".')">req</button>';
+					if($otorisasi == 'all' || $otorisasi == 'admin'){
+						$btnLabel = $lblReq;
+					}else if($otorisasi == 'fg'){
+						if($cekOk->num_rows() > 0){
+							$btnLabel = $lblReq;
 						}else{
-							$lds = '';
+							$btnLabel = '-';
 						}
-						$btnLabel = '<button '.$lds.' onclick="reqLabelRk('."'".$w->id."'".','."'".$w->id_rk."'".','."'".$l."'".')">req</button>';
 					}else{
 						$btnLabel = '-';
 					}
 
 					// PILIH OPSI
 					$btnEditBatalListRk = '<button onclick="editRollRk('."'".$w->id."'".','."'".$w->diameter."'".','."'".$w->seset."'".','."'".$w->weight."'".','."'".$l."'".')">EDIT</button> <button onclick="batalRollRk('."'".$w->id."'".','."'".$l."'".')">BATAL</button>';
-					$cekOk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' AND qc_rk='proses' GROUP BY id_rk");
+					// CEK JIKA SUDAH DIKONFIRMASI CORRUGATED
+					$cekCor = $this->db->query("SELECT*FROM m_timbangan WHERE id='$w->id' AND id_pl='0' AND id_rk='$id_rk' AND cor_at IS NULL AND cor_by IS NULL");
 					// JIKA SUDAH MASUK PACKING LIST TIDAK BISA DI EDIT / BATAL
 					if($w->status != 0 && $w->id_pl != 0){
 						$aksi = '-';
 					}else{
 						if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'fg'){
-							if($plh == 'pl'){
-								$aksi = $btnEditBatalListRk;
+							if($cekCor->num_rows() == 0){
+								$aksi = 'TERKONFIRMASI COR!';
 							}else{
-								if($cekOk->num_rows() > 0){
+								if($plh == 'pl'){
 									$aksi = $btnEditBatalListRk;
 								}else{
-									$aksi = '-';
+									if($cekOk->num_rows() > 0){
+										$aksi = $btnEditBatalListRk;
+									}else{
+										$aksi = '-';
+									}
 								}
+							}
+						}else if($otorisasi == 'cor'){
+							// CORRUGATED
+							if($cekCor->num_rows() == 0){
+								$aksi = '<button onclick="konfirmasiBatalCor('."'".$w->id."'".','."'batal'".','."'".$l."'".')">BATAL KONFIRMASI</button>';
+							}else{
+								$aksi = '<button onclick="konfirmasiBatalCor('."'".$w->id."'".','."'konfirmasi'".','."'".$l."'".')">KONFIRMASI</button>';
 							}
 						}else{
 							$aksi = '-';
@@ -2560,9 +2598,18 @@ class Master extends CI_Controller
 								WHERE id_rk='$w->id_rk' AND pl.nm_ker='$w->nm_ker' AND pl.g_label='$w->g_label' AND po.width='$w->width'
 								GROUP BY pl.id,pl.no_po,pl.nm_ker,pl.g_label");
 								foreach($getPl->result() as $pl){
-									$html .= '<div style="display:block">
-										<button class="tmbl-cek-roll" onclick="entryPL('."'".$w->id_rk."'".','."'".$pl->opl."'".','."'".$pl->tgl_pl."'".','."'".$plh."'".','."'".$l."'".','."'".$pl->id."'".','."'".$w->id."'".','."'".$w->status."'".')">'.$pl->id.'</button>
+									$btnSatuPl = '<div style="display:block">
+									<button class="tmbl-cek-roll" onclick="entryPL('."'".$w->id_rk."'".','."'".$pl->opl."'".','."'".$pl->tgl_pl."'".','."'".$plh."'".','."'".$l."'".','."'".$pl->id."'".','."'".$w->id."'".','."'".$w->status."'".')">'.$pl->id.'</button>
 									</div>';
+									if($pl->id_perusahaan == 210){
+										if($cekCor->num_rows() == 0){
+											$html .= $btnSatuPl;
+										}else{
+											$html .= 'KONFIRMASI DULU!';
+										}
+									}else{
+										$html .= $btnSatuPl;
+									}
 								}
 							}
 						}else{
@@ -2665,23 +2712,35 @@ class Master extends CI_Controller
 					$pLabelReq = '';
 				}
 			}else{
+				$cSj = $this->db->query("SELECT*FROM pl WHERE id_rk='$id_rk' AND qc='ok' GROUP BY id_rk");
 				if($plh == 'pl'){
 					if($otorisasi == 'all' || $otorisasi == 'admin'){
-						$cSj = $this->db->query("SELECT*FROM pl WHERE id_rk='$id_rk' AND qc='ok' GROUP BY id_rk");
 						if($cSj->num_rows() == 0){
 							$btnCekOk = $listPlCek.' '.'<button onclick="cekOkRk('."'".$id_rk."'".','."'".$plh."'".','."'".$l."'".','."'batal'".')">BATAL OK</button>';
 						}else{
 							$btnCekOk = 'SURAT JALAN SUDAH OK!';
 						}
 					}else{
-						$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
+						if($cSj->num_rows() == 0){
+							$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
+						}else{
+							$btnCekOk = 'SURAT JALAN SUDAH OK!';
+						}
 					}
 					$pLabelReq = $lbl;
 				}else{
 					if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'qc'){
-						$btnCekOk = $listPlCek.' '.'SURAT JALAN SEDANG DIPROSES';
+						if($cSj->num_rows() == 0){
+							$btnCekOk = $listPlCek.' '.'SURAT JALAN SEDANG DIPROSES';
+						}else{
+							$btnCekOk = 'SURAT JALAN SUDAH OK!';
+						}
 					}else{
-						$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
+						if($cSj->num_rows() == 0){
+							$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
+						}else{
+							$btnCekOk = 'SURAT JALAN SUDAH OK!';
+						}
 					}
 					$pLabelReq = '';
 				}
@@ -2751,14 +2810,22 @@ class Master extends CI_Controller
 
 	function batalRollRk(){
 		// CEK JIKA SUDAH OK!
+		$id = $_POST['id'];
 		$idrk = $_POST['id_rk'];
 		$plh = $_POST['pilihbtnrencana'];
 
 		// JIKA DI PACKING LIST MASIH BISA BATAL
 		if($plh == 'pl'){
-			$return = $this->m_master->batalRollRk();
-			$msg = 'BERHASIL BATAL!';
-			$info = 'success';
+			$cekPlCor = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND id_pl='0' AND cor_at IS NOT NULL AND cor_by IS NOT NULL");
+			if($cekPlCor->num_rows() > 0){
+				$return = true;
+				$msg = 'SUDAH TERKONFIRMASI COR!';
+				$info = 'error';
+			}else{
+				$return = $this->m_master->batalRollRk();
+				$msg = 'BERHASIL BATAL!';
+				$info = 'success';
+			}
 		}else{
 			$cek = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$idrk' AND qc_rk='proses' GROUP BY id_rk");
 			if($cek->num_rows() == 0){
@@ -2869,6 +2936,24 @@ class Master extends CI_Controller
 		$html .='</table>';
 
 		echo $html;
+	}
+
+	function konfirmasiBatalCor(){
+		$id = $_POST['id'];
+		$id_rk = $_POST['id_rk'];
+
+		if($_POST['pilihan'] == 'konfirmasi'){
+			$return = $this->m_master->konfirmasiBatalCor();
+			echo json_encode(array('res' => $return, 'msg' => 'TERKONFIRMASI!', 'info' => 'success'));
+		}else{
+			$cek = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND id_pl!='0'");
+			if($cek->num_rows() == 0){
+				$return = $this->m_master->konfirmasiBatalCor();
+				echo json_encode(array('res' => $return, 'msg' => 'BATAL KONFIRMASI!', 'info' => 'success'));
+			}else{
+				echo json_encode(array('res' => true, 'msg' => 'ROLL SUDAH MASUK DI PACKING LIST!', 'info' => 'error'));
+			}
+		}
 	}
 
 	function prosesPL(){
@@ -3076,11 +3161,23 @@ class Master extends CI_Controller
 	}
 
 	function entryPL(){
-		$result = $this->m_master->entryPL();
-		echo json_encode(array(
-			'res' => $result,
-			'msg' => 'BERHASIL DITAMBAHKAN KE PL!',
-		));
+		$id = $_POST['idroll'];
+		$kodeIdRk = substr($_POST['id_rk'], 0, 7);
+		if($kodeIdRk == 'RK.210.'){
+			$cekPl = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND id_rk LIKE '$kodeIdRk%' AND id_pl='0' AND cor_at IS NULL AND cor_by IS NULL");
+			if($cekPl->num_rows() > 0){
+				$result = true;
+				echo json_encode(array('res' => $result, 'msg' => 'GAGAL BELUM TERKOMFIRMASI COR!'.$kodeIdRk, 'info' => 'error'));
+			}else{
+				$result = $this->m_master->entryPL();
+				echo json_encode(array('res' => $result, 'msg' => 'BERHASIL DITAMBAHKAN KE PL!'.$kodeIdRk, 'info' => 'success'));
+			}
+		}else{
+			$result = $this->m_master->entryPL();
+			echo json_encode(array('res' => $result, 'msg' => 'BERHASIL DITAMBAHKAN KE PL!'.$kodeIdRk, 'info' => 'success'));
+		}
+		
+
 	}
 
 	function entryPlAllIn(){
@@ -4110,8 +4207,8 @@ class Master extends CI_Controller
 		$getData = $this->db->query("SELECT p.id_rk,id_expedisi,p.tgl,nm_perusahaan,nama,COUNT(t.roll) AS roll,SUM(weight - seset) AS kiriman FROM pl p
 		INNER JOIN m_timbangan t ON p.id=t.id_pl
 		WHERE id_expedisi='$idex'
-		GROUP BY id_expedisi,p.id_perusahaan
-		ORDER BY p.tgl;");
+		GROUP BY id_expedisi,p.id_perusahaan,p.tgl
+		ORDER BY p.tgl");
 		$i = 0;
 		foreach($getData->result() as $r){
 			$i++;

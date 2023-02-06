@@ -1754,12 +1754,12 @@
 			url: '<?php echo base_url('Master/entryPL')?>',
 			type: "POST",
 			data: ({
-				idpl,idroll,rstatus
+				idpl,idroll,rstatus,id_rk
 			}),
 			success: function(json){
 				data = JSON.parse(json)
 				if(data.res){
-					swal(data.msg, "", "success")
+					swal(data.msg, "", data.info)
 					btnRencana(id_rk,opl,tgl_pl,brencana,i)
 				}
 			}
@@ -2233,6 +2233,30 @@
 				}
 			}
 		})
+	}
+
+	//
+
+	function konfirmasiBatalCor(id,pilihan,i){
+		// alert(id);
+		$(".plistinputroll").html('');
+		id_rk = $("#v-id-pl").val();
+		opl = $("#v-opl").val();
+		tgl_pl = $("#v-tgl-pl").val();
+		$.ajax({
+			url: '<?php echo base_url('Master/konfirmasiBatalCor')?>',
+			type: "POST",
+			data: ({
+				id,pilihan,id_rk
+			}),
+			success: function(json){
+				data = JSON.parse(json);
+				if(data.res){
+					swal(data.msg, "", data.info);
+					btnRencana(id_rk,opl,tgl_pl,pilihbtnrencana,i);
+				}
+			}
+		});
 	}
 
 	//

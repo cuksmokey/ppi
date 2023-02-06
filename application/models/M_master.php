@@ -1137,6 +1137,21 @@ class M_master extends CI_Model{
         return $result;
     }
 
+	function konfirmasiBatalCor(){
+		if($_POST['pilihan'] == 'konfirmasi'){
+			$this->db->set('cor_at', date('Y-m-d H:i:s'));
+			$this->db->set('cor_by', $this->session->userdata('username'));
+			$this->db->where('id', $_POST['id']);
+			return $this->db->update('m_timbangan');
+		}else{
+			// batal
+			$this->db->set('cor_at', null);
+			$this->db->set('cor_by', null);
+			$this->db->where('id', $_POST['id']);
+			return $this->db->update('m_timbangan');
+		}
+	}
+
 	function hapusPL(){
 		// idpt,tglpl,opl
 		$idpt = $_POST['idpt'];
