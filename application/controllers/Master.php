@@ -3807,7 +3807,7 @@ class Master extends CI_Controller
 				}
 
 				$usr = $this->session->userdata('username');
-				$cek = $this->db->query("SELECT*FROM USER WHERE username='$usr' AND (id='5' OR id='4' OR id='6' OR id='18')");
+				$cek = $this->db->query("SELECT*FROM user WHERE username='$usr' AND (id='5' OR id='4' OR id='6' OR id='18')");
 				if($cek->num_rows() > 0) {
 					$html .='<td style="padding:5px">
 					<button onclick="editUser('."'".$r->id."'".')" class="btn bg-orange btn-sm waves-effect" style="font-weight:bold">EDIT</button>'.$btnHps.'
