@@ -5099,7 +5099,7 @@ class Laporan extends CI_Controller {
 	}
 
     function newPenPO() {
-		$pt = $_POST['id'];
+		$ptId = $_POST['id'];
 		$id_po = $_POST['id_po'];
 		$no_po = $_POST['no_po'];
 		$opsi = $_POST['opsi'];
@@ -5108,7 +5108,7 @@ class Laporan extends CI_Controller {
 
         $getPT = $this->db->query("SELECT * FROM po_master a
         INNER JOIN m_perusahaan b ON a.id_perusahaan=b.id
-        WHERE a.id_perusahaan='$pt' AND a.id_po='$id_po' AND a.no_po='$no_po' AND status='$opsi'
+        WHERE a.id_perusahaan='$ptId' AND a.id_po='$id_po' AND a.no_po='$no_po' AND status='$opsi'
         -- AND a.tgl LIKE '%2022-11%'
         GROUP BY a.id_perusahaan,a.tgl,a.no_po");
         if($getPT->num_rows() == 0){
@@ -5123,7 +5123,7 @@ class Laporan extends CI_Controller {
 
                 $getTgl = $this->db->query("SELECT b.tgl FROM m_timbangan a
                 INNER JOIN pl b ON a.id_pl=b.id
-                WHERE b.no_po='$pt->no_po'
+                WHERE b.no_po='$pt->no_po' AND b.id_perusahaan='$ptId'
                 -- AND b.tgl LIKE '%2022-11%'
 				AND b.qc='ok'
                 GROUP BY b.tgl");
@@ -5172,7 +5172,7 @@ class Laporan extends CI_Controller {
 
                 // TAMPIL GSM
                 $getGsm = $this->db->query("SELECT a.*,SUM(jml_roll) AS jmll,SUM(tonase) AS tonn,COUNT(a.nm_ker) AS ttl FROM po_master a
-                WHERE a.no_po='$pt->no_po'
+                WHERE a.no_po='$pt->no_po' AND a.id_perusahaan='$ptId'
                 GROUP BY a.nm_ker,a.g_label");
                 $ii = 0;
                 $allTotRoll = 0;
@@ -5199,7 +5199,7 @@ class Laporan extends CI_Controller {
 
                     // GET WIDTH
                     $getUkPO = $this->db->query("SELECT*FROM po_master
-                    WHERE no_po='$rGsm->no_po' AND nm_ker='$rGsm->nm_ker' AND g_label='$rGsm->g_label'
+                    WHERE no_po='$rGsm->no_po' AND nm_ker='$rGsm->nm_ker' AND g_label='$rGsm->g_label' AND id_perusahaan='$ptId'
                     ORDER BY width");
                     $sumPlusMinRoll = 0;
                     $sumPlusMinBerat = 0;
@@ -5212,7 +5212,7 @@ class Laporan extends CI_Controller {
                         foreach($getTgl->result() as $tTgl){
                             $getIsiUk = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
                             INNER JOIN pl b ON a.id_pl=b.id
-                            AND b.no_po='$ukPO->no_po' AND b.tgl='$tTgl->tgl' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width' AND b.qc='ok'
+                            AND b.no_po='$ukPO->no_po' AND b.tgl='$tTgl->tgl' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width' AND b.id_perusahaan='$ptId' AND b.qc='ok'
                             GROUP BY b.tgl,a.g_label,a.nm_ker,a.width");
                             if($getIsiUk->num_rows() == 0){
                                 $html .= '<td></td><td></td>';
@@ -5226,7 +5226,7 @@ class Laporan extends CI_Controller {
                         // TOTAL PER UKURAN PER GSM
                         $getUkpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
                         INNER JOIN pl b ON a.id_pl=b.id
-                        AND b.no_po='$ukPO->no_po' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width' AND b.qc='ok'
+                        AND b.no_po='$ukPO->no_po' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width' AND b.id_perusahaan='$ptId' AND b.qc='ok'
                         GROUP BY a.nm_ker,a.g_label,a.width");
                         if($getUkpGsm->num_rows() == 0){
 							$plusMinRoll = 0 - $ukPO->jml_roll;
@@ -5278,7 +5278,7 @@ class Laporan extends CI_Controller {
                         foreach($getTgl->result() as $tTgl){
                             $getTotpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
                             INNER JOIN pl b ON a.id_pl=b.id
-                            AND b.no_po='$rGsm->no_po' AND b.tgl='$tTgl->tgl' AND a.nm_ker='$rGsm->nm_ker' AND a.g_label='$rGsm->g_label' AND b.qc='ok'
+                            AND b.no_po='$rGsm->no_po' AND b.tgl='$tTgl->tgl' AND a.nm_ker='$rGsm->nm_ker' AND a.g_label='$rGsm->g_label' AND b.id_perusahaan='$ptId' AND b.qc='ok'
                             GROUP BY b.tgl,a.g_label,a.nm_ker");
                             if($getTotpGsm->num_rows() == 0){
                                 $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
@@ -5293,7 +5293,7 @@ class Laporan extends CI_Controller {
                         // JUMLAH TOTAL PER GSM
                         $getJmlTotpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
                         INNER JOIN pl b ON a.id_pl=b.id
-                        AND b.no_po='$rGsm->no_po' AND a.nm_ker='$rGsm->nm_ker' AND a.g_label='$rGsm->g_label' AND b.qc='ok'
+                        AND b.no_po='$rGsm->no_po' AND a.nm_ker='$rGsm->nm_ker' AND a.g_label='$rGsm->g_label' AND b.id_perusahaan='$ptId' AND b.qc='ok'
                         GROUP BY a.g_label,a.nm_ker");
                         if($getJmlTotpGsm->num_rows() == 0){
                             $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
@@ -5332,7 +5332,7 @@ class Laporan extends CI_Controller {
                     foreach($getTgl->result() as $tTgl){
                         $getKir = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
                         INNER JOIN pl b ON a.id_pl=b.id
-                        AND b.no_po='$ukPO->no_po' AND b.tgl='$tTgl->tgl' AND b.qc='ok'
+                        AND b.no_po='$ukPO->no_po' AND b.tgl='$tTgl->tgl' AND b.id_perusahaan='$ptId' AND b.qc='ok'
                         GROUP BY b.tgl");
                         if($getKir->num_rows() == 0){
                             $html .= '<td></td><td></td>';

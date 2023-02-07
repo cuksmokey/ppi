@@ -617,7 +617,7 @@
 			return;
 		}
 
-		$(".list-lap").show().html('Memuat Data . . .');
+		$(".list-lap").show().html('MEMUAT DATA . . .');
 		$.ajax({
 			url: '<?php echo base_url('Master/LoadLaporanPengiriman')?>',
 			type: "POST",
@@ -632,7 +632,7 @@
 
 	function cekLapKiriman(tgl,idpt,idex){
 		// $(".modal-body").html('');
-		$(".isi-lap-kiriman").html('Memuat Data . . .');
+		$(".isi-lap-kiriman").html('MEMUAT DATA . . .');
 		$("#modal-lap-kiriman").modal("show");
 		$.ajax({
 			url: '<?php echo base_url('Master/cekLapKiriman')?>',
@@ -1714,7 +1714,7 @@
 		$("#v-ii").val(i);
 		$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/destroyCartInputRoll') ?>");
 		$(".id-cek").html('');
-		$(".t-plist-rencana-" + i).html('Memuat Rencana Kirim . . .');
+		$(".t-plist-rencana-" + i).html('MEMUAT RENCANA KIRIM . . .');
 		$.ajax({
 			url: '<?php echo base_url('Master/pListRencana')?>',
 			type: "POST",
@@ -1939,7 +1939,7 @@
 
 	function showListEditRk(id_rk,opl,tgl_pl,i){
 		// alert(id_rk)
-		$(".show-list-edit-rk").html('Memuat . . .');
+		$(".show-list-edit-rk").html('MEMUAT . . .');
 		$.ajax({
 			url: '<?php echo base_url('Master/showListEditRk')?>',
 			type: "POST",

@@ -1941,6 +1941,8 @@ class Master extends CI_Controller
 
 		if($jenis == 'MH COLOR'){
 			$tJenis = 'MC';
+		}else if($jenis == 'MN'){
+			$tJenis = 'MH';
 		}else{
 			$tJenis = $jenis;
 		}
@@ -2031,9 +2033,12 @@ class Master extends CI_Controller
 	}
 
 	function loadNmKerSj(){
+		// 16_ex_001/PPI/XII/2022_ex_MN_ex_non_ex_38
 		$id = explode("_ex_", $_POST['id']);
 		if($id[2] == 'MH COLOR'){
 			$tKer = 'MHC';
+		}else if($id[2] == 'MN'){
+			$tKer = 'MH';
 		}else{
 			$tKer = $id[2];
 		}
@@ -2042,7 +2047,7 @@ class Master extends CI_Controller
 		if($id[4] == 210){
 			$nmKer = 'C'.$tKer;
 		}else{
-			$nmKer = $id[2];
+			$nmKer = $tKer;
 		}
 		echo json_encode(array('nm_ker' => $nmKer));
 	}
@@ -2454,7 +2459,7 @@ class Master extends CI_Controller
 						$bgtr = 'status-stok';
 					}
 
-					if($w->nm_ker == 'MH'){
+					if($w->nm_ker == 'MH' || $w->nm_ker == 'MN'){
 						$bgbw = '';
 						$bgrct = '';
 						$bgbi = 'background:#eee';
@@ -2707,7 +2712,7 @@ class Master extends CI_Controller
 					if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'qc'){
 						$btnCekOk = $listPlCek.' '.'<button onclick="cekOkRk('."'".$id_rk."'".','."'".$plh."'".','."'".$l."'".','."'ok'".')">CEK OK</button>';
 					}else{
-						$btnCekOk = 'CEK BELUM OK!';
+						$btnCekOk = 'SEDANG DALAM PENGECEKAN!';
 					}
 					$pLabelReq = '';
 				}
@@ -2735,6 +2740,8 @@ class Master extends CI_Controller
 						}else{
 							$btnCekOk = 'SURAT JALAN SUDAH OK!';
 						}
+					}else if($otorisasi == 'cor'){
+						$btnCekOk = $listPlCek.' '.'SEDANG DIPROSES';
 					}else{
 						if($cSj->num_rows() == 0){
 							$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
@@ -4386,7 +4393,7 @@ class Master extends CI_Controller
 		$totalRoll = 0;
 		$totalBerat = 0;
 		foreach($kop_detail->result() as $kd){
-			if($kd->nm_ker == 'MH' || $kd->nm_ker == 'MI'){
+			if($kd->nm_ker == 'MH' || $kd->nm_ker == 'MI' || $kd->nm_ker == 'MN'){
 				$dkop = '<td style="border:1px solid #000;font-weight:bold">RCT</td>';
 				$joint = 'JNT';
 			}else if($kd->nm_ker == 'BK' || $kd->nm_ker == 'BL'){
@@ -4400,9 +4407,15 @@ class Master extends CI_Controller
 				$joint = 'JNT';
 			}
 
+			if($kd->nm_ker == 'MH COLOR'){
+				$tnmKer = 'MH C';
+			}else{
+				$tnmKer = $kd->nm_ker;
+			}
+
 			$html .= '<tr>
 				<td style="border:1px solid #000;font-weight:bold">NO</td>
-				<td style="border:1px solid #000;font-weight:bold" colspan="2">ROLL - '.$kd->nm_ker.'</td>
+				<td style="border:1px solid #000;font-weight:bold" colspan="2">ROLL - '.$tnmKer.'</td>
 				<td style="border:1px solid #000;font-weight:bold">BW</td>
 				'.$dkop.'
 				<td style="border:1px solid #000;font-weight:bold">GSM</td>
@@ -4435,7 +4448,7 @@ class Master extends CI_Controller
 					$c_bi = $r->bi;
 				}
 
-				if($r->nm_ker == 'MH' || $r->nm_ker == 'MI'){
+				if($r->nm_ker == 'MH' || $r->nm_ker == 'MI' || $r->nm_ker == 'MN'){
 					$cek = '<td style="border:1px solid #000">'.$c_rct.'</td>';
 				}else if($r->nm_ker == 'BK' || $r->nm_ker == 'BL'){
 					$cek = '<td style="border:1px solid #000">'.$c_bi.'</td>';
