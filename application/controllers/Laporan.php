@@ -5739,7 +5739,7 @@ class Laporan extends CI_Controller {
                 $getRollEdit = $this->db->query("SELECT*FROM m_roll_edit e
                 WHERE e.roll='$roll->roll'");
                 if($getRollEdit->num_rows() == 0){
-					if($otori == 'all' || $otori == 'admin' || $otori == 'qc' || $otori == 'fg'){
+					if($otori == 'all' || $otori == 'admin' || $otori == 'qc' || $otori == 'fg' || $otori == 'cor'){
 						$oBre = '<button class="tmbl-cek-roll" onclick="cekRollEdit('."'".$roll->id."'".','."'".$roll->roll."'".')">';
                         $cBre = '</button>';
 					}else{
@@ -5756,7 +5756,7 @@ class Laporan extends CI_Controller {
                     }
                 }
 
-				if((($roll->status == 0 && $roll->id_pl == 0) || ($roll->status == 2 && $roll->id_pl == 0)) && ($roll->id_rk != null || $roll->id_rk != '')){ // MASUK RENCANA KIRIM
+				if($roll->id_pl == 0 && ($roll->id_rk != null || $roll->id_rk != '')){ // MASUK RENCANA KIRIM
                     $bgStt = 'cek-status-rk';
 					if($opsi == 'cekRollStok' || $otori == 'all' || $otori == 'admin' || $otori == 'qc'){
 						$diss = '';
@@ -6065,7 +6065,7 @@ class Laporan extends CI_Controller {
         $html ='';
 
 		$html .='<div style="overflow:auto;white-space:nowrap">';
-		$getRollRk = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll' AND (status='0' OR status='2') AND id_pl='0' AND id_rk!=''");
+		$getRollRk = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll' AND id_pl='0' AND id_rk!=''");
 		if($getRollRk->num_rows() > 0){
 			$html .='<table style="margin:0 0 20px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
 			$rollRk = $getRollRk->row();

@@ -47,7 +47,16 @@
 						<input type="hidden" name="iduser" id="iduser" value="">
 						<input type="hidden" name="lusername" id="lusername" value="">
 
-						<button onclick="btn_add()" style="font-weight:bold" class="btn btn-default btn-sm waves-effect">ADD</button>
+						<?php
+							$level = $this->session->userdata('username');
+							$cek = $this->db->query("SELECT*FROM USER WHERE username='$level' AND (id='5' OR id='4' OR id='6' OR id='18')");
+
+							if($cek->num_rows() > 0) {
+						?>
+							<button onclick="btn_add()" style="font-weight:bold" class="btn btn-default btn-sm waves-effect">ADD</button>
+						<?php
+							}
+						?>
 
 						<div class="box-data" style="overflow:auto;white-space:nowrap;"></div>
 
@@ -230,13 +239,13 @@
 			success: function(data){
 				json = JSON.parse(data);
 				if(json.data){
-					swal(json.msg);
+					swal(json.msg, "", "success");
 					// editUser(json.user.id);
 					$(".box-data").show();
 					$(".box-form").hide();
 					load_data(otorisasi);
 				}else{
-					swal(json.msg);
+					swal(json.msg, "", "error");
 				}
 			}
 		})

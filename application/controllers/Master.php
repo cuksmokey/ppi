@@ -3167,14 +3167,14 @@ class Master extends CI_Controller
 			$cekPl = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND id_rk LIKE '$kodeIdRk%' AND id_pl='0' AND cor_at IS NULL AND cor_by IS NULL");
 			if($cekPl->num_rows() > 0){
 				$result = true;
-				echo json_encode(array('res' => $result, 'msg' => 'GAGAL BELUM TERKOMFIRMASI COR!'.$kodeIdRk, 'info' => 'error'));
+				echo json_encode(array('res' => $result, 'msg' => 'GAGAL BELUM TERKOMFIRMASI COR!', 'info' => 'error'));
 			}else{
 				$result = $this->m_master->entryPL();
-				echo json_encode(array('res' => $result, 'msg' => 'BERHASIL DITAMBAHKAN KE PL!'.$kodeIdRk, 'info' => 'success'));
+				echo json_encode(array('res' => $result, 'msg' => 'BERHASIL DITAMBAHKAN KE PL!', 'info' => 'success'));
 			}
 		}else{
 			$result = $this->m_master->entryPL();
-			echo json_encode(array('res' => $result, 'msg' => 'BERHASIL DITAMBAHKAN KE PL!'.$kodeIdRk, 'info' => 'success'));
+			echo json_encode(array('res' => $result, 'msg' => 'BERHASIL DITAMBAHKAN KE PL!', 'info' => 'success'));
 		}
 		
 
@@ -3805,9 +3805,16 @@ class Master extends CI_Controller
 				}else{
 					$btnHps = '';
 				}
-				$html .='<td style="padding:5px">
+
+				$usr = $this->session->userdata('username');
+				$cek = $this->db->query("SELECT*FROM USER WHERE username='$usr' AND (id='5' OR id='4' OR id='6' OR id='18')");
+				if($cek->num_rows() > 0) {
+					$html .='<td style="padding:5px">
 					<button onclick="editUser('."'".$r->id."'".')" class="btn bg-orange btn-sm waves-effect" style="font-weight:bold">EDIT</button>'.$btnHps.'
-				</td>';
+					</td>';
+				}else{
+					$html .='<td style="padding:5px">-</td>';
+				}
 			}
 			$html .='</tr>';
 		}

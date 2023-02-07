@@ -248,14 +248,19 @@
                             <?php } ?>
                         </ul>
                     </li>
-                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "Corrugated") { ?>
+                    <?php
+						if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "Corrugated") {
+							$level = $this->session->userdata('username');
+							$cek = $this->db->query("SELECT*FROM USER WHERE username='$level' AND (id='5' OR id='4' OR id='6' OR id='18')");
+							if($cek->num_rows() > 0) {
+					?>
                         <li>
                             <a href="<?php echo base_url('Master/Administrator') ?>">
                                 <!-- <i class="material-icons">list</i> -->
                                 <span>Administrator</span>
                             </a>
                         </li>
-                    <?php } ?>
+                    <?php }} ?>
                     <li>
                         <a href="<?php echo base_url('Login/logout') ?>">
                             <!-- <i class="material-icons">logout</i> -->
