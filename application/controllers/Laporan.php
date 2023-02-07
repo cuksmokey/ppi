@@ -5187,6 +5187,8 @@ class Laporan extends CI_Controller {
                         $bgNk = '#ffd';
                     }else if(($rGsm->nm_ker == 'MH' || $rGsm->nm_ker == 'MN') && $rGsm->g_label == 150){
                         $bgNk = '#fdd';
+                    }else if($rGsm->nm_ker == 'BK'){
+                        $bgNk = '#eee';
                     }else if($rGsm->nm_ker == 'WP'){
                         $bgNk = '#dfd';
                     }else{ // BK
