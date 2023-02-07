@@ -49,7 +49,7 @@
 
 						<?php
 							$level = $this->session->userdata('username');
-							$cek = $this->db->query("SELECT*FROM USER WHERE username='$level' AND (id='5' OR id='4' OR id='6' OR id='18')");
+							$cek = $this->db->query("SELECT*FROM user WHERE username='$level' AND (id='5' OR id='4' OR id='6' OR id='18')");
 
 							if($cek->num_rows() > 0) {
 						?>
