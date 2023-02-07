@@ -1184,7 +1184,11 @@ class Laporan extends CI_Controller {
                 }
 
                 $html .= '</table>';
-                $html .= '<div style="page-break-after:always"></div>';
+
+				// 
+				if($data_header->num_rows() != 1){
+					$html .= '<div style="page-break-after:always"></div>';
+				}
             }
 
             // TOTAL PL YANG BISA DI TAMPILANKAN DALAM SATU HALAMAN ANTARA 34 - 39
