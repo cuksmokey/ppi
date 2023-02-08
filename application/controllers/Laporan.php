@@ -800,7 +800,7 @@ class Laporan extends CI_Controller {
                 INNER JOIN m_timbangan b ON a.id=b.id_pl
                 WHERE a.no_pkb='$jenis'
                 GROUP BY a.id
-                ORDER BY no_po DESC,a.g_label DESC,width DESC");
+                ORDER BY no_po DESC,a.g_label DESC");
 
             foreach ($data_header->result() as $data_pl) {
                 if($data_pl->roll >= 38){
@@ -1185,9 +1185,16 @@ class Laporan extends CI_Controller {
 
                 $html .= '</table>';
 
-				// 
-				if($data_header->num_rows() != 1){
-					$html .= '<div style="page-break-after:always"></div>';
+				// MENGHILANGKAN HALAMAN KOSONG DI HALAMAN TERAKHIR PACKING LIST
+				$cekLimitAkhir = $this->db->query("SELECT*FROM pl WHERE no_pkb='$jenis' ORDER BY no_po ASC,g_label ASC LIMIT 1");
+				if($data_header->num_rows() == 1){
+					$html .= '';
+				}else{
+					if($cekLimitAkhir->row()->id == $data_pl->id){
+						$html .= '';
+					}else{
+						$html .= '<div style="page-break-after:always"></div>';
+					}
 				}
             }
 
