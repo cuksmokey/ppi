@@ -2036,7 +2036,7 @@ class Master extends CI_Controller
 		// 16_ex_001/PPI/XII/2022_ex_MN_ex_non_ex_38
 		$id = explode("_ex_", $_POST['id']);
 		if($id[2] == 'MH COLOR'){
-			$tKer = 'MHC';
+			$tKer = 'MC';
 		}else if($id[2] == 'MN'){
 			$tKer = 'MH';
 		}else{
@@ -2647,15 +2647,16 @@ class Master extends CI_Controller
 							$html .='';
 						}else{
 							// CUMA SATU PL
+							// $getPl->row()->id_perusahaan
 							if($getPl->num_rows() == 1){
 								$html .='<tr>
-									<td style="padding:5px;font-weight:bold;text-align:right" colspan="13"><button onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$getPl->row()->id."'".','."'".$plh."'".')">'.$getPl->row()->id.'</button></td>
+									<td style="padding:5px;font-weight:bold;text-align:right" colspan="13"><button onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$getPl->row()->id."'".','."'".$plh."'".','."'".$getPl->row()->id_perusahaan."'".')">'.$getPl->row()->id.'</button></td>
 								</tr>';
 							}else{
 								// ALL IN ID PL TERTENTU
 								$html .='<tr><td style="padding:5px;font-weight:bold;text-align:right" colspan="13">';
 								foreach($getPl->result() as $idpl){
-									$html .='<button style="margin-left:5px" onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$idpl->id."'".','."'".$plh."'".')">'.$idpl->id.'</button>';
+									$html .='<button style="margin-left:5px" onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$idpl->id."'".','."'".$plh."'".','."'".$idpl->id_perusahaan."'".')">'.$idpl->id.'</button>';
 								}
 								$html .='</td></tr>';
 							}
@@ -2687,7 +2688,7 @@ class Master extends CI_Controller
 							GROUP BY pl.id,pl.no_po,pl.nm_ker,pl.g_label");
 							$html .='<tr style="background:#144272"><td style="padding:5px;font-weight:bold;text-align:right" colspan="13">';
 							foreach($idPlSakti->result() as $idpls){
-								$html .='<button style="margin-left:5px" onclick="entryPlAllIn('."'".$id_rk."'".','."'".$idpls->nm_ker."'".','."'".$idpls->g_label."'".',0,'."'".$idpls->id."'".','."'".$plh."'".')">'.$idpls->nm_ker.''.$idpls->g_label.' - '.$idpls->id.'</button>';
+								$html .='<button style="margin-left:5px" onclick="entryPlAllIn('."'".$id_rk."'".','."'".$idpls->nm_ker."'".','."'".$idpls->g_label."'".',0,'."'".$idpls->id."'".','."'".$plh."'".','."'".$idpls->id_perusahaan."'".')">'.$idpls->nm_ker.''.$idpls->g_label.' - '.$idpls->id.'</button>';
 							}
 							$html .='</td></tr>';
 						}

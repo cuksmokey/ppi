@@ -593,16 +593,31 @@ class M_master extends CI_Model{
     }
 
     function loadRkUkuran($search = "", $opl = "", $tglpl = "", $no_po = "", $nmker = "", $g_label =""){
-        $users = $this->db->query("SELECT tgl_pl,opl,p.no_po,p.nm_ker,p.g_label,m.width,p.id_perusahaan FROM pl p
+        $users = $this->db->query("SELECT tgl_pl,opl,p.no_po,p.nm_ker,p.g_label,m.width,p.id_perusahaan,m.jml_roll FROM pl p
         INNER JOIN po_master m ON p.no_po=m.no_po AND p.id_perusahaan=m.id_perusahaan AND p.nm_ker=m.nm_ker AND p.g_label=m.g_label
         WHERE tgl_pl='$tglpl' AND opl='$opl' AND p.no_po='$no_po' AND p.nm_ker='$nmker' AND p.g_label='$g_label' AND m.width LIKE '%$search%'
         GROUP BY tgl_pl,opl,p.no_po,p.nm_ker,p.g_label,m.width")->result_array();
 
         $data = array();
         foreach($users as $user){
+			// CEK ROLL TERJUAL
+			$userNopo = $user['no_po'];
+			$userNmker = $user['nm_ker'];
+			$userGlabel = $user['g_label'];
+			$userWidth = $user['width'];
+			$getRollTerjual = $this->db->query("SELECT * FROM m_timbangan t
+			INNER JOIN pl p ON t.nm_ker=p.nm_ker AND t.g_label=p.g_label AND t.id_pl=p.id
+			WHERE p.qc='ok' AND p.no_po='$userNopo' AND t.nm_ker='$userNmker' AND t.g_label='$userGlabel' AND width='$userWidth'");
+			if($getRollTerjual->num_rows() == 0){
+				$rollTerjual = 0;
+			}else{
+				$rollTerjual = $getRollTerjual->num_rows();
+			}
+			$txtText = round($user['width'],2).' ( '.$user['jml_roll'].' )'.' - '.$rollTerjual;
+
             $data[] = array(
                 "id" => $user['opl'].'_ex_'.$user['tgl_pl'].'_ex_'.$user['no_po'].'_ex_'.$user['nm_ker'].'_ex_'.$user['g_label'].'_ex_'.$user['width'].'_ex_'.$user['id_perusahaan'],
-                "text" => round($user['width'],2),
+                "text" => $txtText,
             );
         }
         return $data;
@@ -1442,29 +1457,42 @@ class M_master extends CI_Model{
 		$glabel = $_POST['glabel'];
 		$width = $_POST['width'];
 		$idpl = $_POST['idpl'];
+		$idpt = $_POST['idpt'];
+
+		if($idpt == 210){
+			$wCor = "AND cor_at IS NOT NULL AND cor_by IS NOT NULL";
+		}else{
+			$wCor = "";
+		}
 
 		// CARI ROLL
-		if($width == 0){ 
+		if($width == 0){
 			// SAKTI
-			$roll = $this->db->query("SELECT*FROM m_timbangan WHERE id_pl='0' AND id_rk='$idrk' AND nm_ker='$nm_ker' AND g_label='$glabel'");
+			$roll = $this->db->query("SELECT*FROM m_timbangan WHERE id_pl='0' AND id_rk='$idrk' AND nm_ker='$nm_ker' AND g_label='$glabel' $wCor");
 		}else{
 			// BIASA
-			$roll = $this->db->query("SELECT*FROM m_timbangan WHERE id_pl='0' AND id_rk='$idrk' AND nm_ker='$nm_ker' AND g_label='$glabel' AND width='$width'");
+			$roll = $this->db->query("SELECT*FROM m_timbangan WHERE id_pl='0' AND id_rk='$idrk' AND nm_ker='$nm_ker' AND g_label='$glabel' AND width='$width' $wCor");
 		}
-		foreach($roll->result() as $r){
-			if($r->status == 0){
-				$status = 1;
-			}else{
-				$status = $r->status;
-			}
 
-			$this->db->set('status', $status);
-			$this->db->set('id_pl', $idpl);
-			$this->db->set('packing_at', date("Y-m-d H:i:s"));
-			$this->db->set('packing_by', $this->session->userdata('username'));
-			$this->db->where('id', $r->id);
-			$result = $this->db->update('m_timbangan');
+		if($roll->num_rows() == 0){
+			$result = true;
+		}else{
+			foreach($roll->result() as $r){
+				if($r->status == 0){
+					$status = 1;
+				}else{
+					$status = $r->status;
+				}
+
+				$this->db->set('status', $status);
+				$this->db->set('id_pl', $idpl);
+				$this->db->set('packing_at', date("Y-m-d H:i:s"));
+				$this->db->set('packing_by', $this->session->userdata('username'));
+				$this->db->where('id', $r->id);
+				$result = $this->db->update('m_timbangan');
+			}
 		}
+
 
 		return $result;
 	}

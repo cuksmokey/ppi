@@ -485,7 +485,7 @@
 										<td style="padding:5px;font-weight:bold">JUMLAH ROLL</td>
 										<td style="padding:5px">:</td>
 										<td style="padding:5px">
-											<input type="text" id="rkjmlroll" class="form-control">
+											<input type="text" id="rkjmlroll" class="form-control" autocomplete="off">
 										</td>
 										<td style="padding:5px">
 											<button onclick="addCartRk()">ADD</button>
@@ -1766,7 +1766,7 @@
 		})
 	}
 
-	function entryPlAllIn(idrk,nm_ker,glabel,width,idpl,plh){
+	function entryPlAllIn(idrk,nm_ker,glabel,width,idpl,plh,idpt){
 		// vidpl = $("#v-id-pl").val();
 		vopl = $("#v-opl").val();
 		vtglpl = $("#v-tgl-pl").val();
@@ -1777,7 +1777,7 @@
 			url: '<?php echo base_url('Master/entryPlAllIn')?>',
 			type: "POST",
 			data: ({
-				idrk,nm_ker,glabel,width,idpl
+				idrk,nm_ker,glabel,width,idpl,idpt
 			}),
 			success: function(json){
 				data = JSON.parse(json)
