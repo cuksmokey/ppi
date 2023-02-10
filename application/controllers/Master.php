@@ -30,11 +30,17 @@ class Master extends CI_Controller
 		$this->load->view('footer');
 	}
 
-
 	public function Timbangan()
 	{
 		$this->load->view('header');
 		$this->load->view('Master/v_timbangan');
+		$this->load->view('footer');
+	}
+
+	public function NewTimbangan()
+	{
+		$this->load->view('header');
+		$this->load->view('Master/v_timbanganNew');
 		$this->load->view('footer');
 	}
 
@@ -1720,7 +1726,9 @@ class Master extends CI_Controller
 
 		$getData = $this->db->query("SELECT * FROM pl
 		WHERE (qc='ok' OR qc='proses') AND tgl_pl='$tglpl'
-		GROUP BY id_perusahaan,tgl_pl,opl,id_rk");
+		-- GROUP BY id_perusahaan,tgl_pl,opl,id_rk
+		GROUP BY opl
+		");
 		
 		if($getData->num_rows() == 0){
 			$html .='<div style="color:#000;padding-top:10px">DATA TIDAK DITEMUKAN</div>';
@@ -4577,7 +4585,7 @@ class Master extends CI_Controller
 		$html .='<table style="font-size:12px;color:#000;text-align:center" border="1">';
 		// INTI DATA
 		$getNmKer = $this->db->query("SELECT nm_ker FROM po_master
-		WHERE status='open' $nmKer
+		WHERE status='open' $nmKer AND status_roll='0'
 		GROUP BY nm_ker");
 		if($getNmKer->num_rows() == 0){
 			$html .='<td style="padding:5px">TIDAK ADA DATA</td>';
@@ -4589,7 +4597,7 @@ class Master extends CI_Controller
 			// TAMPIL JENIS KERTAS
 			foreach($getNmKer->result() as $ker){
 				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM po_master
-				WHERE status='open' AND nm_ker='$ker->nm_ker'
+				WHERE status='open' AND nm_ker='$ker->nm_ker' AND status_roll='0'
 				GROUP BY nm_ker,g_label");
 				$html .='<td style="padding:5px" colspan="'.$getgLabel->num_rows().'">'.$ker->nm_ker.'</td>';
 			}
@@ -4599,7 +4607,7 @@ class Master extends CI_Controller
 			$html .='<tr>';
 			foreach($getNmKer->result() as $ker){
 				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM po_master
-				WHERE status='open' AND nm_ker='$ker->nm_ker'
+				WHERE status='open' AND nm_ker='$ker->nm_ker' AND status_roll='0'
 				GROUP BY nm_ker,g_label");
 				foreach($getgLabel->result() as $glabel){
 					$html .='<td style="padding:5px">'.$glabel->g_label.'</td>';
@@ -4610,7 +4618,7 @@ class Master extends CI_Controller
 			// TAMPIL UKURANNYA
 			$html .='<tr>';
 			$getUkuran = $this->db->query("SELECT width FROM po_master
-			WHERE status='open' $nmKer
+			WHERE status='open' $nmKer AND status_roll='0'
 			-- AND width between '95' AND '105'
 			GROUP BY width;");
 			$i = 0;
@@ -4619,12 +4627,12 @@ class Master extends CI_Controller
 				$html .='<td style="padding:5px">'.$i.'</td><td style="padding:5px">'.round($uk->width,2).'</td>';
 
 				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM po_master
-				WHERE status='open' $nmKer
+				WHERE status='open' $nmKer AND status_roll='0'
 				GROUP BY nm_ker,g_label");
 				foreach($getgLabel->result() as $lbl){
 					// GET PO
 					$getPO = $this->db->query("SELECT*FROM po_master
-					WHERE status='open' AND nm_ker='$lbl->nm_ker' AND g_label='$lbl->g_label' AND width='$uk->width'
+					WHERE status='open' AND nm_ker='$lbl->nm_ker' AND g_label='$lbl->g_label' AND width='$uk->width' AND status_roll='0'
 					GROUP BY no_po");
 					$jmlRoll = 0;
 					// PILIHAN SISA OS / BERTUAN / TIDAK BERTUAN
@@ -4696,7 +4704,7 @@ class Master extends CI_Controller
 					}
 
 					$html .= '<td style="padding:5px;background:'.$gbLbl.'">
-						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".')">'.$tuanOrTidak.'</button>
+						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$tuanOrTidak.'</button>
 					</td>';
 				}
 				$html .='</tr>';

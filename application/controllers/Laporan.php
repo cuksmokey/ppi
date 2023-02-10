@@ -5686,6 +5686,7 @@ class Laporan extends CI_Controller {
         $jnsroll = $_POST['jnsroll'];
         $gsmroll = $_POST['gsmroll'];
         $ukroll = $_POST['ukroll'];
+        $plh_status = $_POST['plh_status'];
         $roll = $_POST['roll'];
         $tgl1 = $_POST['tgl1'];
         $tgl2 = $_POST['tgl2'];
@@ -5698,11 +5699,13 @@ class Laporan extends CI_Controller {
         $html ='';
 
 		if($opsi == 'cekRollStok'){
+			// STOK GUDANG
 			if($stat == 'stok'){
 				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='0' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
 			}else if($stat == 'buffer'){
 				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='3' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
-			}else{ // PRODUKSI
+			}else{
+				// PRODUKSI
                 if($pm == 1){
                     $tpm = "AND pm='1' AND tgl BETWEEN '$vtgl' AND '$vtgl2'";
                 }else if($pm == 2){
@@ -5712,21 +5715,31 @@ class Laporan extends CI_Controller {
                 }
 				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' $tpm";
 			}
-		}else{ // STOK GUDANG
-			if($opsi == 'rroll'){
-				$where = "nm_ker LIKE '%$jnsroll%' AND g_label LIKE '%$gsmroll%' AND width LIKE '%$ukroll%' AND roll LIKE '%$roll%'";
+		}else{
+			// LIST ROLL
+			if($plh_status == "STOK"){
+				$plhStat = "AND status='0'";
+			}else if($plh_status == "BUFFER"){
+				$plhStat = "AND status='3'";
+			}else if($plh_status == "PPI"){
+				$plhStat = "AND status='2'";
 			}else{
-				$where = "tgl BETWEEN '$tgl1' AND '$tgl2'";
+				$plhStat = "";
+			}
+
+			// OPSI PER ROLL / PER TANGGAL
+			if($opsi == 'rroll'){
+				$where = "nm_ker LIKE '%$jnsroll%' AND g_label LIKE '%$gsmroll%' AND width LIKE '%$ukroll%' AND roll LIKE '%$roll%' $plhStat";
+			}else{
+				$where = "tgl BETWEEN '$tgl1' AND '$tgl2' $plhStat";
 			}
 		}
 
 		$html .='<div style="overflow:auto;white-space:nowrap;">';
         $html .='<table style="margin:0;padding:0;font-size:12px;color:#000;vertical-align:center;border-collapse:collapse">';
-		$getRoll = $this->db->query("SELECT*FROM m_timbangan
-		WHERE $where
-		ORDER BY pm,id");
+		$getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE $where ORDER BY pm,id");
 		if($opsi == 'rroll' && ($jnsroll == '' || $gsmroll == '' || $ukroll == '') && $roll == ''){
-            $html .='<tr><td style="font-weight:bold;text-align:center">LENGKAPI DATA JENIS, GSM, UKURAN...</td></tr>';
+            $html .='<tr><td style="font-weight:bold;text-align:center">LENGKAPI DATA JENIS, GSM, UKURAN ATAU CUMA ISI NO. ROLL!</td></tr>';
 		}else if($opsi == 'ttgl' && ($tgl1 == '' || $tgl2 == '')){
             $html .='<tr><td style="font-weight:bold;text-align:center">MASUKKAN TANGGAL...</td></tr>';
 		}else if($getRoll->num_rows() == 0){

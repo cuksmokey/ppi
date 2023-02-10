@@ -123,24 +123,119 @@
 						</h2>
 					</div>
 
-					<div class="body">
+					<div class="body" style="overflow:auto;white-space:nowrap">
 						<input type="hidden" id="otorisasi" value="<?= $otorisasi ?>">
 						<button class="tmbl-opsi" onclick="opsi('roll')">PER ROLL</button>
 						<button class="tmbl-opsi" onclick="opsi('tgl')">PER TANGGAL</button><br/><br/>
 
 						<div class="per_roll">
-							<input type="text" name="jnsroll" id="jnsroll" maxlength="8" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="JENIS">
-							<input type="text" name="gsmroll" id="gsmroll" onkeypress="return hanyaAngka(event)" maxlength="3" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="GSM">
-							<input type="text" name="ukroll" id="ukroll" onkeypress="return aK(event)" maxlength="5" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="UKURAN">
-							<input type="text" name="proll" id="proll" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="NO. ROLL">
-							<button class="tmbl-cari" onclick="cariPer('rroll')">CARI</button>
+							<!-- <input type="text" name="jnsroll" id="jnsroll" maxlength="8" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="JENIS"> -->
+							<!-- <input type="text" name="gsmroll" id="gsmroll" onkeypress="return hanyaAngka(event)" maxlength="3" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="GSM"> -->
+							<!-- <input type="text" name="ukroll" id="ukroll" onkeypress="return aK(event)" maxlength="5" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="UKURAN"> -->
+							<!-- <input type="text" name="proll" id="proll" style="border:1px solid #ccc;padding:5px;border-radius:5px" autocomplete="off" placeholder="NO. ROLL"> -->
+							<!-- <button class="tmbl-cari" onclick="cariPer('rroll')">CARI</button> -->
+							<table style="width:100%;color:#000">
+								<tr>
+									<td style="padding:0;border:0;width:10%"></td>
+									<td style="padding:0;border:0;width:1%"></td>
+									<td style="padding:0;border:0;width:89%"></td>
+								</tr>
+								<tr>
+									<td style="padding:5px 0;font-weight:bold">JENIS</td>
+									<td style="padding:5px 3px;text-align:center">:</td>
+									<td style="padding:5px 0">
+										<input type="text" name="jnsroll" id="jnsroll" maxlength="8" class="form-control" autocomplete="off" placeholder="MH, BK, MN, WP, MH COLOR">
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px 0;font-weight:bold">GSM</td>
+									<td style="padding:5px 3px;text-align:center">:</td>
+									<td style="padding:5px 0">
+										<input type="text" name="gsmroll" id="gsmroll" onkeypress="return hanyaAngka(event)" maxlength="3" class="form-control" autocomplete="off" placeholder="110, 125, 150, dst">
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px 0;font-weight:bold">UKURAN</td>
+									<td style="padding:5px 3px;text-align:center">:</td>
+									<td style="padding:5px 0">
+										<input type="text" name="ukroll" id="ukroll" onkeypress="return aK(event)" maxlength="5" class="form-control" autocomplete="off" placeholder="110, 125, 150, 123.4, dst">
+									</td>
+								</tr>
+								<tr>
+									<td style="padding-bottom:5px;" colspan="2"></td>
+									<td style="padding-bottom:5px;font-size:11px;color:#f00;font-style:italic">* koma pakai titik ( . )</td>
+								</tr>
+								<tr>
+									<td style="padding:5px 0;font-weight:bold">ROLL</td>
+									<td style="padding:5px 3px;text-align:center">:</td>
+									<td style="padding:5px 0">
+										<input type="text" name="proll" id="proll" class="form-control" autocomplete="off" placeholder="1/00123, 2/00123, 00123">
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px 0;font-weight:bold">STATUS</td>
+									<td style="padding:5px 3px;text-align:center">:</td>
+									<td style="padding:5px 0">
+										<select name="plh_status" id="plh_status" class="form-control">
+											<option value="ALL">SEMUA</option>
+											<option value="STOK">STOK</option>
+											<option value="BUFFER">BUFFER</option>
+											<option value="PPI">PPI</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px 0" colspan="2"></td>
+									<td style="padding:5px 0">
+										<button class="tmbl-cari" onclick="cariPer('rroll')">CARI</button>
+									</td>
+								</tr>
+							</table>
 						</div>
 
 						<div class="per_tgl">
-							<input type="date" name="tgl1" id="tgl1" style="margin-right:3px;padding:3px 5px;border:1px solid #ccc;border-radius:5px">
-							s/d
-							<input type="date" name="tgl2" id="tgl2" style="margin-left:3px;padding:3px 5px;border:1px solid #ccc;border-radius:5px">
-							<button class="tmbl-cari" onclick="cariPer('ttgl')">CARI</button>
+							<!-- <input type="date" name="tgl1" id="tgl1" style="margin-right:3px;padding:3px 5px;border:1px solid #ccc;border-radius:5px"> -->
+							<!-- s/d -->
+							<!-- <input type="date" name="tgl2" id="tgl2" style="margin-left:3px;padding:3px 5px;border:1px solid #ccc;border-radius:5px"> -->
+							<!-- <button class="tmbl-cari" onclick="cariPer('ttgl')">CARI</button> -->
+							<table style="width:100%;color:#000">
+								<tr>
+									<td style="padding:0;border:0;width:10%"></td>
+									<td style="padding:0;border:0;width:1%"></td>
+									<td style="padding:0;border:0;width:44%"></td>
+									<td style="padding:0;border:0;width:1%"></td>
+									<td style="padding:0;border:0;width:44%"></td>
+								</tr>
+								<tr>
+									<td style="padding:5px 0;font-weight:bold">TANGGAL</td>
+									<td style="padding:5px 3px;text-align:center">:</td>
+									<td style="padding:5px 0">
+										<input type="date" name="tgl1" id="tgl1" class="form-control">
+									</td>
+									<td style="padding:5px 3px;text-align:center">s/d</td>
+									<td style="padding:5px 0">
+										<input type="date" name="tgl2" id="tgl2" class="form-control">
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px 0;font-weight:bold">STATUS</td>
+									<td style="padding:5px 3px;text-align:center">:</td>
+									<td style="padding:5px 0" colspan="3">
+										<select name="plh_status_tgl" id="plh_status_tgl" class="form-control">
+											<option value="ALL">SEMUA</option>
+											<option value="STOK">STOK</option>
+											<option value="BUFFER">BUFFER</option>
+											<option value="PPI">PPI</option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px" colspan="2"></td>
+									<td style="padding:5px 0" colspan="3">
+										<button class="tmbl-cari" onclick="cariPer('ttgl')">CARI</button>
+									</td>
+								</tr>
+							</table>
 						</div><br/>
 
 						<div class="isi"></div>
@@ -174,9 +269,12 @@
 		$("#jnsroll").val("");
 		$("#gsmroll").val("");
 		$("#ukroll").val("");
+		$("#plh_status").val("ALL");
+		
 		$("#proll").val("");
 		$("#tgl1").val("");
 		$("#tgl2").val("");
+		$("#plh_status_tgl").val("ALL");
 	}
 
 	$("#jnsroll").on({
@@ -226,11 +324,17 @@
 		jnsroll = $("#jnsroll").val();
 		gsmroll = $("#gsmroll").val();
 		ukroll = $("#ukroll").val();
+		if(opsi == 'rroll'){
+			plh_status = $("#plh_status").val();
+		}else{
+			plh_status = $("#plh_status_tgl").val();
+		}
+
 		roll = $("#proll").val();
 		tgl1 = $("#tgl1").val();
 		tgl2 = $("#tgl2").val();
 		// alert(jnsroll+' '+gsmroll+' '+ukroll+' '+roll+' '+tgl1+' '+tgl2+' '+opsi);
-		$(".isi").show().html('Mencari Data . . .');
+		$(".isi").show().html('MENCARI DATA . . .');
 		$.ajax({
 			url: '<?php echo base_url('Laporan/QCCariRoll'); ?>',
 			type: "POST",
@@ -238,6 +342,7 @@
 				jnsroll: jnsroll,
 				gsmroll: gsmroll,
 				ukroll: ukroll,
+				plh_status: plh_status,
 				roll: roll,
 				tgl1: tgl1,
 				tgl2: tgl2,

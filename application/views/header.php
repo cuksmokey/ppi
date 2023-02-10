@@ -134,12 +134,15 @@
                         </a>
                         <?php } ?>
                         <ul class="ml-menu">
-                        <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2") { ?>
-                            <li>
-                                <a href="<?php echo base_url('Master/Timbangan') ?>">Timbangan</a>
-                            </li>
-                        <?php } ?>
+							<?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2") { ?>
+								<li>
+									<a href="<?php echo base_url('Master/Timbangan') ?>">Timbangan</a>
+								</li>
+							<?php } ?>
                             <?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
+								<li>
+                                    <a href="<?php echo base_url('Master/NewTimbangan') ?>">New Timbangan</a>
+                                </li>
                                 <li>
                                     <a href="<?php echo base_url('Master/Perusahaan') ?>">Perusahaan</a>
                                 </li>
@@ -193,7 +196,7 @@
                             </a>
                         </li>
 					<?php } ?>
-					<?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC") { ?>
+					<?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "Corrugated") { ?>
                         <li>
                             <a href="<?php echo base_url('Laporan/List_Roll') ?>">
                                 <!-- <i class="material-icons">list</i> -->

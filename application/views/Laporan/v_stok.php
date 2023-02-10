@@ -532,6 +532,7 @@
 				jnsroll: nm_ker,
 				gsmroll: g_label,
 				ukroll: width,
+				plh_status: '',
 				roll: '',
 				tgl1: '',
 				tgl2: '',
