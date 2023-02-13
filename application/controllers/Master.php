@@ -4101,7 +4101,8 @@ class Master extends CI_Controller
 
 		$getData = $this->db->query("SELECT id_po,no_po,status,pajak FROM po_master
 		WHERE id_perusahaan='$id' AND status='$opsi'
-		GROUP BY id_po,no_po,status,pajak");
+		-- GROUP BY id_po,no_po,status,pajak
+		GROUP BY pajak,tgl,no_po,STATUS,id_po");
 		$i =0;
 		$html .='<div style="overflow:auto;white-space:nowrap">';
 		foreach($getData->result() as $r){
