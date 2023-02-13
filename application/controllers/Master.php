@@ -2734,6 +2734,8 @@ class Master extends CI_Controller
 						}else{
 							$btnCekOk = 'SURAT JALAN SUDAH OK!';
 						}
+					}else if($otorisasi == 'cor'){
+						$btnCekOk = $listPlCek.' '.'SEDANG DIPROSES';
 					}else{
 						if($cSj->num_rows() == 0){
 							$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
