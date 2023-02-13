@@ -2720,6 +2720,8 @@ class Master extends CI_Controller
 				}else{
 					if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'qc'){
 						$btnCekOk = $listPlCek.' '.'<button onclick="cekOkRk('."'".$id_rk."'".','."'".$plh."'".','."'".$l."'".','."'ok'".')">CEK OK</button>';
+					}else if($otorisasi == 'cor'){
+						$btnCekOk = $listPlCek.' '.'SEDANG DIPROSES';
 					}else{
 						$btnCekOk = 'SEDANG DALAM PENGECEKAN!';
 					}
