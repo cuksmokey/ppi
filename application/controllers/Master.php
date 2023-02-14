@@ -1807,14 +1807,14 @@ class Master extends CI_Controller
 		}
 		
 		// NOPOL
-		$getNopol = $this->db->query("SELECT ex.plat,ex.supir,p.* FROM pl p
+		$getNopol = $this->db->query("SELECT ex.plat,ex.supir,ex.pt,p.* FROM pl p
 		INNER JOIN m_expedisi ex ON p.id_expedisi=ex.id
 		WHERE (qc='proses' OR qc='ok') AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
 		GROUP BY id_perusahaan,tgl_pl,id_rk,opl");
 		if($getNopol->num_rows() == 0){
 			$nopol = '';
 		}else{
-			$nopol = $getNopol->row()->plat.' - '.$getNopol->row()->supir;
+			$nopol = $getNopol->row()->plat.' - '.$getNopol->row()->supir.' - '.$getNopol->row()->pt;
 		}
 
 		echo json_encode(array(

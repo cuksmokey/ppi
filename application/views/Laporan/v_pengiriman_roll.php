@@ -385,27 +385,27 @@
 
 								<div style="overflow:auto;white-space:nowrap;">
 									<table style="margin:15px 0 0;padding:0;width:100%;">
-									<tr>
-										<td style="padding:2px;width:15%"></td>
-										<td style="padding:2px;width:1%"></td>
-										<td style="padding:2px;width:34%"></td>
-										<td style="padding:2px;width:50%"></td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">PILIH</td>
-										<td style="padding:5px;font-weight:bold">:</td>
-										<td style="padding:5px">
-											<select class="form-control" id="plnopol" style="width:100%" autocomplete="off"></select>
-										</td>
-									</tr>
-									<tr>
-										<td style="padding:5px;font-weight:bold">NOPOL</td>
-										<td style="padding:5px;font-weight:bold">:</td>
-										<td style="padding:5px">
-											<input type="text" id="txtnopol" class="form-control" style="background:#e9e9e9" disabled>
-										</td>
-										<td style="padding:5px"></td>
-									</tr>
+										<tr>
+											<td style="padding:2px;width:15%"></td>
+											<td style="padding:2px;width:1%"></td>
+											<td style="padding:2px;width:34%"></td>
+											<td style="padding:2px;width:50%"></td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">PILIH</td>
+											<td style="padding:5px;font-weight:bold">:</td>
+											<td style="padding:5px">
+												<select class="form-control" id="plnopol" style="width:100%" autocomplete="off"></select>
+											</td>
+										</tr>
+										<tr>
+											<td style="padding:5px;font-weight:bold">NOPOL</td>
+											<td style="padding:5px;font-weight:bold">:</td>
+											<td style="padding:5px">
+												<input type="text" id="txtnopol" class="form-control" style="background:#e9e9e9" disabled>
+											</td>
+											<td style="padding:5px"></td>
+										</tr>
 									</table>
 								</div>
 

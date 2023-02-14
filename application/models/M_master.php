@@ -484,7 +484,7 @@ class M_master extends CI_Model{
         foreach($users as $user){
             $data[] = array(
                 "id" => $user['id'].'_ex_'.$user['plat'].'_ex_'.$user['supir'],
-                "text" => $user['plat'].' - '.$user['supir'],
+                "text" => $user['plat'].' - '.$user['supir'].' - '.$user['pt'],
             );
         }
         return $data;
