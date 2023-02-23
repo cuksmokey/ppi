@@ -184,9 +184,7 @@
 							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtuan')">STOK FG BERTUAN</button>
 							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtdktuan')">STOK FG TIDAK BERTUAN</button>
 						<?php } ?>
-						<?php if($otorisasi != 'cor') {?>
-							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('produksi')">PRODUKSI</button>
-						<?php } ?>
+						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('produksi')">PRODUKSI</button>
 
 						<div class="menu-stok" style="padding-top:10px;font-size:12px">
 							<button disabled>STOK : </button>
