@@ -14,7 +14,10 @@
 	}
 
 	.tmbl-cek-roll {
-		background:transparent;margin:0;padding:0;border:0
+		background:transparent;
+		margin:0;
+		padding:0;
+		border:0;
 	}
 
 	.tmbl-cari {

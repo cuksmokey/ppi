@@ -5838,9 +5838,11 @@ class Laporan extends CI_Controller {
                 <input type="hidden" id="lket-'.$i.'" value="'.$roll->ket.'">
                 <input type="hidden" id="lstatus-'.$i.'" value="'.$roll->status.'">
                 ';
+				// ROLL
+				// <td style="padding:0 3px;border:1px solid #999">'.$oBre.''.$oBtn.'<input class="ipt-txt" type="text" id="eroll-'.$i.'" value="'.$roll->roll.'" disabled style="width:100px" maxlength="14">'.$cBtn.''.$cBre.'</td>
 				$html .='<tr class="'.$bgStt.'">
 					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<input class="ttggll" type="date" id="etgl-'.$i.'" value="'.$roll->tgl.'" '.$diss.' style="width:85px">'.$cBtn.'</td>
-					<td style="padding:0 3px;border:1px solid #999">'.$oBre.''.$oBtn.'<input class="ipt-txt" type="text" id="eroll-'.$i.'" value="'.$roll->roll.'" disabled style="width:100px" maxlength="14">'.$cBtn.''.$cBre.'</td>
+					<td style="padding:0 3px;border:1px solid #999">'.$oBre.''.$oBtn.''.$roll->roll.''.$cBtn.''.$cBre.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_ac-'.$i.'" value="'.$roll->g_ac.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="erct-'.$i.'" value="'.$roll->rct.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>';
@@ -5876,7 +5878,10 @@ class Laporan extends CI_Controller {
 					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
 
                     // PILIH STATUS
-                    if($roll->status == 2 && $roll->id_pl != 0){
+					$opsRoll = substr($roll->id_rk,0,6);
+                    if($opsRoll == 'RK.210' && ($roll->status == 1 || $roll->status == 3) && $roll->id_pl != 0){
+                        $html .='<td style="border:1px solid #999;text-align:center">'.$oBtn.'PPI'.$cBtn.'</td>';
+                    }else if($roll->status == 2 && $roll->id_pl != 0){
                         $html .='<td style="border:1px solid #999;text-align:center">'.$oBtn.'PPI'.$cBtn.'</td>';
                     }else if(($roll->status == 1 || $roll->status == 3) && $roll->id_pl != 0){
                         $html .='<td style="border:1px solid #999;text-align:center">'.$oBtn.'TERJUAL'.$cBtn.'</td>';
@@ -6198,7 +6203,7 @@ class Laporan extends CI_Controller {
 				}else if($ser->status == 3){
 					$stt = 'BUFFER';
 				}else{
-					$stt = 'STOK';
+					$stt = '-';
 				}
 				$html .='<tr>
 					<td style="padding:5px">'.$i.'</td>
