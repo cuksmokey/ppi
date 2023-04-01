@@ -101,12 +101,12 @@ class Master extends CI_Controller
 			$kodepm = $this->input->post('kodepm');
 			$xroll = $this->input->post('xroll');
 			$xth = $this->input->post('xth');
+			$xbln = $this->input->post('xbln');
 			$xno = $this->input->post('xno');
 			$xkode = $this->input->post('xkode');
 
-			// $cek = $this->m_master->get_data_one("m_timbangan","roll",$id)->num_rows();
-			// CEK ROLL -  HILANGKAN BULAN
-			$r1 = $kodepm.'/'.$xroll.'/'.$xth;
+			// CEK ROLL
+			$r1 = $kodepm.'/'.$xroll.'/'.$xth.$xbln;
 			$r2 = $xno.$xkode;
 			$cek = $this->db->query("SELECT*FROM m_timbangan WHERE roll LIKE '$r1%' AND roll LIKE '%$r2'");
 			if ($cek->num_rows() > 0 ) {

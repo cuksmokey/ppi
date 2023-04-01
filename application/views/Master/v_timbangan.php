@@ -430,6 +430,7 @@
 		kodepm = $("#id1kode").val();
 		xroll = $("#id11").val();
 		xth = $("#id22").val();
+		xbln = $("#id2bln").val();
 		xno = $("#id44").val();
 		xkode = $("#id4kode").val();
 
@@ -525,6 +526,7 @@
 				kodepm: kodepm,
 				xroll: xroll,
 				xth: xth,
+				xbln: xbln,
 				xno: xno,
 				xkode: xkode,
 				jenis: "Timbangan"
