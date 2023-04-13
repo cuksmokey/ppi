@@ -92,6 +92,13 @@ class Master extends CI_Controller
 		$this->load->view('footer');
 	}
 
+	public function Reject_Roll()
+	{
+		$this->load->view('header');
+		$this->load->view('Master/v_reject_roll');
+		$this->load->view('footer');
+	}
+
 	function Insert()
 	{
 		$jenis      = $_POST['jenis'];
@@ -1403,6 +1410,12 @@ class Master extends CI_Controller
 		}else if($data->status == 2){
 			$ket = 'PPI';
 			$sty = '';
+		}else if($data->status == 4){
+			$ket = 'PPI SIZING';
+			$sty = '';
+		}else if($data->status == 5){
+			$ket = 'PPI CALENDER';
+			$sty = '';
 		}else{
 			if($data->ket == ''){
 				$sty = '';
@@ -1475,6 +1488,12 @@ class Master extends CI_Controller
 			$sty = '';
 		}else if($data->status == 2){
 			$ket = 'PPI';
+			$sty = '';
+		}else if($data->status == 4){
+			$ket = 'PPI SIZING';
+			$sty = '';
+		}else if($data->status == 5){
+			$ket = 'PPI CALENDER';
 			$sty = '';
 		}else{
 			if($data->ket == ''){
@@ -4375,6 +4394,8 @@ class Master extends CI_Controller
 		$kop_detail = $this->db->query("SELECT id_rk,nm_ker,COUNT(*) AS jml_roll,SUM(weight) AS berat,SUM(seset) AS seset FROM m_timbangan
 		WHERE id_rk='$idrk' GROUP BY nm_ker ORDER BY nm_ker DESC");
 
+		// RK.210.230403.6
+		$expIdRk = explode(".", $idrk);
 		if($kop_detail->row()->nm_ker == 'WP'){
 			$html .= '<tr>
 				<th style="border:0;padding:2px 0;width:5%"></th>
@@ -4388,6 +4409,19 @@ class Master extends CI_Controller
 				<th style="border:0;padding:2px 0;width:27%"></th>
 			</tr>';
 			$cs = '4';
+		}else if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
+			$html .= '<tr>
+				<th style="border:0;padding:2px 0;width:5%"></th>
+				<th style="border:0;padding:2px 0;width:11%"></th>
+				<th style="border:0;padding:2px 0;width:11%"></th>
+				<th style="border:0;padding:2px 0;width:11%"></th>
+				<th style="border:0;padding:2px 0;width:11%"></th>
+				<th style="border:0;padding:2px 0;width:11%"></th>
+				<th style="border:0;padding:2px 0;width:10%"></th>
+				<th style="border:0;padding:2px 0;width:15%"></th>
+				<th style="border:0;padding:2px 0;width:15%"></th>
+			</tr>';
+			$cs = '3';
 		}else{
 			$html .= '<tr>
 				<th style="border:0;padding:2px 0;width:5%"></th>
@@ -4407,17 +4441,23 @@ class Master extends CI_Controller
 		$totalRoll = 0;
 		$totalBerat = 0;
 		foreach($kop_detail->result() as $kd){
-			if($kd->nm_ker == 'MH' || $kd->nm_ker == 'MI' || $kd->nm_ker == 'MN'){
-				$dkop = '<td style="border:1px solid #000;font-weight:bold">RCT</td>';
-				$joint = 'JNT';
-			}else if($kd->nm_ker == 'BK' || $kd->nm_ker == 'BL'){
-				$dkop = '<td style="border:1px solid #000;font-weight:bold">BI</td>';
-				$joint = 'JNT';
-			}else if($kd->nm_ker == 'WP'){
+			if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
 				$dkop = '';
 				$joint = 'JOINT';
+			}else if($kd->nm_ker == 'MH' || $kd->nm_ker == 'MI' || $kd->nm_ker == 'MN'){
+				$dkop = '<td style="border:1px solid #000;font-weight:bold">BW</td>
+					<td style="border:1px solid #000;font-weight:bold">RCT</td>';
+				$joint = 'JNT';
+			}else if($kd->nm_ker == 'BK' || $kd->nm_ker == 'BL'){
+				$dkop = '<td style="border:1px solid #000;font-weight:bold">BW</td>
+					<td style="border:1px solid #000;font-weight:bold">BI</td>';
+				$joint = 'JNT';
+			}else if($kd->nm_ker == 'WP'){
+				$dkop = '<td style="border:1px solid #000;font-weight:bold">BW</td>';
+				$joint = 'JOINT';
 			}else{
-				$dkop = '<td style="border:1px solid #000;font-weight:bold">-</td>';
+				$dkop = '<td style="border:1px solid #000;font-weight:bold">BW</td>
+					<td style="border:1px solid #000;font-weight:bold">-</td>';
 				$joint = 'JNT';
 			}
 
@@ -4427,16 +4467,23 @@ class Master extends CI_Controller
 				$tnmKer = $kd->nm_ker;
 			}
 
+			// COR
+			if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
+				$ketCor = '<td style="border:1px solid #000;font-weight:bold">APPROVE</td>
+				<td style="border:1px solid #000;font-weight:bold">HOLD</td>';
+			}else{
+				$ketCor = '<td style="border:1px solid #000;font-weight:bold">KETERANGAN</td>';
+			}
+
 			$html .= '<tr>
 				<td style="border:1px solid #000;font-weight:bold">NO</td>
 				<td style="border:1px solid #000;font-weight:bold" colspan="2">ROLL - '.$tnmKer.'</td>
-				<td style="border:1px solid #000;font-weight:bold">BW</td>
 				'.$dkop.'
 				<td style="border:1px solid #000;font-weight:bold">GSM</td>
 				<td style="border:1px solid #000;font-weight:bold">WIDTH</td>
 				<td style="border:1px solid #000;font-weight:bold">BERAT</td>
 				<td style="border:1px solid #000;font-weight:bold">'.$joint.'</td>
-				<td style="border:1px solid #000;font-weight:bold">KETERANGAN</td>
+				'.$ketCor.'
 			</tr>';
 
 			// ISI
@@ -4462,14 +4509,19 @@ class Master extends CI_Controller
 					$c_bi = $r->bi;
 				}
 
-				if($r->nm_ker == 'MH' || $r->nm_ker == 'MI' || $r->nm_ker == 'MN'){
-					$cek = '<td style="border:1px solid #000">'.$c_rct.'</td>';
-				}else if($r->nm_ker == 'BK' || $r->nm_ker == 'BL'){
-					$cek = '<td style="border:1px solid #000">'.$c_bi.'</td>';
-				}else if($r->nm_ker == 'WP'){
+				if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
 					$cek = '';
+				}else if($r->nm_ker == 'MH' || $r->nm_ker == 'MI' || $r->nm_ker == 'MN'){
+					$cek = '<td style="border:1px solid #000">'.$c_g_ac.'</td>
+						<td style="border:1px solid #000">'.$c_rct.'</td>';
+				}else if($r->nm_ker == 'BK' || $r->nm_ker == 'BL'){
+					$cek = '<td style="border:1px solid #000">'.$c_g_ac.'</td>
+						<td style="border:1px solid #000">'.$c_bi.'</td>';
+				}else if($r->nm_ker == 'WP'){
+					$cek = '<td style="border:1px solid #000">'.$c_g_ac.'</td>';
 				}else{
-					$cek = '<td style="border:1px solid #000">-</td>';
+					$cek = '<td style="border:1px solid #000">'.$c_g_ac.'</td>
+						<td style="border:1px solid #000">-</td>';
 				}
 
 				if($r->status == 2){
@@ -4499,16 +4551,25 @@ class Master extends CI_Controller
 					$sesetKet = '- '.$r->seset.'KG. '.$r->weight.'. ';
 				}
 
+				// COR
+				if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
+					$ketIsiCor = '<td style="border:1px solid #000"></td>
+						<td style="border:1px solid #000"></td>';
+					$colspanTotCor = 3;
+				}else{
+					$ketIsiCor = '<td style="border:1px solid #000;text-align:left;font-size:10px">'.$sesetKet.''.strtoupper($r->ket).''.$pKet.'</td>';
+					$colspanTotCor = 2;
+				}
+
 				$html .= '<tr>
 					<td style="border:1px solid #000">'.$no.'</td>
 					<td style="border:1px solid #000;letter-spacing:0.5px" colspan="2">'.$r->roll.'</td>
-					<td style="border:1px solid #000">'.$c_g_ac.'</td>
 					'.$cek.'
 					<td style="border:1px solid #000;background-color:'.$bgCrGsm.'">'.$r->g_label.'</td>
 					<td style="border:1px solid #000">'.round($r->width,2).'</td>
 					<td style="border:1px solid #000">'.$tBerat.'</td>
 					<td style="border:1px solid #000">'.$r->joint.'</td>
-					<td style="border:1px solid #000;text-align:left;font-size:10px">'.$sesetKet.''.strtoupper($r->ket).''.$pKet.'</td>
+					'.$ketIsiCor.'
 				</tr>';
 				$no++;
 			}
@@ -4528,7 +4589,7 @@ class Master extends CI_Controller
 			<td style="border:1px solid #000;font-weight:bold" colspan="'.$cs.'">-</td>
 			<td style="border:1px solid #000;font-weight:bold">TOTAL</td>
 			<td style="border:1px solid #000;font-weight:bold">'.number_format($totalBerat).'</td>
-			<td style="border:1px solid #000" colspan="2"></td>
+			<td style="border:1px solid #000" colspan="'.$colspanTotCor.'"></td>
 		</tr>';
 
 		$qrTotPL = $this->db->query("SELECT nm_ker,g_label,width,COUNT(roll) AS roll FROM m_timbangan WHERE id_rk='$idrk'

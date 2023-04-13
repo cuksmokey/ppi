@@ -196,6 +196,14 @@
                             </a>
                         </li>
 					<?php } ?>
+					<?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
+						<li>
+                            <a href="<?php echo base_url('Master/Reject_Roll') ?>">
+                                <!-- <i class="material-icons">list</i> -->
+                                <span>Reject Pengiriman Roll</span>
+                            </a>
+                        </li>
+					<?php } ?>
 					<?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "Corrugated") { ?>
                         <li>
                             <a href="<?php echo base_url('Laporan/List_Roll') ?>">

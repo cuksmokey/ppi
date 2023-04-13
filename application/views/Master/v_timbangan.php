@@ -148,15 +148,12 @@
 									<td style="padding:3px 0">
 										<select id="nm_ker" class="form-control">
 											<option value="">PILIH</option>
-											<option value="WP">WP</option>
-											<option value="MH">MH</option>
-											<!-- <option value="MI">MI</option> -->
-											<!-- <option value="TL">TL</option> -->
 											<option value="BK">BK</option>
-											<!-- <option value="BL">BL</option> -->
-											<option value="MN">MN</option>
-											<!-- <option value="ML">ML</option> -->
+											<option value="MH">MH</option>
 											<option value="MH COLOR">MH COLOR</option>
+											<option value="MN">MN</option>
+											<option value="WP">WP</option>
+											<option value="WS">WS</option>
 										</select>
 										<!-- <input type="text" class="form-control" id="nm_ker"> -->
 									</td>
@@ -252,18 +249,20 @@
 									</td>
 								</tr>
 								<?php if($otorisasi == 'all' || $otorisasi == 'admin') { ?>
-								<tr>
-									<td style="padding:3px 0;font-weight:bold">STATUS</td>
-									<td style="padding:3px 5px">:</td>
-									<td style="padding:3px 0">
-										<select id="cek_status" class="form-control">
-											<option value="">PILIH</option>
-											<option value="0">STOCK</option>
-											<option value="2">PPI</option>
-											<option value="3">BUFFER</option>
-										</select>
-									</td>
-								</tr>
+									<tr>
+										<td style="padding:3px 0;font-weight:bold">STATUS</td>
+										<td style="padding:3px 5px">:</td>
+										<td style="padding:3px 0">
+											<select id="cek_status" class="form-control">
+												<option value="">PILIH</option>
+												<option value="0">STOCK</option>
+												<option value="2">PPI</option>
+												<option value="4">PPI SIZING</option>
+												<option value="5">PPI CALENDER</option>
+												<option value="3">BUFFER</option>
+											</select>
+										</td>
+									</tr>
 								<?php } ?>
 								<tr>
 									<td style="padding:3px 0;font-weight:bold">KETERANGAN</td>

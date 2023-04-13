@@ -147,3 +147,22 @@ CREATE TABLE `n1576051_db_ppi_fix`.`m_rpk`(
   `ref` TEXT,
   PRIMARY KEY (`id`, `id_rpk`)
 );
+
+
+CREATE TABLE `n1576051_db_ppi_fix`.`t_tahun`(  
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `tahun` INT(4),
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `n1576051_db_ppi_fix`.`t_jenis`(  
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `nm_ker` VARCHAR(11),
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `n1576051_db_ppi_fix`.`t_gsm`(  
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `g_label` INT(4),
+  PRIMARY KEY (`id`)
+);

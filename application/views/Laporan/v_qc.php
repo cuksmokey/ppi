@@ -184,6 +184,8 @@
 											<option value="STOK">STOK</option>
 											<option value="BUFFER">BUFFER</option>
 											<option value="PPI">PPI</option>
+											<option value="PPISIZING">PPI SIZING</option>
+											<option value="PPICALENDER">PPI CALENDER</option>
 										</select>
 									</td>
 								</tr>
@@ -229,6 +231,8 @@
 											<option value="STOK">STOK</option>
 											<option value="BUFFER">BUFFER</option>
 											<option value="PPI">PPI</option>
+											<option value="PPISIZING">PPI SIZING</option>
+											<option value="PPICALENDER">PPI CALENDER</option>
 										</select>
 									</td>
 								</tr>

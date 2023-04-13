@@ -169,7 +169,8 @@ class M_master extends CI_Model{
 		}else{
 			$pm = '';
 		}
-		$query = "SELECT * FROM m_timbangan WHERE (status = '0' OR status = '1' OR status = '2' OR status = '3') AND id_pl='0' $pm
+		// $query = "SELECT * FROM m_timbangan WHERE (status = '0' OR status = '1' OR status = '2' OR status = '3') AND id_pl='0' $pm
+		$query = "SELECT * FROM m_timbangan WHERE id_pl='0' $pm
 		-- AND tgl='$tgl'
 		AND tgl BETWEEN '$tgl_k' AND '$tgl'
         -- LIMIT 5

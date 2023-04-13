@@ -5416,19 +5416,19 @@ class Laporan extends CI_Controller {
         }
         
         if($jenis == 'mh' || $jenis == 'rmh' || $vjenis == 'mh'){
-            $where = "AND (nm_ker='mh' OR nm_ker='mi') $pm";
+            $where = "AND nm_ker='MH' $pm";
         }else if($jenis == 'bk' || $jenis == 'rbk' || $vjenis == 'bk'){
-            $where = "AND (nm_ker='bk' OR nm_ker='bl') $pm";
+            $where = "AND nm_ker='BK' $pm";
         }else if($jenis == 'mhbk' || $jenis == 'rmhbk' || $vjenis == 'mhbk'){
-            $where = "AND nm_ker!='wp' AND nm_ker!='mn' AND nm_ker!='mh color' $pm";
+            $where = "AND nm_ker!='WP' AND nm_ker!='MN' AND nm_ker!='MH COLOR' $pm";
         }else if($jenis == 'nonspek' || $jenis == 'rnonspek' || $vjenis == 'nonspek'){
-            $where = "AND nm_ker='mn' $pm";
+            $where = "AND nm_ker='MN' $pm";
         }else if($jenis == 'wp' || $jenis == 'rwp' || $vjenis == 'wp'){
-            $where = "AND nm_ker='wp' $pm";
+            $where = "AND (nm_ker='WP' OR nm_ker='WS') $pm";
         }else if($jenis == 'rmhc'){
-            $where = "AND nm_ker='mh color' $pm";
+            $where = "AND nm_ker='MH COLOR' $pm";
         }else{
-            $where = "AND (nm_ker='mh' OR nm_ker='mi' OR nm_ker='bk' OR nm_ker='bl' OR nm_ker='mn' OR nm_ker='wp' OR nm_ker='mh color') $pm";
+            $where = "AND (nm_ker='MH' OR nm_ker='BK' OR nm_ker='MN' OR nm_ker='WP' OR nm_ker='WS' OR nm_ker='MH COLOR') $pm";
         }
         
 		if($stat == 'buffer'){
@@ -5516,13 +5516,13 @@ class Laporan extends CI_Controller {
                         $getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
                         WHERE $Btgl AND nm_ker='$gsm->nm_ker' AND g_label='$gsm->g_label' AND width='$width->width' $statusIdPl
                         GROUP BY nm_ker,g_label,width");
-                        if($gsm->nm_ker == 'MH' || $gsm->nm_ker == 'MI' || $gsm->nm_ker == 'ML'){
+                        if($gsm->nm_ker == 'MH' || $gsm->nm_ker == 'ML'){
                             $gbGsm = '#ffc';
                         }else if($gsm->nm_ker == 'MN'){
                             $gbGsm = '#fcc';
-                        }else if($gsm->nm_ker == 'BK' || $gsm->nm_ker == 'BL'){
+                        }else if($gsm->nm_ker == 'BK'){
                             $gbGsm = '#ccc';
-                        }else if($gsm->nm_ker == 'WP'){
+                        }else if($gsm->nm_ker == 'WP' || $gsm->nm_ker == 'WS'){
                             $gbGsm = '#cfc';
                         }else if($gsm->nm_ker == 'MH COLOR'){
                             $gbGsm = '#ccf';
@@ -5723,6 +5723,10 @@ class Laporan extends CI_Controller {
 				$plhStat = "AND status='3'";
 			}else if($plh_status == "PPI"){
 				$plhStat = "AND status='2'";
+			}else if($plh_status == "PPISIZING"){
+				$plhStat = "AND status='4'";
+			}else if($plh_status == "PPICALENDER"){
+				$plhStat = "AND status='5'";
 			}else{
 				$plhStat = "";
 			}
@@ -5859,6 +5863,7 @@ class Laporan extends CI_Controller {
                         <option value="MN">MN</option>
                         <option value="BK">BK</option>
                         <option value="WP">WP</option>
+                        <option value="WS">WS</option>
                         <option value="MH COLOR">MH COLOR</option>
                     </select>';
                 }
@@ -5892,6 +5897,12 @@ class Laporan extends CI_Controller {
                         }else if($roll->status == 2 && $roll->id_pl == 0){
                             $oStt = 2;
                             $pStt = 'PPI';
+                        }else if($roll->status == 4 && $roll->id_pl == 0){
+                            $oStt = 4;
+                            $pStt = 'PPI SIZING';
+                        }else if($roll->status == 5 && $roll->id_pl == 0){
+                            $oStt = 5;
+                            $pStt = 'PPI CALENDER';
                         }else if($roll->status == 3 && $roll->id_pl == 0){
                             $oStt = 3;
                             $pStt = 'BUFFER';
@@ -5904,6 +5915,8 @@ class Laporan extends CI_Controller {
                             <option value="1">-</option>
                             <option value="0">STOK</option>
                             <option value="2">PPI</option>
+                            <option value="4">PPI SIZING</option>
+                            <option value="5">PPI CALENDER</option>
                             <option value="3">BUFFER</option>
                         </select>';
                         $html .='<td style="border:1px solid #999;text-align:center">'.$opt.'</td>';
