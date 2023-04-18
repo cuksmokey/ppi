@@ -205,6 +205,10 @@ class Laporan extends CI_Controller {
 								$stat = 'PPI';
 							}else if($r->status == 3){
 								$stat = 'BUFFER';
+							}else if($r->status == 4){
+								$stat = 'PPI SIZING';
+							}else if($r->status == 5){
+								$stat = 'PPI CALENDER';
 							}else{
 								$stat = '-';
 							}
