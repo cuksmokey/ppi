@@ -2022,6 +2022,8 @@ class Laporan extends CI_Controller {
     function print_stok_gudang() {
         $jenis = $_GET['jenis'];
         $jenis_ker = $_GET['jenis_ker'];
+        $g_label = $_GET['gsm'];
+        $status = $_GET['status'];
         $ctk = $_GET['ctk'];
 
         $html = '';
@@ -2043,63 +2045,131 @@ class Laporan extends CI_Controller {
         if($jenis == 'ALL' && $ctk == 0){
 
             if($jenis_ker == 'MH'){
-                $where = "(nm_ker='MH' OR nm_ker='MI')";
+                $where = "nm_ker='MH'";
             }else if($jenis_ker == 'BK'){
-                $where = "(nm_ker='BK' OR nm_ker='BL')";
+                $where = "nm_ker='BK'";
+            }else if($jenis_ker == 'MN'){
+                $where = "nm_ker='MN'";
+            }else if($jenis_ker == 'WP'){
+                $where = "nm_ker='WP'";
+            }else if($jenis_ker == 'MHCOLOR'){
+				$where = "nm_ker='MH COLOR'";
+            }else{
+                $where = "";
             }
 
             // cetak semuanya pdf
-            $q_uk = $this->db->query("SELECT width FROM m_timbangan WHERE $where AND status='0'
-                GROUP BY width
-                ORDER BY width ASC");
+            $q_uk = $this->db->query("SELECT nm_ker,g_label,width FROM m_timbangan
+            WHERE $where AND status='$status' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
+            AND g_label='$g_label'
+            GROUP BY width ORDER BY width ASC");
 
             foreach ($q_uk->result() as $r ) {
-                
-                $dw = $r->width;
-
-                $html .= '<table style="margin:0;padding:0;font-size:14px;font-weight:bold;color:'.$ink.';width:100%;border-collapse:collapse">
+                // $dw = $r->width;
+				if($status == 0){
+					$jStat = 'STOK';
+				}else if($status == 3){
+					$jStat = 'BUFFER';
+				}else{
+					$jStat = '-';
+				}
+                $html .= '<table style="margin:0;padding:0;font-size:14px;font-weight:bold;color:#000;width:100%;border-collapse:collapse">
                     <tr>
-                        <td colspan="7" style="border:0">UPDATE SPESIFIKASI FINISH GOOD - UPDATE TERBARU ( '.round($dw).' )</td>
+                        <td colspan="7" style="border:0">'.$jStat.' : '.$r->nm_ker.''.$r->g_label.' - UKURAN '.round($r->width, 2).'</td>
                     </tr>
                 </table>';
 
-                $html .= '<table cellspacing="0" cellpadding="5" style="font-size:11px;width:100%;color:'.$ink.';text-align:center;border-collapse:collapse" >
-                        <tr>
-                            <th style="padding:5px 0;width:6%"></th>
-                            <th style="padding:5px 0;width:16%"></th>
-                            <th style="padding:5px 0;width:13%"></th>
-                            <th style="padding:5px 0;width:15%"></th>
-                            <th style="padding:5px 0;width:15%"></th>
-                            <th style="padding:5px 0;width:14%"></th>
-                            <th style="padding:5px 0;width:14%"></th>
-                            <th style="padding:5px 0;width:7%"></th>
-                        </tr>';
+				if($r->nm_ker == 'MH'){
+					$rctorbi = '<td style="font-weight:bold;border:1px solid #000">RCT</td>';
+					$wkop ='<th style="border:0;padding:2px 0;width:7%"></th>';
+					$wket ='26%';
+				}else if($r->nm_ker == 'BK'){
+					$rctorbi = '<td style="font-weight:bold;border:1px solid #000">BI</td>';
+					$wkop ='<th style="border:0;padding:2px 0;width:7%"></th>';
+					$wket ='26%';
+				}else{
+					$rctorbi = '';
+					$wkop ='';
+					$wket ='33%';
+				}
+
+                $html .= '<table cellspacing="0" cellpadding="5" style="font-size:11px;width:100%;color:#000;text-align:center;border-collapse:collapse" >
+				<tr>
+					<th style="border:0;padding:2px 0;width:5%"></th>
+					<th style="border:0;padding:2px 0;width:15%"></th>
+					<th style="border:0;padding:2px 0;width:7%"></th>
+					'.$wkop.'
+					<th style="border:0;padding:2px 0;width:7%"></th>
+					<th style="border:0;padding:2px 0;width:7%"></th>
+					<th style="border:0;padding:2px 0;width:7%"></th>
+					<th style="border:0;padding:2px 0;width:7%"></th>
+					<th style="border:0;padding:2px 0;width:7%"></th>
+					<th style="border:0;padding:2px 0;width:5%"></th>
+					<th style="border:0;padding:2px 0;width:'.$wket.'"></th>
+				</tr>';
 
                 $html .= '<tr>
-                        <td style="border:1px solid '.$ink.'">No</td>
-                        <td style="border:1px solid '.$ink.'">ROLL NUMBER</td>
-                        <td style="border:1px solid '.$ink.'">JENIS KERTAS</td>
-                        <td style="border:1px solid '.$ink.'">GRAMAGE (GSM)</td>
-                        <td style="border:1px solid '.$ink.'">LEBAR (CM)</td>
-                        <td style="border:1px solid '.$ink.'">DIAMETER</td>
-                        <td style="border:1px solid '.$ink.'">BERAT (KG)</td>
-                        <td style="border:1px solid '.$ink.'">JOINT</td>
-                    </tr>';
+					<td style="font-weight:bold;border:1px solid #000">No</td>
+					<td style="font-weight:bold;border:1px solid #000">ROLL</td>
+					<td style="font-weight:bold;border:1px solid #000">BW</td>
+					'.$rctorbi.'
+					<td style="font-weight:bold;border:1px solid #000">JENIS</td>
+					<td style="font-weight:bold;border:1px solid #000">GSM</td>
+					<td style="font-weight:bold;border:1px solid #000">D.CM</td>
+					<td style="font-weight:bold;border:1px solid #000">UK</td>
+					<td style="font-weight:bold;border:1px solid #000">BRT</td>
+					<td style="font-weight:bold;border:1px solid #000">J</td>
+					<td style="font-weight:bold;border:1px solid #000">KET</td>
+				</tr>';
 
                 // ambil data
-                $data_detail_all = $this->db->query("SELECT*FROM m_timbangan WHERE width='$dw' AND $where AND status='0' ORDER BY g_label ASC, roll ASC");
+                $data_detail_all = $this->db->query("SELECT*FROM m_timbangan
+				WHERE g_label='$r->g_label' AND width='$r->width' AND $where AND status='$status' AND id_pl='0'
+				ORDER BY g_label ASC, roll ASC");
 
                 $no = 1;
-                foreach ($data_detail_all->result() as $r ) {
+                foreach ($data_detail_all->result() as $risi ) {
+					if($risi->nm_ker == 'MH'){
+						if($risi->rct == '' || $risi->rct == 0){
+							$txtrct = 0;
+						}else{
+							$txtrct = $risi->rct;
+						}
+						$lrctbi = '<td style="border:1px solid #000">'.$txtrct.'</td>';
+					}else if($risi->nm_ker == 'BK'){
+						if($risi->bi == '' || $risi->bi == 0){
+							$txtbi = 0;
+						}else{
+							$txtbi = $risi->bi;
+						}
+						$lrctbi = '<td style="border:1px solid #000">'.$txtbi.'</td>';
+					}else{
+						$lrctbi = '';
+					}
+
+					if($risi->g_ac == '' || $risi->g_ac == 0){
+						$txtg_ac = '-';
+					}else{
+						$txtg_ac = $risi->g_ac;
+					}
+
+					if($risi->nm_ker == 'MH COLOR'){
+						$nmker = 'MHC';
+					}else{
+						$nmker = $risi->nm_ker;
+					}
                     $html .= '<tr>
-                                <td style="border:1px solid '.$ink.'">'.$no.'</td>
-                                <td style="border:1px solid '.$ink.'">'.$r->roll.'</td>
-                                <td style="border:1px solid '.$ink.'">'.$r->nm_ker.'</td>
-                                <td class="str" style="border:1px solid '.$ink.'">'.$r->g_label.'</td>
-                                <td class="str" style="border:1px solid '.$ink.'">'.round($r->width,2).'</td>
-                                <td class="str" style="border:1px solid '.$ink.'">'.$r->diameter.'</td>
-                                <td style="border:1px solid '.$ink.'">'.$r->weight.'</td>
-                                <td class="str" style="border:1px solid '.$ink.'">'.$r->joint.'</td>
+                                <td style="border:1px solid #000">'.$no.'</td>
+                                <td style="border:1px solid #000">'.$risi->roll.'</td>
+                                <td style="border:1px solid #000">'.$txtg_ac.'</td>
+                                '.$lrctbi.'
+                                <td style="border:1px solid #000">'.$nmker.'</td>
+                                <td class="str" style="border:1px solid #000">'.$risi->g_label.'</td>
+                                <td class="str" style="border:1px solid #000">'.$risi->diameter.'</td>
+                                <td class="str" style="border:1px solid #000">'.round($risi->width,2).'</td>
+                                <td style="border:1px solid #000">'.$risi->weight.'</td>
+                                <td class="str" style="border:1px solid #000">'.$risi->joint.'</td>
+                                <td class="str" style="text-align:left;border:1px solid #000">'.$risi->ket.'</td>
                             </tr>';
                     $no++;
                 }
@@ -2588,7 +2658,8 @@ class Laporan extends CI_Controller {
         // opsi cetak
         if ($ctk == '0') {
             // pdf
-            $this->m_fungsi->_mpdf('',$html,10,10,10,'P');
+            // $this->m_fungsi->_mpdf('',$html,10,10,10,'P');
+            $this->m_fungsi->_mpdf('',$html,10,10,999,'P');
         }else{
             // excel
             header("Content-type: application/octet-stream");

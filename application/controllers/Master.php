@@ -2753,7 +2753,7 @@ class Master extends CI_Controller
 						if($cSj->num_rows() == 0){
 							$btnCekOk = $listPlCek.' '.'<button onclick="cekOkRk('."'".$id_rk."'".','."'".$plh."'".','."'".$l."'".','."'batal'".')">BATAL OK</button>';
 						}else{
-							$btnCekOk = 'SURAT JALAN SUDAH OK!';
+							$btnCekOk = $listPlCek.' SURAT JALAN SUDAH OK!';
 						}
 					}else if($otorisasi == 'cor'){
 						$btnCekOk = $listPlCek.' '.'SEDANG DIPROSES';
@@ -2761,7 +2761,7 @@ class Master extends CI_Controller
 						if($cSj->num_rows() == 0){
 							$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
 						}else{
-							$btnCekOk = 'SURAT JALAN SUDAH OK!';
+							$btnCekOk = $listPlCek.' SURAT JALAN SUDAH OK!';
 						}
 					}
 					$pLabelReq = $lbl;
@@ -2770,7 +2770,7 @@ class Master extends CI_Controller
 						if($cSj->num_rows() == 0){
 							$btnCekOk = $listPlCek.' '.'SURAT JALAN SEDANG DIPROSES';
 						}else{
-							$btnCekOk = 'SURAT JALAN SUDAH OK!';
+							$btnCekOk = $listPlCek.' SURAT JALAN SUDAH OK!';
 						}
 					}else if($otorisasi == 'cor'){
 						$btnCekOk = $listPlCek.' '.'SEDANG DIPROSES';
@@ -2778,7 +2778,7 @@ class Master extends CI_Controller
 						if($cSj->num_rows() == 0){
 							$btnCekOk = 'SURAT JALAN SEDANG DIPROSES';
 						}else{
-							$btnCekOk = 'SURAT JALAN SUDAH OK!';
+							$btnCekOk = $listPlCek.' SURAT JALAN SUDAH OK!';
 						}
 					}
 					$pLabelReq = '';
@@ -3013,7 +3013,10 @@ class Master extends CI_Controller
 		}else{
 			$html .='<div style="overflow:auto;white-space:nowrap;">';
 			$html .='<table style="margin:15px 0;font-size:12px;color:#000" border="1">';
-			$html .='<tr style="background:#e9e9e9;text-align:center">
+			$html .='<tr>
+				<td style="padding:5px" colspan="7">'.$idrk.'</td>
+			</tr>
+			<tr style="background:#e9e9e9;text-align:center">
 				<td style="padding:5px;font-weight:bold">ID PL</td>
 				<td style="padding:5px;font-weight:bold">NO. SURAT</td>
 				<td style="padding:5px;font-weight:bold">NO. SO</td>
@@ -4344,49 +4347,80 @@ class Master extends CI_Controller
 
 	function packingListCek(){
 		$idrk = $_GET['idrk'];
+		$expIdRk = explode(".", $idrk);
 		$html = '';
-		$html .='<table style="width:100%;font-size:11px;border-collapse:collapse;color:#000">
-		<tr>
-			<td style="width:15%"></td>
-			<td style="width:1%"></td>
-			<td style="width:84%"></td>
-		</tr>
-		<tr>
-			<td style="font-weight:bold;text-align:center;text-decoration:underline" colspan="3">PACKING LIST CEK</td>
-		</tr>';
 
 		// HEADER
 		$header = $this->db->query("SELECT a.*,b.nm_ker,COUNT(b.roll) AS roll FROM pl a
 		INNER JOIN m_timbangan b ON a.id_rk=b.id_rk
 		WHERE a.id_rk='$idrk'
 		GROUP BY a.id_rk");
+		
+		if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
+			$html .='<table style="width:100%;margin-bottom:10px;color:#000;font-size:11px;font-weight:bold;border-collapse:collapse">';
+			$html .='<tr>
+				<td style="width:20%;border:0;padding:0"></td>
+				<td style="width:45%;border:0;padding:0"></td>
+				<td style="width:15%;border:0;padding:0"></td>
+				<td style="width:20%;border:0;padding:0"></td>
+			</tr>
+			<tr>
+				<td style="background:url('.base_url().'assets/images/logo_ppi_cor.png)center no-repeat;border:1px solid #000" rowspan="4"></td>
+				<td style="border:1px solid #000;padding:5px;font-size:14px;text-align:center;letter-spacing:1px" colspan="3">PT. PRIMA PAPER INDONESIA</td>
+			</tr>
+			<tr>
+				<td style="border:1px solid #000;font-size:14px;text-align:center;letter-spacing:1px" rowspan="3">PACKING LIST</td>
+				<td style="border:1px solid #000;padding:3px">DITERBITKAN</td>
+				<td style="border:1px solid #000;padding:3px">27 SEPTEMBER 2022</td>
+			</tr>
+			<tr>
+				<td style="border:1px solid #000;padding:3px">REVISI</td>
+				<td style="border:1px solid #000;padding:3px">0</td>
+			</tr>
+			<tr>
+				<td style="border:1px solid #000;padding:3px">NO.</td>
+				<td style="border:1px solid #000;padding:3px">FR-GDB-01</td>
+			</tr>
+			';
+			$html .='</table>';
+		}else{
+			$html .='<table style="width:100%;font-size:11px;border-collapse:collapse;color:#000">
+			<tr>
+				<td style="width:15%"></td>
+				<td style="width:1%"></td>
+				<td style="width:84%"></td>
+			</tr>
+			<tr>
+				<td style="font-weight:bold;text-align:center;text-decoration:underline" colspan="3">PACKING LIST CEK</td>
+			</tr>';
+			$html .='<tr>
+				<td style="padding:2px">ID RK</td>
+				<td style="padding:2px">:</td>
+				<td style="padding:2px">'.$header->row()->id_rk.'</td>
+			</tr>
+			<tr>
+				<td style="padding:2px">RENCANA KIRIM</td>
+				<td style="padding:2px">:</td>
+				<td style="padding:2px">'.$header->row()->tgl_pl.'</td>
+			</tr>
+			<tr>
+				<td style="padding:2px">CUSTOMER</td>
+				<td style="padding:2px">:</td>
+				<td style="padding:2px">'.$header->row()->nm_perusahaan.'</td>
+			</tr>
+			<tr>
+				<td style="padding:2px">NAMA</td>
+				<td style="padding:2px">:</td>
+				<td style="padding:2px">'.$header->row()->nama.'</td>
+			</tr>
+			<tr>
+				<td style="padding:2px">ALAMAT</td>
+				<td style="padding:2px">:</td>
+				<td style="padding:2px">'.$header->row()->alamat_perusahaan.'</td>
+			</tr>';
+			$html .='</table>';
+		}
 
-		$html .='<tr>
-			<td style="padding:2px">ID RK</td>
-			<td style="padding:2px">:</td>
-			<td style="padding:2px">'.$header->row()->id_rk.'</td>
-		</tr>
-		<tr>
-			<td style="padding:2px">RENCANA KIRIM</td>
-			<td style="padding:2px">:</td>
-			<td style="padding:2px">'.$header->row()->tgl_pl.'</td>
-		</tr>
-		<tr>
-			<td style="padding:2px">CUSTOMER</td>
-			<td style="padding:2px">:</td>
-			<td style="padding:2px">'.$header->row()->nm_perusahaan.'</td>
-		</tr>
-		<tr>
-			<td style="padding:2px">NAMA</td>
-			<td style="padding:2px">:</td>
-			<td style="padding:2px">'.$header->row()->nama.'</td>
-		</tr>
-		<tr>
-			<td style="padding:2px">ALAMAT</td>
-			<td style="padding:2px">:</td>
-			<td style="padding:2px">'.$header->row()->alamat_perusahaan.'</td>
-		</tr>';
-		$html .='</table>';
 		
 		// ISI
 		$html .='<table style="width:100%;font-size:11px;text-align:center;border-collapse:collapse;color:#000" cellpadding="5" border="1">';
@@ -4394,8 +4428,6 @@ class Master extends CI_Controller
 		$kop_detail = $this->db->query("SELECT id_rk,nm_ker,COUNT(*) AS jml_roll,SUM(weight) AS berat,SUM(seset) AS seset FROM m_timbangan
 		WHERE id_rk='$idrk' GROUP BY nm_ker ORDER BY nm_ker DESC");
 
-		// RK.210.230403.6
-		$expIdRk = explode(".", $idrk);
 		if($kop_detail->row()->nm_ker == 'WP'){
 			$html .= '<tr>
 				<th style="border:0;padding:2px 0;width:5%"></th>
@@ -4462,7 +4494,7 @@ class Master extends CI_Controller
 			}
 
 			if($kd->nm_ker == 'MH COLOR'){
-				$tnmKer = 'MH C';
+				$tnmKer = 'MHC';
 			}else{
 				$tnmKer = $kd->nm_ker;
 			}
@@ -4592,38 +4624,51 @@ class Master extends CI_Controller
 			<td style="border:1px solid #000" colspan="'.$colspanTotCor.'"></td>
 		</tr>';
 
-		$qrTotPL = $this->db->query("SELECT nm_ker,g_label,width,COUNT(roll) AS roll FROM m_timbangan WHERE id_rk='$idrk'
-		GROUP BY nm_ker,g_label,nm_ker,width ORDER BY nm_ker DESC,g_label ASC,width ASC");
-		$html .='<tr>
-			<td style="padding:5px 0 0;border:0;font-weight:normal;text-align:left" colspan="10" >';
-			foreach($qrTotPL->result() as $abc){
-				if(($abc->nm_ker == 'MH' || $abc->nm_ker == 'MN') && ($abc->g_label == 105 || $abc->g_label == 110)){
-					$bcg2 = '#eef';
-				}else if($abc->nm_ker == 'MH' && ($abc->g_label == 120 || $abc->g_label == 125)){
-					$bcg2 = '#ffe';
-				}else if(($abc->nm_ker == 'MH' || $abc->nm_ker == 'MN') && $abc->g_label == 150){
-					$bcg2 = '#fee';
-				}else if($abc->nm_ker == 'WP'){
-					$bcg2 = '#efe';
-				}else{
-					$bcg2 = '#fff';
+		if($expIdRk[1] != 210 || $expIdRk[1] != '210'){
+			$qrTotPL = $this->db->query("SELECT nm_ker,g_label,width,COUNT(roll) AS roll FROM m_timbangan WHERE id_rk='$idrk'
+			GROUP BY nm_ker,g_label,nm_ker,width ORDER BY nm_ker DESC,g_label ASC,width ASC");
+			$html .='<tr>
+				<td style="padding:5px 0 0;border:0;font-weight:normal;text-align:left" colspan="10" >';
+				foreach($qrTotPL->result() as $abc){
+					if(($abc->nm_ker == 'MH' || $abc->nm_ker == 'MN') && ($abc->g_label == 105 || $abc->g_label == 110)){
+						$bcg2 = '#eef';
+					}else if($abc->nm_ker == 'MH' && ($abc->g_label == 120 || $abc->g_label == 125)){
+						$bcg2 = '#ffe';
+					}else if(($abc->nm_ker == 'MH' || $abc->nm_ker == 'MN') && $abc->g_label == 150){
+						$bcg2 = '#fee';
+					}else if($abc->nm_ker == 'WP'){
+						$bcg2 = '#efe';
+					}else{
+						$bcg2 = '#fff';
+					}
+					$html .= '<span style="background-color:'.$bcg2.'">( '.$abc->roll.' - '.round($abc->width,2).' )</span> ';
 				}
-				$html .= '<span style="background-color:'.$bcg2.'">( '.$abc->roll.' - '.round($abc->width,2).' )</span> ';
-			}
-		$html .='</td></tr>';
+			$html .='</td></tr>';
+		}
 		$html .='</table>';
 
-		// $count_p_pl = $this->db->query("SELECT*FROM m_timbangan WHERE id_rk='$idrk'")->num_rows();
-		// if($count_p_pl >= 38){
-			$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',3);
-		// }else if($count_p_pl >= 35){
-		// 	$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',2);
-		// }else if($count_p_pl >= 34){
-		// 	$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',1);
-		// }else if($count_p_pl <tr 34){
-		// 	$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',0);
-		// }
+		if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
+			$html .='<table style="width:100%;text-align:center;font-size:11px;border-collapse:collapse;color:#000">
+			<tr>
+				<td style="width:25%;border:0;padding-top:72px"></td>
+				<td style="width:20%;border:0;padding-top:72px"></td>
+				<td style="width:10%;border:0;padding-top:72px"></td>
+				<td style="width:20%;border:0;padding-top:72px"></td>
+				<td style="width:25%;border:0;padding-top:72px"></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td style="border-top:1px solid #000;font-weight:bold">QC HEAD</td>
+				<td></td>
+				<td style="border-top:1px solid #000;font-weight:bold">INCOMING INSPECTOR</td>
+				<td></td>
+			</tr>
+			';
+			$html .='</table>';
+		}
 
+
+		$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',3);
 		// echo $html;
 	}
 
