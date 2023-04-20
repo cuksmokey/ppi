@@ -5185,17 +5185,28 @@ class Laporan extends CI_Controller {
 	}
 
     function newPenPO() {
+		$html = '';
+
+		// LOCAL
+		// $ptId = $_GET['id'];
+		// $id_po = $_GET['id_po'];
+		// $no_po = $_GET['no_po'];
+		// $opsi = $_GET['opsi'];
+		// $ctk = $_GET['ctk'];
+		// $getPT = $this->db->query("SELECT * FROM po_master a
+        // INNER JOIN m_perusahaan b ON a.id_perusahaan=b.id
+        // WHERE a.id_perusahaan='$ptId' AND a.id_po='$id_po' AND a.no_po LIKE '%$no_po%' AND status LIKE '%$opsi%'
+        // GROUP BY a.id_perusahaan,a.tgl,a.no_po");
+
+		// ONLINE
 		$ptId = $_POST['id'];
 		$id_po = $_POST['id_po'];
 		$no_po = $_POST['no_po'];
 		$opsi = $_POST['opsi'];
-		$ctk = $_POST['ctk'];
-		$html = '';
-
+		$ctk = $_POST['ctk'];		
         $getPT = $this->db->query("SELECT * FROM po_master a
         INNER JOIN m_perusahaan b ON a.id_perusahaan=b.id
         WHERE a.id_perusahaan='$ptId' AND a.id_po='$id_po' AND a.no_po='$no_po' AND status='$opsi'
-        -- AND a.tgl LIKE '%2022-11%'
         GROUP BY a.id_perusahaan,a.tgl,a.no_po");
         if($getPT->num_rows() == 0){
             $html .='<div style="padding:5px">Data Tidak Ditemukan!.</div>';
@@ -5205,6 +5216,7 @@ class Laporan extends CI_Controller {
                 $html .= '<div class="scroll-horizontal">
                     <table style="font-size:12px;color:#000;vertical-align:middle;border-collapse:collapse;border-color:#555" border="1">';
 
+				// LOCAL
                 // $html .= '<tr><td style="font-weight:bold;border:0" colspan="5">'.$pt->no_po.'</td></tr>';
 
                 $getTgl = $this->db->query("SELECT b.tgl FROM m_timbangan a
@@ -5292,9 +5304,15 @@ class Laporan extends CI_Controller {
                     $sumPlusMinRoll = 0;
                     $sumPlusMinBerat = 0;
                     foreach($getUkPO->result() as $ukPO){
-                        $html .= '<td style="padding:5px;text-align:center;font-weight:bold" id="i">'.round($ukPO->width,2).'</td>
-                            <td style="padding:5px;text-align:center;font-weight:bold" id="i">'.number_format($ukPO->jml_roll).'</td>
-                            <td style="padding:5px;text-align:right;font-weight:bold" id="i">'.number_format($ukPO->tonase).'</td>';
+						if($ukPO->status == 'open'){
+							$ukpoStat = '';
+						}else{
+							$ukpoStat = ';background:#f9af55';
+						}
+
+                        $html .= '<td style="padding:5px;text-align:center;font-weight:bold'.$ukpoStat.'" id="i">'.round($ukPO->width,2).'</td>
+                            <td style="padding:5px;text-align:center;font-weight:bold'.$ukpoStat.'" id="i">'.number_format($ukPO->jml_roll).'</td>
+                            <td style="padding:5px;text-align:right;font-weight:bold'.$ukpoStat.'" id="i">'.number_format($ukPO->tonase).'</td>';
 
                         // ISI PENGIRIMAN PER UKURAN
                         foreach($getTgl->result() as $tTgl){
@@ -5325,8 +5343,8 @@ class Laporan extends CI_Controller {
 								<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($plusMinBerat).'</td>';
                         }else{
                             $ukGsmFixBerat = $getUkpGsm->row()->berat - $getUkpGsm->row()->seset;
-                            $html .= '<td style="padding:5px;font-weight:bold;text-align:center" id="i">'.number_format($getUkpGsm->row()->jumlah).'</td>
-                            <td style="padding:5px;font-weight:bold;text-align:center" id="i">'.number_format($ukGsmFixBerat).'</td>';
+                            $html .= '<td style="padding:5px;font-weight:bold;text-align:center'.$ukpoStat.'" id="i">'.number_format($getUkpGsm->row()->jumlah).'</td>
+                            <td style="padding:5px;font-weight:bold;text-align:center'.$ukpoStat.'" id="i">'.number_format($ukGsmFixBerat).'</td>';
                             
                             // + -
                             // JIKA JUMLAH ROLL LEBIH DARI PO DI NOL KAN!
