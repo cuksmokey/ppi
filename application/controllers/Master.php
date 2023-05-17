@@ -880,6 +880,12 @@ class Master extends CI_Controller
 		echo json_encode($response);
 	}
 
+	function loadPtPORjt(){ 
+		$searchTerm = $_GET['search'];
+		$response = $this->m_master->loadPtPORjt($searchTerm);
+		echo json_encode($response);
+	}
+
 	function loadPlPO(){ 
 		$searchTerm = $_GET['search'];
 		$fid = $_GET['fid'];
@@ -3486,6 +3492,24 @@ class Master extends CI_Controller
 		$this->cart->destroy();
 	}
 
+	function InputCartRpk(){
+		$data = array(
+			'id' => $_POST['id'],
+			'name' => $_POST['id'],
+			'price' => 0,
+			'qty' => $_POST['id'],
+			'options' => array(
+				'roll' => $_POST['roll'],
+			),
+		);
+		$this->cart->insert($data);
+		echo json_encode(array('data' => true, 'isi' => $data));
+	}
+
+	function destroyCartRpk() {
+		$this->cart->destroy();
+	}
+
 	function addCartPO(){
 		$id = $_POST['fjenis'].'_'.$_POST['fgsm'].'_'.$_POST['fukuran'];
 		$nama = $_POST['fjenis'].'-'.$_POST['fgsm'].'-'.$_POST['fukuran'];
@@ -4357,7 +4381,7 @@ class Master extends CI_Controller
 		GROUP BY a.id_rk");
 		
 		if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
-			$html .='<table style="width:100%;margin-bottom:10px;color:#000;font-size:11px;font-weight:bold;border-collapse:collapse">';
+			$html .='<table style="width:100%;margin-bottom:3px;color:#000;font-size:11px;font-weight:bold;border-collapse:collapse">';
 			$html .='<tr>
 				<td style="width:20%;border:0;padding:0"></td>
 				<td style="width:45%;border:0;padding:0"></td>
@@ -4369,7 +4393,7 @@ class Master extends CI_Controller
 				<td style="border:1px solid #000;padding:5px;font-size:14px;text-align:center;letter-spacing:1px" colspan="3">PT. PRIMA PAPER INDONESIA</td>
 			</tr>
 			<tr>
-				<td style="border:1px solid #000;font-size:14px;text-align:center;letter-spacing:1px" rowspan="3">PACKING LIST</td>
+				<td style="border:1px solid #000;font-size:14px;text-align:center;letter-spacing:1px" rowspan="3">DATA INCOMING PAPER ROLL</td>
 				<td style="border:1px solid #000;padding:3px">DITERBITKAN</td>
 				<td style="border:1px solid #000;padding:3px">27 SEPTEMBER 2022</td>
 			</tr>
@@ -4380,6 +4404,11 @@ class Master extends CI_Controller
 			<tr>
 				<td style="border:1px solid #000;padding:3px">NO.</td>
 				<td style="border:1px solid #000;padding:3px">FR-GDB-01</td>
+			</tr>
+			<tr>
+				<td style="padding:3px" colspan="2"></td>
+				<td style="padding:3px" colspan="2">TGL DATANG</td>
+				<td style="padding:3px"></td>
 			</tr>
 			';
 			$html .='</table>';
@@ -4444,16 +4473,17 @@ class Master extends CI_Controller
 		}else if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
 			$html .= '<tr>
 				<th style="border:0;padding:2px 0;width:5%"></th>
-				<th style="border:0;padding:2px 0;width:11%"></th>
-				<th style="border:0;padding:2px 0;width:11%"></th>
-				<th style="border:0;padding:2px 0;width:11%"></th>
-				<th style="border:0;padding:2px 0;width:11%"></th>
-				<th style="border:0;padding:2px 0;width:11%"></th>
-				<th style="border:0;padding:2px 0;width:10%"></th>
-				<th style="border:0;padding:2px 0;width:15%"></th>
-				<th style="border:0;padding:2px 0;width:15%"></th>
+				<th style="border:0;padding:2px 0;width:8%"></th>
+				<th style="border:0;padding:2px 0;width:8%"></th>
+				<th style="border:0;padding:2px 0;width:8%"></th>
+				<th style="border:0;padding:2px 0;width:8%"></th>
+				<th style="border:0;padding:2px 0;width:8%"></th>
+				<th style="border:0;padding:2px 0;width:8%"></th>
+				<th style="border:0;padding:2px 0;width:8%"></th>
+				<th style="border:0;padding:2px 0;width:8%"></th>
+				<th style="border:0;padding:2px 0;width:26%"></th>
 			</tr>';
-			$cs = '3';
+			$cs = '4';
 		}else{
 			$html .= '<tr>
 				<th style="border:0;padding:2px 0;width:5%"></th>
@@ -4501,8 +4531,9 @@ class Master extends CI_Controller
 
 			// COR
 			if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
-				$ketCor = '<td style="border:1px solid #000;font-weight:bold">APPROVE</td>
-				<td style="border:1px solid #000;font-weight:bold">HOLD</td>';
+				$ketCor = '<td style="border:1px solid #000;font-weight:bold">BW</td>
+					<td style="border:1px solid #000;font-weight:bold">VISUAL</td>
+					<td style="border:1px solid #000;font-weight:bold">KET</td>';
 			}else{
 				$ketCor = '<td style="border:1px solid #000;font-weight:bold">KETERANGAN</td>';
 			}
@@ -4586,6 +4617,7 @@ class Master extends CI_Controller
 				// COR
 				if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
 					$ketIsiCor = '<td style="border:1px solid #000"></td>
+						<td style="border:1px solid #000"></td>
 						<td style="border:1px solid #000"></td>';
 					$colspanTotCor = 3;
 				}else{

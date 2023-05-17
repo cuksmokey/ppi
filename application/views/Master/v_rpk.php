@@ -53,10 +53,14 @@
 									<td style="width:79%;border:1px solid #000;padding:3px"></td>
 								</tr>
 								<tr>
-									<td style="padding:5px 0;font-weight:bold">TANGGAL</td>
+									<td style="padding:5px 0;font-weight:bold">PM</td>
 									<td style="padding:5px 0;text-align:center">:</td>
 									<td style="padding:5px 0">
-										<input type="date" name="tgl" id="tgl" class="form-control">
+										<select name="pm" id="pm" class="form-control">
+											<option value="">PILIH</option>
+											<option value="1">1</option>
+											<option value="2">2</option>
+										</select>
 									</td>
 								</tr>
 								<tr>
@@ -92,14 +96,10 @@
 									</td>
 								</tr>
 								<tr>
-									<td style="padding:5px 0;font-weight:bold">PM</td>
+									<td style="padding:5px 0;font-weight:bold">TANGGAL</td>
 									<td style="padding:5px 0;text-align:center">:</td>
 									<td style="padding:5px 0">
-										<select name="pm" id="pm" class="form-control">
-											<option value="">PILIH</option>
-											<option value="1">1</option>
-											<option value="2">2</option>
-										</select>
+										<input type="date" name="tgl" id="tgl" class="form-control">
 									</td>
 								</tr>
 								<tr>
@@ -119,19 +119,19 @@
 										<table style="width:100%">
 											<tr>
 												<td>
-													<input type="number" name="1" id="1" class="form-control">
+													<input type="number" name="item1" id="item1" class="form-control">
 												</td>
 												<td>
-													<input type="number" name="1" id="1" class="form-control">
+													<input type="number" name="item2" id="item2" class="form-control">
 												</td>
 												<td>
-													<input type="number" name="1" id="1" class="form-control">
+													<input type="number" name="item3" id="item3" class="form-control">
 												</td>
 												<td>
-													<input type="number" name="1" id="1" class="form-control">
+													<input type="number" name="item4" id="item4" class="form-control">
 												</td>
 												<td>
-													<input type="number" name="1" id="1" class="form-control">
+													<input type="number" name="item5" id="item5" class="form-control">
 												</td>
 											</tr>
 											<tr>
@@ -156,10 +156,13 @@
 								</tr><tr>
 									<td style="padding:5px 0" colspan="2"></td>
 									<td style="padding:5px 0">
-										<button>ADD</button>
+										<button onclick="addCartRpk()">ADD</button>
 									</td>
 								</tr>
 							</table>
+
+							<!-- CART LIST RPK -->
+							<div class="cart-list-rpk" style="overflow:auto;white-space:nowrap;">LIST RPK</div>
 						</div>
 					</div>
 				</div>
@@ -173,6 +176,26 @@
 	otorisasi = $("#otorisasi").val();
 
 	$(document).ready(function() {
-		// 
+		kosong();
 	});
+
+	function kosong() {
+		$("#pm").val("");
+		$("#nm_ker").val("");
+		$("#g_label").val("");
+		$("#tgl").val("");
+		$("#id_rpk").val("");
+		$("#item1").val("");
+		$("#item2").val("");
+		$("#item3").val("");
+		$("#item4").val("");
+		$("#item5").val("");
+		$("#times").val("");
+		$("#ref").val("");
+	}
+
+	function addCartRpk() {
+		
+	}
+
 </script>

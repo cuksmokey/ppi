@@ -624,6 +624,40 @@ class M_master extends CI_Model{
         return $data;
     }
 
+	function loadPtPORjt($searchTerm=""){
+		$users = $this->db->query("SELECT pt.* FROM m_perusahaan pt
+		INNER JOIN po_master m ON pt.id=m.id_perusahaan
+		WHERE NOT EXISTS (SELECT*FROM pl_box bx WHERE bx.id_perusahaan=pt.id)
+		AND (pt.pimpinan LIKE '%$searchTerm%' OR pt.nm_perusahaan LIKE '%$searchTerm%' OR pt.alamat LIKE '%$searchTerm%')
+		GROUP BY pt.id")->result_array();
+        
+
+        $data = array();
+        foreach($users as $user){
+            if($user['pimpinan'] == '' || $user['pimpinan'] == '-'){
+                $nama = '';
+            }else{
+                $nama = $user['pimpinan'].' - ';
+            }
+            if($user['nm_perusahaan'] == '' || $user['nm_perusahaan'] == '-'){
+                $pt = '';
+            }else{
+                $pt = $user['nm_perusahaan'].' - ';
+            }
+            // id pimpinan nm_perusahaan alamat no_telp
+            $txt = $nama.$pt.$user['alamat'];
+            $data[] = array(
+                "id"=>$user['id'],
+                "text"=>$txt, 
+                "pimpinan"=>$user['pimpinan'],
+                "nm_perusahaan"=>$user['nm_perusahaan'],
+                "alamat"=>$user['alamat'],
+                "no_telp"=>$user['no_telp'],
+            );
+        }
+        return $data;
+    }
+
     //
 
     function loadPtPO($searchTerm="", $opsi=""){

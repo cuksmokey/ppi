@@ -64,16 +64,14 @@
 									<td style="padding:5px 0;font-weight:bold">KIRIMAN KE</td>
 									<td style="padding:5px 0">:</td>
 									<td style="padding:5px 0">
-										<select name="kirimke" id="kirimke" class="form-control">
-											<option value="">PILIH</option>
-										</select>
+										<select name="kirimke" id="kirimke" class="form-control" autocomplete="off"></select>
 									</td>
 								</tr>
 								<tr>
 									<td style="padding:5px 0;font-weight:bold">TAHUN</td>
 									<td style="padding:5px 0">:</td>
 									<td style="padding:5px 0">
-										<select name="pl" id="pl" class="form-control">
+										<select name="tahun" id="tahun" class="form-control">
 											<option value="">PILIH</option>
 											<option value="2020">2020</option>
 											<option value="2021">2021</option>
@@ -83,15 +81,15 @@
 									</td>
 								</tr>
 								<tr>
-									<td style="padding:5px 0;font-weight:bold">PACKING LIST</td>
+									<td style="padding:5px 0;font-weight:bold">SURAT JALAN</td>
 									<td style="padding:5px 0">:</td>
 									<td style="padding:5px 0">
-										<select name="pl" id="pl" class="form-control">
+										<select name="sj" id="sj" class="form-control">
 											<option value="">PILIH</option>
 										</select>
 									</td>
 								</tr>
-								<tr>
+								<!-- <tr>
 									<td style="padding:5px 0;font-weight:bold">ROLL</td>
 									<td style="padding:5px 0">:</td>
 									<td style="padding:5px 0">
@@ -99,7 +97,7 @@
 											<option value="">PILIH</option>
 										</select>
 									</td>
-								</tr>
+								</tr> -->
 							</table>
 						</div>
 					</div>
@@ -114,6 +112,70 @@
 	otorisasi = $("#otorisasi").val();
 
 	$(document).ready(function() {
-		// 
+		kosong();
+		load_pt();
+	});
+
+	function kosong() {
+		$("#tgl").val("");
+		$("#kirimke").val("").prop("disabled", true).attr('style', 'background:#e9e9e9');
+		$("#tahun").val("").prop("disabled", true).attr('style', 'background:#e9e9e9');
+		$("#sj").val("").prop("disabled", true).attr('style', 'background:#e9e9e9');
+	}
+
+	$('#tgl').on('change', function() {
+		load_pt();
+		$("#kirimke").val("").prop("disabled", false);
+	});
+
+	//
+
+	function load_pt() {
+		$('#tahun').val("").prop("disabled", true).attr('style', 'background:#e9e9e9');
+		$('#sj').val("").prop("disabled", true).attr('style', 'background:#e9e9e9');
+		// load_po('');
+		
+		$('#kirimke').select2({
+			allowClear: true,
+			placeholder: '- - SELECT - -',
+			ajax: {
+				dataType: 'json',
+				url: '<?php echo base_url(); ?>/Master/loadPtPORjt',
+				data: function(params) {
+					if (params.term == undefined) {
+						return {
+							search: "",
+						}
+					} else {
+						return {
+							search: params.term,
+						}
+					}
+				},
+				processResults: function(data, page) {
+					return {
+						results: data
+					};
+				},
+			}
+		});
+	}
+	$('#kirimke').on('change', function() {
+		data = $('#kirimke').select2('data');
+		alert(data[0].id);
+		// $("#fid").val(data[0].id);
+		// $("#fnmpt").val(data[0].nm_perusahaan);
+		// $("#fnama").val(data[0].pimpinan);
+		// $("#falamat").val(data[0].alamat);
+		// $("#ftelp").val(data[0].no_telp);
+
+		// $('#fnopo').val("");
+		// load_po(data[0].id);
+		// $('#fjenis').val("").prop("disabled", true);
+		// plhPlPoJns('');
+		// $('#fplhplgsm').val("").prop("disabled", true);
+		// plhPlGsm('');
+		
+		// $('#fnopo').prop("disabled", false);
 	});
 </script>
