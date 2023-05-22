@@ -4762,7 +4762,7 @@ class Master extends CI_Controller
 			$html .='<tr>';
 			$getUkuran = $this->db->query("SELECT width FROM po_master
 			WHERE status='open' $nmKer AND status_roll='0'
-			AND width between '85' AND '105'
+			-- AND width between '85' AND '105'
 			GROUP BY width;");
 			$i = 0;
 			foreach($getUkuran->result() as $uk){
