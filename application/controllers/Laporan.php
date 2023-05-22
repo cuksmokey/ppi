@@ -5188,14 +5188,12 @@ class Laporan extends CI_Controller {
 		$html = '';
 
 		// LOCAL
-		// $ptId = $_GET['id'];
+		// $ptId = $_GET['id_pt'];
 		// $id_po = $_GET['id_po'];
-		// $no_po = $_GET['no_po'];
-		// $opsi = $_GET['opsi'];
 		// $ctk = $_GET['ctk'];
 		// $getPT = $this->db->query("SELECT * FROM po_master a
         // INNER JOIN m_perusahaan b ON a.id_perusahaan=b.id
-        // WHERE a.id_perusahaan='$ptId' AND a.id_po='$id_po' AND a.no_po LIKE '%$no_po%' AND status LIKE '%$opsi%'
+		// WHERE a.id_perusahaan='$ptId' AND a.id_po='$id_po'
         // GROUP BY a.id_perusahaan,a.tgl,a.no_po");
 
 		// ONLINE

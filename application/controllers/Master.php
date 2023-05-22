@@ -4762,7 +4762,7 @@ class Master extends CI_Controller
 			$html .='<tr>';
 			$getUkuran = $this->db->query("SELECT width FROM po_master
 			WHERE status='open' $nmKer AND status_roll='0'
-			-- AND width between '95' AND '105'
+			AND width between '85' AND '105'
 			GROUP BY width;");
 			$i = 0;
 			foreach($getUkuran->result() as $uk){
@@ -4822,7 +4822,8 @@ class Master extends CI_Controller
 						if($vWidth >= $jmlRoll){
 							$tuanOrTidak = $jmlRoll;
 						}else{
-							$tuanOrTidak = 0;
+							// $tuanOrTidak = 0;
+							$tuanOrTidak = $vWidth - $jmlRoll;
 						}
 					}else{ // ofgtdktuan
 						// if($vWidth >= $jmlRoll){
@@ -5012,4 +5013,347 @@ class Master extends CI_Controller
 
 		echo $html;
 	}
+
+	function newPenPO() {
+		$html = '';
+
+		// LOCAL
+		$ptId = $_GET['id_pt'];
+		$id_po = $_GET['id_po'];
+		$ctk = $_GET['ctk'];
+		$getPT = $this->db->query("SELECT * FROM po_master a
+        INNER JOIN m_perusahaan b ON a.id_perusahaan=b.id
+		WHERE a.id_perusahaan='$ptId' AND a.id_po='$id_po'
+        GROUP BY a.id_perusahaan,a.tgl,a.no_po");
+
+        if($getPT->num_rows() == 0){
+            $html .='<div style="padding:5px">Data Tidak Ditemukan!.</div>';
+        }else{
+            foreach($getPT->result() as $pt){
+                $html .= '<style>#i{mso-number-format:\@}</style>';
+                $html .= '<div class="scroll-horizontal">
+                    <table style="font-size:12px;color:#000;vertical-align:middle;border-collapse:collapse;border-color:#555" border="1">';
+
+				// LOCAL
+                $html .= '<tr><td style="font-weight:bold;padding:5px;border:0" colspan="5">'.$pt->no_po.'</td></tr>';
+
+                $getTgl = $this->db->query("SELECT b.tgl FROM m_timbangan a
+                INNER JOIN pl b ON a.id_pl=b.id
+                WHERE b.no_po='$pt->no_po' AND b.id_perusahaan='$ptId'
+                -- AND b.tgl LIKE '%2022-11%'
+				AND b.qc='ok'
+                GROUP BY b.tgl");
+
+                $html .= '<tr>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" rowspan="3">No.</td>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" rowspan="3">GSM</td>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" rowspan="3">UK</td>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" colspan="2" rowspan="2">ORDER</td>';
+                foreach($getTgl->result() as $tTgl){
+                    $html .= '<td style="padding:5px;background:#B9E9FB;font-weight:bold;text-align:center" colspan="2">'.strtoupper($this->m_fungsi->getHariIni($tTgl->tgl)).'</td>';
+                }
+                $html .= '<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" colspan="2" rowspan="2">TOTAL</td>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" colspan="2" rowspan="2">( + / - )</td>
+                </tr>'; // TOTAL
+
+                $html .= '<tr>';
+                foreach($getTgl->result() as $tTgl){
+                    $html .= '<td style="padding:5px;background:#B9E9FB;font-weight:bold;text-align:center" colspan="2">'.strtoupper($this->m_fungsi->tglInd_skt($tTgl->tgl)).'</td>';
+                }
+                $html .= '</tr>';
+                
+                // ROLL, TON
+                $html .= '<tr>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold">ROLL</td>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold">TON</td>';
+                foreach($getTgl->result() as $tTgl){ // ISI PER UKURAN
+                    $html .= '<td style="padding:5px;background:#B9E9FB;text-align:center;font-weight:bold">ROLL</td>
+                    <td style="padding:5px;background:#B9E9FB;text-align:center;font-weight:bold">TON</td>';
+                }
+                // TOTAL, + -
+                $html .= '<td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold">ROLL</td>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold">TON</td>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold">ROLL</td>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold">TON</td>
+                </tr>';
+                
+                // KOTAK KOSONG
+                $html .= '<tr><td style="padding:5px;padding:0" colspan="5"></td>';
+                $ik = 0;
+                foreach($getTgl->result() as $tTgl){
+                    $ik++;
+                    $html .= '<td style="padding:5px;padding:0;text-align:center" colspan="2" id="i">'.$ik.'</td>';
+                }
+                $html .= '</tr>';
+
+                // TAMPIL GSM
+                $getGsm = $this->db->query("SELECT a.*,SUM(jml_roll) AS jmll,SUM(tonase) AS tonn,COUNT(a.nm_ker) AS ttl FROM po_master a
+                WHERE a.no_po='$pt->no_po' AND a.id_perusahaan='$ptId'
+                GROUP BY a.nm_ker,a.g_label");
+                $ii = 0;
+                $allTotRoll = 0;
+                $allTotTonn = 0;
+                $allSumPlusMinRoll = 0;
+                $allSumPlusMinBerat = 0;
+                foreach($getGsm->result() as $rGsm){
+                    $ii++;
+                    if(($rGsm->nm_ker == 'MH' || $rGsm->nm_ker == 'MN') && ($rGsm->g_label == 105 || $rGsm->g_label == 110)){
+                        $bgNk = '#ddf';
+                    }else if(($rGsm->nm_ker == 'MH' || $rGsm->nm_ker == 'MN') && ($rGsm->g_label == 120 || $rGsm->g_label == 125)){
+                        $bgNk = '#ffd';
+                    }else if(($rGsm->nm_ker == 'MH' || $rGsm->nm_ker == 'MN') && $rGsm->g_label == 150){
+                        $bgNk = '#fdd';
+                    }else if($rGsm->nm_ker == 'BK'){
+                        $bgNk = '#eee';
+                    }else if($rGsm->nm_ker == 'WP'){
+                        $bgNk = '#dfd';
+                    }else{ // BK
+                        $bgNk = '#fff';
+                    }
+
+                    $html .= '<tr>
+                        <td style="padding:5px;text-align:center;font-weight:bold" rowspan="'.$rGsm->ttl.'" id="i">'.$ii.'</td>
+                        <td style="padding:5px;text-align:center;font-weight:bold;background:'.$bgNk.'" rowspan="'.$rGsm->ttl.'" id="i">'.$rGsm->nm_ker.' '.$rGsm->g_label.'</td>';
+
+                    // GET WIDTH
+                    $getUkPO = $this->db->query("SELECT*FROM po_master
+                    WHERE no_po='$rGsm->no_po' AND nm_ker='$rGsm->nm_ker' AND g_label='$rGsm->g_label' AND id_perusahaan='$ptId'
+                    ORDER BY width");
+                    $sumPlusMinRoll = 0;
+                    $sumPlusMinBerat = 0;
+                    foreach($getUkPO->result() as $ukPO){
+						if($ukPO->status == 'open'){
+							$ukpoStat = '';
+						}else{
+							$ukpoStat = ';background:#f9af55';
+						}
+
+                        $html .= '<td style="padding:5px;text-align:center;font-weight:bold'.$ukpoStat.'" id="i">'.round($ukPO->width,2).'</td>
+                            <td style="padding:5px;text-align:center;font-weight:bold'.$ukpoStat.'" id="i">'.number_format($ukPO->jml_roll).'</td>
+                            <td style="padding:5px;text-align:right;font-weight:bold'.$ukpoStat.'" id="i">'.number_format($ukPO->tonase).'</td>';
+
+                        // ISI PENGIRIMAN PER UKURAN
+                        foreach($getTgl->result() as $tTgl){
+                            $getIsiUk = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
+                            INNER JOIN pl b ON a.id_pl=b.id
+                            AND b.no_po='$ukPO->no_po' AND b.tgl='$tTgl->tgl' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width' AND b.id_perusahaan='$ptId' AND b.qc='ok'
+                            GROUP BY b.tgl,a.g_label,a.nm_ker,a.width");
+                            if($getIsiUk->num_rows() == 0){
+                                $html .= '<td></td><td></td>';
+                            }else{
+                                $ukFixBerat = $getIsiUk->row()->berat - $getIsiUk->row()->seset; // jika ada seset
+                                $html .= '<td style="padding:5px;text-align:center;background:'.$bgNk.'" id="i">'.number_format($getIsiUk->row()->jumlah).'</td>
+                                <td style="padding:5px;text-align:right;background:'.$bgNk.'" id="i">'.number_format($ukFixBerat).'</td>';
+                            }
+                        }
+
+                        // TOTAL PER UKURAN PER GSM
+                        $getUkpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
+                        INNER JOIN pl b ON a.id_pl=b.id
+                        AND b.no_po='$ukPO->no_po' AND a.nm_ker='$ukPO->nm_ker' AND a.g_label='$ukPO->g_label' AND a.width='$ukPO->width' AND b.id_perusahaan='$ptId' AND b.qc='ok'
+                        GROUP BY a.nm_ker,a.g_label,a.width");
+                        if($getUkpGsm->num_rows() == 0){
+							$plusMinRoll = 0 - $ukPO->jml_roll;
+                            $plusMinBerat = 0 - $ukPO->tonase;
+                            $html .= '<td style="padding:5px;text-align:center">-</td>
+								<td style="padding:5px;text-align:center">-</td>
+                                <td style="padding:5px;font-weight:bold;text-align:center">'.number_format($plusMinRoll).'</td>
+								<td style="padding:5px;font-weight:bold;text-align:center">'.number_format($plusMinBerat).'</td>';
+                        }else{
+                            $ukGsmFixBerat = $getUkpGsm->row()->berat - $getUkpGsm->row()->seset;
+                            $html .= '<td style="padding:5px;font-weight:bold;text-align:center'.$ukpoStat.'" id="i">'.number_format($getUkpGsm->row()->jumlah).'</td>
+                            <td style="padding:5px;font-weight:bold;text-align:center'.$ukpoStat.'" id="i">'.number_format($ukGsmFixBerat).'</td>';
+                            
+                            // + -
+                            // JIKA JUMLAH ROLL LEBIH DARI PO DI NOL KAN!
+                            if($getUkpGsm->row()->jumlah >= $ukPO->jml_roll){
+                                $plusMinRoll = 0;
+                            }else{
+                                $plusMinRoll = $getUkpGsm->row()->jumlah - $ukPO->jml_roll;
+                            }
+                            // JIKA QTY BERAT LEBIH DARI PO DI NOL KAN!
+                            if($ukGsmFixBerat >= $ukPO->tonase){
+                                $plusMinBerat = 0;
+                            }else{
+                                $plusMinBerat = $ukGsmFixBerat - $ukPO->tonase;
+                            }
+                            // $plusMinRoll = $getUkpGsm->row()->jumlah - $ukPO->jml_roll;
+                            // $plusMinBerat = $ukGsmFixBerat - $ukPO->tonase;
+                            $html .= '<td style="padding:5px;text-align:center;font-weight:bold" id="i">'.number_format($plusMinRoll).'</td>
+                                <td style="padding:5px;text-align:center;font-weight:bold" id="i">'.number_format($plusMinBerat).'</td>';
+                        }
+                        $html .= '</tr>';
+
+                        $sumPlusMinRoll += $plusMinRoll;
+                        $sumPlusMinBerat += $plusMinBerat;
+                    }
+
+                    // JIKA CUMA SATU GSM YANG ADA DI PO
+                    if($getGsm->num_rows() == 1){
+                        $html .= '';
+                    }else{
+                        // TOTAL PER GSM ORDER ROLL , TON
+                        $html .= '<tr>
+                            <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" colspan="3"></td>
+                            <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($rGsm->jmll).'</td>
+                            <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($rGsm->tonn).'</td>';
+
+                        // TOTAL PER GSM
+                        foreach($getTgl->result() as $tTgl){
+                            $getTotpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
+                            INNER JOIN pl b ON a.id_pl=b.id
+                            AND b.no_po='$rGsm->no_po' AND b.tgl='$tTgl->tgl' AND a.nm_ker='$rGsm->nm_ker' AND a.g_label='$rGsm->g_label' AND b.id_perusahaan='$ptId' AND b.qc='ok'
+                            GROUP BY b.tgl,a.g_label,a.nm_ker");
+                            if($getTotpGsm->num_rows() == 0){
+                                $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
+                                    <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>';
+                            }else{
+                                $totGsmFixBerat = $getTotpGsm->row()->berat - $getTotpGsm->row()->seset;
+                                $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($getTotpGsm->row()->jumlah).'</td>
+                                <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($totGsmFixBerat).'</td>';
+                            }
+                        }
+
+                        // JUMLAH TOTAL PER GSM
+                        $getJmlTotpGsm = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
+                        INNER JOIN pl b ON a.id_pl=b.id
+                        AND b.no_po='$rGsm->no_po' AND a.nm_ker='$rGsm->nm_ker' AND a.g_label='$rGsm->g_label' AND b.id_perusahaan='$ptId' AND b.qc='ok'
+                        GROUP BY a.g_label,a.nm_ker");
+                        if($getJmlTotpGsm->num_rows() == 0){
+                            $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
+                                <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">-</td>
+                                <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">'.number_format($sumPlusMinRoll).'</td>
+                                <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold">'.number_format($sumPlusMinBerat).'</td>';
+                        }else{
+                            $jmlTotGsmFixBerat = $getJmlTotpGsm->row()->berat - $getJmlTotpGsm->row()->seset;
+                            $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($getJmlTotpGsm->row()->jumlah).'</td>
+                            <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($jmlTotGsmFixBerat).'</td>';
+
+                            // + -
+                            // $plusMinSumRoll = $getJmlTotpGsm->row()->jumlah - $rGsm->jmll;
+                            // $plusMinSumBerat = $jmlTotGsmFixBerat - $rGsm->tonn;
+                            $html .= '<td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($sumPlusMinRoll).'</td>
+                            <td style="padding:5px;background:#99DDCC;text-align:center;font-weight:bold" id="i">'.number_format($sumPlusMinBerat).'</td>';
+                        }
+                        $html .= '</tr>';
+                    }
+
+                    $allTotRoll += $rGsm->jmll;
+                    $allTotTonn += $rGsm->tonn;
+                    $allSumPlusMinRoll += $sumPlusMinRoll;
+                    $allSumPlusMinBerat += $sumPlusMinBerat;
+                }
+
+                // ===========================================================================================================================================
+
+                // TOTAL KESELURAHAN PO
+                $html .= '<tr>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" colspan="3">TOTAL</td>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" id="i">'.number_format($allTotRoll).'</td>
+                    <td style="padding:5px;background:#87B7C9;text-align:center;font-weight:bold" id="i">'.number_format($allTotTonn).'</td>';
+                    $sumRoll = 0;
+                    $sumTon = 0;
+                    foreach($getTgl->result() as $tTgl){
+                        $getKir = $this->db->query("SELECT b.tgl,a.nm_ker,a.g_label,a.width,COUNT(*) AS jumlah,SUM(a.weight) AS berat,SUM(a.seset) AS seset FROM m_timbangan a
+                        INNER JOIN pl b ON a.id_pl=b.id
+                        AND b.no_po='$ukPO->no_po' AND b.tgl='$tTgl->tgl' AND b.id_perusahaan='$ptId' AND b.qc='ok'
+                        GROUP BY b.tgl");
+                        if($getKir->num_rows() == 0){
+                            $html .= '<td></td><td></td>';
+                        }else{
+                            $fixTotBerat = $getKir->row()->berat - $getKir->row()->seset;
+                            $html .= '<td style="padding:5px;font-weight:bold;text-align:center;background:#B9E9FB" id="i">'.number_format($getKir->row()->jumlah).'</td>
+                            <td style="padding:5px;font-weight:bold;text-align:center;background:#B9E9FB" id="i">'.number_format($fixTotBerat).'</td>';
+                        }
+
+                        $sumRoll += $getKir->row()->jumlah;
+                        $sumTon += $fixTotBerat;
+                    }
+                
+                // $plusMinTottSumRoll = $sumRoll - $allTotRoll;
+                // $plusMinTottSumBerat = $sumTon - $allTotTonn;
+                $html .= '<td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($sumRoll).'</td>
+                <td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($sumTon).'</td>
+                <td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($allSumPlusMinRoll).'</td>
+                <td style="padding:5px;font-weight:bold;text-align:center;background:#87B7C9" id="i">'.number_format($allSumPlusMinBerat).'</td>';
+                $html .= '</tr>';
+
+                $html .= '</table></div>';
+            }
+        }
+
+        // CETAK
+        // $judul = $getPT->row()->nm_perusahaan;
+        if ($ctk == '0') {
+            echo $html;
+        }
+        // else if ($ctk == '1') {
+		// 	$this->m_fungsi->newPDFopsi($html,'L',5,5,5,5,'','','','','','');
+        // }
+        else{
+            header("Content-type: application/octet-stream");
+            header("Content-Disposition: attachment; filename=excel.xls");
+            header("Pragma: no-cache");
+            header("Expires: 0");
+            $data2['prev']= $html;
+            $this->load->view('view_excel', $data2);
+        }
+    }
+
+	function AllListPO(){
+		$ctk = $_GET['ctk'];
+		$html = '';
+
+		$qPt = $this->db->query("SELECT pt.id AS id_pt,pt.nm_perusahaan AS nm_pt,pt.pimpinan AS nama,po.id_po,po.no_po,po.status FROM po_master po
+		INNER JOIN m_perusahaan pt ON po.id_perusahaan=pt.id
+		-- WHERE pt.pimpinan LIKE '%%' AND pt.nm_perusahaan LIKE '%%'
+		-- AND po.nm_ker!='WP'
+		AND pt.id!='210'
+		-- po.status='open'
+		GROUP BY pt.nm_perusahaan,pt.pimpinan");
+		$html .= '<style>.str{mso-number-format:\@}</style>';
+		$html .= '<table style="color:#000;vertical-align:middle;border-collapse:collapse;border-color:#555">';
+
+		foreach($qPt->result() as $r){
+			$html .= '<tr>
+				<td style="border:1px solid #000;background:#ddd;padding:5px;font-weight:bold" colspan="2">'.$r->nm_pt.' '.$r->nama.'</td>
+			</tr>';
+			$html .='<tr>
+				<td style="border:1px solid #000;background:#ddd;padding:5px;font-weight:bold">NO PO</td>
+				<td style="border:1px solid #000;background:#ddd;padding:5px;font-weight:bold">STATUS</td>
+			</tr>';
+
+			$qIsi = $this->db->query("SELECT pt.id AS id_pt,pt.nm_perusahaan AS nm_pt,pt.pimpinan AS nama,po.id_po,po.no_po,po.status FROM po_master po
+			INNER JOIN m_perusahaan pt ON po.id_perusahaan=pt.id
+			WHERE pt.id='$r->id_pt'
+			-- AND po.nm_ker!='WP'
+			AND pt.id!='210'
+			-- po.status='open'
+			GROUP BY po.status DESC,po.no_po");
+			foreach($qIsi->result() as $isi){
+				$html .='<tr>
+					<td style="border:1px solid #000;padding:5px"><a style="text-decoration:none" href="'.base_url().'Master/newPenPO?id_pt='.$r->id_pt.'&id_po='.$isi->id_po.'&ctk=0" target="_blank">'.$isi->no_po.'</a></td>
+					<td style="border:1px solid #000;padding:5px">'.strtoupper($isi->status).'</td>
+				</tr>';
+			}
+
+			$html .= '<tr>
+				<td style="padding:10px;font-weight:bold" colspan="3"></td>
+			</tr>';
+		}
+
+		$html .= '</table>';
+
+		if ($ctk == '0') {
+            echo $html;
+        }else{
+            header("Content-type: application/octet-stream");
+            header("Content-Disposition: attachment; filename=SemuaListPO.xls");
+            header("Pragma: no-cache");
+            header("Expires: 0");
+            $data2['prev']= $html;
+            $this->load->view('view_excel', $data2);
+        }
+	}
+
 }

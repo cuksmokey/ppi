@@ -72,6 +72,15 @@
 							<?php if($otorisasi != 'cor') { ?>
 								<button class="btn-c-po" onclick="add_box('routpo')">REKAP OUTSTANDING PO</button>
 							<?php } ?>
+
+							<?php if($otorisasi != 'cor') { ?>
+								<br/><br/>
+								<form action="<?php echo base_url(); ?>Master/AllListPO" method="get">
+									<input type="hidden" id="ctk" name="ctk" value="0">
+									<button type="submit" formtarget="_blank">SEMUA LIST PO</button>
+								</form>
+							<?php } ?>
+
 						</div>
 
 						<?php if($otorisasi != 'cor') { ?>

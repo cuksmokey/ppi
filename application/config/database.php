@@ -11,7 +11,7 @@ $db['default'] = array(
 	// LOCAL
 	// 'username' => 'root',
 	// 'password' => '',
-	// 'database' => 'db_ppi',
+	// 'database' => 'db_ppi2',
 
 	// WEB
 	'username' => 'n1576051_ppiwng',
