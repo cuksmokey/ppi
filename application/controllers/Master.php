@@ -4483,7 +4483,7 @@ class Master extends CI_Controller
 				<th style="border:0;padding:2px 0;width:8%"></th>
 				<th style="border:0;padding:2px 0;width:26%"></th>
 			</tr>';
-			$cs = '4';
+			$cs = '3';
 		}else{
 			$html .= '<tr>
 				<th style="border:0;padding:2px 0;width:5%"></th>
@@ -4619,7 +4619,7 @@ class Master extends CI_Controller
 					$ketIsiCor = '<td style="border:1px solid #000"></td>
 						<td style="border:1px solid #000"></td>
 						<td style="border:1px solid #000"></td>';
-					$colspanTotCor = 3;
+					$colspanTotCor = 4;
 				}else{
 					$ketIsiCor = '<td style="border:1px solid #000;text-align:left;font-size:10px">'.$sesetKet.''.strtoupper($r->ket).''.$pKet.'</td>';
 					$colspanTotCor = 2;
