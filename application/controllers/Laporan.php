@@ -5684,7 +5684,7 @@ class Laporan extends CI_Controller {
 				<td style="padding:5px;font-weight:bold">CUSTOMER</td>
 				<td style="padding:5px;font-weight:bold">NO. PO</td>
 				<td style="padding:5px;font-weight:bold">ROLL</td>
-				<td style="padding:5px;font-weight:bold">KET</td>
+				<td style="padding:5px;font-weight:bold">KETERANGAN</td>
 			</tr>'; // kop
 			$sumRollPO = 0;
 			foreach($getMasPO->result() as $masPO){
@@ -5761,15 +5761,18 @@ class Laporan extends CI_Controller {
 			// tototot
 			$html .='<tr>
 				<td style="padding:10px 5px 5px;font-weight:bold;text-align:right;border-top:3px solid #333" colspan="3">JUMLAH ROLL PO - PENJUALAN</td>
-				<td style="padding:10px 5px 5px;font-weight:bold;text-align:right;border-top:3px solid #333" colspan="3">'.number_format($sumRollPO).'</td>
+				<td style="padding:10px 5px 5px;font-weight:bold;text-align:right;border-top:3px solid #333">'.number_format($sumRollPO).'</td>
+				<td style="padding:10px 5px 5px"></td>
 			</tr>
 			<tr>
 				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">'.$txtStat.' ROLL GUDANG</td>
-				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">'.number_format($nsJmlRoll).'</td>
+				<td style="padding:5px;font-weight:bold;text-align:right">'.number_format($nsJmlRoll).'</td>
+				<td style="padding:5px"></td>
 			</tr>
 			<tr>
 				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">SISA '.$txtStat.' ROLL GUDANG</td>
-				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">'.number_format($stokRollTuan).'</td>
+				<td style="padding:5px;font-weight:bold;text-align:right">'.number_format($stokRollTuan).'</td>
+				<td style="padding:5px"></td>
 			</tr>';
 		}
 		$html .='</table></div>';
