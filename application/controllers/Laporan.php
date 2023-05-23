@@ -5684,6 +5684,7 @@ class Laporan extends CI_Controller {
 				<td style="padding:5px;font-weight:bold">CUSTOMER</td>
 				<td style="padding:5px;font-weight:bold">NO. PO</td>
 				<td style="padding:5px;font-weight:bold">ROLL</td>
+				<td style="padding:5px;font-weight:bold">KET</td>
 			</tr>'; // kop
 			$sumRollPO = 0;
 			foreach($getMasPO->result() as $masPO){
@@ -5694,6 +5695,7 @@ class Laporan extends CI_Controller {
 					<td style="padding:5px;font-weight:bold">'.$masPO->nm_perusahaan.'</td>
 					<td style="padding:5px;font-weight:bold">'.$masPO->no_po.'</td>
 					<td style="padding:5px;font-weight:bold;text-align:right">'.number_format($masPO->jml_roll).'</td>
+					<td style="padding:5px;font-weight:bold">'.$masPO->ket.'</td>
 				</tr>';
 
                 $getKirim = $this->db->query("SELECT pl.tgl,pl.no_surat,COUNT(r.roll) AS jml_roll,SUM(r.weight) AS jml_berat FROM m_timbangan r
@@ -5703,9 +5705,10 @@ class Laporan extends CI_Controller {
 				$sumRollKiriman = 0;
                 foreach($getKirim->result() as $kirim){
 					$html .='<tr>
-					<td style="padding:5px;font-weight:bold;text-align:center">-</td>
-					<td style="padding:5px" colspan="2">'.$this->m_fungsi->tglInd_skt($kirim->tgl).' - '.trim($kirim->no_surat).'</td>
-					<td style="padding:5px;text-align:right">'.number_format($kirim->jml_roll).'</td>
+						<td style="padding:5px;font-weight:bold;text-align:center">-</td>
+						<td style="padding:5px" colspan="2">'.$this->m_fungsi->tglInd_skt($kirim->tgl).' - '.trim($kirim->no_surat).'</td>
+						<td style="padding:5px;text-align:right">'.number_format($kirim->jml_roll).'</td>
+						<td style="padding:5px"></td>
                     </tr>';
 					$sumRollKiriman += $kirim->jml_roll;
                 }
@@ -5717,9 +5720,10 @@ class Laporan extends CI_Controller {
 					$html .='<tr>
 						<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">-</td>
 						<td style="padding:5px;font-weight:bold;text-align:right">'.$pKir.'</td>
+						<td style="padding:5px"></td>
 					</tr>';
 				}
-				$html .='<tr><td style="padding:5px" coslpan="4"></td></tr>';
+				$html .='<tr><td style="padding:5px" coslpan="5"></td></tr>';
 				
 				// PERHITUHANG STOK PO
 				$penguruangan = $masPO->jml_roll - $sumRollKiriman;
