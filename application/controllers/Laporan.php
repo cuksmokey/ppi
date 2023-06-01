@@ -5553,13 +5553,15 @@ class Laporan extends CI_Controller {
         }else{
             if($stat == 'produksi'){
                 $Btgl = $tTgl;
+				$no120 = "";
             }else{
-                $Btgl = "tgl BETWEEN '2020-04-01' AND '9999-01-01'";
+				$Btgl = "tgl BETWEEN '2020-04-01' AND '9999-01-01'";
+				$no120 = "AND g_label!='120'";
             }
 
 			// DATA INTI DARI SEGALA INTI
             $getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
-            WHERE $Btgl $statusIdPl $where
+            WHERE $Btgl $statusIdPl $where $no120
             GROUP BY nm_ker");
 
 			// GET SEMUA KOP JENIS
@@ -5568,7 +5570,7 @@ class Laporan extends CI_Controller {
             <td style="padding:5px;font-weight:bold" rowspan="2">UKURAN</td>';
             foreach($getLabel->result() as $lbl){
                 $getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-                WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl
+                WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl $no120
                 GROUP BY nm_ker,g_label");
                 $html .='<td style="padding:5px;font-weight:bold" colspan="'.$getGsm->num_rows().'">'.$lbl->nm_ker.'</td>';
             }
@@ -5578,7 +5580,7 @@ class Laporan extends CI_Controller {
             $html .='<tr>';
             foreach($getLabel->result() as $lbl){
                 $getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-                WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl
+                WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl $no120
                 GROUP BY nm_ker,g_label");
                 foreach($getGsm->result() as $gsm){
                     $html .='<td style="padding:5px;background:#e9e9e9;font-weight:bold">'.$gsm->g_label.'</td>';
@@ -5588,8 +5590,8 @@ class Laporan extends CI_Controller {
 
 			// TAMPIL SEMUA DATA UKURAN
             $getWidth = $this->db->query("SELECT width FROM m_timbangan
-            WHERE $Btgl $statusIdPl $where
-            -- AND width BETWEEN '80' AND '100' # TESTING
+            WHERE $Btgl $statusIdPl $where $no120
+            -- AND width BETWEEN '165' AND '170' # TESTING
             GROUP BY width");
             $i = 0;
             foreach($getWidth->result() as $width){
@@ -5597,16 +5599,23 @@ class Laporan extends CI_Controller {
                 $html .='<tr class="new-stok-gg"><td style="font-weight:bold">'.$i.'</td><td style="font-weight:bold">'.round($width->width,2).'</td>';
 
                 $getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
-                WHERE $Btgl $statusIdPl $where
+                WHERE $Btgl $statusIdPl $where $no120
                 GROUP BY nm_ker");
                 foreach($getLabel->result() as $lbl){
                     $getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-                    WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl
+                    WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl $no120
                     GROUP BY nm_ker,g_label");
                     foreach($getGsm->result() as $gsm){
+						//
+						if($gsm->g_label == 125 || $gsm->g_label == '125'){
+							$a120cuy = "(g_label='120' OR g_label='125')";
+						}else{
+							$a120cuy = "g_label='$gsm->g_label'";
+						}
+
                         $getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
-                        WHERE $Btgl AND nm_ker='$gsm->nm_ker' AND g_label='$gsm->g_label' AND width='$width->width' $statusIdPl
-                        GROUP BY nm_ker,g_label,width");
+                        WHERE $Btgl AND nm_ker='$gsm->nm_ker' AND $a120cuy AND width='$width->width' $statusIdPl
+                        GROUP BY nm_ker,width");
                         if($gsm->nm_ker == 'MH' || $gsm->nm_ker == 'ML'){
                             $gbGsm = '#ffc';
                         }else if($gsm->nm_ker == 'MN'){
@@ -5634,18 +5643,29 @@ class Laporan extends CI_Controller {
                 }
             }
             $html .='</tr>';
+
 			// TOTAL SEMUANYA PER GRAMATURE
 			$html .='<tr style="background:#e9e9e9">
 				<td style="padding:5px;font-weight:bold" colspan="2">TOTAL</td>';
 				foreach($getLabel->result() as $lbl){
 					$getGsm = $this->db->query("SELECT nm_ker,g_label,COUNT(width) AS totjmlroll FROM m_timbangan
-					WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl
+					WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl $no120
 					GROUP BY nm_ker,g_label");
 					foreach($getGsm->result() as $s){
+						// AMBIL 120
+						if($s->g_label == 125 || $s->g_label == '125'){
+							$a120kuy = "(g_label='120' OR g_label='125')";
+						}else{
+							$a120kuy = "g_label='$s->g_label'";
+						}
+
+                        $getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
+                        WHERE $Btgl AND nm_ker='$s->nm_ker' AND $a120kuy $statusIdPl
+                        GROUP BY nm_ker");
 						if($s->totjmlroll == 0){
 							$totot = 0;
 						}else{
-							$totot = $s->totjmlroll;
+							$totot = $getWidth->row()->jml;
 						}
 						$html .='<td style="padding:5px;font-weight:bold">'.number_format($totot).'</td>';
 					}
@@ -5668,10 +5688,15 @@ class Laporan extends CI_Controller {
 		$html .= '<div style="color:#000;font-weight:bold">CEK PENJUALAN BERDASARKAN PO</div><br/>';
 		$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;vertical-align:middle;border-collapse:collapse">';
 
+		if($g_label == 120 || $g_label == '120' || $g_label == 125 || $g_label == '125'){
+			$gLabel1 = "(g_label='120' OR g_label='125')";
+		}else{
+			$gLabel1 = "g_label='$g_label'";
+		}
 		$getMasPO = $this->db->query("SELECT a.*,b.nm_perusahaan FROM po_master a
 		INNER JOIN m_perusahaan b ON a.id_perusahaan=b.id
-		WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width' AND status='open'
-		AND status_roll='$statcor'
+		WHERE nm_ker='$nm_ker' AND $gLabel1 AND width='$width' AND status='open'
+		AND status_roll='$statcor' AND a.jml_roll!='0'
 		GROUP BY nm_ker,g_label,width,b.nm_perusahaan,tgl,no_po,a.status");		
 		if($getMasPO->num_rows() == 0){
 			$html .='<tr>
@@ -5683,6 +5708,7 @@ class Laporan extends CI_Controller {
 				<td style="padding:5px;font-weight:bold">NO.</td>
 				<td style="padding:5px;font-weight:bold">CUSTOMER</td>
 				<td style="padding:5px;font-weight:bold">NO. PO</td>
+				<td style="padding:5px;font-weight:bold">GSM</td>
 				<td style="padding:5px;font-weight:bold">ROLL</td>
 				<td style="padding:5px;font-weight:bold">KETERANGAN</td>
 			</tr>'; // kop
@@ -5694,6 +5720,7 @@ class Laporan extends CI_Controller {
 					<td style="padding:5px;font-weight:bold;text-align:center">'.$i.'</td>
 					<td style="padding:5px;font-weight:bold">'.$masPO->nm_perusahaan.'</td>
 					<td style="padding:5px;font-weight:bold">'.$masPO->no_po.'</td>
+					<td style="padding:5px;font-weight:bold;text-align:center">'.$masPO->g_label.'</td>
 					<td style="padding:5px;font-weight:bold;text-align:right">'.number_format($masPO->jml_roll).'</td>
 					<td style="padding:5px;font-weight:bold">'.$masPO->ket.'</td>
 				</tr>';
@@ -5706,7 +5733,7 @@ class Laporan extends CI_Controller {
                 foreach($getKirim->result() as $kirim){
 					$html .='<tr>
 						<td style="padding:5px;font-weight:bold;text-align:center">-</td>
-						<td style="padding:5px" colspan="2">'.$this->m_fungsi->tglInd_skt($kirim->tgl).' - '.trim($kirim->no_surat).'</td>
+						<td style="padding:5px" colspan="3">'.$this->m_fungsi->tglInd_skt($kirim->tgl).' - '.trim($kirim->no_surat).'</td>
 						<td style="padding:5px;text-align:right">'.number_format($kirim->jml_roll).'</td>
 						<td style="padding:5px"></td>
                     </tr>';
@@ -5718,12 +5745,12 @@ class Laporan extends CI_Controller {
 					$html .='';
 				}else{
 					$html .='<tr>
-						<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">-</td>
+						<td style="padding:5px;font-weight:bold;text-align:right" colspan="4">-</td>
 						<td style="padding:5px;font-weight:bold;text-align:right">'.$pKir.'</td>
 						<td style="padding:5px"></td>
 					</tr>';
 				}
-				$html .='<tr><td style="padding:5px" coslpan="5"></td></tr>';
+				$html .='<tr><td style="padding:5px" coslpan="6"></td></tr>';
 				
 				// PERHITUHANG STOK PO
 				$penguruangan = $masPO->jml_roll - $sumRollKiriman;
@@ -5740,9 +5767,10 @@ class Laporan extends CI_Controller {
 			}
 
 			$getStokGudang = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan
-			WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width'
+			WHERE nm_ker='$nm_ker' AND $gLabel1 AND width='$width'
 			AND status='$statcor' AND id_pl='0'
-			GROUP BY nm_ker,g_label,width");
+			-- GROUP BY nm_ker,g_label,width
+			");
 			// STOK BERTUAN = STOK GUDANG - STOK ROLL PO
 			if($getStokGudang->num_rows() == 0){
 				$nsJmlRoll = 0;
@@ -5760,17 +5788,17 @@ class Laporan extends CI_Controller {
 
 			// tototot
 			$html .='<tr>
-				<td style="padding:10px 5px 5px;font-weight:bold;text-align:right;border-top:3px solid #333" colspan="3">JUMLAH ROLL PO - PENJUALAN</td>
+				<td style="padding:10px 5px 5px;font-weight:bold;text-align:right;border-top:3px solid #333" colspan="4">JUMLAH ROLL PO - PENJUALAN</td>
 				<td style="padding:10px 5px 5px;font-weight:bold;text-align:right;border-top:3px solid #333">'.number_format($sumRollPO).'</td>
 				<td style="padding:10px 5px 5px"></td>
 			</tr>
 			<tr>
-				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">'.$txtStat.' ROLL GUDANG</td>
+				<td style="padding:5px;font-weight:bold;text-align:right" colspan="4">'.$txtStat.' ROLL GUDANG</td>
 				<td style="padding:5px;font-weight:bold;text-align:right">'.number_format($nsJmlRoll).'</td>
 				<td style="padding:5px"></td>
 			</tr>
 			<tr>
-				<td style="padding:5px;font-weight:bold;text-align:right" colspan="3">SISA '.$txtStat.' ROLL GUDANG</td>
+				<td style="padding:5px;font-weight:bold;text-align:right" colspan="4">SISA '.$txtStat.' ROLL GUDANG</td>
 				<td style="padding:5px;font-weight:bold;text-align:right">'.number_format($stokRollTuan).'</td>
 				<td style="padding:5px"></td>
 			</tr>';
