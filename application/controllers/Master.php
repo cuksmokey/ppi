@@ -4823,7 +4823,7 @@ class Master extends CI_Controller
 
 					// GET UKURAN STOK
 					$vWidth = 0;
-					if($otfg == 'ofgtuan' || $otfg == 'ofgtdktuan'){
+					if($otfg == 'ofgtuan' || $otfg == 'ofgtuanf' || $otfg == 'ofgtdktuan'){
 						$getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
 						WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width'
 						AND status='0' AND id_pl='0'
@@ -4841,6 +4841,13 @@ class Master extends CI_Controller
 					if($otfg == 'ofg'){
 						$tuanOrTidak = $jmlRoll;
 					}else if($otfg == 'ofgtuan'){
+						if($vWidth >= $jmlRoll){
+							$tuanOrTidak = $jmlRoll;
+						}else{
+							// $tuanOrTidak = 0;
+							$tuanOrTidak = $vWidth - $jmlRoll;
+						}
+					}else if($otfg == 'ofgtuanf'){
 						if($vWidth >= $jmlRoll){
 							$tuanOrTidak = $jmlRoll;
 						}else{

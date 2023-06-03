@@ -181,7 +181,8 @@
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('stok')">STOK GUDANG</button>
 						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'office') {?>
 							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofg')">OUTSTANDING FG</button>
-							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtuan')">STOK FG BERTUAN</button>
+							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtuan')">STOK BERTUAN:BEFORE</button>
+							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtuanf')">STOK BERTUAN:AFTER</button>
 							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtdktuan')">STOK FG TIDAK BERTUAN</button>
 						<?php } ?>
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('produksi')">PRODUKSI</button>
@@ -311,11 +312,13 @@
 			$(".menu-stok").show();
 			$(".menu-out-fg").hide();
 			$(".menu-produksi").hide();
-		}else if(plh == 'ofg' || plh == 'ofgtuan' || plh == 'ofgtdktuan'){
+		}else if(plh == 'ofg' || plh == 'ofgtuan' || plh == 'ofgtuanf' || plh == 'ofgtdktuan'){
 			if(plh == 'ofg'){
 				txtplh = 'SISA OS : '; 
 			}else if(plh == 'ofgtuan'){
-				txtplh = 'STOK BERTUAN : '; 
+				txtplh = 'STOK BERTUAN : BEFORE'; 
+			}else if(plh == 'ofgtuanf'){
+				txtplh = 'STOK BERTUAN : AFTER'; 
 			}else{
 				txtplh = 'STOK TIDAK BERTUAN : '; 
 			}
