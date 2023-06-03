@@ -1980,15 +1980,18 @@ class Master extends CI_Controller
 			$tJenis = $jenis;
 		}
 
-		// COR
-		// 86_ex_PPI/FG/01/02/23_ex_MH_ex_ppn_ex_210
+		// COR 210
+		// LAM 217
 		$jnsCor = explode("_ex_", $_POST['id']);
 		if($jnsCor[4] == 210){
 			$whereNoSj = $syear."/".$kpjk."/C".$tJenis;
 			$whereCor = "AND id_perusahaan='210'";
+		}else if($jnsCor[4] == 217){
+			$whereNoSj = $syear."/".$kpjk."/L".$tJenis;
+			$whereCor = "AND id_perusahaan='217'";
 		}else{
 			$whereNoSj = $syear."/".$kpjk."/".$tJenis;
-			$whereCor = "AND id_perusahaan!='210'";
+			$whereCor = "AND (id_perusahaan!='210' OR id_perusahaan!='217')";
 		}
 		
 		// PACKING LIST OK
@@ -2079,6 +2082,8 @@ class Master extends CI_Controller
 		// COR
 		if($id[4] == 210){
 			$nmKer = 'C'.$tKer;
+		}else if($id[4] == 217){
+			$nmKer = 'L'.$tKer;
 		}else{
 			$nmKer = $tKer;
 		}
@@ -2521,11 +2526,11 @@ class Master extends CI_Controller
 
 					// REQ PRINT LABEL
 					if($w->lbl_rk == 'req'){
-						$lds = 'disabled class="btn-req-lbl"';
+						$lds = 'class="btn-req-lbl"';
 					}else{
 						$lds = '';
 					}
-					$lblReq = '<button '.$lds.' onclick="reqLabelRk('."'".$w->id."'".','."'".$w->id_rk."'".','."'".$l."'".')">req</button>';
+					$lblReq = '<button '.$lds.' onclick="reqLabelRk('."'".$w->id."'".','."'".$w->id_rk."'".','."'".$w->lbl_rk."'".','."'".$l."'".')">req</button>';
 					if($otorisasi == 'all' || $otorisasi == 'admin'){
 						$btnLabel = $lblReq;
 					}else if($otorisasi == 'fg'){
@@ -2850,7 +2855,14 @@ class Master extends CI_Controller
 
 	function reqLabelRk(){
 		$retrun = $this->m_master->reqLabelRk();
-		echo json_encode(array('res' => $retrun, 'msg' => 'REQUEST LABEL BERHASIL!'));
+
+		$lbl_rk = $_POST['lbl_rk'];
+		if($lbl_rk == ''){
+			$msg = 'REQUEST LABEL!';
+		}else{
+			$msg = 'BATAL REQUEST!';
+		}
+		echo json_encode(array('res' => $retrun, 'msg' => $msg));
 	}
 
 	function batalRollRk(){

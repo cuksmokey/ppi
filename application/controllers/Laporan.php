@@ -5826,10 +5826,16 @@ class Laporan extends CI_Controller {
 
 		if($opsi == 'cekRollStok'){
 			// STOK GUDANG
+			if($gsmroll == 125 || $gsmroll == '125'){
+				$wGLabel = "(g_label='120' OR g_label='125')";
+			}else{
+				$wGLabel = "g_label='$gsmroll'";
+			}
+			
 			if($stat == 'stok'){
-				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='0' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
+				$where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND status='0' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
 			}else if($stat == 'buffer'){
-				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND status='3' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
+				$where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND status='3' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
 			}else{
 				// PRODUKSI
                 if($pm == 1){
@@ -6010,7 +6016,7 @@ class Laporan extends CI_Controller {
 
                     // PILIH STATUS
 					$opsRoll = substr($roll->id_rk,0,6);
-                    if($opsRoll == 'RK.210' && ($roll->status == 1 || $roll->status == 3) && $roll->id_pl != 0){
+                    if(($opsRoll == 'RK.210' || $opsRoll == 'RK.217') && ($roll->status == 1 || $roll->status == 3) && $roll->id_pl != 0){
                         $html .='<td style="border:1px solid #999;text-align:center">'.$oBtn.'PPI'.$cBtn.'</td>';
                     }else if($roll->status == 2 && $roll->id_pl != 0){
                         $html .='<td style="border:1px solid #999;text-align:center">'.$oBtn.'PPI'.$cBtn.'</td>';

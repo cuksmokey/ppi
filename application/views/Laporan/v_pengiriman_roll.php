@@ -2193,13 +2193,13 @@
 		})
 	}
 
-	function reqLabelRk(id,idrk,i){
+	function reqLabelRk(id,idrk,lbl_rk,i){
 		// alert(id+' - '+idrk+' - '+i);
 		$.ajax({
 			url: '<?php echo base_url('Master/reqLabelRk')?>',
 			type: "POST",
 			data: ({
-				id
+				id,lbl_rk
 			}),
 			success: function(json){
 				data = JSON.parse(json);

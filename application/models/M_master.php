@@ -1116,7 +1116,14 @@ class M_master extends CI_Model{
     }
 
     function reqLabelRk(){
-        $this->db->set('lbl_rk', 'req');
+		$lbl_rk = $_POST['lbl_rk'];
+
+		if($lbl_rk != null || $lbl_rk != ''){
+			$this->db->set('lbl_rk', null);
+		}else{
+			$this->db->set('lbl_rk', 'req');
+		}
+
         $this->db->where('id', $_POST['id']);
         return $this->db->update('m_timbangan');
     }
