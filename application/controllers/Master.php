@@ -4844,15 +4844,12 @@ class Master extends CI_Controller
 						if($vWidth >= $jmlRoll){
 							$tuanOrTidak = $jmlRoll;
 						}else{
-							// $tuanOrTidak = 0;
-							$tuanOrTidak = $vWidth - $jmlRoll;
+							$tuanOrTidak = 0;
+							// $tuanOrTidak = $vWidth - $jmlRoll;
 						}
-					}else{ // ofgtdktuan
-						// if($vWidth >= $jmlRoll){
-							$tuanOrTidak = $vWidth - $jmlRoll;
-						// }else{
-						// 	$tuanOrTidak = 0;
-						// }
+					}else{
+						// ofgtdktuan
+						$tuanOrTidak = $vWidth - $jmlRoll;
 					}
 
 					if(($lbl->nm_ker == 'MH' || $lbl->nm_ker == 'MI' || $lbl->nm_ker == 'ML') && ($tuanOrTidak == 0 || $tuanOrTidak <= 0) ){
