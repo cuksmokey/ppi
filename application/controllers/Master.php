@@ -4851,8 +4851,9 @@ class Master extends CI_Controller
 						if($vWidth >= $jmlRoll){
 							$tuanOrTidak = $jmlRoll;
 						}else{
-							$tuanOrTidak = 0;
+							// $tuanOrTidak = 0;
 							// $tuanOrTidak = $vWidth - $jmlRoll;
+							$tuanOrTidak = $vWidth;
 						}
 					}else{
 						// ofgtdktuan
