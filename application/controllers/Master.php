@@ -3325,8 +3325,14 @@ class Master extends CI_Controller
 					}else{
 						$aksi = $uk->jml_roll;
 					}
+
+					if($uk->g_label == 120 || $uk->g_label == 125){
+						$ukRGLabel = "AND (g_label='120' OR g_label='125')";
+					}else{
+						$ukRGLabel = "AND g_label='$uk->g_label'";
+					}
 					// GET ROLL
-					$getRoll = $this->db->query("SELECT COUNT(roll) AS jmlRoll FROM m_timbangan WHERE id_rk='$uk->id_rk' AND nm_ker='$uk->nm_ker' AND g_label='$uk->g_label' AND width='$uk->width'");
+					$getRoll = $this->db->query("SELECT COUNT(roll) AS jmlRoll FROM m_timbangan WHERE id_rk='$uk->id_rk' AND nm_ker='$uk->nm_ker' $ukRGLabel AND width='$uk->width'");
 					if($getRoll->row()->jmlRoll == '' || $getRoll->row()->jmlRoll == 0){
 						$jmlRoll = 0;
 					}else{
@@ -3371,8 +3377,13 @@ class Master extends CI_Controller
 			<button class="btn-cari-inp-roll" onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".','."'".$key."'".')">CARI</button>
 		</div>';
 		
+		if($g_label == 120 || $g_label == 125){
+			$ukRGLabel = "AND (g_label='120' OR g_label='125')";
+		}else{
+			$ukRGLabel = "AND g_label='$g_label'";
+		}
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan
-		WHERE nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width' AND roll LIKE '%$roll%'
+		WHERE nm_ker='$nm_ker' $ukRGLabel AND width='$width' AND roll LIKE '%$roll%'
 		AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
 		AND (status='0' OR status='3') AND id_pl='0' AND (id_rk IS NULL OR id_rk = '')
 		ORDER BY YEAR(tgl),pm,roll");
