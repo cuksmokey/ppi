@@ -5909,7 +5909,7 @@ class Laporan extends CI_Controller {
 						$cBre = '';
 					}
                 }else{
-                    if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){
+                    if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3 || $roll->status == 4) && $roll->id_pl != 0){
                         $oBre = '';
                         $cBre = '';
                     }else{
@@ -5945,7 +5945,7 @@ class Laporan extends CI_Controller {
 					}
 					$oBtn = '';
 					$cBtn = '';
-				}else if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){ // PENJUALAN
+				}else if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3 || $roll->status == 4) && $roll->id_pl != 0){ // PENJUALAN
                     $bgStt = 'cek-status-terjual';
 					$diss = 'disabled';
 					$oBtn = '<button class="tmbl-cek-roll" onclick="cek_roll('."'".$roll->id."'".')">';

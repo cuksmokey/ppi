@@ -3377,7 +3377,9 @@ class Master extends CI_Controller
 			<button class="btn-cari-inp-roll" onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".','."'".$key."'".')">CARI</button>
 		</div>';
 		
-		if($g_label == 120 || $g_label == 125){
+		if($g_label == 68 || $g_label == 70){
+			$ukRGLabel = "AND (g_label='68' OR g_label='70')";
+		}else if($g_label == 120 || $g_label == 125){
 			$ukRGLabel = "AND (g_label='120' OR g_label='125')";
 		}else{
 			$ukRGLabel = "AND g_label='$g_label'";

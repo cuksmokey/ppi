@@ -432,8 +432,8 @@
 		$("#falamat").val(data[0].alamat);
 		$("#ftelp").val(data[0].no_telp);
 
-		// TAMPIL AMBIL STOK / BUFFER PPI COR
-		if(data[0].id == 210){
+		// TAMPIL AMBIL STOK / BUFFER PPI COR / LAMINASI
+		if(data[0].id == 210 || data[0].id == 217){
 			$("#select-ambil-cor").val(3).prop('disabled', false).removeAttr('style');
 		}else{
 			$("#select-ambil-cor").val(0).prop('disabled', true).attr('style', 'background:#e9e9e9');
@@ -690,7 +690,7 @@
 				$(".box-form").show();
 				$(".box-form-po").hide();
 
-				if(id == 210){
+				if(id == 210 || id == 217){
 					$("#select-ambil-cor").val(3).prop('disabled', false).removeAttr('style');
 				}else{
 					$("#select-ambil-cor").val(0).prop('disabled', true).attr('style', 'background:#e9e9e9');
