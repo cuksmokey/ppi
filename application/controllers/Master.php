@@ -3326,7 +3326,9 @@ class Master extends CI_Controller
 						$aksi = $uk->jml_roll;
 					}
 
-					if($uk->g_label == 120 || $uk->g_label == 125){
+					if($uk->g_label == 68 || $uk->g_label == 70){
+						$ukRGLabel = "AND (g_label='68' OR g_label='70')";
+					}else if($uk->g_label == 120 || $uk->g_label == 125){
 						$ukRGLabel = "AND (g_label='120' OR g_label='125')";
 					}else{
 						$ukRGLabel = "AND g_label='$uk->g_label'";
