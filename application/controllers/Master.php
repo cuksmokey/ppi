@@ -4013,6 +4013,12 @@ class Master extends CI_Controller
 		$caripo = $_POST['caripo'];
 		$otorisasi = $_POST['otorisasi'];
 		$html = '';
+
+		if($otorisasi == 'all'){
+			$jmlRollNolls = "";
+		}else{
+			$jmlRollNolls = "AND m.jml_roll!='0'";
+		}
 		
 		// KHUSUS COR
 		if($otorisasi == 'cor'){
@@ -4024,7 +4030,7 @@ class Master extends CI_Controller
 		}else{
 			$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,pt.alamat,m.* FROM po_master m
 			INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id
-			WHERE status='$opsi' AND (pt.pimpinan LIKE '%$caripo%' OR pt.nm_perusahaan LIKE '%$caripo%')
+			WHERE status='$opsi' AND (pt.pimpinan LIKE '%$caripo%' OR pt.nm_perusahaan LIKE '%$caripo%') $jmlRollNolls
 			GROUP BY id_perusahaan
 			ORDER BY pt.pimpinan,pt.nm_perusahaan");
 		}
@@ -4172,8 +4178,14 @@ class Master extends CI_Controller
 		$li = $_POST['i'];
 		$html = '';
 
-		$getData = $this->db->query("SELECT id_po,no_po,status,pajak FROM po_master
-		WHERE id_perusahaan='$id' AND status='$opsi'
+		if($this->session->userdata('level') == 'SuperAdmin'){
+			$jmlRollNollp = "";
+		}else{
+			$jmlRollNollp = "AND jml_roll!='0'";
+		}
+
+		$getData = $this->db->query("SELECT id_po,no_po,status,pajak,SUM(jml_roll) FROM po_master
+		WHERE id_perusahaan='$id' AND status='$opsi' $jmlRollNollp
 		-- GROUP BY id_po,no_po,status,pajak
 		GROUP BY pajak,tgl,no_po,STATUS,id_po");
 		$i =0;
@@ -5346,17 +5358,21 @@ class Master extends CI_Controller
 		$ctk = $_GET['ctk'];
 		$html = '';
 
-		$qPt = $this->db->query("SELECT pt.id AS id_pt,pt.nm_perusahaan AS nm_pt,pt.pimpinan AS nama,po.id_po,po.no_po,po.status FROM po_master po
+		if($this->session->userdata('level') == 'SuperAdmin'){
+			$jmlRollNoll = "";
+		}else{
+			$jmlRollNoll = "AND po.jml_roll!='0'";
+		}
+
+		$qPt = $this->db->query("SELECT pt.id AS id_pt,pt.nm_perusahaan AS nm_pt,pt.pimpinan AS nama,po.id_po,po.no_po,po.status,SUM(po.jml_roll) FROM po_master po
 		INNER JOIN m_perusahaan pt ON po.id_perusahaan=pt.id
-		-- WHERE pt.pimpinan LIKE '%%' AND pt.nm_perusahaan LIKE '%%'
-		-- AND po.nm_ker!='WP'
-		AND pt.id!='210'
-		-- po.status='open'
+		WHERE (pt.id!='210' AND pt.id!='217') $jmlRollNoll
 		GROUP BY pt.nm_perusahaan,pt.pimpinan");
-		$html .= '<style>.str{mso-number-format:\@}</style>';
-		$html .= '<table style="color:#000;vertical-align:middle;border-collapse:collapse;border-color:#555">';
 
 		foreach($qPt->result() as $r){
+			$html .= '<style>.str{mso-number-format:\@}</style>';
+			$html .= '<table style="color:#000;vertical-align:middle;border-collapse:collapse;border-color:#555">';
+
 			$html .= '<tr>
 				<td style="border:1px solid #000;background:#ddd;padding:5px;font-weight:bold" colspan="2">'.$r->nm_pt.' '.$r->nama.'</td>
 			</tr>';
@@ -5365,12 +5381,9 @@ class Master extends CI_Controller
 				<td style="border:1px solid #000;background:#ddd;padding:5px;font-weight:bold">STATUS</td>
 			</tr>';
 
-			$qIsi = $this->db->query("SELECT pt.id AS id_pt,pt.nm_perusahaan AS nm_pt,pt.pimpinan AS nama,po.id_po,po.no_po,po.status FROM po_master po
+			$qIsi = $this->db->query("SELECT pt.id AS id_pt,pt.nm_perusahaan AS nm_pt,pt.pimpinan AS nama,po.id_po,po.no_po,po.status,SUM(po.jml_roll) FROM po_master po
 			INNER JOIN m_perusahaan pt ON po.id_perusahaan=pt.id
-			WHERE pt.id='$r->id_pt'
-			-- AND po.nm_ker!='WP'
-			AND pt.id!='210'
-			-- po.status='open'
+			WHERE pt.id='$r->id_pt' $jmlRollNoll
 			GROUP BY po.status DESC,po.no_po");
 			foreach($qIsi->result() as $isi){
 				$getIdPo = $this->db->query("SELECT id_po FROM po_master
@@ -5382,13 +5395,12 @@ class Master extends CI_Controller
 					<td style="border:1px solid #000;padding:5px">'.strtoupper($isi->status).'</td>
 				</tr>';
 			}
-
 			$html .= '<tr>
 				<td style="padding:10px;font-weight:bold" colspan="3"></td>
 			</tr>';
-		}
 
-		$html .= '</table>';
+			$html .= '</table>';
+		}
 
 		if ($ctk == '0') {
             echo $html;
