@@ -594,7 +594,7 @@ class M_master extends CI_Model{
     }
 
     function loadRkUkuran($search = "", $opl = "", $tglpl = "", $no_po = "", $nmker = "", $g_label =""){
-        $users = $this->db->query("SELECT tgl_pl,opl,p.no_po,p.nm_ker,p.g_label,m.width,p.id_perusahaan,m.jml_roll FROM pl p
+        $users = $this->db->query("SELECT tgl_pl,opl,p.no_po,p.nm_ker,p.g_label,m.width,p.id_perusahaan,m.jml_roll,m.ket FROM pl p
         INNER JOIN po_master m ON p.no_po=m.no_po AND p.id_perusahaan=m.id_perusahaan AND p.nm_ker=m.nm_ker AND p.g_label=m.g_label
         WHERE tgl_pl='$tglpl' AND opl='$opl' AND p.no_po='$no_po' AND p.nm_ker='$nmker' AND p.g_label='$g_label' AND m.width LIKE '%$search%'
         GROUP BY tgl_pl,opl,p.no_po,p.nm_ker,p.g_label,m.width")->result_array();
@@ -609,12 +609,20 @@ class M_master extends CI_Model{
 			$getRollTerjual = $this->db->query("SELECT * FROM m_timbangan t
 			INNER JOIN pl p ON t.nm_ker=p.nm_ker AND t.g_label=p.g_label AND t.id_pl=p.id
 			WHERE p.qc='ok' AND p.no_po='$userNopo' AND t.nm_ker='$userNmker' AND t.g_label='$userGlabel' AND width='$userWidth'");
+
 			if($getRollTerjual->num_rows() == 0){
 				$rollTerjual = 0;
 			}else{
 				$rollTerjual = $getRollTerjual->num_rows();
 			}
-			$txtText = round($user['width'],2).' ( '.$user['jml_roll'].' )'.' - '.$rollTerjual;
+
+			if($user['ket'] == '' || $user['ket'] == null){
+				$txtKet = '';
+			}else{
+				$txtKet = ' - '.$user['ket'];
+			}
+
+			$txtText = round($user['width'],2).' ( '.$user['jml_roll'].' )'.' - '.$rollTerjual.$txtKet;
 
             $data[] = array(
                 "id" => $user['opl'].'_ex_'.$user['tgl_pl'].'_ex_'.$user['no_po'].'_ex_'.$user['nm_ker'].'_ex_'.$user['g_label'].'_ex_'.$user['width'].'_ex_'.$user['id_perusahaan'],
