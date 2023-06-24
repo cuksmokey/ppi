@@ -5383,7 +5383,7 @@ class Master extends CI_Controller
 
 			$qIsi = $this->db->query("SELECT pt.id AS id_pt,pt.nm_perusahaan AS nm_pt,pt.pimpinan AS nama,po.id_po,po.no_po,po.status,SUM(po.jml_roll) FROM po_master po
 			INNER JOIN m_perusahaan pt ON po.id_perusahaan=pt.id
-			WHERE pt.id='$r->id_pt' $jmlRollNoll
+			WHERE pt.id='$r->id_pt' AND po.jml_roll!='0'
 			GROUP BY po.status DESC,po.no_po");
 			foreach($qIsi->result() as $isi){
 				$getIdPo = $this->db->query("SELECT id_po FROM po_master
