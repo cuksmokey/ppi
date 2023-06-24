@@ -4014,11 +4014,11 @@ class Master extends CI_Controller
 		$otorisasi = $_POST['otorisasi'];
 		$html = '';
 
-		if($otorisasi == 'all'){
-			$jmlRollNolls = "";
-		}else{
-			$jmlRollNolls = "AND m.jml_roll!='0'";
-		}
+		// if($otorisasi == 'all'){
+		// 	$jmlRollNolls = "";
+		// }else{
+		// 	$jmlRollNolls = "AND m.jml_roll!='0'";
+		// }
 		
 		// KHUSUS COR
 		if($otorisasi == 'cor'){
@@ -4030,7 +4030,7 @@ class Master extends CI_Controller
 		}else{
 			$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,pt.alamat,m.* FROM po_master m
 			INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id
-			WHERE status='$opsi' AND (pt.pimpinan LIKE '%$caripo%' OR pt.nm_perusahaan LIKE '%$caripo%') $jmlRollNolls
+			WHERE status='$opsi' AND (pt.pimpinan LIKE '%$caripo%' OR pt.nm_perusahaan LIKE '%$caripo%') AND m.jml_roll!='0'
 			GROUP BY id_perusahaan
 			ORDER BY pt.pimpinan,pt.nm_perusahaan");
 		}
