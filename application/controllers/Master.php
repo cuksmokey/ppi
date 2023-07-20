@@ -92,6 +92,13 @@ class Master extends CI_Controller
 		$this->load->view('footer');
 	}
 
+	public function ListTungguKirim()
+	{
+		$this->load->view('header');
+		$this->load->view('Master/v_list_tunggu_kirim');
+		$this->load->view('footer');
+	}
+
 	public function Reject_Roll()
 	{
 		$this->load->view('header');

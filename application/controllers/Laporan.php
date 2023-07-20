@@ -6384,4 +6384,420 @@ class Laporan extends CI_Controller {
 
         echo $html;
     }
+
+	function loadtkBtnAllList(){
+		$html ='';
+		$qGsm = $this->db->query("SELECT nm_ker,g_label FROM po_master po
+		WHERE g_label!='120' AND po.status='open'
+		AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND id_perusahaan!='210' AND id_perusahaan!='217' AND nm_ker!='WP'
+		GROUP BY nm_ker,g_label");
+		foreach($qGsm->result() as $btn){	
+			$html .='<button class="tmbl-plh-all-list" style="margin-right:3px;font-size:12px;color:#000" onclick="btnTkAllListPer('."'".$btn->nm_ker."'".','."'".$btn->g_label."'".')">'.$btn->nm_ker.''.$btn->g_label.'</button>';
+		}
+
+		echo $html;
+	}
+
+	function loadTkAllListPer(){
+		$nmker = $_POST["nmker"];
+		$glabel = $_POST["glabel"];
+		$html = '';
+
+		$html .='<div style="overflow:auto;white-space:nowrap"><table style="margin:10px 0 0;padding:0;text-align:center;font-size:12px;color:#000;border-collapse:collapse">';
+
+		$html .='<tr>
+			<td style="background:#eee;padding:5px;font-weight:bold;border:1px solid #000">'.$nmker.''.$glabel.'</td>';
+
+			// GET CUSTOMER
+			$qGetCust = $this->db->query("SELECT id_perusahaan,pt.pimpinan,pt.nm_perusahaan,pt.aka FROM po_master po
+			INNER JOIN m_perusahaan pt ON po.id_perusahaan=pt.id
+			WHERE po.status='open' AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND id_perusahaan!='210' AND id_perusahaan!='217'
+			AND nm_ker='$nmker' AND g_label='$glabel'
+			GROUP BY id_perusahaan
+			ORDER BY pt.aka");
+			foreach($qGetCust->result() as $cust){
+				if($cust->aka != null || $cust->aka != ''){
+					$namaPT = $cust->aka;
+				}else{
+					$namaPT = $cust->nm_perusahaan;
+				}
+				$html .='<td style="background:#eee;padding:5px;font-weight:bold;border:1px solid #000">'.$namaPT.'</td>';
+			}
+		$html .='</tr>';
+		
+		$qGetUk = $this->db->query("SELECT width FROM po_master po
+		WHERE po.status='open' AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND id_perusahaan!='210' AND id_perusahaan!='217'
+		AND nm_ker='$nmker' AND g_label='$glabel'
+		GROUP BY width");
+		foreach($qGetUk->result() as $uk){
+			$html .='<tr class="all-list-gg">
+				<td style="padding:5px;border:1px solid #000">'.round($uk->width,2).'</td>';
+				// GET CUSTOMER
+				foreach($qGetCust->result() as $custUk){
+					if($nmker == 'MH' || $nmker == 'ML'){
+						$gbGsm = '#ffc';
+					}else if($nmker == 'MN'){
+						$gbGsm = '#fcc';
+					}else if($nmker == 'BK'){
+						$gbGsm = '#ccc';
+					}else if($nmker == 'WP' || $nmker == 'WS'){
+						$gbGsm = '#cfc';
+					}else if($nmker == 'MH COLOR'){
+						$gbGsm = '#ccf';
+					}else{
+						$gbGsm = '#fff';
+					}
+
+					// RUMUS ISINYA
+					if($glabel == 125 || $glabel == '125'){
+						$gLabel = "(g_label='120' OR g_label='125')";
+					}else{
+						$gLabel = "g_label='$glabel'";
+					}
+					$qGetJnsGsmPerUkuran = $this->db->query("SELECT (SELECT COUNT(t.roll) FROM m_timbangan t INNER JOIN pl p ON t.id_pl=p.id WHERE p.no_po=po.no_po AND t.nm_ker=po.nm_ker AND t.g_label=po.g_label AND t.width=po.width AND p.id_perusahaan=po.id_perusahaan)
+					AS kir_roll,po.* FROM po_master po
+					WHERE nm_ker='$nmker' AND $gLabel AND width='$uk->width' AND po.status='open'
+					AND (jml_roll!='0' OR ket LIKE '%PENDING%')
+					AND id_perusahaan='$custUk->id_perusahaan'");
+					$jmlUk = 0;
+					foreach($qGetJnsGsmPerUkuran->result() as $isiUk){
+						$itung = $isiUk->jml_roll - $isiUk->kir_roll;
+						if($itung == 0 || $itung >= 0){
+							$tmbh = $itung;
+						}else{
+							$tmbh = 0;
+						}
+						$jmlUk += $tmbh;
+					}
+					// TAMPIL
+					if($jmlUk == 0){
+						if($qGetJnsGsmPerUkuran->num_rows() == 0){
+							$html .='<td style="background:'.$gbGsm.';padding:5px;border:1px solid #000">0</td>';
+						}else{
+							$html .='<td style="background:'.$gbGsm.';padding:5px;border:1px solid #000">
+								<button style="background:transparent;font-weight:bold;text-decoration:underline;margin:0;padding:0;border:0" onclick="cekTungguKirim('."'".$nmker."'".','."'".$glabel."'".','."'".$uk->width."'".','."'".$custUk->id_perusahaan."'".')">0</button>
+							</td>';
+						}
+					}else{
+						$html .='<td style="background:#fff;padding:5px;border:1px solid #000">
+							<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cekTungguKirim('."'".$nmker."'".','."'".$glabel."'".','."'".$uk->width."'".','."'".$custUk->id_perusahaan."'".')">'.$jmlUk.'</button>
+						</td>';
+					}
+				}
+			$html .='</tr>';
+		}
+		$html .='</table></div>';
+
+		echo $html;
+	}
+
+	function loadTkCustomer(){
+		$html ='';
+
+		$qGetPt = $this->db->query("SELECT pt.id,pt.nm_perusahaan,pt.pimpinan FROM po_master po
+		INNER JOIN m_perusahaan pt ON pt.id=po.id_perusahaan
+		WHERE po.id_perusahaan!='210' AND po.id_perusahaan!='217' AND (po.nm_ker!='WP' AND po.nm_ker!='MN')
+		AND pt.nm_perusahaan LIKE '%%'
+		AND po.status LIKE '%open%'
+		GROUP BY pt.id
+		ORDER BY pt.nm_perusahaan;");
+		$i = 0;
+		foreach($qGetPt->result() as $r){
+			$i++;
+			if($r->nm_perusahaan == '-' || $r->nm_perusahaan == ''){
+				$nm = $r->pimpinan;
+			}else{
+				$nm = $r->nm_perusahaan;
+			}
+
+			if($r->id == 40){
+				$infoNama = ' ( IGC )';
+			}else if($r->id == 189){
+				$infoNama = ' ( PHP )';
+			}else if($r->id == 218){
+				$infoNama = ' ( HFS )';
+			}else if($r->id == 211){
+				$infoNama = ' ( KAM )';
+			}else{
+				$infoNama = '';
+			}
+
+			$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+			$html .='<tr>
+				<td class="list-table" style="padding:5px 0">
+					<button class="btn-r-cust" onclick="btnRCust('."'".$i."'".','."'".$r->id."'".')">DETAIL</button> '.$nm.''.$infoNama.'
+				</td>
+			</tr>';
+			$html .='</table>';
+			
+			$html .='<div class="btn-cek isi-rincian-customer-'.$i.'"></div>';
+		}
+
+		echo $html;
+	}
+
+	function BtnRCustList(){
+		$i = $_POST["i"];
+		$id = $_POST["id"];
+		$html ='';
+		$html .='<table style="margin:5px 0;padding:0;font-size:12px;color:#000;text-align:center;border-collapse:collapse">';
+
+		// GET JENIS - MH BK WP MN 
+		$qGetJenis = $this->db->query("SELECT nm_ker FROM po_master
+		WHERE id_perusahaan='$id' AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND status='open'
+		GROUP BY nm_ker");
+
+		// KOP JENIS
+		$html .='<tr>
+			<td style="background:#eee;padding:5px;border:1px solid #000;font-weight:bold" rowspan="2">UKURAN</td>';
+			foreach($qGetJenis->result() as $kopJenis){
+				$qGetGsm = $this->db->query("SELECT nm_ker,g_label FROM po_master
+				WHERE id_perusahaan='$id' AND nm_ker='$kopJenis->nm_ker' AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND status='open'
+				AND g_label!='120'
+				GROUP BY nm_ker,g_label");
+				$html .='<td style="background:#eee;padding:5px;border:1px solid #000;font-weight:bold" colspan="'.$qGetGsm->num_rows().'">'.$kopJenis->nm_ker.'</td>';
+			}
+		$html .='</tr>';
+
+		// KOP GSM
+		foreach($qGetJenis->result() as $kopJenis){
+			$qGetGsm = $this->db->query("SELECT nm_ker,g_label FROM po_master
+			WHERE id_perusahaan='$id' AND nm_ker='$kopJenis->nm_ker' AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND status='open'
+			AND g_label!='120'
+			GROUP BY nm_ker,g_label");
+			foreach($qGetGsm->result() as $kopGsm){
+				$html .='<td style="background:#eee;padding:5px;border:1px solid #000;font-weight:bold">'.$kopGsm->g_label.'</td>';
+			}
+		}
+
+		// TAMPIL ISI GET UKURAN DULU
+		$qGetUkuran = $this->db->query("SELECT width FROM po_master
+		WHERE id_perusahaan='$id' AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND status='open'
+		GROUP BY width");
+		foreach($qGetUkuran->result() as $uk){
+			$html .='<tr>
+				<td style="padding:5px;border:1px solid #000;font-weight:bold">'.round($uk->width,2).'</td>';
+				// CARI JENIS
+				foreach($qGetJenis->result() as $kopJenis){
+					$qGetGsm = $this->db->query("SELECT nm_ker,g_label FROM po_master
+					WHERE id_perusahaan='$id' AND nm_ker='$kopJenis->nm_ker' AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND status='open'
+					AND g_label!='120'
+					GROUP BY nm_ker,g_label");
+					// CARI GSM
+					foreach($qGetGsm->result() as $kopGsm){
+						if($kopGsm->nm_ker == 'MH' || $kopGsm->nm_ker == 'ML'){
+                            $gbGsm = '#ffc';
+                        }else if($kopGsm->nm_ker == 'MN'){
+                            $gbGsm = '#fcc';
+                        }else if($kopGsm->nm_ker == 'BK'){
+                            $gbGsm = '#ccc';
+                        }else if($kopGsm->nm_ker == 'WP' || $kopGsm->nm_ker == 'WS'){
+                            $gbGsm = '#cfc';
+                        }else if($kopGsm->nm_ker == 'MH COLOR'){
+                            $gbGsm = '#ccf';
+                        }else{
+                            $gbGsm = '#fff';
+                        }
+
+						// RUMUS ISINYA
+						if($kopGsm->g_label == 125 || $kopGsm->g_label == '125'){
+							$gLabel = "(g_label='120' OR g_label='125')";
+						}else{
+							$gLabel = "g_label='$kopGsm->g_label'";
+						}
+						$qGetJnsGsmPerUkuran = $this->db->query("SELECT (SELECT COUNT(t.roll) FROM m_timbangan t INNER JOIN pl p ON t.id_pl=p.id WHERE p.no_po=po.no_po AND t.nm_ker=po.nm_ker AND t.g_label=po.g_label AND t.width=po.width AND p.id_perusahaan=po.id_perusahaan)
+						AS kir_roll,po.* FROM po_master po
+						WHERE nm_ker='$kopGsm->nm_ker' AND $gLabel AND width='$uk->width' AND po.status='open'
+						AND (jml_roll!='0' OR ket LIKE '%PENDING%')
+						AND id_perusahaan='$id'");
+						$jmlUk = 0;
+						foreach($qGetJnsGsmPerUkuran->result() as $isiUk){
+							$itung = $isiUk->jml_roll - $isiUk->kir_roll;
+							if($itung == 0 || $itung >= 0){
+								$tmbh = $itung;
+							}else{
+								$tmbh = 0;
+							}
+							$jmlUk += $tmbh;
+						}
+						// TAMPIL
+						if($jmlUk == 0){
+							if($qGetJnsGsmPerUkuran->num_rows() == 0){
+								$html .='<td style="background:'.$gbGsm.';padding:5px;border:1px solid #000">0</td>';
+							}else{
+								$html .='<td style="background:'.$gbGsm.';padding:5px;border:1px solid #000">
+									<button style="background:transparent;font-weight:bold;text-decoration:underline;margin:0;padding:0;border:0" onclick="cekTungguKirim('."'".$kopGsm->nm_ker."'".','."'".$kopGsm->g_label."'".','."'".$uk->width."'".','."'".$id."'".')">0</button>
+								</td>';
+							}
+						}else{
+							$html .='<td style="background:#fff;padding:5px;border:1px solid #000">
+								<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cekTungguKirim('."'".$kopGsm->nm_ker."'".','."'".$kopGsm->g_label."'".','."'".$uk->width."'".','."'".$id."'".')">'.$jmlUk.'</button>
+							</td>';
+						}
+					}
+				}
+			$html .='</tr>';
+		}
+
+		$html .='</table>';
+
+		echo $html;
+	}
+
+	function PopupTungguKirim(){
+		$nm_ker = $_POST["nm_ker"];
+		$g_label = $_POST["g_label"];
+		$width = $_POST["width"];
+		$id = $_POST["id"];
+		$html = '';
+		$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+
+		if($g_label == 125 || $g_label == '125'){
+			$gLabel = "(g_label='120' OR g_label='125')";
+		}else{
+			$gLabel = "g_label='$g_label'";
+		}
+		$qGetPOMaster = $this->db->query("SELECT*FROM po_master po
+		WHERE id_perusahaan='$id' AND nm_ker='$nm_ker' AND $gLabel AND width='$width'
+		AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND po.status='open'
+		GROUP BY tgl,nm_ker,g_label,width,no_po");
+
+		if($qGetPOMaster->num_rows() == 0){
+			$html .='<tr>
+				<td style="padding:5px;font-weight:bold">TIDAK ADA PO!!! . . .</td>
+			</tr>';
+		}else{
+			$html .='<tr>
+				<td style="padding:5px;font-weight:bold;border-bottom:2px solid #000">NO.</td>
+				<td style="padding:5px;font-weight:bold;border-bottom:2px solid #000">NO. PO</td>
+				<td style="padding:5px;font-weight:bold;border-bottom:2px solid #000">JENIS</td>
+				<td style="padding:5px;font-weight:bold;border-bottom:2px solid #000">GSM</td>
+				<td style="padding:5px;font-weight:bold;border-bottom:2px solid #000">KIRIM</td>
+				<td style="padding:5px;font-weight:bold;border-bottom:2px solid #000">KETERANGAN</td>
+			</tr>';
+
+			$i = 0;
+			$sumSisaPenj = 0;
+			foreach($qGetPOMaster->result() as $po){
+				$html .='<tr>
+					<td colspan="6" style="padding:5px"></td>
+				</tr>';
+
+				$i++;
+				$html .='<tr>
+					<td style="padding:5px;font-weight:bold;text-align:center">'.$i.'.</td>
+					<td style="padding:5px;font-weight:bold">'.$po->no_po.'</td>
+					<td style="padding:5px;font-weight:bold;text-align:center">'.$po->nm_ker.'</td>
+					<td style="padding:5px;font-weight:bold;text-align:center">'.$po->g_label.'</td>
+					<td style="padding:5px;font-weight:bold;text-align:right">'.$po->jml_roll.'</td>
+					<td style="padding:5px;font-weight:bold">'.$po->ket.'</td>
+				</tr>';
+
+				// $this->m_fungsi->tglInd_skt($kirim->tgl)
+				$qGetKiriman = $this->db->query("SELECT p.tgl,p.id_perusahaan,p.no_po,p.no_surat,p.no_pkb,t.nm_ker,t.g_label,t.width,COUNT(t.roll) AS jmlkir FROM m_timbangan t
+				INNER JOIN pl p ON t.id_pl=p.id
+				WHERE p.id_perusahaan='$id' AND p.no_po='$po->no_po'
+				AND t.nm_ker='$po->nm_ker' AND t.g_label='$po->g_label' AND t.width='$po->width'
+				GROUP BY p.tgl,p.id_perusahaan,p.no_po,p.no_pkb,t.nm_ker,t.g_label,t.width");
+				$sumKir = 0;
+				foreach($qGetKiriman->result() as $kir){
+					$html .='<tr>
+						<td style="padding:5px"></td>
+						<td style="padding:5px" colspan="3">- '.$this->m_fungsi->tglInd_skt($kir->tgl).' - '.trim($kir->no_surat).'</td>
+						<td style="padding:5px;text-align:right">'.$kir->jmlkir.'</td>
+					</tr>';
+					$sumKir += $kir->jmlkir;
+				}
+
+				// TOTAL
+				if($sumKir == 0){
+					$html .='';
+				}else{
+					$html .='<tr>
+						<td colspan="4" style="padding:5px;font-weight:bold;text-align:right">TOTAL KIRIM</td>
+						<td style="padding:5px;font-weight:bold;text-align:right">'.$sumKir.'</td>
+					</tr>';
+				}
+
+				// SISA PO - KIRIMAN
+				$kurangRollPOnKiriman = $po->jml_roll - $sumKir;
+				if($kurangRollPOnKiriman == 0 || $kurangRollPOnKiriman >= 0){
+					$sisaPenj = $kurangRollPOnKiriman;
+				}else{
+					$sisaPenj = 0;
+				}
+				$sumSisaPenj += $sisaPenj;
+
+				if($sumKir == 0){
+					$html .='';
+				}else{
+					if($kurangRollPOnKiriman > 0){
+						$html .='<tr>
+							<td colspan="4" style="padding:5px;font-weight:bold;text-align:right">SISA</td>
+							<td style="padding:5px;font-weight:bold;text-align:right">'.$sisaPenj.'</td>
+						</tr>';
+					}else{
+						$html .='';
+					}
+				}
+
+				$html .='<tr>
+					<td colspan="6" style="padding:5px"></td>
+				</tr>';
+			}
+
+			// TOTAL KESELURUHAN
+			$html .='<tr>
+				<td colspan="4" style="padding:5px;font-weight:bold;border-top:2px solid #000;text-align:right">TOTAL PO - PENJUALAN</td>
+				<td style="padding:5px;font-weight:bold;border-top:2px solid #000;text-align:right">'.$sumSisaPenj.'</td>
+			</tr>';
+			$html .='</table>';
+		}
+
+		echo $html;
+	}
+
+	//
+
+	function loadRekap(){
+		// $html ='';
+		// $html .='<table style="margin:0;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+		// $html .='<tr>
+		// 	<td style="background:#ddd;padding:5px;font-weight:bold;text-align:center;border:1px solid #000" colspan="3">ROLL YANG BELUM TERKIRIM</td>
+		// </tr>';
+
+		// $qGetPt = $this->db->query("SELECT pt.id,pt.nm_perusahaan,pt.pimpinan FROM po_master po
+		// INNER JOIN m_perusahaan pt ON pt.id=po.id_perusahaan
+		// WHERE po.id_perusahaan!='210' AND po.id_perusahaan!='217' AND (po.nm_ker!='WP' AND po.nm_ker!='MN')
+		// AND pt.nm_perusahaan LIKE '%santosa jawi%'
+		// AND po.status LIKE '%open%'
+		// GROUP BY pt.id
+		// ORDER BY pt.nm_perusahaan;");
+		// $i = 0;
+		// foreach($qGetPt->result() as $r){
+		// 	$i++;
+
+		// 	if($r->id == 40){
+		// 		$infoNama = ' ( IGC )';
+		// 	}else if($r->id == 189){
+		// 		$infoNama = ' ( PHP )';
+		// 	}else if($r->id == 218){
+		// 		$infoNama = ' ( HFS )';
+		// 	}else if($r->id == 211){
+		// 		$infoNama = ' ( KAM )';
+		// 	}else{
+		// 		$infoNama = '';
+		// 	}
+
+		// 	$html .='<tr>
+		// 		<td style="padding:5px;border:1px solid #000;text-align:center">'.$i.'</td>
+		// 		<td style="padding:5px;border:1px solid #000">'.$r->nm_perusahaan.''.$infoNama.'</td>
+		// 		<td style="padding:5px;border:1px solid #000">0</td>
+		// 	</tr>';
+		// }
+		// $html .='</table>';
+
+		$html ='REKAP';
+		echo $html;
+	}
 }

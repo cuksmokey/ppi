@@ -125,6 +125,12 @@
 								<span>R P K</span>
 							</a>
 						</li>
+						<li>
+							<a href="<?php echo base_url('Master/ListTungguKirim') ?>">
+								<!-- <i class="material-icons">list</i> -->
+								<span>List Tunggu Kirim</span>
+							</a>
+						</li>
                     <?php } ?>
                     <li>
                         <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2") { ?>
