@@ -6392,7 +6392,7 @@ class Laporan extends CI_Controller {
 		AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND id_perusahaan!='210' AND id_perusahaan!='217' AND nm_ker!='WP'
 		GROUP BY nm_ker,g_label");
 		foreach($qGsm->result() as $btn){	
-			$html .='<button class="tmbl-plh-all-list" style="margin-right:3px;font-size:12px;color:#000" onclick="btnTkAllListPer('."'".$btn->nm_ker."'".','."'".$btn->g_label."'".')">'.$btn->nm_ker.''.$btn->g_label.'</button>';
+			$html .='<button class="tmbl-plh-all-list" style="margin:0 3px 3px 0;font-size:12px;color:#000" onclick="btnTkAllListPer('."'".$btn->nm_ker."'".','."'".$btn->g_label."'".')">'.$btn->nm_ker.''.$btn->g_label.'</button>';
 		}
 
 		echo $html;
@@ -6684,7 +6684,7 @@ class Laporan extends CI_Controller {
 				</tr>';
 
 				$i++;
-				$html .='<tr>
+				$html .='<tr class="all-list-gg">
 					<td style="padding:5px;font-weight:bold;text-align:center">'.$i.'.</td>
 					<td style="padding:5px;font-weight:bold">'.$po->no_po.'</td>
 					<td style="padding:5px;font-weight:bold;text-align:center">'.$po->nm_ker.'</td>
@@ -6701,12 +6701,23 @@ class Laporan extends CI_Controller {
 				GROUP BY p.tgl,p.id_perusahaan,p.no_po,p.no_pkb,t.nm_ker,t.g_label,t.width");
 				$sumKir = 0;
 				foreach($qGetKiriman->result() as $kir){
-					$html .='<tr>
+					$i++;
+					$html .='<tr class="all-list-gg">
 						<td style="padding:5px"></td>
 						<td style="padding:5px" colspan="3">- '.$this->m_fungsi->tglInd_skt($kir->tgl).' - '.trim($kir->no_surat).'</td>
-						<td style="padding:5px;text-align:right">'.$kir->jmlkir.'</td>
+						<td style="padding:5px;text-align:right">
+							<button class="lnk" style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cekKirimanTkRoll('."'".trim($kir->no_surat)."'".','."'".$po->no_po."'".','."'".$po->nm_ker."'".','."'".$po->g_label."'".','."'".$po->width."'".','."'".$i."'".')">'.$kir->jmlkir.'</button>
+						</td>
 					</tr>';
+					// <td style="padding:5px;text-align:right">'.$kir->jmlkir.'</td>
 					$sumKir += $kir->jmlkir;
+
+					$html .='<tr>
+						<td></td>
+						<td colspan="5">
+							<div class="clear-tmpl-roll tmpl-roll-tk-kirim-'.$i.'"></div>
+						</td>
+					</tr>';
 				}
 
 				// TOTAL
@@ -6753,6 +6764,62 @@ class Laporan extends CI_Controller {
 			</tr>';
 			$html .='</table>';
 		}
+
+		echo $html;
+	}
+
+	function PopupTkKiriman(){
+		$no_surat = $_POST["no_surat"];
+		$no_po = $_POST["no_po"];
+		$nm_ker = $_POST["nm_ker"];
+		$g_label = $_POST["g_label"];
+		$width = $_POST["width"];
+		$i = $_POST["i"];
+		$html ='';
+		$html .='<table style="margin:0;padding:0;font-size:12px;text-align:center;color:#000;border-collapse:collapse">';
+
+		if($nm_ker == "MH"){
+			$rctBi = '';
+		}else if($nm_ker == "BK"){
+			$rctBi = '';
+		}else{
+			$rctBi = '';
+		}
+		$html .='<tr>
+			<td style="background:#eee;font-weight:bold;padding:3px 5px;border:1px solid #000">NO.</td>
+			<td style="background:#eee;font-weight:bold;padding:3px 5px;border:1px solid #000">TGL</td>
+			<td style="background:#eee;font-weight:bold;padding:3px 5px;border:1px solid #000">NO. ROLL</td>
+			<td style="background:#eee;font-weight:bold;padding:3px 5px;border:1px solid #000">D(CM)</td>
+			<td style="background:#eee;font-weight:bold;padding:3px 5px;border:1px solid #000">BERAT</td>
+			<td style="background:#eee;font-weight:bold;padding:3px 5px;border:1px solid #000">JOINT</td>
+			<td style="background:#eee;font-weight:bold;padding:3px 5px;border:1px solid #000">KETERANGAN</td>
+		</tr>';
+		$qGetKirimanRoll = $this->db->query("SELECT t.* FROM m_timbangan t
+		INNER JOIN pl p ON t.id_pl=p.id AND t.nm_ker=p.nm_ker AND t.g_label=p.g_label
+		WHERE p.no_surat LIKE '%$no_surat%' AND p.no_po='$no_po'
+		AND t.nm_ker='$nm_ker' AND t.g_label='$g_label' AND t.width='$width'
+		ORDER BY t.roll");
+		$ll = 0;
+		foreach($qGetKirimanRoll->result() as $roll){
+			$ll++;
+			if($roll->seset != 0){
+				$seset = '-'.$roll->seset.'KG. '.$roll->weight.'. ';
+				$berat = $roll->weight - $roll->seset;
+			}else{
+				$seset = '';
+				$berat = $roll->weight;
+			}
+			$html .= '<tr class="all-list-gg">
+				<td style="padding:3px;border:1px solid #000">'.$ll.'</td>
+				<td style="padding:3px;border:1px solid #000">'.$roll->tgl.'</td>
+				<td style="padding:3px;border:1px solid #000">'.$roll->roll.'</td>
+				<td style="padding:3px;border:1px solid #000">'.$roll->diameter.'</td>
+				<td style="padding:3px;border:1px solid #000">'.number_format($berat).'</td>
+				<td style="padding:3px;border:1px solid #000">'.$roll->joint.'</td>
+				<td style="padding:3px;border:1px solid #000;text-align:left">'.$seset.''.$roll->ket.'</td>
+			</tr>';
+		}
+		$html .='</table>';
 
 		echo $html;
 	}

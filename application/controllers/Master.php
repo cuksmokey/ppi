@@ -3376,6 +3376,7 @@ class Master extends CI_Controller
 		$g_label = $_POST['g_label'];
 		$width = $_POST['width'];
 		$roll = $_POST['roll'];
+		$opbuf = $_POST['opbuf'];
 		$html='';
 
 		$key = 'cari';
@@ -3383,8 +3384,13 @@ class Master extends CI_Controller
 		<div style="padding:10px 0 0">
 			<button style="padding:5px;font-weight:bold" disabled>'.$nm_ker.''.$g_label.' - '.round($width,2).' :</button>
 			<input type="text" name="roll" id="vcariroll-'.$i.'" value="'.$roll.'" maxlength="14" style="border:1px solid #ccc;padding:7px;border-radius:5px" autocomplete="off" placeholder="ROLL">
-			<button class="btn-cari-inp-roll" onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".','."'".$key."'".')">CARI</button>
-		</div>';
+			<button class="btn-cari-inp-roll" onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".',1,'."'".$key."'".')">CARI</button>
+		</div>
+		<div style="padding-top:5px">
+			<button class="btn-op-stok" onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".',0,'."'".$key."'".')">STOK</button>
+			<button class="btn-op-buff" onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".',3,'."'".$key."'".')">BUFFER</button>
+		</div>
+		';
 		
 		if($g_label == 68 || $g_label == 70){
 			$ukRGLabel = "AND (g_label='68' OR g_label='70')";
@@ -3393,13 +3399,24 @@ class Master extends CI_Controller
 		}else{
 			$ukRGLabel = "AND g_label='$g_label'";
 		}
+
+		if($opbuf == 0 || $opbuf == ""){
+			$ketOpbuff = "status='0'";
+			$zonkKetOpBuff = 'STOK';
+		}else if($opbuf == 3){
+			$ketOpbuff = "status='3'";
+			$zonkKetOpBuff = 'BUFFER';
+		}else{
+			$ketOpbuff = "(status='0' OR status='3')";
+			$zonkKetOpBuff = 'DATA STOK/BUFFER';
+		}
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan
 		WHERE nm_ker='$nm_ker' $ukRGLabel AND width='$width' AND roll LIKE '%$roll%'
 		AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
-		AND (status='0' OR status='3') AND id_pl='0' AND (id_rk IS NULL OR id_rk = '')
+		AND $ketOpbuff AND id_pl='0' AND (id_rk IS NULL OR id_rk = '')
 		ORDER BY YEAR(tgl),pm,roll");
 		if($getRoll->num_rows() == 0){
-			$html .='<div class="notfon">DATA TIDAK DITEMUKAN</div>';
+			$html .='<div style="font-weight:bold" class="notfon">'.$zonkKetOpBuff.' TIDAK DITEMUKAN</div>';
 		}else{
 			$ii = 0;
 			$html .='<div style="padding-top:10px"><table class="list-table" style="text-align:center;width:100%" border="1">

@@ -117,6 +117,26 @@
 		border-radius: 3px;
 		color: #fff;
 	}
+
+	.btn-op-buff {
+		background: #fee;
+		padding:5px 8px;
+		border: 3px solid #a99;
+		border-width: 0 0 0 4px;
+		font-weight: bold;
+		font-size: 12px;
+		color: #000;
+	}
+
+	.btn-op-stok {
+		background: #cfc;
+		padding:5px 8px;
+		border: 3px solid #7a7;
+		border-width: 0 0 0 4px;
+		font-weight: bold;
+		font-size: 12px;
+		color: #000;
+	}
 </style>
 
 <?php
@@ -2067,9 +2087,9 @@
 		});
 	}
 
-	function btnInputRoll(i,nm_ker,g_label,width,roll='',cari=''){ // KLIK JUMLAH PADA RENCARA KIRIMAN
+	// KLIK JUMLAH PADA RENCARA KIRIMAN
+	function btnInputRoll(i,nm_ker,g_label,width,roll='',cari='',opbuf=''){
 		// alert(i+' - '+id_pl+' - '+nm_ker+' - '+g_label+' - '+width+' - '+roll+' - '+cari);
-		// v_id_pl = $("#v-id-pl").val();
 		if(cari == ''){
 			$(".t-plist-hasil-input-" + i).load("<?php echo base_url('Master/destroyCartInputRoll') ?>");
 		}
@@ -2079,10 +2099,11 @@
 			type: "POST",
 			data: ({
 				i: i, 
-				nm_ker: nm_ker, 
-				g_label: g_label, 
-				width: width, 
-				roll: roll, 
+				nm_ker: nm_ker,
+				g_label: g_label,
+				width: width,
+				roll: roll,
+				opbuf: opbuf
 			}),
 			success: function(response){
 				if(response){
@@ -2141,10 +2162,10 @@
 		});
 	}
 
-	function cariRoll(i,nm_ker,g_label,width,xroll='',cari){
-		// alert(i+' - '+nm_ker+' - '+g_label+' - '+width+' - '+xroll+' - '+cari);
+	function cariRoll(i,nm_ker,g_label,width,xroll='',opbuf,cari){
+		// alert(i+' - '+nm_ker+' - '+g_label+' - '+width+' - '+xroll+' - '+opbuf+' - '+cari);
 		xroll = $('#vcariroll-'+i).val();
-		btnInputRoll(i,nm_ker,g_label,width,xroll,cari);
+		btnInputRoll(i,nm_ker,g_label,width,xroll,cari,opbuf);
 	}
 
 	function simpanInputRoll(){

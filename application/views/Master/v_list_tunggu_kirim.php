@@ -31,6 +31,10 @@
 	.all-list-gg:hover {
 		background: rgba(238, 238, 238, 0.5);
 	}
+
+	.lnk:hover {
+		text-decoration: underline;
+	}
 </style>
 
 <section class="content">
@@ -161,6 +165,38 @@
 		})
 	}
 
+	function cekTungguKirim(nm_ker,g_label,width,id){
+		// alert(nm_ker+' '+g_label+' '+width+' '+id);
+		$(".popup-list-kurang-kirim").html('Tunggu Sebentar . . .');
+		$("#modal-kurang-kirim").modal("show");
+		$.ajax({
+			url: '<?php echo base_url('Laporan/PopupTungguKirim') ?>',
+			type: "POST",
+			data: ({
+				nm_ker,g_label,width,id
+			}),
+			success: function(response) {
+				$(".popup-list-kurang-kirim").html(response);
+			}
+		});
+	}
+
+	function cekKirimanTkRoll(no_surat,no_po,nm_ker,g_label,width,i){
+		// alert(no_surat+' '+no_po+' '+nm_ker+' '+g_label+' '+width); clear-tmpl-roll
+		$(".clear-tmpl-roll").html('');
+		$(".tmpl-roll-tk-kirim-" + i).html('<div style="padding-left:5px">MEMUAT . . .</div>');
+		$.ajax({
+			url: '<?php echo base_url('Laporan/PopupTkKiriman') ?>',
+			type: "POST",
+			data: ({
+				no_surat,no_po,nm_ker,g_label,width,i
+			}),
+			success: function(response) {
+				$(".tmpl-roll-tk-kirim-" + i).html(response);
+			}
+		});
+	}
+
 	//
 
 	function tkLoadCustomer(){
@@ -194,22 +230,6 @@
 				$(".btn-r-cust").prop("disabled", false);
 			}
 		})
-	}
-
-	function cekTungguKirim(nm_ker,g_label,width,id){
-		// alert(nm_ker+' '+g_label+' '+width+' '+id);
-		$(".popup-list-kurang-kirim").html('Tunggu Sebentar . . .');
-		$("#modal-kurang-kirim").modal("show");
-		$.ajax({
-			url: '<?php echo base_url('Laporan/PopupTungguKirim') ?>',
-			type: "POST",
-			data: ({
-				nm_ker,g_label,width,id
-			}),
-			success: function(response) {
-				$(".popup-list-kurang-kirim").html(response);
-			}
-		});
 	}
 
 	//
