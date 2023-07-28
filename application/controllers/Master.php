@@ -99,7 +99,7 @@ class Master extends CI_Controller
 		$this->load->view('footer');
 	}
 
-	public function Reject_Roll()
+	public function Retur_Roll()
 	{
 		$this->load->view('header');
 		$this->load->view('Master/v_reject_roll');
@@ -2475,7 +2475,7 @@ class Master extends CI_Controller
 			$totRoll = 0;
 			$totBerat = 0;
 			foreach($getKer->result() as $ker){
-				if($ker->nm_ker == 'MH' && $ker->g_label == 110){
+				if(($ker->nm_ker == 'MH' || $ker->nm_ker == 'MN') && $ker->g_label == 110){
 					$bgtrt = 'list-p-biru';
 				}else if(($ker->nm_ker == 'MH') && ($ker->g_label == 120 || $ker->g_label == 125)){
 					$bgtrt = 'list-p-kuning';
@@ -2498,7 +2498,9 @@ class Master extends CI_Controller
 				$i = 0;
 				foreach($getWidth->result() as $w){
 					$i++;
-					if($w->status == '3'){
+					if($w->id_rtr != ''){
+						$bgtr = 'status-retur';
+					}else if($w->status == '3'){
 						$bgtr = 'status-buffer';
 					}else{
 						$bgtr = 'status-stok';
@@ -3437,7 +3439,9 @@ class Master extends CI_Controller
 			</tr>';
 			foreach($getRoll->result() as $r){
 				$ii++;
-				if($r->status == 3){
+				if($r->id_rtr != ''){
+					$bgtr = 'status-retur';
+				}else if($r->status == 3){
 					$bgtr = 'status-buffer';
 				}else{
 					$bgtr = 'status-stok';
@@ -5438,4 +5442,337 @@ class Master extends CI_Controller
         }
 	}
 
+	function cariSJReject(){
+		$noSj = $_POST["noSj"];
+		$jNmKer = $_POST["jNmKer"];
+		$html = '';
+		$html .='<div style="overflow:auto;white-space:nowrap">';
+
+		$qGetSjRetur = $this->db->query("SELECT p.* FROM pl p
+		INNER JOIN m_timbangan t ON p.id=t.id_pl AND p.nm_ker=t.nm_ker AND p.g_label=t.g_label
+		WHERE no_surat LIKE '%$noSj%' AND p.nm_ker LIKE '%$jNmKer%'
+		AND id_perusahaan!='210' AND id_perusahaan!='217'
+		GROUP BY p.id_rk ORDER BY p.tgl,no_pkb");
+		if($qGetSjRetur->num_rows() == 0){
+			$html .= '<div style="margin-top:10px;font-weight:bold">NO. SURAT JALAN TIDAK DITEMUKAN</div>';
+		}else{
+			$i = 0;
+			foreach($qGetSjRetur->result() as $rr){
+				$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+				$i++;
+				if($rr->nm_perusahaan == "-"){
+					$namaPt = $rr->nama;
+				}else{
+					$namaPt = $rr->nm_perusahaan;
+				}
+				$html .= '<tr>
+					<td style="font-weight:bold">
+						<button onclick="detailList('."'".$i."'".','."'".trim($rr->no_surat)."'".','."'".$rr->id_rk."'".','."'".$rr->nm_ker."'".')">DETAIL</button>
+					</td>
+					<td style="padding:5px;font-weight:bold">'.$rr->tgl.'</td>
+					<td>-</td>
+					<td style="padding:5px;font-weight:bold">'.trim($rr->no_surat).'</td>
+					<td>-</td>
+					<td style="padding:5px;font-weight:bold">'.$namaPt.'</td>
+				</tr>';
+				$html .= '</table>';
+
+				$html .='<div class="clr-list-reject tmpl-list-reject-'.$i.'"></div>';
+			}
+		}
+
+		echo $html;
+	}
+
+	function tmplDetailList(){
+		$l = $_POST["i"];
+		$no_surat = $_POST["no_surat"];
+		$id_rk = $_POST["id_rk"];
+		$nm_ker = $_POST["nm_ker"];
+		$html = '';
+
+		$html .= '<div>
+			<input type="hidden" name="r-l" id="r-l" value="'.$l.'">
+			<input type="hidden" name="r-no-surat" id="r-no-surat" value="'.$no_surat.'">
+			<input type="hidden" name="r-id-rk" id="r-id-rk" value="'.$id_rk.'">
+			<input type="hidden" name="r-nm-ker" id="r-nm-ker" value="'.$nm_ker.'">
+		</div>';
+
+		$html .= '<div class="tmpl-hasil-input-rjt-'.$l.'"></div>';
+
+		$html .= '<div class="tmpl-sementara-lr-'.$l.'"></div>';
+
+		$html .='<table style="margin:10px 0;padding:0;font-size:12px;color:#000;text-align:center;border-collapse:collapse">';
+		$html .= '<tr>
+			<td style="padding:5px 0;font-weight:bold;text-align:left" colspan="9">LIST ROLL DARI SURAT JALAN :</td>
+		</tr>
+		<tr>
+			<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">NO.</td>
+			<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">NO. ROLL</td>
+			<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">GSM</td>
+			<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">UKURAN</td>
+			<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">D(CM)</td>
+			<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">BERAT</td>
+			<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">JOINT</td>
+			<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">KETERANGAN</td>
+			<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">OPSI</td>
+		</tr>';
+
+		$qGetRoll = $this->db->query("SELECT*FROM m_timbangan
+		WHERE id_rk='$id_rk' AND nm_ker='$nm_ker'
+		ORDER BY nm_ker,g_label,width,pm,roll");
+		$i = 0;
+		foreach($qGetRoll->result() as $r){
+			$i++;
+			if(($r->nm_ker == 'MH' || $r->nm_ker == 'MN') && ($r->g_label == 105 || $r->g_label == 110)){
+				$bgGsm = 'background:#ccf;';
+			}else if($r->nm_ker == 'MH' && ($r->g_label == 120 || $r->g_label == 125)){
+				$bgGsm = 'background:#ffc;';
+			}else if(($r->nm_ker == 'MH' || $r->nm_ker == 'MN') && $r->g_label == 150){
+				$bgGsm = 'background:#fcc;';
+			}else if($r->nm_ker == 'WP'){
+				$bgGsm = 'background:#cfc;';
+			}else{
+				$bgGsm = 'background:#fff;';
+			}
+
+			if($r->seset != 0){
+				$berat = $r->weight - $r->seset;
+				$ketSet = '-'.$r->seset.'KG. '.$r->weight.'. ';
+			}else{
+				$berat = $r->weight;
+				$ketSet = '';
+			}
+
+			// VALIDASI
+			if($r->id_rk != '' && $r->id_rtr == null){
+				$bgRjt = '';
+				$btnAdd = '<button onclick="addListReject('."'".$l."'".','."'".$r->id."'".','."'".$r->roll."'".','."'".$r->id_rk."'".')">ADD</button>';
+			}else{
+				$bgRjt = 'style="background:#ddd"';
+				$btnAdd = '-';
+			}
+
+			$html .= '<tr class="list-p-putih" '.$bgRjt.'>
+				<td style="padding:5px;border:1px solid #666">'.$i.'</td>
+				<td style="padding:5px;border:1px solid #666">'.$r->roll.'</td>
+				<td style="'.$bgGsm.'padding:5px;border:1px solid #666">'.$r->g_label.'</td>
+				<td style="padding:5px;border:1px solid #666">'.round($r->width,2).'</td>
+				<td style="padding:5px;border:1px solid #666">'.$r->diameter.'</td>
+				<td style="padding:5px;border:1px solid #666">'.number_format($berat).'</td>
+				<td style="padding:5px;border:1px solid #666">'.$r->joint.'</td>
+				<td style="padding:5px;border:1px solid #666;text-align:left">'.$ketSet.$r->ket.'</td>
+				<td style="padding:5px;border:1px solid #666">
+					'.$btnAdd.'
+				</td>
+			</tr>';
+		}
+
+		$html .= '</table>';
+
+		echo $html;
+	}
+
+	function hasilInputRollReject(){
+		$i = $_POST["i"];
+		$no_surat = $_POST["no_surat"];
+		$id_rk = $_POST["id_rk"];
+		$nm_ker = $_POST["nm_ker"];
+		$html ='';
+
+		$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;text-align:center;border-collapse:collapse">';
+		$qGetRollRjt = $this->db->query("SELECT*FROM m_timbangan WHERE id_rtr='$id_rk' ORDER BY nm_ker,g_label,width,pm,roll");
+		if($qGetRollRjt->num_rows() == 0){
+			$html .='<tr>
+				<td style="padding:5px 0 0;font-weight:bold">BELUM ADA YANG DIRETUR</td>
+			</tr>';
+		}else{
+			$html .= '<tr>
+				<td style="padding:5px 0;font-weight:bold;text-align:left" colspan="8">LIST ROLL YANG DI RETUR :</td>
+			</tr>
+			<tr>
+				<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">NO.</td>
+				<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">NO. ROLL</td>
+				<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">GSM</td>
+				<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">UKURAN</td>
+				<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">D(CM)</td>
+				<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">BERAT</td>
+				<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">JOINT</td>
+				<td style="background:#ddd;padding:5px 35px;font-weight:bold;border:1px solid #666">KETERANGAN</td>
+				<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">STATUS</td>
+				<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">EDIT</td>
+				<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #666">HAPUS</td>
+			</tr>';
+			$l = 0;
+			foreach($qGetRollRjt->result() as $rjt){
+				// STATUS
+				if($rjt->status == 3){
+					$opt = '<option value="3">BUFFER</option>
+						<option value="1">-</option>
+						<option value="0">STOK</option>';
+				}else if($rjt->status == 0){
+					$opt = '<option value="0">STOK</option>
+						<option value="1">-</option>
+						<option value="3">BUFFER</option>';
+				}else if($rjt->status == 1){
+					$opt = '<option value="1">-</option>
+						<option value="0">STOK</option>
+						<option value="3">BUFFER</option>';
+				}else{
+					$opt = '<option value="">PILIH</option>
+						<option value="1">-</option>
+						<option value="0">STOK</option>
+						<option value="3">BUFFER</option>';
+				}
+
+				// MASUK RENCANA KIRIM LAGI TIDAK BISA DIEDIT
+				if($rjt->id_rk != ''){
+					$btnEdit = '-';
+					$btnHapus = '-';
+				}else{
+					$btnEdit = '<button onclick="editInputRollReject('."'".$i."'".','."'".$no_surat."'".','."'".$id_rk."'".','."'".$nm_ker."'".','."'".$rjt->id."'".','."'".$rjt->roll."'".')">EDIT</button>';
+					$btnHapus = '<button onclick="hapusInputRollReject('."'".$i."'".','."'".$no_surat."'".','."'".$id_rk."'".','."'".$nm_ker."'".','."'".$rjt->id."'".','."'".$rjt->roll."'".')">HAPUS</button>';
+				}
+
+				if($rjt->id_rk == $rjt->id_rtr){
+					$html .= '';
+				}else{
+					$l++;
+					$html .= '<tr class="list-p-putih">
+						<td style="padding:5px;border:1px solid #666">'.$l.'</td>
+						<td style="padding:5px;border:1px solid #666">'.$rjt->roll.'</td>
+						<td style="padding:5px;border:1px solid #666">'.$rjt->g_label.'</td>
+						<td style="padding:5px;border:1px solid #666">'.round($rjt->width,2).'</td>
+						<td style="position:relative;padding:5px;border:1px solid #666">
+							<input type="text" class="inp-abs" id="erjt-diameter-'.$rjt->id.'" value="'.$rjt->diameter.'" maxlength="3">
+						</td>
+						<td style="position:relative;padding:5px;border:1px solid #666">
+							<input type="text" class="inp-abs" id="erjt-weight-'.$rjt->id.'" value="'.$rjt->weight.'" maxlength="4">
+						</td>
+						<td style="position:relative;padding:5px;border:1px solid #666">
+							<input type="text" class="inp-abs" id="erjt-joint-'.$rjt->id.'" value="'.$rjt->joint.'" maxlength="2">
+						</td>
+						<td style="position:relative;padding:5px;border:1px solid #666">
+							<textarea class="txt-area-new" id="erjt-ket-'.$rjt->id.'">'.$rjt->ket.'</textarea>
+						</td>
+						<td style="border:1px solid #666">
+							<select name="jenis-nmker" id="erjt-status-'.$rjt->id.'" style="border:0;background:none">
+								'.$opt.'
+							</select>
+						</td>
+						<td style="padding:5px;border:1px solid #666">'.$btnEdit.'</td>
+						<td style="padding:5px;border:1px solid #666">'.$btnHapus.'</td>
+					</tr>';
+				}
+
+			}
+		}
+		$html .='</table>';
+
+		echo $html;
+	}
+
+	function editInputRollReject(){
+		$erjtDiameter = $_POST["erjtDiameter"];
+		$erjtWeight = $_POST["erjtWeight"];
+		$erjtJoint = $_POST["erjtJoint"];
+
+		if(!preg_match("/^[0-9]*$/",$erjtDiameter)){
+			echo json_encode(array(
+				'res' => false,
+				'msg' => 'DIAMETER HANYA BOLEH ANGKA!',
+				'info' => 'error',
+			));
+		}else if(!preg_match("/^[0-9]*$/",$erjtWeight)){
+			echo json_encode(array(
+				'res' => false,
+				'msg' => 'BERAT HANYA BOLEH ANGKA!',
+				'info' => 'error',
+			));
+		}else if(!preg_match("/^[0-9]*$/",$erjtJoint)){
+			echo json_encode(array(
+				'res' => false,
+				'msg' => 'JOINT HANYA BOLEH ANGKA!',
+				'info' => 'error',
+			));
+		}else{ // SIMPAN
+			$return = $this->m_master->simpanEditInputRollReject();
+			echo json_encode(array(
+				'res' => $return,
+				'msg' => 'EDIT BERHASIL!',
+				'info' => 'success',
+			));
+		}
+	}
+
+	function hapusInputRollReject(){
+		$result = $this->m_master->hapusInputRollReject();
+		echo json_encode(array(
+			'res' => $result,
+			'msg' => 'EH KEHAPUS!'
+		));
+	}
+
+	function pListReject(){
+		$data = array(
+			'id' => $_POST['xid'],
+			'name' => $_POST['xid'],
+			'price' => 0,
+			'qty' => $_POST['xid'],
+			'options' => array(
+				'id_roll' => $_POST['xid'],
+				'id_rk' => $_POST['xidrk'],
+				'roll' => $_POST['roll'],
+				'i' => $_POST['i'],
+			),
+		);
+		$this->cart->insert($data);
+		echo json_encode(array('data' => true, 'isi' => $data));
+	}
+
+	function showListReject(){
+		$html = '';
+
+		if($this->cart->total_items() != 0){
+			$html .='<table style="text-align:center;margin:5px 0;font-size:12px">
+			<tr style="background:#e9e9e9">
+				<td style="font-weight:bold;padding:5px;border:1px solid #666">NO.</td>
+				<td style="font-weight:bold;padding:5px;border:1px solid #666">ROLL</td>
+				<td style="font-weight:bold;padding:5px;border:1px solid #666">AKSI</td>
+			</tr>';
+		}
+
+		$i = 0;
+		foreach($this->cart->contents() as $items){
+			$i++;
+			$html .='<tr class="list-p-putih">
+				<td style="font-weight:bold;padding:5px;border:1px solid #666">'.$i.'</td>
+				<td style="font-weight:bold;padding:5px;border:1px solid #666">'.$items['options']['roll'].'</td>
+				<td style="padding:5px;border:1px solid #666"><button onclick="hapusListReject('."'".$items['rowid']."'".','."'".$items['options']['i']."'".')">Batal</button></td>
+			</tr>';
+		}
+		$html .='</table>';
+
+		if($this->cart->total_items() != 0){
+			$html .='<div class="btn-simpan-sementara-rjt" style="font-size:12px;font-weight:bold;color:#000"><button onclick="simpanListReject()">SIMPAN</button></div>';
+		}
+		echo $html;
+	}
+
+	function simpanListReject(){
+		$this->m_master->simpanListReject();
+		echo json_encode(array('data' => true));
+	}
+
+	function hapusListReject() {
+		$data = array(
+			'rowid' => $_POST['rowid'],
+			'qty' => 0,
+		);
+		$this->cart->update($data);
+	}
+
+	function destroyListReject() {
+		$this->cart->destroy();
+	}
 }

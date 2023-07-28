@@ -74,6 +74,26 @@
 		background:#edd;
 	}
 
+	.cek-status-retur {
+		background-color: #fe9;
+	}
+	.cek-status-retur:hover {
+		background-color: #ed8;
+	}
+	.cek-status-retur:hover .edit-roll {
+		background:#ed8;
+	}
+
+	.cek-status-rk-rtr {
+		background-color: #cb6;
+	}
+	.cek-status-rk-rtr:hover {
+		background-color: #ba5;
+	}
+	.cek-status-rk-rtr:hover .edit-roll {
+		background-color: #ba5;
+	}
+
 	.cek-status-terjual {
 		background-color: #dfd;
 	}
@@ -183,6 +203,7 @@
 											<option value="ALL">SEMUA</option>
 											<option value="STOK">STOK</option>
 											<option value="BUFFER">BUFFER</option>
+											<option value="RETUR">RETUR</option>
 											<option value="PPI">PPI</option>
 											<option value="PPISIZING">PPI SIZING</option>
 											<option value="PPICALENDER">PPI CALENDER</option>
@@ -230,6 +251,7 @@
 											<option value="ALL">SEMUA</option>
 											<option value="STOK">STOK</option>
 											<option value="BUFFER">BUFFER</option>
+											<option value="RETUR">RETUR</option>
 											<option value="PPI">PPI</option>
 											<option value="PPISIZING">PPI SIZING</option>
 											<option value="PPICALENDER">PPI CALENDER</option>

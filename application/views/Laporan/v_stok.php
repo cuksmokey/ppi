@@ -71,6 +71,26 @@
 		background:#edd;
 	}
 
+	.cek-status-retur {
+		background-color: #fe9;
+	}
+	.cek-status-retur:hover {
+		background-color: #ed8;
+	}
+	.cek-status-retur:hover .edit-roll {
+		background:#ed8;
+	}
+
+	.cek-status-rk-rtr {
+		background-color: #cb6;
+	}
+	.cek-status-rk-rtr:hover {
+		background-color: #ba5;
+	}
+	.cek-status-rk-rtr:hover .edit-roll {
+		background-color: #ba5;
+	}
+
 	.cek-status-terjual {
 		background-color: #dfd;
 	}

@@ -204,9 +204,9 @@
 					<?php } ?>
 					<?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
 						<li>
-                            <a href="<?php echo base_url('Master/Reject_Roll') ?>">
+                            <a href="<?php echo base_url('Master/Retur_Roll') ?>">
                                 <!-- <i class="material-icons">list</i> -->
-                                <span>Reject Pengiriman Roll</span>
+                                <span>Retur Pengiriman Roll</span>
                             </a>
                         </li>
 					<?php } ?>

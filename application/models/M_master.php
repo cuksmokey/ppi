@@ -1666,4 +1666,100 @@ class M_master extends CI_Model{
 
         return $result;
     }
+
+	function simpanListReject(){
+		foreach($this->cart->contents() as $data){
+			$xid = $data['options']['id_roll'];
+			$xidrk = $data['options']['id_rk'];
+			$roll = $data['options']['roll'];
+			$i = $data['options']['i'];
+
+			$qGetRoll = $this->db->query("SELECT*FROM m_timbangan WHERE id='$xid' AND roll='$roll' AND id_rk='$xidrk'");
+			if($qGetRoll->row()->seset != 0){
+				$berat = $qGetRoll->row()->weight - $qGetRoll->row()->seset;
+			}else{
+				$berat = $qGetRoll->row()->weight;
+			}
+
+			// DUPLIKAT ROLL MENJADI RETUR
+			$data = array(
+				'roll' => $qGetRoll->row()->roll,
+				'tgl' => date("Y-m-d"),
+				'nm_ker' => $qGetRoll->row()->nm_ker,
+				'g_ac' => 0,
+				'g_label' => $qGetRoll->row()->g_label,
+				'width' => $qGetRoll->row()->width,
+				'weight' => $berat,
+				'diameter' => $qGetRoll->row()->diameter,
+				'joint' => $qGetRoll->row()->joint,
+				'id_rtr' => $xidrk,
+				'rct' => 0,
+				'bi' => 0,
+				'status' => 3,
+				'ket' => $qGetRoll->row()->ket,
+				'created_at' => date("Y-m-d H:i:s"),
+				'created_by' => $this->session->userdata('username'),
+				'pm' => $qGetRoll->row()->pm
+			);
+			$result= $this->db->insert("m_timbangan",$data);
+
+			// UPDATE ROLL YANG TERJUAL TAPI DI RETUR
+			$this->db->set('id_rtr', $xidrk);
+			$this->db->set('edited_at', date("Y-m-d H:i:s"));
+			$this->db->set('edited_by', $this->session->userdata('username'));
+			$this->db->where('id', $xid);
+			$this->db->where('roll', $roll);
+			$result = $this->db->update('m_timbangan');
+		}
+        
+		return $result;
+    }
+
+	function simpanEditInputRollReject(){
+		$erjtDiameter = $_POST["erjtDiameter"];
+		$erjtWeight = $_POST["erjtWeight"];
+		$erjtJoint = $_POST["erjtJoint"];
+		$erjtKet = $_POST["erjtKet"];
+		$erjtStatus = $_POST["erjtStatus"];
+		$id_rk = $_POST["id_rk"];
+		$id_rjt = $_POST["id_rjt"];
+		$roll = $_POST["roll"];
+
+		$this->db->set('diameter', $erjtDiameter);
+		$this->db->set('weight', $erjtWeight);
+		$this->db->set('joint', $erjtJoint);
+		$this->db->set('ket', strtoupper($erjtKet));
+		$this->db->set('status', $erjtStatus);
+		$this->db->set('edited_at', date("Y-m-d H:i:s"));
+		$this->db->set('edited_by', $this->session->userdata('username'));
+		$this->db->where('id', $id_rjt);
+		$this->db->where('roll', $roll);
+		$this->db->where('id_rtr', $id_rk);
+		$result = $this->db->update('m_timbangan');
+
+		return $result;
+	}
+
+	function hapusInputRollReject(){
+		$id_rjt = $_POST["id_rjt"];
+		$id_rk = $_POST["id_rk"];
+		$roll = $_POST["roll"];
+
+		// DELETE ROLL YANG SALAH RETUR
+		$this->db->where('id', $id_rjt);
+		$this->db->where('id_rk', null);
+		$this->db->where('id_rtr', $id_rk);
+		$result = $this->db->delete('m_timbangan');
+
+		// UPDATE ID RETUR KE NULL KEMBALI
+		$this->db->set('id_rtr', null);
+		$this->db->set('edited_at', date("Y-m-d H:i:s"));
+		$this->db->set('edited_by', $this->session->userdata('username'));
+		$this->db->where('roll', $roll);
+		$this->db->where('id_rk', $id_rk);
+		$this->db->where('id_rtr', $id_rk);
+		$result = $this->db->update('m_timbangan');
+
+		return $result;
+	}
 }

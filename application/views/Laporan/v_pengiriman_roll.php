@@ -57,9 +57,6 @@
 	.status-stok:hover {
 		background-color: #eee;
 	}
-	/* .cek-status-stok:hover .edit-roll {
-		background-color: #eee;
-	} */
 
 	.status-buffer {
 		background-color: #fee;
@@ -67,9 +64,13 @@
 	.status-buffer:hover {
 		background-color: #edd;
 	}
-	/* .cek-status-buffer:hover .edit-roll {
-		background:#edd;
-	} */
+
+	.status-retur {
+		background-color: #fe9;
+	}
+	.status-retur:hover {
+		background-color: #ed8;
+	}
 
 	.notfon {
 		color:#000;padding:5px 0 0

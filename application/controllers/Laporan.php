@@ -5845,7 +5845,7 @@ class Laporan extends CI_Controller {
                 }else{
                     $tpm = "AND tgl BETWEEN '$vtgl' AND '$vtgl2'";
                 }
-				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' $tpm";
+				$where = "nm_ker='$jnsroll' AND g_label='$gsmroll' AND width='$ukroll' AND id_rtr IS NULL $tpm";
 			}
 		}else{
 			// LIST ROLL
@@ -5853,6 +5853,8 @@ class Laporan extends CI_Controller {
 				$plhStat = "AND status='0'";
 			}else if($plh_status == "BUFFER"){
 				$plhStat = "AND status='3'";
+			}else if($plh_status == "RETUR"){
+				$plhStat = "AND id_rtr IS NOT NULL";
 			}else if($plh_status == "PPI"){
 				$plhStat = "AND status='2'";
 			}else if($plh_status == "PPISIZING"){
@@ -5918,8 +5920,21 @@ class Laporan extends CI_Controller {
                     }
                 }
 
-				if($roll->id_pl == 0 && ($roll->id_rk != null || $roll->id_rk != '')){ // MASUK RENCANA KIRIM
-                    $bgStt = 'cek-status-rk';
+				if($roll->id_pl == 0 && ($roll->id_rtr != null || $roll->id_rtr != '')){ // ROLL RETUR
+					if($roll->id_rk == null){
+						$bgStt = 'cek-status-retur';
+					}else{
+						$bgStt = 'cek-status-rk-rtr';
+					}
+					if($opsi == 'cekRollStok' || $otori == 'all'){
+						$diss = '';
+					}else{
+						$diss = 'disabled';
+					}
+					$oBtn = '';
+					$cBtn = '';
+				}else if($roll->id_pl == 0 && ($roll->id_rk != null || $roll->id_rk != '')){ // MASUK RENCANA KIRIM
+					$bgStt = 'cek-status-rk';
 					if($opsi == 'cekRollStok' || $otori == 'all' || $otori == 'admin' || $otori == 'qc'){
 						$diss = '';
 					}else{
@@ -6077,7 +6092,7 @@ class Laporan extends CI_Controller {
         echo $html;
     }
 
-    function QCRollTerjual(){ //
+    function QCRollTerjual(){
         $id = $_POST['id'];
         $html='';
         
@@ -6128,6 +6143,33 @@ class Laporan extends CI_Controller {
 			<td style="padding:5px">'.$getRoll->created_by.'</td>
 		</tr>';
 		$html .='</table>';
+
+		// RETUR
+		$getRollRjt = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$getRoll->roll' AND id_pl!='0' AND id_rtr IS NOT NULL");
+		if($getRollRjt->num_rows() == 0){
+			$html .= '';
+		}else{
+			$grjt = $getRollRjt->row()->id_rtr;
+			$qGetPlRetur = $this->db->query("SELECT*FROM pl WHERE id_rk='$grjt' GROUP BY id_rk");
+
+			$html .='<table style="margin:0 0 15px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+			$html .='<tr>
+					<td style="font-weight:bold" colspan="4">RETUR KIRIMAN DARI :</td>
+				</tr>
+				<tr>
+				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">TANGGAL KIRIM</td>
+				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NO. SURAT JALAN</td>
+				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NAMA</td>
+				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NAMA PERUSAHAAN</td>
+			</tr>';
+			$html .='<tr>
+				<td style="padding:5px;border:1px solid #888">'.$this->m_fungsi->tglInd_skt($qGetPlRetur->row()->tgl).'</td>
+				<td style="padding:5px;border:1px solid #888">'.trim($qGetPlRetur->row()->no_surat).'</td>
+				<td style="padding:5px;border:1px solid #888">'.$qGetPlRetur->row()->nama.'</td>
+				<td style="padding:5px;border:1px solid #888">'.$qGetPlRetur->row()->nm_perusahaan.'</td>
+			</tr>';
+			$html .= '</table>';
+		}
 
         $getData = $this->db->query("SELECT*FROM m_roll_edit WHERE roll='$getRoll->roll'");
 		if($getData->num_rows() == 0){
@@ -6314,6 +6356,33 @@ class Laporan extends CI_Controller {
 			<td style="padding:5px">'.$getRoll->created_by.'</td>
 		</tr>';
 		$html .='</table>';
+
+		// RETUR
+		$getRollRjt = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll' AND id_pl='0' AND id_rtr IS NOT NULL");
+		if($getRollRjt->num_rows() == 0){
+			$html .= '';
+		}else{
+			$grjt = $getRollRjt->row()->id_rtr;
+			$qGetPlRetur = $this->db->query("SELECT*FROM pl WHERE id_rk='$grjt' GROUP BY id_rk");
+
+			$html .='<table style="margin:0 0 15px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+			$html .='<tr>
+					<td style="font-weight:bold" colspan="4">RETUR KIRIMAN DARI :</td>
+				</tr>
+				<tr>
+				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">TANGGAL KIRIM</td>
+				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NO. SURAT JALAN</td>
+				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NAMA</td>
+				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NAMA PERUSAHAAN</td>
+			</tr>';
+			$html .='<tr>
+				<td style="padding:5px;border:1px solid #888">'.$this->m_fungsi->tglInd_skt($qGetPlRetur->row()->tgl).'</td>
+				<td style="padding:5px;border:1px solid #888">'.trim($qGetPlRetur->row()->no_surat).'</td>
+				<td style="padding:5px;border:1px solid #888">'.$qGetPlRetur->row()->nama.'</td>
+				<td style="padding:5px;border:1px solid #888">'.$qGetPlRetur->row()->nm_perusahaan.'</td>
+			</tr>';
+			$html .= '</table>';
+		}
 
         $getData = $this->db->query("SELECT*FROM m_roll_edit WHERE roll='$roll'");
 		if($getData->num_rows() == 0){
