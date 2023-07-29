@@ -52,8 +52,8 @@
 
 					<div class="body">
 
-						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('allList')">SEMUA LIST</button>
-						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('perCustomer')">PER CUSTOMER</button>
+						<button class="tmbl-plh-all-list btn-r-cust tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('allList')">SEMUA LIST</button>
+						<button class="tmbl-plh-all-list btn-r-cust tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('perCustomer')">PER CUSTOMER</button>
 						<!-- <button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('rekapan')">REKAPAN</button> -->
 
 						<div class="menu-list" style="padding-top:10px;font-size:12px">

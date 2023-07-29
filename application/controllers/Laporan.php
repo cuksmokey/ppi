@@ -193,6 +193,7 @@ class Laporan extends CI_Controller {
                         }
                         $html .= '
 							<td align="center">Keterangan</td>
+							<td align="center">Created</td>
 						</tr>';
                     $no = 1;
                     $tot_weight = 0 ;
@@ -200,17 +201,29 @@ class Laporan extends CI_Controller {
                     if($data_detail->num_rows() > 0) {
                         foreach ($data_detail->result() as $r ) {
                             if($r->status == 0){
-								$stat = 'STOK';
+								if($r->id_rtr != null){
+									$stat = 'RETUR';
+								}else{
+									$stat = 'STOK';
+								}
 							}else if($r->status == 2){
 								$stat = 'PPI';
 							}else if($r->status == 3){
-								$stat = 'BUFFER';
+								if($r->id_rtr != null){
+									$stat = 'RETUR';
+								}else{
+									$stat = 'BUFFER';
+								}
 							}else if($r->status == 4){
 								$stat = 'PPI SIZING';
 							}else if($r->status == 5){
 								$stat = 'PPI CALENDER';
 							}else{
-								$stat = '-';
+								if($r->id_rtr != null){
+									$stat = 'RETUR';
+								}else{
+									$stat = '-';
+								}
 							}
                             $html .= '<tr>
 								<td align="center">'.$no.'</td>
@@ -236,6 +249,7 @@ class Laporan extends CI_Controller {
 								}
 								$html .= '
 								<td align="center">'.$r->ket.'</td>
+								<td align="center">'.$r->created_by.'</td>
 							</tr>';
 						$no++;
 						$tot_weight += $r->weight;
@@ -246,7 +260,7 @@ class Laporan extends CI_Controller {
 						$html .= '<tr bgcolor="#CCCCCC">
 							<td align="center" colspan="7">TOTAL BERAT</td>
 							<td align="center">'.number_format($tot_weight).'</td>
-							<td colspan="5"></td>
+							<td colspan="6"></td>
 						</tr>';
                     }
 
@@ -6484,8 +6498,13 @@ class Laporan extends CI_Controller {
 		$glabel = $_POST["glabel"];
 		$html = '';
 
-		$html .='<div style="overflow:auto;white-space:nowrap"><table style="margin:10px 0 0;padding:0;text-align:center;font-size:12px;color:#000;border-collapse:collapse">';
+		if($glabel == 125){
+			$ketGLabel = "(g_label='120' OR g_label='125')";
+		}else{
+			$ketGLabel = "g_label='$glabel'";
+		}
 
+		$html .='<div style="overflow:auto;white-space:nowrap"><table style="margin:10px 0 0;padding:0;text-align:center;font-size:12px;color:#000;border-collapse:collapse">';
 		$html .='<tr>
 			<td style="background:#eee;padding:5px;font-weight:bold;border:1px solid #000">'.$nmker.''.$glabel.'</td>';
 
@@ -6493,7 +6512,7 @@ class Laporan extends CI_Controller {
 			$qGetCust = $this->db->query("SELECT id_perusahaan,pt.pimpinan,pt.nm_perusahaan,pt.aka FROM po_master po
 			INNER JOIN m_perusahaan pt ON po.id_perusahaan=pt.id
 			WHERE po.status='open' AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND id_perusahaan!='210' AND id_perusahaan!='217'
-			AND nm_ker='$nmker' AND g_label='$glabel'
+			AND nm_ker='$nmker' AND $ketGLabel
 			GROUP BY id_perusahaan
 			ORDER BY pt.aka");
 			foreach($qGetCust->result() as $cust){
@@ -6508,7 +6527,7 @@ class Laporan extends CI_Controller {
 		
 		$qGetUk = $this->db->query("SELECT width FROM po_master po
 		WHERE po.status='open' AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND id_perusahaan!='210' AND id_perusahaan!='217'
-		AND nm_ker='$nmker' AND g_label='$glabel'
+		AND nm_ker='$nmker' AND $ketGLabel
 		GROUP BY width");
 		foreach($qGetUk->result() as $uk){
 			$html .='<tr class="all-list-gg">
@@ -6530,14 +6549,9 @@ class Laporan extends CI_Controller {
 					}
 
 					// RUMUS ISINYA
-					if($glabel == 125 || $glabel == '125'){
-						$gLabel = "(g_label='120' OR g_label='125')";
-					}else{
-						$gLabel = "g_label='$glabel'";
-					}
 					$qGetJnsGsmPerUkuran = $this->db->query("SELECT (SELECT COUNT(t.roll) FROM m_timbangan t INNER JOIN pl p ON t.id_pl=p.id WHERE p.no_po=po.no_po AND t.nm_ker=po.nm_ker AND t.g_label=po.g_label AND t.width=po.width AND p.id_perusahaan=po.id_perusahaan)
 					AS kir_roll,po.* FROM po_master po
-					WHERE nm_ker='$nmker' AND $gLabel AND width='$uk->width' AND po.status='open'
+					WHERE nm_ker='$nmker' AND $ketGLabel AND width='$uk->width' AND po.status='open'
 					AND (jml_roll!='0' OR ket LIKE '%PENDING%')
 					AND id_perusahaan='$custUk->id_perusahaan'");
 					$jmlUk = 0;
@@ -6644,16 +6658,25 @@ class Laporan extends CI_Controller {
 		foreach($qGetJenis->result() as $kopJenis){
 			$qGetGsm = $this->db->query("SELECT nm_ker,g_label FROM po_master
 			WHERE id_perusahaan='$id' AND nm_ker='$kopJenis->nm_ker' AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND status='open'
-			AND g_label!='120'
+			-- AND g_label!='120'
 			GROUP BY nm_ker,g_label");
 			foreach($qGetGsm->result() as $kopGsm){
-				$html .='<td style="background:#eee;padding:5px;border:1px solid #000;font-weight:bold">'.$kopGsm->g_label.'</td>';
+				if($qGetGsm->num_rows() == 1 && $kopGsm->g_label == 120){
+					$html .='<td style="background:#eee;padding:5px;border:1px solid #000;font-weight:bold">125</td>';
+				}else{
+					if($kopGsm->g_label == 120){
+						$html .='';
+					}else{
+						$html .='<td style="background:#eee;padding:5px;border:1px solid #000;font-weight:bold">'.$kopGsm->g_label.'</td>';
+					}
+				}
 			}
 		}
 
 		// TAMPIL ISI GET UKURAN DULU
 		$qGetUkuran = $this->db->query("SELECT width FROM po_master
 		WHERE id_perusahaan='$id' AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND status='open'
+		-- AND width BETWEEN '95' AND '120'
 		GROUP BY width");
 		foreach($qGetUkuran->result() as $uk){
 			$html .='<tr>
@@ -6662,7 +6685,7 @@ class Laporan extends CI_Controller {
 				foreach($qGetJenis->result() as $kopJenis){
 					$qGetGsm = $this->db->query("SELECT nm_ker,g_label FROM po_master
 					WHERE id_perusahaan='$id' AND nm_ker='$kopJenis->nm_ker' AND (jml_roll!='0' OR ket LIKE '%PENDING%') AND status='open'
-					AND g_label!='120'
+					-- AND g_label!='120'
 					GROUP BY nm_ker,g_label");
 					// CARI GSM
 					foreach($qGetGsm->result() as $kopGsm){
@@ -6681,7 +6704,7 @@ class Laporan extends CI_Controller {
                         }
 
 						// RUMUS ISINYA
-						if($kopGsm->g_label == 125 || $kopGsm->g_label == '125'){
+						if($kopGsm->g_label == 125 || $kopGsm->g_label == '125' || $kopGsm->g_label == 120 || $kopGsm->g_label == '120'){
 							$gLabel = "(g_label='120' OR g_label='125')";
 						}else{
 							$gLabel = "g_label='$kopGsm->g_label'";
@@ -6702,19 +6725,54 @@ class Laporan extends CI_Controller {
 							$jmlUk += $tmbh;
 						}
 						// TAMPIL
-						if($jmlUk == 0){
-							if($qGetJnsGsmPerUkuran->num_rows() == 0){
-								$html .='<td style="background:'.$gbGsm.';padding:5px;border:1px solid #000">0</td>';
+						if($qGetGsm->num_rows() == 1 && $kopGsm->g_label == 120){
+							if($jmlUk == 0){
+								if($qGetJnsGsmPerUkuran->num_rows() == 0){
+									$html .='<td style="background:'.$gbGsm.';padding:5px;border:1px solid #000">0</td>';
+								}else{
+									$html .='<td style="background:'.$gbGsm.';padding:5px;border:1px solid #000">
+										<button style="background:transparent;font-weight:bold;text-decoration:underline;margin:0;padding:0;border:0" onclick="cekTungguKirim('."'".$kopGsm->nm_ker."'".','."'".$kopGsm->g_label."'".','."'".$uk->width."'".','."'".$id."'".')">0</button>
+									</td>';
+								}
 							}else{
-								$html .='<td style="background:'.$gbGsm.';padding:5px;border:1px solid #000">
-									<button style="background:transparent;font-weight:bold;text-decoration:underline;margin:0;padding:0;border:0" onclick="cekTungguKirim('."'".$kopGsm->nm_ker."'".','."'".$kopGsm->g_label."'".','."'".$uk->width."'".','."'".$id."'".')">0</button>
+								$html .='<td style="background:#fff;padding:5px;border:1px solid #000">
+									<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cekTungguKirim('."'".$kopGsm->nm_ker."'".','."'".$kopGsm->g_label."'".','."'".$uk->width."'".','."'".$id."'".')">'.$jmlUk.'</button>
 								</td>';
 							}
 						}else{
-							$html .='<td style="background:#fff;padding:5px;border:1px solid #000">
-								<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cekTungguKirim('."'".$kopGsm->nm_ker."'".','."'".$kopGsm->g_label."'".','."'".$uk->width."'".','."'".$id."'".')">'.$jmlUk.'</button>
-							</td>';
+							if($kopGsm->g_label == 120){
+								$html .='';
+							}else{
+								if($jmlUk == 0){
+									if($qGetJnsGsmPerUkuran->num_rows() == 0){
+										$html .='<td style="background:'.$gbGsm.';padding:5px;border:1px solid #000">0</td>';
+									}else{
+										$html .='<td style="background:'.$gbGsm.';padding:5px;border:1px solid #000">
+											<button style="background:transparent;font-weight:bold;text-decoration:underline;margin:0;padding:0;border:0" onclick="cekTungguKirim('."'".$kopGsm->nm_ker."'".','."'".$kopGsm->g_label."'".','."'".$uk->width."'".','."'".$id."'".')">0</button>
+										</td>';
+									}
+								}else{
+									$html .='<td style="background:#fff;padding:5px;border:1px solid #000">
+										<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cekTungguKirim('."'".$kopGsm->nm_ker."'".','."'".$kopGsm->g_label."'".','."'".$uk->width."'".','."'".$id."'".')">'.$jmlUk.'</button>
+									</td>';
+								}
+							}
 						}
+
+
+						// if($jmlUk == 0){
+						// 	if($qGetJnsGsmPerUkuran->num_rows() == 0){
+						// 		$html .='<td style="background:'.$gbGsm.';padding:5px;border:1px solid #000">0</td>';
+						// 	}else{
+						// 		$html .='<td style="background:'.$gbGsm.';padding:5px;border:1px solid #000">
+						// 			<button style="background:transparent;font-weight:bold;text-decoration:underline;margin:0;padding:0;border:0" onclick="cekTungguKirim('."'".$kopGsm->nm_ker."'".','."'".$kopGsm->g_label."'".','."'".$uk->width."'".','."'".$id."'".')">0</button>
+						// 		</td>';
+						// 	}
+						// }else{
+						// 	$html .='<td style="background:#fff;padding:5px;border:1px solid #000">
+						// 		<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cekTungguKirim('."'".$kopGsm->nm_ker."'".','."'".$kopGsm->g_label."'".','."'".$uk->width."'".','."'".$id."'".')">'.$jmlUk.'</button>
+						// 	</td>';
+						// }
 					}
 				}
 			$html .='</tr>';
