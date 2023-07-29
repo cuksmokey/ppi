@@ -1013,7 +1013,7 @@ class M_master extends CI_Model{
 			'edited_by' => $this->session->userdata('username'),
 		);
 
-		if($_POST['edit'] == 'ListStokGudang' && ($_POST['lket'] == $_POST['ket'])){
+		if($_POST['edit'] == 'ListStokGudang' && ($_POST['lket'] == $_POST['ket']) && ($_POST['lstatus'] == $_POST['status'])){
 			$result = true;
 		}else if($_POST['edit'] == 'LapQC' && ($_POST['lnm_ker'] == $_POST['nm_ker']) && ($_POST['lg_label'] == $_POST['g_label']) && ($_POST['lwidth'] == $_POST['width']) && ($_POST['lweight'] == $_POST['weight']) && ($_POST['ldiameter'] == $_POST['diameter']) && ($_POST['ljoint'] == $_POST['joint']) && ($_POST['lket'] == $_POST['ket']) && ($_POST['lstatus'] == $_POST['status'])){
             $result = true;

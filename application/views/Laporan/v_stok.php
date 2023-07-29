@@ -608,6 +608,7 @@
 		lstatus = $("#lstatus-"+i).val();
 		// console.log(lroll,lnm_ker,lg_label,lwidth,lweight,ldiameter,ljoint,lket,lstatus);
 
+		$("#btnn-edit-roll-"+i).prop("disabled", true);
 		$.ajax({
 			url: '<?php echo base_url('Master/editQCRoll') ?>',
 			type: "POST",
@@ -663,6 +664,8 @@
 				$("#ljoint-"+i).val(json.joint);
 				$("#lket-"+i).val(json.ket);
 				$("#lstatus-"+i).val(json.status);
+
+				$("#btnn-edit-roll-"+i).prop("disabled", false);
 			}
 		});
 	}

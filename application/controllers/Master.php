@@ -2589,9 +2589,9 @@ class Master extends CI_Controller
 					// JIKA ROLL PERNAH DI EDIT
 					$getRollEdit = $this->db->query("SELECT*FROM m_roll_edit WHERE roll='$w->roll'");
 					if($getRollEdit->num_rows() == 0){
-						$btnEdit = $w->roll;
+						$btnEdit = '';
 					}else{
-						$btnEdit = '<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('."'".$w->id."'".','."'".$w->roll."'".')">'.$w->roll.'</button>';
+						$btnEdit = 'style="color:#00f"';
 					}
 
 					// G AC
@@ -2617,7 +2617,9 @@ class Master extends CI_Controller
 
 					$html .='<tr class="'.$bgtr.'">
 						<td style="padding:5px">'.$i.'</td>
-						<td style="padding:5px">'.$btnEdit.'</td>
+						<td style="padding:5px">
+							<button class="tmbl-cek-roll" '.$btnEdit.' onclick="cekRollEdit('."'".$w->id."'".','."'".$w->roll."'".')">'.$w->roll.'</button>
+						</td>
 						<td style="padding:5px;'.$bgbw.'">'.$txtGac.'</td>
 						<td style="padding:5px;'.$bgrct.'">'.$txtRct.'</td>
 						<td style="padding:5px;'.$bgbi.'">'.$txtBi.'</td>
@@ -3449,13 +3451,15 @@ class Master extends CI_Controller
 				// JIKA ROLL PERNAH DI EDIT
 				$getRollEdit = $this->db->query("SELECT*FROM m_roll_edit WHERE roll='$r->roll'");
 				if($getRollEdit->num_rows() == 0){
-					$btnEdit = $r->roll;
+					$btnEdit = '';
 				}else{
-					$btnEdit = '<button class="tmbl-cek-roll" style="color:#00f" onclick="cekRollEdit('."'".$r->id."'".','."'".$r->roll."'".')">'.$r->roll.'</button>';
+					$btnEdit = 'style="color:#00f"';
 				}
 				$html .='<tr class="'.$bgtr.'">
 					<td style="padding:5px;font-weight:bold">'.$ii.'</td>
-					<td style="padding:5px;text-align:left">'.$btnEdit.'</td>
+					<td style="padding:5px;text-align:left">
+						<button class="tmbl-cek-roll" '.$btnEdit.' onclick="cekRollEdit('."'".$r->id."'".','."'".$r->roll."'".')">'.$r->roll.'</button>
+					</td>
 					<td style="padding:5px">'.$r->g_ac.'</td>
 					<td style="padding:5px">'.$r->rct.'</td>
 					<td style="padding:5px">'.$r->bi.'</td>
@@ -5442,17 +5446,104 @@ class Master extends CI_Controller
         }
 	}
 
+	function loadDataReturTahun(){
+		$html ='';
+
+		$qGetTahun = $this->db->query("SELECT YEAR(tgl) AS tahun FROM m_timbangan
+		WHERE id_rtr IS NOT NULL AND (id_rk IS NULL OR id_rk!=id_rtr)
+		GROUP BY YEAR(tgl)");
+		foreach($qGetTahun->result() as $th){
+			$html .='<button style="margin:0 3px 3px 0;font-weight:bold" onclick="loadDataReturBulan('."'".$th->tahun."'".')">'.$th->tahun.'</button>';
+		}
+
+		echo $html;
+	}
+
+	function loadDataReturBulan(){
+		$th = $_POST["th"];
+		$html = '';
+
+		$qGetBulan = $this->db->query("SELECT YEAR(tgl) AS tahun,MONTH(tgl) AS bulan FROM m_timbangan
+		WHERE YEAR(tgl)='$th'
+		AND id_rtr IS NOT NULL AND (id_rk IS NULL OR id_rk!=id_rtr)
+		GROUP BY MONTH(tgl)");
+		foreach($qGetBulan->result() as $bln){
+			if($bln->bulan == 1){
+				$ketBln = 'JAN';
+			}else if($bln->bulan == 2){
+				$ketBln = 'FEB';
+			}else if($bln->bulan == 3){
+				$ketBln = 'MAR';
+			}else if($bln->bulan == 4){
+				$ketBln = 'APR';
+			}else if($bln->bulan == 5){
+				$ketBln = 'MEI';
+			}else if($bln->bulan == 6){
+				$ketBln = 'JUN';
+			}else if($bln->bulan == 7){
+				$ketBln = 'JUL';
+			}else if($bln->bulan == 8){
+				$ketBln = 'AGS';
+			}else if($bln->bulan == 9){
+				$ketBln = 'SEP';
+			}else if($bln->bulan == 10){
+				$ketBln = 'OKT';
+			}else if($bln->bulan == 111){
+				$ketBln = 'NOV';
+			}else if($bln->bulan == 12){
+				$ketBln = 'DES';
+			}else{
+				$ketBln = '';
+			}
+			$html .='<button style="margin:0 3px 3px 0;font-weight:bold" onclick="loadDataReturPerTgl('."'".$th."'".','."'".$bln->bulan."'".')">'.$ketBln.'</button>';
+		}
+
+		echo $html;
+	}
+
+	function loadDataReturPerTgl(){
+		$th = $_POST["th"];
+		$bln = $_POST["bln"];
+		$html ='';
+
+		$qGetTgl = $this->db->query("SELECT tgl FROM m_timbangan
+		WHERE YEAR(tgl)='$th' AND MONTH(tgl)='$bln'
+		AND id_rtr IS NOT NULL AND (id_rk IS NULL OR id_rk!=id_rtr)
+		GROUP BY tgl");
+		foreach($qGetTgl->result() as $tgl){
+			$html .='<button style="margin:0 3px 3px 0;font-weight:bold" onclick="cari('."'".$tgl->tgl."'".')">'.strtoupper($this->m_fungsi->getHariIni($tgl->tgl)).'-'.$this->m_fungsi->fgGetTglIni($tgl->tgl).'</button>';
+		}
+
+		echo $html;
+	}
+
 	function cariSJReject(){
+		$tgl = $_POST["tgl"];
 		$noSj = $_POST["noSj"];
 		$jNmKer = $_POST["jNmKer"];
 		$html = '';
 		$html .='<div style="overflow:auto;white-space:nowrap">';
 
-		$qGetSjRetur = $this->db->query("SELECT p.* FROM pl p
-		INNER JOIN m_timbangan t ON p.id=t.id_pl AND p.nm_ker=t.nm_ker AND p.g_label=t.g_label
-		WHERE no_surat LIKE '%$noSj%' AND p.nm_ker LIKE '%$jNmKer%'
-		AND id_perusahaan!='210' AND id_perusahaan!='217'
-		GROUP BY p.id_rk ORDER BY p.tgl,no_pkb");
+		// CARI
+		if($tgl == ""){
+			$qGetSjRetur = $this->db->query("SELECT p.* FROM pl p
+			INNER JOIN m_timbangan t ON p.id=t.id_pl AND p.nm_ker=t.nm_ker AND p.g_label=t.g_label
+			WHERE no_surat LIKE '%$noSj%' AND p.nm_ker LIKE '%$jNmKer%'
+			AND id_perusahaan!='210' AND id_perusahaan!='217'
+			GROUP BY p.id_rk ORDER BY p.tgl,no_pkb");
+		}else{
+			$qGetSjRetur = $this->db->query("SELECT nm_ker,
+			(SELECT id_rk FROM pl WHERE id_rk=id_rtr GROUP BY id_rk) AS id_rk,
+			(SELECT tgl FROM pl WHERE id_rk=id_rtr GROUP BY id_rk) AS tgl,
+			(SELECT no_surat FROM pl WHERE id_rk=id_rtr GROUP BY id_rk) AS no_surat,
+			(SELECT nama FROM pl WHERE id_rk=id_rtr GROUP BY id_rk) AS nama,
+			(SELECT nm_perusahaan FROM pl WHERE id_rk=id_rtr GROUP BY id_rk) AS nm_perusahaan
+			FROM m_timbangan
+			WHERE tgl='$tgl'
+			AND id_rtr IS NOT NULL AND (id_rk IS NULL OR id_rk!=id_rtr)
+			GROUP BY id_rtr");
+		}
+		
 		if($qGetSjRetur->num_rows() == 0){
 			$html .= '<div style="margin-top:10px;font-weight:bold">NO. SURAT JALAN TIDAK DITEMUKAN</div>';
 		}else{
@@ -5466,7 +5557,7 @@ class Master extends CI_Controller
 					$namaPt = $rr->nm_perusahaan;
 				}
 				$html .= '<tr>
-					<td style="font-weight:bold">
+					<td style="padding:3px 0;font-weight:bold">
 						<button onclick="detailList('."'".$i."'".','."'".trim($rr->no_surat)."'".','."'".$rr->id_rk."'".','."'".$rr->nm_ker."'".')">DETAIL</button>
 					</td>
 					<td style="padding:5px;font-weight:bold">'.$rr->tgl.'</td>
@@ -5631,7 +5722,11 @@ class Master extends CI_Controller
 					$btnHapus = '-';
 				}else{
 					$btnEdit = '<button onclick="editInputRollReject('."'".$i."'".','."'".$no_surat."'".','."'".$id_rk."'".','."'".$nm_ker."'".','."'".$rjt->id."'".','."'".$rjt->roll."'".')">EDIT</button>';
-					$btnHapus = '<button onclick="hapusInputRollReject('."'".$i."'".','."'".$no_surat."'".','."'".$id_rk."'".','."'".$nm_ker."'".','."'".$rjt->id."'".','."'".$rjt->roll."'".')">HAPUS</button>';
+					if($this->session->userdata('level') == "SuperAdmin"){
+						$btnHapus = '<button onclick="hapusInputRollReject('."'".$i."'".','."'".$no_surat."'".','."'".$id_rk."'".','."'".$nm_ker."'".','."'".$rjt->id."'".','."'".$rjt->roll."'".')">HAPUS</button>';
+					}else{
+						$btnHapus = '-';
+					}
 				}
 
 				if($rjt->id_rk == $rjt->id_rtr){

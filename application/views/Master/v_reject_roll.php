@@ -58,25 +58,8 @@
 					<div class="body">
 						<input type="hidden" name="otorisasi" id="otorisasi" value="<?php echo $otorisasi; ?>">
 
-						<div class="box-data" style="overflow:auto;white-space:nowrap;">
-							DATA
-						</div>
-
-						<div class="box-form" style="overflow:auto;white-space:nowrap;">
+						<div style="font-size:12px" class="box-form" style="overflow:auto;white-space:nowrap;">
 							<table style="margin-bottom:10px">
-								<tr>
-									<td style="padding:5px 0;border:1px solid #000"></td>
-									<td style="padding:5px;border:1px solid #000"></td>
-									<td style="padding:5px 0;border:1px solid #000"></td>
-									<td style="padding:5px 0;border:1px solid #000"></td>
-								</tr>
-								<!-- <tr>
-									<td style="padding:5px 0;font-weight:bold">TANGGAL</td>
-									<td style="padding:5px 0">:</td>
-									<td style="padding:5px 0">
-										<input type="date" name="tgl" id="tgl" class="form-control">
-									</td>
-								</tr> -->
 								<tr>
 									<td style="padding:5px 0;font-weight:bold">NO. SURAT JALAN</td>
 									<td style="padding:5px">:</td>
@@ -111,7 +94,16 @@
 								</tr>
 							</table>
 
-							<div class="hasil-cari-reject"></div>
+							<div class="cari-clr hasil-cari-reject"></div>
+						</div>
+
+						<div style="background:#999;margin-top:15px;padding:5px;display:block"></div>
+
+						<div class="box-data" style="font-size:12px;color:#000;overflow:auto;white-space:nowrap;">
+							<div class="data-tahun"></div>
+							<div class="data-bulan"></div>
+							<div class="data-tgl"></div>
+							<div class="cari-clr hasil-data-reject"></div>
 						</div>
 					</div>
 				</div>
@@ -126,6 +118,7 @@
 
 	$(document).ready(function() {
 		kosong();
+		loadDataReturTahun();
 	});
 
 	function kosong() {
@@ -134,23 +127,86 @@
 
 	//
 
-	function cari() {
+	function loadDataReturTahun(){
+		$(".data-bulan").html('');
+		$(".data-tgl").html('');
+		$(".data-tahun").html('- - -');
+		$.ajax({
+			url: '<?php echo base_url('Master/loadDataReturTahun')?>',
+			type: "POST",
+			success: function(res){
+				$(".data-tahun").html(res);
+			}
+		});
+	}
+
+	function loadDataReturBulan(th){
+		$(".data-tgl").html('');
+		$(".cari-clr").html('');
+		$(".data-bulan").html('- - -');
+		$.ajax({
+			url: '<?php echo base_url('Master/loadDataReturBulan')?>',
+			type: "POST",
+			data: ({
+				th
+			}),
+			success: function(res){
+				$(".data-bulan").html(res);
+			}
+		});
+	}
+
+	function loadDataReturPerTgl(th,bln){
+		$(".cari-clr").html('');
+		$(".data-tgl").html('- - -');
+		$.ajax({
+			url: '<?php echo base_url('Master/loadDataReturPerTgl')?>',
+			type: "POST",
+			data: ({
+				th,bln
+			}),
+			success: function(res){
+				$(".data-tgl").html(res);
+			}
+		});
+	}
+
+	//
+
+	function cari(tgl="") {
+		$(".cari-clr").html('');
+
 		noSj = $("#no-sj").val();
 		jNmKer = $("#jenis-nmker").val();
-		if(noSj == ''){
+		if(tgl == "" && noSj == ""){
 			swal("NO. SURAT JALAN HARAP DI ISILAH BRO", "", "error");
 			return;
 		}
+		if(tgl == "" && noSj.toString().length < 3){
+			swal("NO. SURAT JALAN MINIMAL 3 DIGIT!", "", "error");
+			return;
+		}
 
-		$(".hasil-cari-reject").html('MEMUAT');
+		if(tgl == ""){
+			$(".hasil-cari-reject").html('MEMUAT');
+		}else{
+			$(".hasil-data-reject").html('MEMUAT');
+		}
+
 		$.ajax({
 			url: '<?php echo base_url('Master/cariSJReject')?>',
 			type: "POST",
 			data: ({
-				noSj,jNmKer
+				tgl,noSj,jNmKer
 			}),
 			success: function(res){
-				$(".hasil-cari-reject").html(res);
+				if(tgl == ""){
+					$(".data-bulan").html('');
+					$(".data-tgl").html('');
+					$(".hasil-cari-reject").html(res);
+				}else{
+					$(".hasil-data-reject").html(res);
+				}
 			}
 		});
 	}
@@ -299,6 +355,7 @@
 			success: function(response){
 				$('#btn-simpan-sementara-rjt').prop("disabled", false);
 				detailList(rL,rNoSurat,rIdRk,rNmKer);
+				loadDataReturTahun();
 			}
 		});
 	}
