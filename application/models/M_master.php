@@ -1762,4 +1762,41 @@ class M_master extends CI_Model{
 
 		return $result;
 	}
+
+	function simpanCartRpk(){
+		// $opsi = $_POST['opsi'];
+		foreach($this->cart->contents() as $data){
+			// tgl nm_ker g_label pm id_rpk item1 item2 item3 item4 item5 x ref
+			$tgl = $data['options']['tgl'];
+			$nm_ker = $data['options']['nm_ker'];
+			$g_label = $data['options']['g_label'];
+			$pm = $data['options']['pm'];
+			$id_rpk = $data['options']['id_rpk'];
+			$item1 = ($data['options']['item1'] != "") ? $data['options']['item1'] : 0;
+			$item2 = ($data['options']['item2'] != "") ? $data['options']['item2'] : 0;
+			$item3 = ($data['options']['item3'] != "") ? $data['options']['item3'] : 0;
+			$item4 = ($data['options']['item4'] != "") ? $data['options']['item4'] : 0;
+			$item5 = ($data['options']['item5'] != "") ? $data['options']['item5'] : 0;
+
+			$data = array(
+				'tgl' => $tgl,
+				'nm_ker' => $nm_ker,
+				'g_label' => $g_label,
+				'pm' => $pm,
+				'id_rpk' => $id_rpk,
+				'item1' => $item1,
+				'item2' => $item2,
+				'item3' => $item3,
+				'item4' => $item4,
+				'item5' => $item5,
+				'x' => $data['options']['times'],
+				'ref' => $data['options']['ref'],
+				'created_at' => date("Y-m-d H:i:s"),
+				'created_by' => $this->session->userdata('username'),
+			);
+			$result = $this->db->insert('m_rpk', $data);
+		}
+
+		return $result;
+	}
 }

@@ -5870,4 +5870,168 @@ class Master extends CI_Controller
 	function destroyListReject() {
 		$this->cart->destroy();
 	}
+
+	function getNoRpk(){
+		$tgl = explode("-", $_POST["tgl"]);
+		$pm = $_POST["pm"];
+		$nm_ker = $_POST["nm_ker"];
+		$g_label = $_POST["g_label"];
+
+		echo json_encode(
+			array(
+				'data' => 'RPK.'.$tgl[2].$tgl[1].substr($tgl[0],2,2).'.'.$pm.'.'.$nm_ker.$g_label
+			)
+		);
+	}
+
+	function addCartRpk(){
+		$tgl = $_POST["tgl"];
+		$pm = $_POST["pm"];
+		$nm_ker = $_POST["nm_ker"];
+		$g_label = $_POST["g_label"];
+		$id_rpk = $_POST["id_rpk"];
+		$xplh = $_POST["xplh"];
+		$item1 = $_POST["item1"];
+		$item2 = $_POST["item2"];
+		$item3 = $_POST["item3"];
+		$item4 = $_POST["item4"];
+		$item5 = $_POST["item5"];
+		$times = $_POST["times"];
+		$ref = $_POST["ref"];
+		// $opsi = $_POST["opsi"];
+
+		if($xplh == 1){
+			$items = $item1;
+		}else if($xplh == 2){
+			$items = $item1.$item2;
+		}else if($xplh == 3){
+			$items = $item1.$item2.$item3;
+		}else if($xplh == 4){
+			$items = $item1.$item2.$item3.$item4;
+		}else if($xplh == 5){
+			$items = $item1.$item2.$item3.$item4.$item5;
+		}
+
+		if(!preg_match("/^[0-9.]*$/", $items)){
+			echo json_encode(array('res' => false, 'msg' => 'INPUT ITEMS HANYA BOLEH ANGKA ATAU BESERTA TITIK. DIKANDANI NGEYEL!!'));
+		}else if(!preg_match("/^[0-9]*$/", $times)){
+			echo json_encode(array('res' => false, 'msg' => 'IKI MENEH. PAKAI ANGKA!!'));
+		}else{
+			foreach($this->cart->contents() as $cart){
+				if($item1 == $cart['options']['item1'] && $item2 == $cart['options']['item2'] && $item3 == $cart['options']['item3'] && $item4 == $cart['options']['item4'] && $item5 == $cart['options']['item5'] && ($times != $cart['options']['times'] || $ref != $cart['options']['ref'])){
+					$upd = array(
+						'rowid' => $cart['rowid'],
+						'qty' => 0,
+					);
+					$this->cart->update($upd);
+				}
+			}
+			
+			$data = array(
+				'id' => $nm_ker.$g_label.'_'.$items,
+				'name' => $nm_ker.$g_label.'_'.$items,
+				'price' => 0,
+				'qty' => 1,
+				'options' => array(
+					'tgl' => $tgl,
+					'pm' => $pm,
+					'nm_ker' => $nm_ker,
+					'g_label' => $g_label,
+					'id_rpk' => $id_rpk,
+					'item1' => $item1,
+					'item2' => $item2,
+					'item3' => $item3,
+					'item4' => $item4,
+					'item5' => $item5,
+					'times' => $times,
+					'ref' => $ref,
+				),
+			);
+			$this->cart->insert($data);	
+			echo json_encode(array('res' => true));
+		}
+	}
+
+	function hapusCartRpkL($rowId) {
+		$data = array(
+			'rowid' => $rowId,
+			'qty' => 0,
+		);
+		$this->cart->update($data);
+	}
+
+	function showCartRpk(){
+		$html ='';
+
+		if($this->cart->total_items() != 0){
+			$html .='<table style="margin-top:15px;color:#000;font-size:12px;text-align:center">';
+			$html .='<tr style="background:#e9e9e9">
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">NO.</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">TANGGAL</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">PM</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">JENIS</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">NO RPK</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">ITEM 1</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">ITEM 2</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">ITEM 3</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">ITEM 4</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">ITEM 5</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">TRIM WIDTH</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">TIMES</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">REFERENSI</td>
+				<td style="padding:5px;font-weight:bold;border:1px solid #333">AKSI</td>
+			</tr>';
+		}
+
+		$i = 0;
+		foreach($this->cart->contents() as $items){
+			$i++;
+			$item1 = ($items['options']['item1'] != "") ? $items['options']['item1'] : 0;
+			$item2 = ($items['options']['item2'] != "") ? $items['options']['item2'] : 0;
+			$item3 = ($items['options']['item3'] != "") ? $items['options']['item3'] : 0;
+			$item4 = ($items['options']['item4'] != "") ? $items['options']['item4'] : 0;
+			$item5 = ($items['options']['item5'] != "") ? $items['options']['item5'] : 0;
+			$trimW = $item1 + $item2 + $item3 + $item4 + $item5;
+
+
+			$html .='<tr>
+				<td style="padding:5px;border:1px solid #333">'.$i.'</td>
+				<td style="padding:5px;border:1px solid #333">'.$items['options']['tgl'].'</td>
+				<td style="padding:5px;border:1px solid #333">'.$items['options']['pm'].'</td>
+				<td style="padding:5px;border:1px solid #333">'.$items['options']['nm_ker'].''.$items['options']['g_label'].'</td>
+				<td style="padding:5px;border:1px solid #333">'.$items['options']['id_rpk'].'</td>
+				<td style="padding:5px;border:1px solid #333">'.$item1.'</td>
+				<td style="padding:5px;border:1px solid #333">'.$item2.'</td>
+				<td style="padding:5px;border:1px solid #333">'.$item3.'</td>
+				<td style="padding:5px;border:1px solid #333">'.$item4.'</td>
+				<td style="padding:5px;border:1px solid #333">'.$item5.'</td>
+				<td style="padding:5px;border:1px solid #333">'.$trimW.'</td>
+				<td style="padding:5px;border:1px solid #333">'.$items['options']['times'].'</td>
+				<td style="padding:5px;border:1px solid #333">'.$items['options']['ref'].'</td>
+				<td style="padding:5px;border:1px solid #333"><button onclick="hapusCartRpk('."'".$items['rowid']."'".')">Batal</button></td>
+			</tr>';
+		}
+
+		if($this->cart->total_items() != 0){
+			$html .='<tr>
+					<td style="padding:10px 0 0;font-weight:bold;text-align:left" colspan="14"><button class="btn-s-rpk" onclick="simpanCartRpk()">SIMPAN</button></td>
+				</tr>
+			</table>';
+		}
+
+		echo $html;
+	}
+
+	function hapusCartRpk() {
+		$data = array(
+			'rowid' => $_POST['rowid'],
+			'qty' => 0,
+		);
+		$this->cart->update($data);
+	}
+
+	function simpanCartRpk(){
+		$this->m_master->simpanCartRpk();
+		echo json_encode(array('data' => true));
+	}
 }
