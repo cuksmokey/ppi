@@ -1799,4 +1799,31 @@ class M_master extends CI_Model{
 
 		return $result;
 	}
+
+	function aksiEditRpk(){
+		$eitem1 = $_POST["eitem1"];
+		$eitem2 = $_POST["eitem2"];
+		$eitem3 = $_POST["eitem3"];
+		$eitem4 = $_POST["eitem4"];
+		$eitem5 = $_POST["eitem5"];
+		$ex = $_POST["ex"];
+		$eref = $_POST["eref"];
+		$idx = $_POST["idx"]; // id m_rpk
+		$id_rpk = $_POST["id_rpk"];
+
+		$this->db->set('item1', $eitem1);
+		$this->db->set('item2', $eitem2);
+		$this->db->set('item3', $eitem3);
+		$this->db->set('item4', $eitem4);
+		$this->db->set('item5', $eitem5);
+		$this->db->set('x', $ex);
+		$this->db->set('ref', $eref);
+		$this->db->set('edited_at', date("Y-m-d H:i:s"));
+		$this->db->set('edited_by', $this->session->userdata('username'));
+		$this->db->where('id', $idx);
+		$this->db->where('id_rpk', $id_rpk);
+		$result = $this->db->update('m_rpk');
+
+		return $result;
+	}
 }

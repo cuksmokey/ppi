@@ -36,6 +36,10 @@
 		margin: 0;
 		padding: 5px 12px;
 	}
+
+	.edrpk {
+		position:absolute;top:0;right:0;left:0;bottom:0;border:0;margin:0;padding:5px;text-align:center;background:none;
+	}
 </style>
 
 <section class="content">
@@ -54,20 +58,19 @@
 					<div class="body">
 						<input type="hidden" name="otorisasi" id="otorisasi" value="<?php echo $otorisasi; ?>">
 
-						<div class="box-btn" style="font-size:12px;color:#000">
+						<div class="box-btn" style="font-size:12px;font-weight:bold;color:#000">
 							<button onclick="btnOpsi('data')">BERJALAN</button>
 							<button onclick="btnOpsi('close')">CLOSE</button>
 							<button onclick="btnOpsi('add')">ADD RPK BARU</button>
 						</div>
 
-						<div class="box-data" style="overflow:auto;white-space:nowrap;">
-							DATA
-						</div>
+						<div class="box-data" style="overflow:auto;white-space:nowrap;"></div>
 
 						<div class="box-close" style="overflow:auto;white-space:nowrap;">
 							CLOSE
 						</div>
 
+						<div class="box-from-loading"></div>
 						<div class="box-form" style="overflow:auto;white-space:nowrap;">
 							<table>
 								<tr>
@@ -125,6 +128,7 @@
 									<td style="padding:5px 0;font-weight:bold">NO RPK</td>
 									<td style="padding:5px;text-align:center">:</td>
 									<td style="padding:5px 0">
+										<input type="hidden" id="tampung-id_rpk" value="">
 										<input type="text" name="id_rpk" id="id_rpk" class="id_rpk form-control">
 									</td>
 								</tr>
@@ -148,19 +152,19 @@
 											</tr>
 											<tr>
 												<td style="padding:0 2px">
-													<input type="text" name="item1" id="item1" class="ii item1 form-control" placeholder="1" maxlength="6">
+													<input type="text" name="item1" id="item1" class="ii item1 form-control" placeholder="1" maxlength="6" autocomplete="off">
 												</td>
 												<td style="padding:0 2px">
-													<input type="text" name="item2" id="item2" class="ii item2 form-control" placeholder="2" maxlength="6">
+													<input type="text" name="item2" id="item2" class="ii item2 form-control" placeholder="2" maxlength="6" autocomplete="off">
 												</td>
 												<td style="padding:0 2px">
-													<input type="text" name="item3" id="item3" class="ii item3 form-control" placeholder="3" maxlength="6">
+													<input type="text" name="item3" id="item3" class="ii item3 form-control" placeholder="3" maxlength="6" autocomplete="off">
 												</td>
 												<td style="padding:0 2px">
-													<input type="text" name="item4" id="item4" class="ii item4 form-control" placeholder="4" maxlength="6">
+													<input type="text" name="item4" id="item4" class="ii item4 form-control" placeholder="4" maxlength="6" autocomplete="off">
 												</td>
 												<td style="padding:0 2px">
-													<input type="text" name="item5" id="item5" class="ii item5 form-control" placeholder="5" maxlength="6">
+													<input type="text" name="item5" id="item5" class="ii item5 form-control" placeholder="5" maxlength="6" autocomplete="off">
 												</td>
 											</tr>
 											<tr>
@@ -180,14 +184,14 @@
 									<td style="padding:5px 0;font-weight:bold">TIMES</td>
 									<td style="padding:5px;text-align:center">:</td>
 									<td style="padding:5px 0">
-										<input type="text" name="times" id="times" maxlength="3" class="times form-control" placeholder="x">
+										<input type="text" name="times" id="times" maxlength="3" class="times form-control" placeholder="x" autocomplete="off">
 									</td>
 								</tr>
 								<tr>
 									<td style="padding:5px 0;font-weight:bold">REFERENSI</td>
 									<td style="padding:5px;text-align:center">:</td>
 									<td style="padding:5px 0">
-										<textarea name="ref" id="ref" class="ref form-control" style="resize:none;" placeholder="KET"></textarea>
+										<textarea name="ref" id="ref" class="ref form-control" style="resize:none;" placeholder="KET" autocomplete="off"></textarea>
 									</td>
 								</tr><tr>
 									<td style="padding:5px 0" colspan="2"></td>
@@ -197,8 +201,11 @@
 								</tr>
 							</table>
 
-							<!-- CART LIST RPK -->
+							<!-- CART CART LIST RPK -->
 							<div class="cart-list-rpk"></div>
+
+							<!-- CART EDIT LIST RPK -->
+							<div class="edit-list-rpk"></div>
 						</div>
 					</div>
 				</div>
@@ -216,27 +223,13 @@
 		$(".box-data").show();
 		$(".box-close").hide();
 		$(".box-form").hide();
+		loadDataRpk();
 	});
 
-	function btnOpsi(opsi){
-		if(opsi == 'data'){
-			$(".box-data").show();
-			$(".box-close").hide();
-			$(".box-form").hide();
-		}else if(opsi == 'close'){
-			$(".box-data").hide();
-			$(".box-close").show();
-			$(".box-form").hide();
-		}else{
-			kosong();
-			$(".box-data").hide();
-			$(".box-close").hide();
-			$(".box-form").show();
-		}
-	}
-
 	function kosong() {
-		// $("#tgl").val("");
+		status = 'insert';
+		$("#tampung-id_rpk").val("");
+		
 		$("#pm").val("");
 		$("#nm_ker").val("");
 		$("#g_label").val("");
@@ -247,6 +240,7 @@
 		$("#item4").val("");
 		$("#item5").val("");
 		$("#times").val("");
+		$("#trimw").val(0);
 		$("#ref").val("");
 
 		$(".form-control").prop("disabled", true).attr('style', 'background:#e9e9e9');
@@ -257,9 +251,168 @@
 		$(".ii").val("").prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
 
 		$(".cart-list-rpk").load("<?php echo base_url('Master/destroyCartRpk') ?>");
+		$(".edit-list-rpk").html('');
 	}
 
 	// 
+
+	function btnOpsi(opsi){
+		kosong();
+		// alert(status);
+		if(opsi == 'data'){
+			$(".box-data").show();
+			$(".box-close").hide();
+			$(".box-form").hide();
+			loadDataRpk();
+		}else if(opsi == 'close'){
+			$(".box-data").hide();
+			$(".box-close").show();
+			$(".box-form").hide();
+		}else{
+			$(".box-data").hide();
+			$(".box-close").hide();
+			$(".box-form").show();
+		}
+	}
+
+	function loadDataRpk(){
+		$(".box-data").html('Loading...');
+		$.ajax({
+			url: '<?php echo base_url("Master/loadDataRpk")?>',
+			type: "POST",
+			// data: ({})
+			success: function(res){
+				$(".box-data").html(res);
+			}
+		});
+	}
+
+	function btnDetailRpk(i,id_rpk){
+		$(".clr-dtl").html('');
+		$(".dtl-list-rpk-"+i).html('Loading...');
+		$.ajax({
+			url: '<?php echo base_url("Master/btnDetailRpk")?>',
+			type: "POST",
+			data: ({
+				i,id_rpk
+			}),
+			success: function(res){
+				$(".dtl-list-rpk-"+i).html(res);
+			}
+		})
+	}
+
+	function btnEditRpk(id_rpk){
+		status = 'edit';
+		$("#tampung-id_rpk").val(id_rpk);
+		$(".cart-list-rpk").load("<?php echo base_url('Master/destroyCartRpk') ?>");
+		$(".box-data").hide();
+		$(".box-from-loading").html('<div style="padding:5px 0">Loading...</div>');
+		$.ajax({
+			url: '<?php echo base_url("Master/btnEditRpk")?>',
+			type: "POST",
+			data: ({
+				id_rpk
+			}),
+			success: function(res){
+				$(".box-from-loading").html('');
+				$(".box-form").show();
+				data = JSON.parse(res);
+				$("#tgl").val(data.tgl).prop("disabled", true).attr('style', 'background:#e9e9e9');
+				$("#pm").val(data.pm).prop("disabled", true).attr('style', 'background:#e9e9e9');
+				$("#nm_ker").val(data.nm_ker);
+				$("#g_label").val(data.g_label);
+				$("#id_rpk").val(data.id_rpk);
+				$(".pi").prop("disabled", false).removeAttr('style');
+				loadDataEditListRpk(id_rpk);
+			}
+		});
+	}
+
+	function loadDataEditListRpk(id_rpk){
+		// edit-list-rpk
+		$(".edit-list-rpk").html('<div style="padding:5px 0">Loading...</div>');
+		$.ajax({
+			url: '<?php echo base_url("Master/loadDataEditListRpk")?>',
+			type: "POST",
+			data: ({
+				id_rpk
+			}),
+			success: function(res){
+				$(".edit-list-rpk").html(res);
+			}
+		});
+	}
+
+	function aksiEditRpk(idx,id_rpk){
+		// toString().length
+		eitem1 = $("#erpk1-"+idx).val();
+		eitem2 = $("#erpk2-"+idx).val();
+		eitem3 = $("#erpk3-"+idx).val();
+		eitem4 = $("#erpk4-"+idx).val();
+		eitem5 = $("#erpk5-"+idx).val();
+		ex = $("#ex-"+idx).val();
+		eref = $("#eref-"+idx).val();
+		
+		if(eitem1 == ""){
+			swal("ITEM 1 TIDAK BOLEH KOSONG", "", "error");
+			return;
+		}
+		if(eitem2 == ""){
+			swal("ITEM 2 TIDAK BOLEH KOSONG", "", "error");
+			return;
+		}
+		if(eitem3 == ""){
+			swal("ITEM 3 TIDAK BOLEH KOSONG", "", "error");
+			return;
+		}
+		if(eitem4 == ""){
+			swal("ITEM 4 TIDAK BOLEH KOSONG", "", "error");
+			return;
+		}
+		if(eitem5 == ""){
+			swal("ITEM 5 TIDAK BOLEH KOSONG", "", "error");
+			return;
+		}
+
+		$.ajax({
+			url: '<?php echo base_url("Master/aksiEditRpk")?>',
+			type: "POST",
+			data: ({
+				eitem1,eitem2,eitem3,eitem4,eitem5,ex,eref,idx,id_rpk
+			}),
+			success: function(res){
+				data = JSON.parse(res);
+				if(data.data == true){
+					// swal(data.msg, "", "success");
+					showNotification("alert-success", data.msg, "top", "center", "", "");
+					// loadDataEditListRpk(id_rpk);
+					$("#erpk1-"+idx).val(data.item1).animateCss('fadeInRight');
+					$("#erpk2-"+idx).val(data.item2).animateCss('fadeInRight');
+					$("#erpk3-"+idx).val(data.item3).animateCss('fadeInRight');
+					$("#erpk4-"+idx).val(data.item4).animateCss('fadeInRight');
+					$("#erpk5-"+idx).val(data.item5).animateCss('fadeInRight');
+					$("#etrimw-"+idx).val(data.trimw).animateCss('fadeInRight');
+					$("#ex-"+idx).val(data.x).animateCss('fadeInRight');
+					$("#eref-"+idx).val(data.ref).animateCss('fadeInRight');
+
+					($("#erpk1-"+idx).val() != 0) ? $("#erpk2-"+idx).prop("disabled", false).removeAttr('style') : $("#erpk2-"+idx).val(0).prop("disabled", true).attr('style', 'background:#e9e9e9');
+					($("#erpk2-"+idx).val() != 0) ? $("#erpk3-"+idx).prop("disabled", false).removeAttr('style') : $("#erpk3-"+idx).val(0).prop("disabled", true).attr('style', 'background:#e9e9e9');
+					($("#erpk3-"+idx).val() != 0) ? $("#erpk4-"+idx).prop("disabled", false).removeAttr('style') : $("#erpk4-"+idx).val(0).prop("disabled", true).attr('style', 'background:#e9e9e9');
+					($("#erpk4-"+idx).val() != 0) ? $("#erpk5-"+idx).prop("disabled", false).removeAttr('style') : $("#erpk5-"+idx).val(0).prop("disabled", true).attr('style', 'background:#e9e9e9');
+				}else{
+					swal(data.msg, "", "error");
+					return;
+				}
+			}
+		});
+	}
+
+	function aksiHapusRpk(idx,id_rpk){
+		alert(idx+' - '+id_rpk);
+	}
+
+	//
 
 	$('#tgl').on('change', function() {
 		kosong();
@@ -340,6 +493,7 @@
 				success: function(res){
 					data = JSON.parse(res);
 					$("#id_rpk").val(data.data);
+					$("#tampung-id_rpk").val(data.data); //hidden
 				}
 			});
 		}
@@ -540,7 +694,7 @@
 			url: '<?php echo base_url("Master/addCartRpk")?>',
 			type: "POST",
 			data: ({
-				tgl,pm,nm_ker,g_label,id_rpk,xplh,item1,item2,item3,item4,item5,times,ref,opsi: 'insert'
+				tgl,pm,nm_ker,g_label,id_rpk,xplh,item1,item2,item3,item4,item5,times,ref,opsi: status
 			}),
 			success: function(res){
 				data = JSON.parse(res);
@@ -570,16 +724,23 @@
 	//
 
 	function simpanCartRpk(){
+		tId_rpk = $("#tampung-id_rpk").val();
+		// alert(status+' '+tId_rpk);
 		$(".btn-s-rpk").prop("disabled", true);
 		$.ajax({
 			url: '<?php echo base_url("Master/simpanCartRpk")?>',
 			type: "POST",
-			data:({
-				opsi: 'insert'
-			}),
 			success: function(res){
 				$(".btn-s-rpk").prop("disabled", false);
-				kosong();
+				swal("BERHASIL!!!", "", "success");
+				btnEditRpk(tId_rpk);
+				$(".nm_ker").prop("disabled", true).attr('style', 'background:#e9e9e9');
+				$(".g_label").prop("disabled", true).attr('style', 'background:#e9e9e9');
+				$(".ii").val("").prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
+				$("#trimw").val(0);
+				$("#times").val("");
+				$("#ref").val("");
+				// kosong();
 			}
 		});
 	}
