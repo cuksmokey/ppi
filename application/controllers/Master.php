@@ -25,17 +25,18 @@ class Master extends CI_Controller
 		}else if($this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "Office" || $this->session->userdata('level') == "Finance" || $this->session->userdata('level') == "Corrugated"){
 			$this->load->view('Laporan/v_stok');
 		}else{
-			$this->load->view('Master/v_timbangan');
+			// $this->load->view('Master/v_timbangan');
+			$this->load->view('Master/v_timbanganNew');
 		}
 		$this->load->view('footer');
 	}
 
-	public function Timbangan()
-	{
-		$this->load->view('header');
-		$this->load->view('Master/v_timbangan');
-		$this->load->view('footer');
-	}
+	// public function Timbangan()
+	// {
+	// 	$this->load->view('header');
+	// 	$this->load->view('Master/v_timbangan');
+	// 	$this->load->view('footer');
+	// }
 
 	public function NewTimbangan()
 	{
@@ -6040,126 +6041,276 @@ class Master extends CI_Controller
 	}
 
 	function simpanCartRpk(){
-		$this->m_master->simpanCartRpk();
-		echo json_encode(array('data' => true));
+		$id_rpk = $_POST["tId_rpk"];
+		$status = $_POST["status"];
+
+		if($status == 'insert'){
+			$getRpk = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' GROUP BY id_rpk");
+			if($getRpk->num_rows() == 0){
+				$this->m_master->simpanCartRpk();
+				echo json_encode(array('data' => true));
+			}else{
+				echo json_encode(array('data' => false));
+			}
+		}else{
+			$this->m_master->simpanCartRpk();
+			echo json_encode(array('data' => true));
+		}
+	}
+
+	function getIRpk(){
+		$html = '';
+		$getNoRpk = $this->db->query("SELECT tgl,id_rpk FROM m_rpk WHERE stat='open' GROUP BY tgl,id_rpk");
+		if($getNoRpk->num_rows() == 0){
+			$html .='<div style="font-weight:bold">BELUM ADA RPK</div>';
+		}else{
+			$i = 0;
+			foreach($getNoRpk->result() as $r){
+				$i++;
+				$html .='<table style="border-collapse:collapse">';
+				$html .='<tr>
+					<td style="padding:5px 0">
+						<button class="btn-rpk" onclick="btnDetailRpk('."'".$i."'".','."'".$r->id_rpk."'".')">'.$r->id_rpk.'</button>
+					</td>
+				</tr>';
+				$html .='</table>';
+
+				$html .='<div class="clr-trpk dtl-list-trpk-'.$i.'"></div>';
+				$html .='<div class="clr-gdng list-gd-ng-'.$i.'"></div>';
+			}
+		}
+
+		echo $html;
+	}
+
+	function loadRollRpkBaru(){
+		$qGetRpkNew = $this->db->query("SELECT p.id_rpk FROM m_timbangan t
+		INNER JOIN m_rpk p ON t.id_rpk=p.id
+		WHERE t.id_rpk IS NOT NULL
+		ORDER BY t.id DESC LIMIT 1");
+		if($qGetRpkNew->num_rows() == 0){
+			echo json_encode(array('data' => '', 'll' => ''));
+		}else{
+			$getDataRpk = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' GROUP BY tgl,id_rpk");
+			$i = 0;
+			foreach($getDataRpk->result() as $r){
+				$i++;
+				if($r->id_rpk == $qGetRpkNew->row()->id_rpk){
+					$no = $i;
+				}
+			}
+			echo json_encode(array('data' => $qGetRpkNew->row()->id_rpk, 'll' => $no));
+		}
 	}
 
 	function loadDataRpk(){
 		$html='';
 		$getDataRpk = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' GROUP BY tgl,id_rpk");
-		$i = 0;
-		foreach($getDataRpk->result() as $r){
-			$i++;
-			$html .='<table style="font-weight:bold;border-collapse:collapse">';
-			$html .='<tr>
-				<td>
-					<button onclick="btnDetailRpk('."'".$i."'".','."'".$r->id_rpk."'".')">DETAIL</button>
-				</td>
-				<td style="padding:5px">'.strtoupper($this->m_fungsi->getHariIni($r->tgl)).'</td>
-				<td>-</td>
-				<td style="padding:5px">'.strtoupper($this->m_fungsi->tglInd_skt($r->tgl)).'</td>
-				<td>-</td>
-				<td style="padding:5px">'.$r->id_rpk.'</td>
-				<td>
-					<button onclick="btnEditRpk('."'".$r->id_rpk."'".')">EDIT</button>
-				</td>
-			</tr>';
-			$html .='</table>';
-			$html .='<div class="clr-dtl dtl-list-rpk-'.$i.'"></div>';
+		if($getDataRpk->num_rows() == 0){
+			$html .= 'BELUM ADA RPK';
+		}else{
+			$i = 0;
+			foreach($getDataRpk->result() as $r){
+				$i++;
+				if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC"){
+					$btnEEdit = '<td style="padding:5px">-</td>
+						<td><button onclick="btnEditRpk('."'".$r->id_rpk."'".')">EDIT</button></td>';
+				}else{
+					$btnEEdit = '<td style="padding-left:5px">-</td>';
+				}
+				$html .='<table style="font-weight:bold;border-collapse:collapse">';
+				$html .='<tr>
+					<td>
+						<button onclick="btnDetailRpk('."'".$i."'".','."'".$r->id_rpk."'".')">DETAIL</button>
+					</td>
+					'.$btnEEdit.'
+					<td style="padding:5px">'.strtoupper($this->m_fungsi->getHariIni($r->tgl)).'</td>
+					<td>-</td>
+					<td style="padding:5px">'.strtoupper($this->m_fungsi->tglInd_skt($r->tgl)).'</td>
+					<td>-</td>
+					<td style="padding:5px">'.$r->id_rpk.'</td>
+					<td>
+						<a href="'.base_url('Master/btnDetailRpk').'?i='.$i.'&id_rpk='.$r->id_rpk.'" target="_blank" rel="plcek">PDF</a>
+					</td>
+				</tr>';
+				$html .='</table>';
+				$html .='<div class="clr-dtl dtl-list-rpk-'.$i.'"></div>';
+				$html .='<div class="clr-gdng list-gd-ng-'.$i.'"></div>';
+			}
 		}
+
 		echo $html;
 	}
 
 	function btnDetailRpk(){
-		$i = $_POST["i"];
-		$id_rpk = $_POST["id_rpk"];
 		$html = '';
-		$html .='<table style="text-align:center;border-collapse:collapse">';
 
-		$getKopItem = $this->db->query("SELECT SUM(item1) AS item1,SUM(item2) AS item2,SUM(item3) AS item3,SUM(item4) AS item4,SUM(item5) AS item5 FROM m_rpk
-		WHERE stat='open' AND id_rpk='$id_rpk' GROUP BY id_rpk")->row();
+		if(isset($_GET["i"]) && isset($_GET["id_rpk"])){
+			$i = $_GET["i"];
+			$id_rpk = $_GET["id_rpk"];
+
+			$getKopItem = $this->db->query("SELECT SUM(item1) AS item1,SUM(item2) AS item2,SUM(item3) AS item3,SUM(item4) AS item4,SUM(item5) AS item5 FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' GROUP BY id_rpk")->row();
+			$tblWidth = ';width:100%';
+
+			$qGetKopJdl = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' LIMIT 1")->row();
+			$kopJudul = '<table style="border-collapse:collapse;text-align:center;font-size:22px;font-weight:bold;width:100%">
+				<tr>
+					<td style="width:20%;padding:46px 5px;border:1px solid #000;background:url('.base_url().'assets/images/logo_ppi_inv.png)center no-repeat"></td>
+					<td style="width:10%;padding:46px 5px;border:1px solid #000">PM '.$qGetKopJdl->pm.'</td>
+					<td style="width:70%;padding:46px 5px;border:1px solid #000">RENCANA PRODUKSI KERTAS - '.$qGetKopJdl->nm_ker.' '.$qGetKopJdl->g_label.'</td>
+				</tr>
+			</table>
+			<table style="margin:10px 0;border-collapse:collapse;font-size:12px;font-weight:bold">
+				<tr>
+					<td style="padding:5px 0">TANGGAL</td>
+					<td style="padding:5px">:</td>
+					<td style="padding:5px 0">'.strtoupper($this->m_fungsi->tanggal_format_indonesia($qGetKopJdl->tgl)).'</td>
+				</tr>
+				<tr>
+					<td style="padding:5px 0">NO. RPK</td>
+					<td style="padding:5px">:</td>
+					<td style="padding:5px 0">'.$qGetKopJdl->id_rpk.'</td>
+				</tr>
+			</table>';
+
+			if($getKopItem->item4 != 0 && $getKopItem->item5 == 0){
+				$tdTmbh = '<td style="width:6%"></td>
+					<td style="width:6%"></td>
+					<td style="width:6%"></td>
+					<td style="width:6%"></td>';
+				$tdTmbhRef = 'style="width:30%"';
+			}else if($getKopItem->item5 != 0){
+				$tdTmbh = '<td style="width:6%"></td>
+					<td style="width:6%"></td>
+					<td style="width:6%"></td>
+					<td style="width:6%"></td>
+					<td style="width:6%"></td>';
+				$tdTmbhRef = 'style="width:24%"';
+			}else{
+				$tdTmbh = '<td style="width:8%"></td>
+					<td style="width:8%"></td>
+					<td style="width:8%"></td>';
+				$tdTmbhRef = 'style="width:30%"';
+			}
+
+			$kopWidth = '<tr>
+				<td style="width:4%"></td>
+				'.$tdTmbh.'
+				<td style="width:8%"></td>
+				<td style="width:8%"></td>
+				<td style="width:8%"></td>
+				<td style="width:8%"></td>
+				<td style="width:10%"></td>
+				<td '.$tdTmbhRef.'></td>
+			</tr>';
+			$kopBgTr = 'style="background:#eee"';
+			$fS = '11px';
+		}else{
+			$i = $_POST["i"];
+			$id_rpk = $_POST["id_rpk"];
+			$getKopItem = $this->db->query("SELECT SUM(item1) AS item1,SUM(item2) AS item2,SUM(item3) AS item3,SUM(item4) AS item4,SUM(item5) AS item5 FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' GROUP BY id_rpk")->row();
+
+			$tblWidth = ';margin:10px 0';
+			$kopJudul = '';
+			$kopWidth = '';
+			$kopBgTr = 'style="background:#ddd"';
+			(isset($_POST["timbangan"])) ? $fS = '14px' : $fS = '12px';
+		}
+
+		$html .= $kopJudul;
+		$html .='<table style="font-size:'.$fS.';text-align:center;border-collapse:collapse'.$tblWidth.'">';
+		$html .= $kopWidth;
+		
 		if($getKopItem->item4 != 0 && $getKopItem->item5 == 0){
 			$kopBrICls = 4;
-			$kopBrItem = '<tr>
-				<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">[ 1 ]</td>
-				<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">[ 2 ]</td>
-				<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">[ 3 ]</td>
-				<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">[ 4 ]</td>';
+			$kopBrItem = '<tr '.$kopBgTr.'>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px">[ 1 ]</td>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px">[ 2 ]</td>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px">[ 3 ]</td>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px">[ 4 ]</td>';
 		}else if($getKopItem->item5 != 0){
 			$kopBrICls = 5;
-			$kopBrItem = '<tr>
-				<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">[ 1 ]</td>
-				<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">[ 2 ]</td>
-				<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">[ 3 ]</td>
-				<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">[ 4 ]</td>
-				<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">[ 5 ]</td>';
+			$kopBrItem = '<tr '.$kopBgTr.'>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px">[ 1 ]</td>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px">[ 2 ]</td>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px">[ 3 ]</td>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px">[ 4 ]</td>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px">[ 5 ]</td>';
 		}else{
 			$kopBrICls = 3;
-			$kopBrItem = '<tr>
-				<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">[ 1 ]</td>
-				<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">[ 2 ]</td>
-				<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">[ 3 ]</td>';
+			$kopBrItem = '<tr '.$kopBgTr.'>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px">[ 1 ]</td>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px">[ 2 ]</td>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px">[ 3 ]</td>';
 		}
-		$html .='<tr>
-			<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">NO.</td>
-			<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px" colspan="'.$kopBrICls.'">WIDTH(CM)</td>
-			<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">TIMES <br>( X )</td>
-			<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px" colspan="2">SUDAH POTONG</td>
-			<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">TRIM <br>WIDTH</td>
-			<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">WEIGHT <br>( TON )</td>
-			<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">REFERENSI</td>
+		$html .='<tr '.$kopBgTr.'>
+			<td style="border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">NO.</td>
+			<td style="border:1px solid #000;font-weight:bold;padding:5px" colspan="'.$kopBrICls.'">WIDTH(CM)</td>
+			<td style="border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">TIMES <br>( X )</td>
+			<td style="border:1px solid #000;font-weight:bold;padding:5px" colspan="2">SUDAH POTONG</td>
+			<td style="border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">TRIM <br>WIDTH</td>
+			<td style="border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">WEIGHT <br>( TON )</td>
+			<td style="border:1px solid #000;font-weight:bold;padding:5px 25px" rowspan="2">REFERENSI</td>
 		</tr>';
 		$html .= $kopBrItem.'
-			<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">GD</td>
-			<td style="background:#ddd;border:1px solid #000;font-weight:bold;padding:5px">NG</td>
+			<td style="border:1px solid #000;font-weight:bold;padding:5px">GD</td>
+			<td style="border:1px solid #000;font-weight:bold;padding:5px">NG</td>
 		</tr>';
 
 		$getIsi = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk'");
-		$n = 0;
-		$x = 0;
-		$t = 0;
+		$n = 0; $x = 0; $t = 0; $sumGood = 0; $sumNotGood = 0;
 		foreach($getIsi->result() as $isi){
 			$n++;
-			$item1 = ($isi->item1 != 0) ? round($isi->item1,2) : '-';
-			$item2 = ($isi->item2 != 0) ? round($isi->item2,2) : '-';
-			$item3 = ($isi->item3 != 0) ? round($isi->item3,2) : '-';
-			$item4 = ($isi->item4 != 0) ? round($isi->item4,2) : '-';
-			$item5 = ($isi->item5 != 0) ? round($isi->item5,2) : '-';
 
+			// TIMBANGAN
+			if(isset($_POST["timbangan"])){
+				$item1 = ($isi->item1 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$isi->id."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item1,2)."'".','."'".round($isi->item1+1,2)."'".')">'.round($isi->item1,2).'</button>' : '-';
+				$item2 = ($isi->item2 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$isi->id."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item2,2)."'".','."'".round($isi->item2+2,2)."'".')">'.round($isi->item2,2).'</button>' : '-';
+				$item3 = ($isi->item3 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$isi->id."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item3,2)."'".','."'".round($isi->item3+3,2)."'".')">'.round($isi->item3,2).'</button>' : '-';
+				$item4 = ($isi->item4 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$isi->id."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item4,2)."'".','."'".round($isi->item4+4,2)."'".')">'.round($isi->item4,2).'</button>' : '-';
+				$item5 = ($isi->item5 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$isi->id."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item5,2)."'".','."'".round($isi->item5+5,2)."'".')">'.round($isi->item5,2).'</button>' : '-';
+			}else{
+				$item1 = ($isi->item1 != 0) ? round($isi->item1,2) : '-';
+				$item2 = ($isi->item2 != 0) ? round($isi->item2,2) : '-';
+				$item3 = ($isi->item3 != 0) ? round($isi->item3,2) : '-';
+				$item4 = ($isi->item4 != 0) ? round($isi->item4,2) : '-';
+				$item5 = ($isi->item5 != 0) ? round($isi->item5,2) : '-';
+			}
+// class="clr-tt dtl-t-rpk-'.$isi->id.'-'.$item1.'"
 			$html .='<tr>
 				<td style="border:1px solid #000;padding:5px">'.$n.'</td>';
 			if($getKopItem->item1 != 0 && $getKopItem->item2 == 0 && $getKopItem->item3 == 0 && $getKopItem->item4 == 0 && $getKopItem->item5 == 0){
 				$trimW = $item1;
-				$html .='<td style="border:1px solid #000;padding:5px">'.$item1.'</td>
+				$html .='<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item1+1,2).'" style="border:1px solid #000;padding:5px">'.$item1.'</td>
 				<td style="border:1px solid #000;padding:5px 14px">-</td>
 				<td style="border:1px solid #000;padding:5px 14px">-</td>
 				';
 			}else if($getKopItem->item1 != 0 && $getKopItem->item2 != 0 && $getKopItem->item3 == 0 && $getKopItem->item4 == 0 && $getKopItem->item5 == 0){
 				$trimW = $item1 + $item2;
-				$html .='<td style="border:1px solid #000;padding:5px">'.$item1.'</td>
-					<td style="border:1px solid #000;padding:5px">'.$item2.'</td>
+				$html .='<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item1+1,2).'" style="border:1px solid #000;padding:5px">'.$item1.'</td>
+					<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item2+2,2).'" style="border:1px solid #000;padding:5px">'.$item2.'</td>
 					<td style="border:1px solid #000;padding:5px 14px">-</td>
 				';
 			}else if($getKopItem->item1 != 0 && $getKopItem->item2 != 0 && $getKopItem->item3 != 0 && $getKopItem->item4 == 0 && $getKopItem->item5 == 0){
 				$trimW = $item1 + $item2 + $item3;
-				$html .='<td style="border:1px solid #000;padding:5px">'.$item1.'</td>
-					<td style="border:1px solid #000;padding:5px">'.$item2.'</td>
-					<td style="border:1px solid #000;padding:5px">'.$item3.'</td>
+				$html .='<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item1+1,2).'" style="border:1px solid #000;padding:5px">'.$item1.'</td>
+					<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item2+2,2).'" style="border:1px solid #000;padding:5px">'.$item2.'</td>
+					<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item3+3,2).'" style="border:1px solid #000;padding:5px">'.$item3.'</td>
 				';
 			}else if($getKopItem->item1 != 0 && $getKopItem->item2 != 0 && $getKopItem->item3 != 0 && $getKopItem->item4 != 0 && $getKopItem->item5 == 0){
 				$trimW = $item1 + $item2 + $item3 + $item4;
-				$html .='<td style="border:1px solid #000;padding:5px">'.$item1.'</td>
-					<td style="border:1px solid #000;padding:5px">'.$item2.'</td>
-					<td style="border:1px solid #000;padding:5px">'.$item3.'</td>
-					<td style="border:1px solid #000;padding:5px">'.$item4.'</td>
+				$html .='<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item1+1,2).'" style="border:1px solid #000;padding:5px">'.$item1.'</td>
+					<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item2+2,2).'" style="border:1px solid #000;padding:5px">'.$item2.'</td>
+					<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item3+3,2).'" style="border:1px solid #000;padding:5px">'.$item3.'</td>
+					<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item4+4,2).'" style="border:1px solid #000;padding:5px">'.$item4.'</td>
 				';
 			}else{
 				$trimW = $item1 + $item2 + $item3 + $item4 + $item5;
-				$html .='<td style="border:1px solid #000;padding:5px">'.$item1.'</td>
-					<td style="border:1px solid #000;padding:5px">'.$item2.'</td>
-					<td style="border:1px solid #000;padding:5px">'.$item3.'</td>
-					<td style="border:1px solid #000;padding:5px">'.$item4.'</td>
-					<td style="border:1px solid #000;padding:5px">'.$item5.'</td>
+				$html .='<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item1+1,2).'" style="border:1px solid #000;padding:5px">'.$item1.'</td>
+					<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item2+2,2).'" style="border:1px solid #000;padding:5px">'.$item2.'</td>
+					<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item3+3,2).'" style="border:1px solid #000;padding:5px">'.$item3.'</td>
+					<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item4+4,2).'" style="border:1px solid #000;padding:5px">'.$item4.'</td>
+					<td class="clr-tt dtl-t-rpk-'.$isi->id.'-'.round($isi->item5+5,2).'" style="border:1px solid #000;padding:5px">'.$item5.'</td>
 				';
 			}
 
@@ -6167,164 +6318,165 @@ class Master extends CI_Controller
 			$html .='<td style="border:1px solid #000;padding:5px">'.$isi->x.'</td>';
 			
 			// CARI YANG BAGUS DONG
-			if($isi->item1 != 0){
-				$qItems1 = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE (t.status='0' OR t.status='2' OR t.status='4' OR t.status='5') AND id_rpk='$isi->id' AND width='$isi->item1' GROUP BY id_rpk");
-				if($qItems1->num_rows() != 0){
-					$gdItems1 = '[ '.round($isi->item1,2).'='.$qItems1->row()->roll.' ]';
-					$twGIt1 = $qItems1->row()->berat;
-				}else{
-					$gdItems1 = '';
-					$twGIt1 = 0;
-				}
+			$qGood = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE (t.status='0' OR t.status='2' OR t.status='4' OR t.status='5') AND id_rpk='$isi->id' GROUP BY id_rpk");
+			if($qGood->num_rows() != 0){
+				$good = $qGood->row()->roll;
+				$goodBerat = $qGood->row()->berat;
+				$btnGood = '<button class="btn-gg" onclick="CekListGdNg('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".',0)">'.$good.'</button>';
 			}else{
-				$gdItems1 = '';
-				$twGIt1 = 0;
+				$good = 0;
+				$goodBerat = 0;
+				$btnGood = 0;
 			}
-			if($isi->item2 != 0){
-				$qItems2 = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE (t.status='0' OR t.status='2' OR t.status='4' OR t.status='5') AND id_rpk='$isi->id' AND width='$isi->item2' GROUP BY id_rpk");
-				if($qItems2->num_rows() != 0){
-					$gdItems2 = '[ '.round($isi->item2,2).'='.$qItems2->row()->roll.' ]';
-					$twGIt2 = $qItems2->row()->berat;
-				}else{
-					$gdItems2 = '';
-					$twGIt2 = 0;
-				}
-			}else{
-				$gdItems2 = '';
-				$twGIt2 = 0;
-			}
-			if($isi->item3 != 0){
-				$qItems3 = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE (t.status='0' OR t.status='2' OR t.status='4' OR t.status='5') AND id_rpk='$isi->id' AND width='$isi->item3' GROUP BY id_rpk");
-				if($qItems3->num_rows() != 0){
-					$gdItems3 = '[ '.round($isi->item3,2).'='.$qItems3->row()->roll.' ]';
-					$twGIt3 = $qItems3->row()->berat;
-				}else{
-					$gdItems3 = '';
-					$twGIt3 = 0;
-				}
-			}else{
-				$gdItems3 = '';
-				$twGIt3 = 0;
-			}
-			if($isi->item4 != 0){
-				$qItems4 = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE (t.status='0' OR t.status='2' OR t.status='4' OR t.status='5') AND id_rpk='$isi->id' AND width='$isi->item4' GROUP BY id_rpk");
-				if($qItems4->num_rows() != 0){
-					$gdItems4 = '[ '.round($isi->item4,2).'='.$qItems4->row()->roll.' ]';
-					$twGIt4 = $qItems4->row()->berat;
-				}else{
-					$gdItems4 = '';
-					$twGIt4 = 0;
-				}
-			}else{
-				$gdItems4 = '';
-				$twGIt4 = 0;
-			}
-			if($isi->item5 != 0){
-				$qItems5 = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE (t.status='0' OR t.status='2' OR t.status='4' OR t.status='5') AND id_rpk='$isi->id' AND width='$isi->item5' GROUP BY id_rpk");
-				if($qItems5->num_rows() != 0){
-					$gdItems5 = '[ '.round($isi->item5,2).'='.$qItems5->row()->roll.' ]';
-					$twGIt5 = $qItems5->row()->berat;
-				}else{
-					$gdItems5 = '';
-					$twGIt5 = 0;
-				}
-			}else{
-				$gdItems5 = '';
-				$twGIt5 = 0;
-			}
-			$html .='<td style="border:1px solid #000;padding:5px">'.$gdItems1.$gdItems2.$gdItems3.$gdItems4.$gdItems5.'</td>';
+			$html .='<td class="tdllgg td-gdng-'.$isi->id.'-0" style="border:1px solid #000;padding:5px">'.$btnGood.'</td>';
 
 			// CARI YANG JELEK DONG
-			if($isi->item1 != 0){
-				$qNgItems1 = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE t.status='3' AND id_rpk='$isi->id' AND width='$isi->item1' GROUP BY id_rpk");
-				if($qNgItems1->num_rows() != 0){
-					$ngItems1 = '[ '.round($isi->item1,2).'='.$qNgItems1->row()->roll.' ]';
-					$twNIt1 = $qNgItems1->row()->berat;
-				}else{
-					$ngItems1 = '';
-					$twNIt1 = 0;
-				}
+			$qNotGood = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE t.status='3' AND id_rpk='$isi->id' GROUP BY id_rpk");
+			if($qNotGood->num_rows() != 0){
+				$notGood = $qNotGood->row()->roll;
+				$notGoodBerat = $qNotGood->row()->berat;
+				$btnNotGood = '<button class="btn-gg" onclick="CekListGdNg('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".',3)">'.$notGood.'</button>';
 			}else{
-				$ngItems1 = '';
-				$twNIt1 = 0;
+				$notGood = 0;
+				$notGoodBerat = 0;
+				$btnNotGood = 0;
 			}
-			if($isi->item2 != 0){
-				$qNgItems2 = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE t.status='3' AND id_rpk='$isi->id' AND width='$isi->item2' GROUP BY id_rpk");
-				if($qNgItems2->num_rows() != 0){
-					$ngItems2 = '[ '.round($isi->item2,2).'='.$qNgItems2->row()->roll.' ]';
-					$twNIt2 = $qNgItems2->row()->berat;
-				}else{
-					$ngItems2 = '';
-					$twNIt2 = 0;
-				}
-			}else{
-				$ngItems2 = '';
-				$twNIt2 = 0;
-			}
-			if($isi->item3 != 0){
-				$qNgItems3 = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE t.status='3' AND id_rpk='$isi->id' AND width='$isi->item3' GROUP BY id_rpk");
-				if($qNgItems3->num_rows() != 0){
-					$ngItems3 = '[ '.round($isi->item3,2).'='.$qNgItems3->row()->roll.' ]';
-					$twNIt3 = $qNgItems3->row()->berat;
-				}else{
-					$ngItems3 = '';
-					$twNIt3 = 0;
-				}
-			}else{
-				$ngItems3 = '';
-				$twNIt3 = 0;
-			}
-			if($isi->item4 != 0){
-				$qNgItems4 = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE t.status='3' AND id_rpk='$isi->id' AND width='$isi->item4' GROUP BY id_rpk");
-				if($qNgItems4->num_rows() != 0){
-					$ngItems4 = '[ '.round($isi->item4,2).'='.$qNgItems4->row()->roll.' ]';
-					$twNIt4 = $qNgItems4->row()->berat;
-				}else{
-					$ngItems4 = '';
-					$twNIt4 = 0;
-				}
-			}else{
-				$ngItems4 = '';
-				$twNIt4 = 0;
-			}
-			if($isi->item5 != 0){
-				$qNgItems5 = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE t.status='3' AND id_rpk='$isi->id' AND width='$isi->item5' GROUP BY id_rpk");
-				if($qNgItems5->num_rows() != 0){
-					$ngItems5 = '[ '.round($isi->item5,2).'='.$qNgItems5->row()->roll.' ]';
-					$twNIt5 = $qNgItems5->row()->berat;
-				}else{
-					$ngItems5 = '';
-					$twNIt5 = 0;
-				}
-			}else{
-				$ngItems5 = '';
-				$twNIt5 = 0;
-			}
-			$html .='<td style="border:1px solid #000;padding:5px">'.$ngItems1.$ngItems2.$ngItems3.$ngItems4.$ngItems5.'</td>';
-			
+			$html .='<td class="tdllgg td-gdng-'.$isi->id.'-3" style="border:1px solid #000;padding:5px">'.$btnNotGood.'</td>';
 			$html .='<td style="border:1px solid #000;padding:5px">'.$trimW.'</td>';
 			
 			// WEIGHT TOTAL
-			$sumGTrimW = $twGIt1+$twGIt2+$twGIt3+$twGIt4+$twGIt5;
-			$sumNTrimW = $twNIt1+$twNIt2+$twNIt3+$twNIt4+$twNIt5;
-			$t += $twGIt1+$twGIt2+$twGIt3+$twGIt4+$twGIt5+$twNIt1+$twNIt2+$twNIt3+$twNIt4+$twNIt5;
-			$html .='<td style="border:1px solid #000;padding:5px">'.number_format($sumGTrimW+$sumNTrimW).'</td>';
-
-			$html .='<td style="border:1px solid #000;padding:5px">'.$isi->ref.'</td>';
+			$sumGood += $good; 
+			$sumNotGood += $notGood;
+			$t += $goodBerat + $notGoodBerat;
+			$html .='<td style="border:1px solid #000;padding:5px">'.number_format($goodBerat + $notGoodBerat).'</td>';
+			$html .='<td style="border:1px solid #000;padding:5px;text-align:left">'.$isi->ref.'</td>';
 			$html .='</tr>';
 		}
 
 		// TOTAL
-		$html .='<tr>
-			<td style="border:1px solid #000;padding:5px"></td>
-			<td style="border:1px solid #000;padding:5px" colspan="'.$kopBrICls.'"></td>
-			<td style="border:1px solid #000;padding:5px">'.$x.'</td>
-			<td style="border:1px solid #000;padding:5px" colspan="3"></td>
-			<td style="border:1px solid #000;padding:5px">'.number_format($t).'</td>
-			<td style="border:1px solid #000;padding:5px"></td>
+		$clsTot = $kopBrICls + 1;
+		$html .='<tr '.$kopBgTr.'>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold" colspan="'.$clsTot.'"></td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$x.'</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$sumGood.'</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$sumNotGood.'</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold"></td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold">'.number_format($t).'</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold"></td>
+		</tr>';
+		$html .='</table>';
+		
+
+		if(isset($_GET["i"]) && isset($_GET["id_rpk"])){
+			$this->m_fungsi->newMpdf($html,10,5,10,5,'P','A4');
+		}else{
+			echo $html;
+		}
+	}
+
+	function CekListGdNg(){
+		$i = $_POST["i"];
+		$idx = $_POST["idx"];
+		$id_rpk = $_POST["id_rpk"];
+		$stat = $_POST["stat"];
+		$width = $_POST["width"];
+		$html = '';
+		$html .='<table style="margin-bottom:10px;text-align:center;border-collapse:collapse">';
+
+		($stat == 0) ? $opt = "AND t.status!='3'" : $opt = "AND t.status='3'";
+		$qGetCount = $this->db->query("SELECT width,COUNT(roll) AS jml_roll FROM m_timbangan t WHERE id_rpk='$idx' $opt GROUP BY width");
+		if($width != ''){
+			$bgWdAll = 'style="background:#fff;padding:5px 2px;border:0"';
+		}else{
+			$bgWdAll = 'style="background:#ddd;padding:5px 8px;border:0;border-left:3px solid #0f0"';
+		}
+		$html .='<tr><td style="padding:5px 0;font-weight:bold;text-align:left" colspan="12">
+		<button '.$bgWdAll.' onclick="CekListGdNg('."'".$i."'".','."'".$idx."'".','."'".$id_rpk."'".','."'".$stat."'".','."'"."'".')">SEMUA</button> ';
+		if($qGetCount->num_rows() != 1){
+			foreach($qGetCount->result() as $c){
+				// CekListGdNg(i,idx,id_rpk,stat,width="")
+				// $html .= '<button class="bbb btn-gg2 ggww-'.round($c->width,2).'" onclick="plhCekUkuran('."".round($c->width,2)."".')">[ '.round($c->width,2).' = '.$c->jml_roll.' ]</button> ';
+				if($width == round($c->width,2)){
+					$bgWd = 'style="background:#ddd;padding:5px 8px;border:0;border-left:3px solid #0f0"';
+				}else{
+					$bgWd = 'style="background:#fff;padding:5px 2px;border:0"';
+				}
+				$html .= '<button '.$bgWd.' onclick="CekListGdNg('."'".$i."'".','."'".$idx."'".','."'".$id_rpk."'".','."'".$stat."'".','."'".round($c->width,2)."'".')">[ '.round($c->width,2).' = '.$c->jml_roll.' ]</button> ';
+			}
+		}
+		$html .='</td></tr>';
+
+		$html .= '<tr>
+			<td style="background:#ccc;padding:5px;font-weight:bold;border:1px solid #000">NO.</td>
+			<td style="background:#ccc;padding:5px;font-weight:bold;border:1px solid #000">NO/ ROLL</td>
+			<td style="background:#ccc;padding:5px;font-weight:bold;border:1px solid #000">JENIS</td>
+			<td style="background:#ccc;padding:5px;font-weight:bold;border:1px solid #000">GSM</td>
+			<td style="background:#ccc;padding:5px 10px;font-weight:bold;border:1px solid #000">BW</td>
+			<td style="background:#ccc;padding:5px 10px;font-weight:bold;border:1px solid #000">RCT</td>
+			<td style="background:#ccc;padding:5px 10px;font-weight:bold;border:1px solid #000">BI</td>
+			<td style="background:#ccc;padding:5px;font-weight:bold;border:1px solid #000">D(CM)</td>
+			<td style="background:#ccc;padding:5px;font-weight:bold;border:1px solid #000">UKURAN</td>
+			<td style="background:#ccc;padding:5px;font-weight:bold;border:1px solid #000">BERAT</td>
+			<td style="background:#ccc;padding:5px;font-weight:bold;border:1px solid #000">JOINT</td>
+			<td style="background:#ccc;padding:5px;font-weight:bold;border:1px solid #000">KETERANGAN</td>
 		</tr>';
 
+		$qGetRoll = $this->db->query("SELECT * FROM m_timbangan t WHERE id_rpk='$idx' AND width LIKE '%$width%' $opt");
+		$n = 0;
+		foreach($qGetRoll->result() as $r){
+			$n++;
+			if($this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2"){
+				$bgTr = '';
+				$cekRoll = 'onclick="cekRollEdit('."'".$r->id."'".','."'".$r->roll."'".')"';
+			}else{
+				if($r->id_pl == 0 && $r->id_rk != null){ // RK
+					$bgTr = 'style="background:#eef"';
+				}else if($r->status != 3 && $r->id_pl == 0){ // STOK
+					$bgTr = 'style="background:#fff"';
+				}else if($r->status == 3 && $r->id_pl == 0){ // BUFFER
+					$bgTr = 'style="background:#fee"';
+				}else if($r->id_pl != 0){ // TERJUAL
+					$bgTr = 'style="background:#dfd"';
+				}else{
+					$bgTr = 'style="background:#fff"';
+				}
+
+				// AKSI TERJUAL
+				if($r->id_pl != 0){
+					$cekRoll = 'onclick="cek_roll('."'".$r->id."'".')"';
+				}else{
+					$cekRoll = 'onclick="cekRollEdit('."'".$r->id."'".','."'".$r->roll."'".')"';
+				}
+			}
+
+			// ROLL YANG DIEDIT
+			$getRollEdit = $this->db->query("SELECT*FROM m_roll_edit e WHERE e.roll='$r->roll'");
+			if($getRollEdit->num_rows() != 0){
+				$eE = 'style="color:#00f"';
+			}else{
+				$eE = '';
+			}
+
+			$html .= '<tr '.$bgTr.'>
+				<td style="padding:5px;border:1px solid #000">'.$n.'</td>
+				<td style="padding:5px;border:1px solid #000">
+					<button class="btn-gg" '.$eE.' '.$cekRoll.'>'.$r->roll.'</button>
+				</td>
+				<td style="padding:5px;border:1px solid #000">'.$r->nm_ker.'</td>
+				<td style="padding:5px;border:1px solid #000">'.$r->g_label.'</td>
+				<td style="padding:5px;border:1px solid #000">'.round($r->g_ac,2).'</td>
+				<td style="padding:5px;border:1px solid #000">'.round($r->rct,2).'</td>
+				<td style="padding:5px;border:1px solid #000">'.round($r->bi,2).'</td>
+				<td style="padding:5px;border:1px solid #000">'.$r->diameter.'</td>
+				<td style="padding:5px;border:1px solid #000">'.round($r->width,2).'</td>
+				<td style="padding:5px;border:1px solid #000">'.number_format($r->weight).'</td>
+				<td style="padding:5px;border:1px solid #000">'.$r->joint.'</td>
+				<td style="padding:5px;border:1px solid #000;text-align:left">'.$r->ket.'</td>
+			</tr>';
+		}
+
 		$html .='</table>';
+
 		echo $html;
 	}
 
@@ -6432,25 +6584,50 @@ class Master extends CI_Controller
 		}else if(!preg_match("/^[0-9]*$/", $ex)){
 			echo json_encode(array('data' => false, 'msg' => 'PERIKSA LAGI, DI TIMES!!'));
 		}else if(($eitem1 != 0 && $eitem2 == 0 && $eitem3 == 0 && $eitem4 == 0 && $eitem5 == 0) || ($eitem1 != 0 && $eitem2 != 0 && $eitem3 == 0 && $eitem4 == 0 && $eitem5 == 0) || ($eitem1 != 0 && $eitem2 != 0 && $eitem3 != 0 && $eitem4 == 0 && $eitem5 == 0) || ($eitem1 != 0 && $eitem2 != 0 && $eitem3 != 0 && $eitem4 != 0 && $eitem5 == 0) || ($eitem1 != 0 && $eitem2 != 0 && $eitem3 != 0 && $eitem4 != 0 && $eitem5 != 0)){
-			$result = $this->m_master->aksiEditRpk();
-			$RpkNew = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' AND id='$idx'")->row();
-			$trimW = $RpkNew->item1+$RpkNew->item2+$RpkNew->item3+$RpkNew->item4+$RpkNew->item5;
-			echo json_encode(
-				array(
-					'data' => $result,
-					'item1' => round($RpkNew->item1,2),
-					'item2' => round($RpkNew->item2,2),
-					'item3' => round($RpkNew->item3,2),
-					'item4' => round($RpkNew->item4,2),
-					'item5' => round($RpkNew->item5,2),
-					'x' => $RpkNew->x,
-					'ref' => $RpkNew->ref,
-					'trimw' => $trimW,
-					'msg' => 'BERHASIL!!'
-				)
-			);
+			// YANG SUDAH ADA JANGANLAH
+			$qGet = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' AND item1='$eitem1' AND item2='$eitem2' AND item3='$eitem3' AND item4='$eitem4' AND item5='$eitem5' AND x='$ex' AND ref='$eref'");
+			if($qGet->num_rows() != 0){
+				echo json_encode(array('data' => false, 'msg' => 'ITEM SUDAH ADA SEBELUMNYA!!'));
+			}else{
+				$result = $this->m_master->aksiEditRpk();
+				$RpkNew = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' AND id='$idx'")->row();
+				$trimW = $RpkNew->item1+$RpkNew->item2+$RpkNew->item3+$RpkNew->item4+$RpkNew->item5;
+				echo json_encode(
+					array(
+						'data' => $result,
+						'item1' => round($RpkNew->item1,2),
+						'item2' => round($RpkNew->item2,2),
+						'item3' => round($RpkNew->item3,2),
+						'item4' => round($RpkNew->item4,2),
+						'item5' => round($RpkNew->item5,2),
+						'x' => $RpkNew->x,
+						'ref' => $RpkNew->ref,
+						'trimw' => $trimW,
+						'msg' => 'BERHASIL!!'
+					)
+				);
+			}
 		}else{
 			echo json_encode(array('data' => false, 'msg' => 'ADA YANG SALAH, PERIKSA KEMBALI!!'));
 		}
+	}
+
+	function aksiHapusRpk(){
+		$idx = $_POST["idx"];
+		$id_rpk = $_POST["id_rpk"];
+
+		$result = $this->m_master->aksiHapusRpk();
+		$qGetRpk = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' GROUP BY id_rpk");
+		if($qGetRpk->num_rows() != 0){
+			$list = 'ada';
+		}else{
+			$list = 'kosong';
+		}
+		echo json_encode(
+			array(
+				'data' => $result,
+				'list' => $list,
+			)
+		);
 	}
 }

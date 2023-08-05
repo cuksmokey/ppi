@@ -17,6 +17,47 @@
 	}
 ?>
 
+<style>
+	.btn-rpk{
+		background: #e9e9e9;
+		font-weight: bold;
+		padding: 6px 8px;
+		border: 0;
+	}
+
+	.bg-iya {
+		background: #ccc;
+		font-weight: bold;
+	}
+
+	.bg-tdk {
+		background: #fff;
+	}
+
+	.btn-gg {
+		background: none;
+		background: transparent;
+		margin: 0;
+		padding: 0;
+		border:0
+	}
+
+	.not-tt{
+		background: #fff;
+	}
+
+	.plh-tt{
+		background: #0f0;
+		text-decoration: underline;
+		font-weight: bold;
+	}
+
+	.new-tt{
+		font-weight: bold;
+		background: #e9e9e9 !important;
+	}
+</style>
+
 <section class="content">
 	<div class="container-fluid">
 		<!-- Exportable Table -->
@@ -26,19 +67,17 @@
 					<div class="header">
 						<h2>
 							<ol class="breadcrumb">
-								<li class="">MASTER NEW TIMBANGAN</li>
+								<li class="">MASTER TIMBANGAN</li>
 							</ol>
 						</h2>
 
 					</div>
 
 					<div class="body">
-
 						<div class="box-data">
 							<table width="100%">
 								<tr>
 									<td> <button type="button" class="btn-add btn btn-default btn-sm waves-effect">
-											<!-- <i class="material-icons">library_add</i> -->
 											<b><span>NEW</span></b>
 										</button>
 									</td>
@@ -54,7 +93,6 @@
 											<th>ROLL</th>
 											<th>TANGGAL</th>
 											<th>JENIS</th>
-											<!-- <th>Gramage Label</th> -->
 											<th>GSM</th>
 											<th>UKURAN</th>
 											<th>DIAMETER</th>
@@ -70,8 +108,11 @@
 						</div>
 
 						<!-- box form -->
-						<div class="box-form">
-							<div id="judul"></div>
+						<div class="box-form" style="color:#000">
+							<input type="hidden" id="box-data-id-rpk" value="">
+							<input type="hidden" id="box-data-idx" value="">
+							<div class="box-load-rpk"></div>
+
 							<table style="width:100%">
 								<tr>
 									<td style="padding:5px;width:13%"></td>
@@ -83,19 +124,6 @@
 									<td style="padding:3px 0;font-weight:bold">ROLL NUMBER</td>
 									<td style="padding:3px 5px">:</td>
 									<td style="padding:3px 0" colspan="2">
-										<div class="old_roll">
-											<table>
-												<tr>
-													<td><input type="text" id="id1" class="angka form-control" maxlength="5" autocomplete="off"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="id2" class="angka form-control" maxlength="2" autocomplete="off"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="id3" class="angka form-control" maxlength="1" autocomplete="off"></td>
-													<td style="padding:0 5px">/</td>
-													<td><input type="text" id="id4" class="form-control" maxlength="1" autocomplete="off"></td>
-												</tr>
-											</table>
-										</div>
 										<div class="new_roll">
 											<?php
 												if($this->session->userdata('level') == "Rewind1"){
@@ -109,6 +137,7 @@
 													$dkodepm = '';
 												} 
 											?>
+											<input type="hidden" id="id_rpk" value="">
 											<input type="hidden" id="getid" value="">
 											<input type="hidden" id="l-tgl" value="">
 											<input type="hidden" id="l-nm_ker" value="">
@@ -121,15 +150,15 @@
 											<input type="hidden" id="l-status" value="">
 											<table>
 												<tr>
-													<td><input type="text" style="text-align:center" id="id1kode" class="form-control" maxlength="1" autocomplete="off" placeholder="PM" tabindex="1" onkeypress="return hanyaPm(event)" value="<?php echo $kodePm; ?>" <?php echo $dkodepm; ?>></td>
+													<td><input type="text" id="id1kode" class="form-control" maxlength="1" autocomplete="off" placeholder="PM" tabindex="1" onkeypress="return hanyaPm(event)" value="<?php echo $kodePm; ?>"></td>
 													<td style="padding: 0 5px">/</td>
-													<td><input type="text" style="text-align:center" id="id11" class="angka form-control" maxlength="5" autocomplete="off" placeholder="NOMOR ROLL" tabindex="2"></td>
+													<td><input type="text" id="id11" class="angka form-control" maxlength="5" autocomplete="off" placeholder="NOMOR ROLL" tabindex="2"></td>
 													<td style="padding: 0 5px">/</td>
-													<td><input type="text" style="text-align:center" id="id22" class="angka form-control" maxlength="2" autocomplete="off" placeholder="TAHUN"></td>
-													<td><input type="text" style="text-align:center" id="id2bln" class="form-control" maxlength="1" autocomplete="off" placeholder="BULAN" onkeypress="return hanyaBln(event)"></td>
+													<td><input type="text" id="id22" class="angka form-control" maxlength="2" autocomplete="off" placeholder="TAHUN"></td>
+													<td><input type="text" id="id2bln" class="form-control" maxlength="1" autocomplete="off" placeholder="BULAN" onkeypress="return hanyaBln(event)"></td>
 													<td style="padding: 0 5px">/</td>
-													<td><input type="text" style="text-align:center" id="id44" class="angka form-control" maxlength="1" autocomplete="off" placeholder="0" tabindex="3"></td>
-													<td><input type="text" style="text-align:center" id="id4kode" class="form-control" maxlength="1" autocomplete="off" placeholder="F/M/B" tabindex="4" onkeypress="return hanyaHuruf(event)"></td>
+													<td><input type="text" id="id44" class="angka form-control" maxlength="1" autocomplete="off" placeholder="0" tabindex="3"></td>
+													<td><input type="text" id="id4kode" class="form-control" maxlength="1" autocomplete="off" placeholder="F/M/B" tabindex="4" onkeypress="return hanyaHuruf(event)"></td>
 												</tr>
 											</table>
 										</div>
@@ -146,61 +175,24 @@
 									<td style="padding:3px 0;font-weight:bold">NAMA KERTAS</td>
 									<td style="padding:3px 5px">:</td>
 									<td style="padding:3px 0">
-										<select id="nm_ker" class="form-control">
-											<option value="">PILIH</option>
-											<option value="WP">WP</option>
-											<option value="MH">MH</option>
-											<!-- <option value="MI">MI</option> -->
-											<!-- <option value="TL">TL</option> -->
-											<option value="BK">BK</option>
-											<!-- <option value="BL">BL</option> -->
-											<option value="MN">MN</option>
-											<!-- <option value="ML">ML</option> -->
-											<option value="MH COLOR">MH COLOR</option>
-										</select>
-										<!-- <input type="text" class="form-control" id="nm_ker"> -->
+										<input type="text" id="nm_ker" class="form-control new-tt" autocomplete="off" placeholder="PILIH" disabled>
 									</td>
 								</tr>
-								<!-- <tr>
-									<td>Grammage Actual</td>
-									<td style="padding:0 5px">:</td>
-									<td><input type="text" class="form-control" id="g_ac" placeholder="0" autocomplete="off"></td>
-									<td><input type="text" disabled="true" class="form-control" value="GSM" style="width: 30%;border: none"></td>
-								</tr> -->
 								<tr>
 									<td style="padding:3px 0;font-weight:bold">GRAMATURE</td>
 									<td style="padding:3px 5px">:</td>
 									<td style="padding:3px 0">
-										<select id="g_label" class="form-control">
-											<option value="">PILIH</option>
-											<!-- <option value="67">67</option> -->
-											<option value="68">68</option>
-											<option value="70">70</option>
-											<option value="105">105</option>
-											<option value="110">110</option>
-											<option value="115">115</option>
-											<option value="125">125</option>
-											<option value="120">120</option>
-											<option value="140">140</option>
-											<option value="150">150</option>
-											<option value="200">200</option>
-										</select>
+										<input type="text" id="g_label" class="form-control new-tt" autocomplete="off" placeholder="PILIH" disabled>
 									</td>
-									<td style="padding:3px 5px">
-										GSM
-										<!-- <input type="text" disabled="true" class="form-control" value="GSM" style="width: 30%;border: none"> -->
-									</td>
+									<td style="padding:3px 5px">GSM</td>
 								</tr>
 								<tr>
 									<td style="padding:3px 0;font-weight:bold">UKURAN</td>
 									<td style="padding:3px 5px">:</td>
 									<td style="padding:3px 0">
-										<input type="text" onkeypress="return aK(event)" class="form-control" placeholder="0" id="width" maxlength="5" autocomplete="off">
+										<input type="text" id="width" class="form-control new-tt" autocomplete="off" placeholder="PILIH" disabled>
 									</td>
-									<td style="padding:3px 5px">
-										CM
-										<!-- <input type="text" disabled="true" class=" form-control" value="CM" style="width: 30%;border: none"> -->
-									</td>
+									<td style="padding:3px 5px">CM</td>
 								</tr>
 								<tr>
 									<td style="padding:3px 0;font-weight:bold">DIAMATER</td>
@@ -208,10 +200,7 @@
 									<td style="padding:3px 0">
 										<input type="text" class="angka form-control" placeholder="0" id="diameter" maxlength="5" autocomplete="off">
 									</td>
-									<td style="padding:3px 5px">
-										CM
-										<!-- <input type="text" disabled="true" class="form-control" value="CM" style="width: 30%;border: none"> -->
-									</td>
+									<td style="padding:3px 5px">CM</td>
 								</tr>
 								<tr>
 									<td style="padding:3px 0;font-weight:bold">BERAT</td>
@@ -219,31 +208,8 @@
 									<td style="padding:3px 0">
 										<input type="text" class="angka form-control" placeholder="0" id="weight" maxlength="5" autocomplete="off">
 									</td>
-									<td style="padding:3px 5px">
-										KG
-										<!-- <input type="text" disabled="true" class="form-control" value="KG" style="width: 30%;border: none"> -->
-									</td>
+									<td style="padding:3px 5px">KG</td>
 								</tr>
-								<!-- <tr>
-									<td>RCT</td>
-									<td style="padding:0 5px">:</td>
-									<td>
-										<input type="text" class="form-control" placeholder="0" id="rct" autocomplete="off">
-									</td>
-									<td>
-										<input type="text" disabled="true" class="form-control" value="KGF" style="width: 30%;border: none">
-									</td>
-								</tr>
-								<tr>
-									<td>BI</td>
-									<td style="padding:0 5px">:</td>
-									<td>
-										<input type="text" class="form-control" placeholder="0" id="bi" autocomplete="off">
-									</td>
-									<td>
-										<input type="text" disabled="true" class="form-control" value="KPA.m2/G" style="width: 30%;border: none">
-									</td>
-								</tr> -->
 								<tr>
 									<td style="padding:3px 0;font-weight:bold">JOINT</td>
 									<td style="padding:3px 5px">:</td>
@@ -251,20 +217,6 @@
 										<input type="text" class="angka form-control" placeholder="0" id="joint" maxlength="3" autocomplete="off">
 									</td>
 								</tr>
-								<?php if($otorisasi == 'all' || $otorisasi == 'admin') { ?>
-								<tr>
-									<td style="padding:3px 0;font-weight:bold">STATUS</td>
-									<td style="padding:3px 5px">:</td>
-									<td style="padding:3px 0">
-										<select id="cek_status" class="form-control">
-											<option value="">PILIH</option>
-											<option value="0">STOCK</option>
-											<option value="2">PPI</option>
-											<option value="3">BUFFER</option>
-										</select>
-									</td>
-								</tr>
-								<?php } ?>
 								<tr>
 									<td style="padding:3px 0;font-weight:bold">KETERANGAN</td>
 									<td style="padding:3px 5px">:</td>
@@ -277,17 +229,13 @@
 								</tr>
 							</table>
 
-							<!-- <button type="button" class="btn-kembali btn btn-dark btn-sm waves-effect waves-circle waves-float"> -->
 							<button type="button" class="btn-kembali btn btn-dark btn-default btn-sm waves-effect">
-								<!-- <i class="material-icons">arrow_back</i> -->
 								<b><span>BACK</span></b>
 							</button> &nbsp;&nbsp;
 							<button onclick="simpan()" id="btn-simpan" type="button" class="btn bg-light-green btn-sm waves-effect">
-								<!-- <i class="material-icons">save</i> -->
 								<b><span id="txt-btn-simpan">SIMPAN</span></b>
 							</button> &nbsp;&nbsp;
 							<button onclick="kosong()" type="button" class="btn btn-default btn-sm waves-effect">
-								<!-- <i class="material-icons">note_add</i> -->
 								<b><span>TAMBAH DATA</span></b>
 							</button>
 							<a type="button" id="btn-print" target="_blank" class="btn btn-default btn-sm waves-effect waves-float pull-right" style="display: none">
@@ -304,6 +252,19 @@
 		</div>
 	</div>
 </section>
+
+<div class="modal fade bd-example-modal-lg" id="modal-qc-list" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header"></div>
+			<div class="modal-body" style="overflow:auto;white-space:nowrap;">
+				<div class="isi-qc-terjual"></div>
+				<div class="isi-qc-edit"></div>
+			</div>
+			<div class="modal-footer"></div>
+		</div>
+	</div>
+</div>
 
 <script>
 	status = '';
@@ -328,21 +289,108 @@
 		status = 'insert';
 		kosong();
 		getThnBlnRoll();
-		// getmax();
+		// getIRpk();
+		loadRollRpkBaru();
 		$(".box-data").hide();
-		$(".old_roll").hide();
 		$(".new_roll").show();
 		$(".box-form").show();
-		$("#judul").html('<h3>FORM TAMBAH DATA</h3>');
-		// $('.box-form').animateCss('fadeInDown');
 	});
 
 	$(".btn-kembali").click(function() {
 		$(".box-form").hide();
 		$(".box-data").show();
-		// $('.box-data').animateCss('fadeIn');
 		load_data();
 	});
+
+	function loadRollRpkBaru(){
+		$(".box-load-rpk").html('');
+		$("#box-data-id-rpk").val("");
+		$.ajax({
+			url: '<?php echo base_url("Master/loadRollRpkBaru")?>',
+			type: "POST",
+			// data: ({}),
+			success: function(res){
+				data = JSON.parse(res);
+				$("#box-data-id-rpk").val(data.data);
+				$("#box-data-idx").val(data.ll);
+				getIRpk();
+			}
+		});
+	}
+
+	function getIRpk(){
+		id_rpk = $("#box-data-id-rpk").val();
+		i = $("#box-data-idx").val();
+		$(".box-load-rpk").html('MEMUAT RPK...');
+		$.ajax({
+			url: '<?php echo base_url("Master/getIRpk")?>',
+			type: "POST",
+			// data: ({}),
+			success: function(res){
+				$(".box-load-rpk").html(res);
+				btnDetailRpk(i,id_rpk);
+			}
+		});
+	}
+
+	function btnDetailRpk(i,id_rpk){
+		kosong();
+		$(".clr-trpk").html('');
+		$(".clr-gdng").html('');
+		$(".dtl-list-trpk-"+i).html('Loading...');
+		$.ajax({
+			url: '<?php echo base_url("Master/btnDetailRpk")?>',
+			type: "POST",
+			data: ({
+				i,id_rpk,timbangan: 'timbangan'
+			}),
+			success: function(res){
+				$(".dtl-list-trpk-"+i).html(res);
+			}
+		})
+	}
+
+	function plhUkRpk(idx,nm_ker,g_label,width,www){
+		$(".clr-tt").removeClass("plh-tt").addClass("not-tt");
+		$(".dtl-t-rpk-"+idx+'-'+www).removeClass("not-tt").addClass("plh-tt");
+		$("#nm_ker").val(nm_ker);
+		$("#g_label").val(g_label);
+		$("#width").val(width);
+		$("#id_rpk").val(idx);
+	}
+
+	function CekListGdNg(i,idx,id_rpk,stat,width=""){
+		// alert(i+' - '+idx+' - '+id_rpk+' - '+stat+' - '+width);
+		$(".tdllgg").removeClass("bg-iya").addClass("bg-tdk");
+		$(".td-gdng-"+idx+"-"+stat).removeClass("bg-tdk").addClass("bg-iya");
+		$(".list-gd-ng-"+i).html('<div style="margin-bottom:5px">Loading...</div>');
+		$.ajax({
+			url: '<?php echo base_url("Master/CekListGdNg")?>',
+			type: "POST",
+			data: ({
+				i,idx,id_rpk,stat,width
+			}),
+			success: function(res){
+				$(".list-gd-ng-"+i).html(res);
+			}
+		});
+	}
+
+	function cekRollEdit(idroll,roll){
+		$(".isi-qc-terjual").html('');
+		$(".isi-qc-edit").html('Tunggu Sebentar . . .');
+		$("#modal-qc-list").modal("show");
+		$.ajax({
+			url: '<?php echo base_url('Laporan/QCShowEditRoll')?>',
+			type: "POST",
+			data: ({
+				idroll,roll
+			}),
+			success: function(response){
+				$(".isi-qc-edit").html(response);
+			}
+		});
+	}
 
 	function hanyaPm(evt) {
 		let charCode = (evt.which) ? evt.which : event.keyCode
@@ -430,25 +478,19 @@
 		kodepm = $("#id1kode").val();
 		xroll = $("#id11").val();
 		xth = $("#id22").val();
+		xbln = $("#id2bln").val();
 		xno = $("#id44").val();
 		xkode = $("#id4kode").val();
 
-		if (kodepm == '' || kodepm == null) {
-			roll = $("#id1").val() + "/" + $("#id2").val() + "/" + $("#id3").val() + "/" + $("#id4").val();
-		} else {
-			roll = kodepm + "/" + $("#id11").val() + "/" + $("#id22").val() + $("#id2bln").val() + "/" + $("#id44").val() + $("#id4kode").val();
-		}
+		roll = kodepm + "/" + $("#id11").val() + "/" + $("#id22").val() + $("#id2bln").val() + "/" + $("#id44").val() + $("#id4kode").val();
 
 		tgl = $("#tgl").val();
 		nm_ker = $("#nm_ker").val();
-		// g_ac = $("#g_ac").val();
 		g_label = $("#g_label").val();
 		width = $("#width").val();
 		weight = $("#weight").val();
 		diameter = $("#diameter").val();
 		joint = $("#joint").val();
-		// rct = $("#rct").val();
-		// bi = $("#bi").val();
 		cstatus = $("#cek_status").val();
 		ket = $("textarea#ket").val();
 
@@ -463,21 +505,14 @@
 		lket = $("#l-ket").val();
 		lstatus = $("#l-status").val();
 		getid = $("#getid").val();
+		id_rpk = $("#id_rpk").val();
 		// alert(lnm_ker+' - '+lg_label+' - '+lwidth+' - '+lweight+' - '+ldiameter+' - '+ljoint+' - '+lket+' - '+lstatus+' - '+getid);
 
-		if (kodepm == '' || kodepm == null) {
-			if ($("#id1").val() == "" || $("#id2").val() == "" || $("#id3").val() == "" || $("#id4").val() == "") {
-				showNotification("alert-info", "HARAP ISI NOMER ROLL LENGKAP", "bottom", "center", "", "");
-				return;
-			}
-		} else {
-			if (kodepm == "" || $("#id11").val() == "" || $("#id22").val() == "" || $("#id2bln").val() == "" || $("#id44").val() == "" || $("#id4kode").val() == "") {
-				showNotification("alert-info", "HARAP ISI NOMER ROLL LENGKAP", "bottom", "center", "", "");
-				return;
-			}
+		if (kodepm == "" || $("#id11").val() == "" || $("#id22").val() == "" || $("#id2bln").val() == "" || $("#id44").val() == "" || $("#id4kode").val() == "") {
+			showNotification("alert-info", "HARAP ISI NOMER ROLL LENGKAP", "bottom", "center", "", "");
+			return;
 		}
-
-		if (nm_ker == "" || g_label == "" || width == "" || diameter == "" || joint == "") {
+		if (tgl == "" || nm_ker == "" || g_label == "" || width == "" || diameter == "" || joint == "" || id_rpk == "") {
 			showNotification("alert-info", "HARAP LENGKAPI FORM", "bottom", "center", "", "");
 			return;
 		}
@@ -487,11 +522,6 @@
 			showNotification("alert-info", "NOMER ROLL HARUS LENGKAP LIMA DIGIT", "bottom", "center", "", "");
 			return;
 		}
-
-		// if (cstatus == "") {
-		// 	showNotification("alert-info", "HARAP PILIH STATUS ROLL", "bottom", "center", "", "");
-		// 	return;
-		// }
 
 		$("#btn-simpan").prop("disabled", true);
 		$.ajax({
@@ -510,7 +540,7 @@
 				ket: ket,
 				rct: 0,
 				bi: 0,
-				// cstatus: cstatus,
+				id_rpk,
 				cstatus: 1,
 				ltgl: ltgl,
 				lnm_ker: lnm_ker,
@@ -525,6 +555,7 @@
 				kodepm: kodepm,
 				xroll: xroll,
 				xth: xth,
+				xbln: xbln,
 				xno: xno,
 				xkode: xkode,
 				jenis: "Timbangan"
@@ -533,18 +564,17 @@
 			success: function(data) {
 				$("#btn-simpan").prop("disabled", false);
 				if (data.data == true) {
-					// showNotification("alert-success", "BERHASIL", "bottom", "center", "", "");
 					swal("BERHASIL", "", "success");
-					// $("#btn-print").attr("href", "<?php echo base_url('Master/print_timbangan?id=')?>" + roll);
-					// $("#btn-print").show();
-					// $("#btn-print-kcl").attr("href", "<?php echo base_url('Master/print_timbangan2?id=')?>" + roll);
-					// $("#btn-print-kcl").show();
-					status = 'update';
-					$("#txt-btn-simpan").html("UPDATE");
-					// alert(data.getid);
-					tampil_edit(data.getid);
+					if(status == 'insert'){
+						status = 'insert';
+						kosong();
+						loadRollRpkBaru();
+					}else{
+						status = 'update';
+						$("#txt-btn-simpan").html("UPDATE");
+						tampil_edit(data.getid);
+					}
 				} else {
-					// showNotification("alert-danger", data.msg, "bottom", "center", "", "");
 					swal(data.msg, "", "error");
 					status = 'insert';
 				}
@@ -576,62 +606,27 @@
 					$(".box-form").hide();
 					swal("ROLL SUDAH DICETAK, TIDAL BISA EDIT DATA ROLL, HARAP HUB. QC", "", "error");
 					load_data();
-				}
-				// else if(json.status != 0 && json.id_pl != 0){
-				// 	$(".box-data").show();
-				// 	$(".box-form").hide();
-				// 	swal("DATA SUDAH TERJUAL!!!", "", "error");
-				// 	load_data();
-				// }
-				else{
+				}else{
+					$(".box-load-rpk").html('');
 					$(".box-data").hide();
 					$(".box-form").show();
-					$(".new_roll").hide();
-					$(".old_roll").hide();
-					$("#judul").html('<h3>FORM EDIT DATA</h3>');
+					$(".new_roll").show();
 					status = "update";
-					// if(json.ctk == 0){
-					// 	$("#btn-print").attr("href", "<?php echo base_url('Master/print_timbangan?id=')  ?>" + json.roll);
-					// 	$("#btn-print").show();
-					// 	$("#btn-print-kcl").attr("href", "<?php echo base_url('Master/print_timbangan2?id=')  ?>" + json.roll);
-					// 	$("#btn-print-kcl").show();
-					// }
 
 					a = json.roll.split("/");
+					textthnbln = a[2].toString();
+					athn = textthnbln.substr(0, 2);
+					abln = textthnbln.substr(2, 1);
+					textsetr = a[3].toString();
+					anka = textsetr.substr(0, 1);
+					ankod = textsetr.substr(1, 1);
 
-					$("#id1").prop("disabled", true);
-					$("#id2").prop("disabled", true);
-					$("#id3").prop("disabled", true);
-					$("#id4").prop("disabled", true);
-
-					if (json.pm == '' || json.pm == null) {
-						$(".old_roll").show();
-						$(".new_roll").hide();
-
-						$("#id1").val(a[0]);
-						$("#id2").val(a[1]);
-						$("#id3").val(a[2]);
-						$("#id4").val(a[3]);
-					} else {
-						$(".old_roll").hide();
-						$(".new_roll").show();
-
-						textthnbln = a[2].toString();
-						athn = textthnbln.substr(0, 2);
-						abln = textthnbln.substr(2, 1);
-
-						textsetr = a[3].toString();
-						anka = textsetr.substr(0, 1);
-						ankod = textsetr.substr(1, 1);
-
-						// $("#id1kode").val(a[0]).prop("disabled", true);
-						$("#id1kode").val(a[0]);
-						$("#id11").val(a[1]).prop("disabled", true);
-						$("#id22").val(athn).prop("disabled", true);
-						$("#id2bln").val(abln).prop("disabled", true);
-						$("#id44").val(anka).prop("disabled", true);
-						$("#id4kode").val(ankod).prop("disabled", true);
-					}
+					$("#id1kode").val(a[0]);
+					$("#id11").val(a[1]).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
+					$("#id22").val(athn).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
+					$("#id2bln").val(abln).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
+					$("#id44").val(anka).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
+					$("#id4kode").val(ankod).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
 
 					$("#tgl").val(json.tgl);
 					$("#nm_ker").val(json.nm_ker);
@@ -645,6 +640,7 @@
 					$("#bi").val(json.bi);
 					$("#cek_status").val(json.status);
 					$("textarea#ket").val(json.ket);
+					$("#id_rpk").val(json.id_rpk);
 
 					// cocok data lama
 					$("#l-tgl").val(json.tgl);
@@ -684,7 +680,6 @@
 						success: function(data) {
 							if (data == 1) {
 								swal("BERHASIL!", "", "success");
-								// reloadTable();
 								load_data();
 							} else {
 								swal("ROLL SUDAH DICEK/DICETAK, TIDAL BISA HAPUS DATA ROLL, HARAP HUB. QC", "", "error");
@@ -698,33 +693,28 @@
 	}
 
 	function kosong() {
-		$("#judul").html('<h3>FORM TAMBAH DATA</h3>');
 		$("#btn-print").hide();
 		$("#btn-print-kcl").hide();
-		$(".old_roll").hide();
 		$(".new_roll").show();
 
 		status = "insert";
-
-		// $("#acc").prop("disabled",false);
 
 		$("#id1").prop("disabled", false);
 		$("#id2").prop("disabled", false);
 		$("#id3").prop("disabled", false);
 		$("#id4").prop("disabled", false);
 
+		$("#id1kode").prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
 		$("#tgl").val("");
 		$("#id1").val("");
 		$("#id2").val("");
 		$("#id3").val("");
 		$("#id4").val("");
-		$("#id11").val("").prop("disabled", false);
-		$("#id22").val("").prop("disabled", false);
-		$("#id44").val("").prop("disabled", false);
-		$("#id2bln").val("").prop("disabled", false);
-		// $("#id1kode").val("").prop("disabled", false);
-		// $("#id1kode").val("");
-		$("#id4kode").val("").prop("disabled", false);
+		$("#id11").val("").prop("disabled", false).attr('style', 'background:#fff;text-align:center');
+		$("#id22").val("").prop("disabled", false).attr('style', 'background:#fff;text-align:center');
+		$("#id44").val("").prop("disabled", false).attr('style', 'background:#fff;text-align:center');
+		$("#id2bln").val("").prop("disabled", false).attr('style', 'background:#fff;text-align:center');
+		$("#id4kode").val("").prop("disabled", false).attr('style', 'background:#fff;text-align:center');
 		$("#nm_ker").val("");
 		$("#g_ac").val("");
 		$("#g_label").val("");
@@ -737,6 +727,7 @@
 		$("#cek_status").val("");
 		$("#ket").val("");
 
+		$("#id_rpk").val("");
 		$("#getid").val("");
 		$("#l-tgl").val("");
 		$("#l-nm_ker").val("");

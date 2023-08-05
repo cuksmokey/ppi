@@ -6042,9 +6042,9 @@ class Laporan extends CI_Controller {
 					$opsRoll = substr($roll->id_rk,0,6);
                     if(($opsRoll == 'RK.210' || $opsRoll == 'RK.217') && ($roll->status == 1 || $roll->status == 3) && $roll->id_pl != 0){
                         $html .='<td style="border:1px solid #999;text-align:center">'.$oBtn.'PPI'.$cBtn.'</td>';
-                    }else if($roll->status == 2 && $roll->id_pl != 0){
+                    }else if(($roll->status == 2 || $roll->status == 4 || $roll->status == 5) && $roll->id_pl != 0){
                         $html .='<td style="border:1px solid #999;text-align:center">'.$oBtn.'PPI'.$cBtn.'</td>';
-                    }else if(($roll->status == 1 || $roll->status == 3) && $roll->id_pl != 0){
+                    }else if($roll->id_pl != 0){
                         $html .='<td style="border:1px solid #999;text-align:center">'.$oBtn.'TERJUAL'.$cBtn.'</td>';
                     }else{
                         if($roll->status == 0 && $roll->id_pl == 0){
@@ -6113,6 +6113,28 @@ class Laporan extends CI_Controller {
     function QCRollTerjual(){
         $id = $_POST['id'];
         $html='';
+
+		// R P K
+		$qGetRPK = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND id_rpk IS NOT NULL");
+		if($qGetRPK->num_rows() == 0){
+			$html .='';
+		}else{
+			$html .='<table style="margin:0 0 20px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+			$html .='<tr>
+					<td style="font-weight:bold" colspan="2">RPK :</td>
+				</tr>
+				<tr>
+					<td style="padding:5px">tgl</td>
+					<td style="padding:5px">no. rpk</td>
+				</tr>';
+			$idrpk = $qGetRPK->row()->id_rpk;
+			$isiRpk = $this->db->query("SELECT*FROM m_rpk WHERE id='$idrpk'")->row();
+			$html .='<tr>
+				<td style="padding:5px">'.$isiRpk->tgl.'</td>
+				<td style="padding:5px">'.$isiRpk->id_rpk.'</td>
+			</tr>';
+			$html .='</table>';
+		}
         
         $html .='<table style="margin:0 0 20px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id'")->row();
@@ -6299,34 +6321,59 @@ class Laporan extends CI_Controller {
         $id = $_POST['idroll'];
         $roll = $_POST['roll'];
         $html ='';
-
 		$html .='<div style="overflow:auto;white-space:nowrap">';
-		$getRollRk = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll' AND id_pl='0' AND id_rk!=''");
-		if($getRollRk->num_rows() > 0){
+
+		// R P K
+		$qGetRPK = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll' AND id_rpk IS NOT NULL");
+		if($qGetRPK->num_rows() == 0){
+			$html .='';
+		}else{
 			$html .='<table style="margin:0 0 20px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
-			$rollRk = $getRollRk->row();
-			$header = $this->db->query("SELECT a.* FROM pl a
-			INNER JOIN m_timbangan b ON a.id_rk=b.id_rk
-			WHERE a.id_rk='$rollRk->id_rk'
-			GROUP BY a.id_rk");
 			$html .='<tr>
-				<td style="font-weight:bold" colspan="5">RENCANA KIRIM :</td>
-			</tr>
-			<tr>
-				<td style="padding:5px">id rk</td>
-				<td style="padding:5px">tgl rk</td>
-				<td style="padding:5px">customer</td>
-				<td style="padding:5px">nama</td>
-			</tr>
-			<tr>
-				<td style="padding:5px">'.$header->row()->id_rk.'</td>
-				<td style="padding:5px">'.$header->row()->tgl_pl.'</td>
-				<td style="padding:5px">'.$header->row()->nm_perusahaan.'</td>
-				<td style="padding:5px">'.$header->row()->nama.'</td>
+					<td style="font-weight:bold" colspan="2">RPK :</td>
+				</tr>
+				<tr>
+					<td style="padding:5px">tgl</td>
+					<td style="padding:5px">no. rpk</td>
+				</tr>';
+			$idrpk = $qGetRPK->row()->id_rpk;
+			$isiRpk = $this->db->query("SELECT*FROM m_rpk WHERE id='$idrpk'")->row();
+			$html .='<tr>
+				<td style="padding:5px">'.$isiRpk->tgl.'</td>
+				<td style="padding:5px">'.$isiRpk->id_rpk.'</td>
 			</tr>';
 			$html .='</table>';
 		}
+		
+		// RENCANA KIRIM
+		$getRollRk = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll' AND id_rk!=''");
+		if($this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2"){
+			$html .='';
+		}else{
+			if($getRollRk->num_rows() > 0){
+				$html .='<table style="margin:0 0 20px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+				$rollRk = $getRollRk->row();
+				$header = $this->db->query("SELECT a.* FROM pl a INNER JOIN m_timbangan b ON a.id_rk=b.id_rk WHERE a.id_rk='$rollRk->id_rk' GROUP BY a.id_rk");
+				$html .='<tr>
+					<td style="font-weight:bold" colspan="5">RENCANA KIRIM :</td>
+				</tr>
+				<tr>
+					<td style="padding:5px">id rk</td>
+					<td style="padding:5px">tgl rk</td>
+					<td style="padding:5px">customer</td>
+					<td style="padding:5px">nama</td>
+				</tr>
+				<tr>
+					<td style="padding:5px">'.$header->row()->id_rk.'</td>
+					<td style="padding:5px">'.$header->row()->tgl_pl.'</td>
+					<td style="padding:5px">'.$header->row()->nm_perusahaan.'</td>
+					<td style="padding:5px">'.$header->row()->nama.'</td>
+				</tr>';
+				$html .='</table>';
+			}
+		}
 
+		// TAMPIL DATA
         $html .='<table style="margin:0 0 20px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll'")->row();
 		$html .='<tr>
@@ -6376,38 +6423,40 @@ class Laporan extends CI_Controller {
 		$html .='</table>';
 
 		// RETUR
-		$getRollRjt = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll' AND id_pl='0' AND id_rtr IS NOT NULL");
-		if($getRollRjt->num_rows() == 0){
-			$html .= '';
-		}else{
-			$grjt = $getRollRjt->row()->id_rtr;
-			$qGetPlRetur = $this->db->query("SELECT*FROM pl WHERE id_rk='$grjt' GROUP BY id_rk");
+		if($this->session->userdata('level') != "Rewind1" || $this->session->userdata('level') != "Rewind2"){
+			$getRollRjt = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll' AND id_pl='0' AND id_rtr IS NOT NULL");
+			if($getRollRjt->num_rows() == 0){
+				$html .= '';
+			}else{
+				$grjt = $getRollRjt->row()->id_rtr;
+				$qGetPlRetur = $this->db->query("SELECT*FROM pl WHERE id_rk='$grjt' GROUP BY id_rk");
 
-			$html .='<table style="margin:0 0 15px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
-			$html .='<tr>
-					<td style="font-weight:bold" colspan="4">RETUR KIRIMAN DARI :</td>
-				</tr>
-				<tr>
-				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">TANGGAL KIRIM</td>
-				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">TANGGAL DI RETUR</td>
-				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NO. SURAT JALAN</td>
-				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NAMA</td>
-				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NAMA PERUSAHAAN</td>
-			</tr>';
-			$hariKirim = strtoupper($this->m_fungsi->getHariIni($qGetPlRetur->row()->tgl));
-			$tglKirim = strtoupper($this->m_fungsi->tglInd_skt($qGetPlRetur->row()->tgl));
+				$html .='<table style="margin:0 0 15px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
+				$html .='<tr>
+						<td style="font-weight:bold" colspan="4">RETUR KIRIMAN DARI :</td>
+					</tr>
+					<tr>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">TANGGAL KIRIM</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">TANGGAL DI RETUR</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NO. SURAT JALAN</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NAMA</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NAMA PERUSAHAAN</td>
+				</tr>';
+				$hariKirim = strtoupper($this->m_fungsi->getHariIni($qGetPlRetur->row()->tgl));
+				$tglKirim = strtoupper($this->m_fungsi->tglInd_skt($qGetPlRetur->row()->tgl));
 
-			$hariRetur = strtoupper($this->m_fungsi->getHariIni($getRollRjt->row()->tgl));
-			$tglRetur = strtoupper($this->m_fungsi->tglInd_skt($getRollRjt->row()->tgl));
+				$hariRetur = strtoupper($this->m_fungsi->getHariIni($getRollRjt->row()->tgl));
+				$tglRetur = strtoupper($this->m_fungsi->tglInd_skt($getRollRjt->row()->tgl));
 
-			$html .='<tr>
-				<td style="padding:5px;border:1px solid #888">'.$hariKirim.' - '.$tglKirim.'</td>
-				<td style="padding:5px;border:1px solid #888">'.$hariRetur.' - '.$tglRetur.'</td>
-				<td style="padding:5px;border:1px solid #888">'.trim($qGetPlRetur->row()->no_surat).'</td>
-				<td style="padding:5px;border:1px solid #888">'.$qGetPlRetur->row()->nama.'</td>
-				<td style="padding:5px;border:1px solid #888">'.$qGetPlRetur->row()->nm_perusahaan.'</td>
-			</tr>';
-			$html .= '</table>';
+				$html .='<tr>
+					<td style="padding:5px;border:1px solid #888">'.$hariKirim.' - '.$tglKirim.'</td>
+					<td style="padding:5px;border:1px solid #888">'.$hariRetur.' - '.$tglRetur.'</td>
+					<td style="padding:5px;border:1px solid #888">'.trim($qGetPlRetur->row()->no_surat).'</td>
+					<td style="padding:5px;border:1px solid #888">'.$qGetPlRetur->row()->nama.'</td>
+					<td style="padding:5px;border:1px solid #888">'.$qGetPlRetur->row()->nm_perusahaan.'</td>
+				</tr>';
+				$html .= '</table>';
+			}
 		}
 
         $getData = $this->db->query("SELECT*FROM m_roll_edit WHERE roll='$roll'");

@@ -19,7 +19,7 @@
 ?>
 
 <style>
-	.box-data, .box-close,.box-form {
+	.box-data, .box-close {
 		padding-top:15px;
 		font-size:12px;
 		color: #000
@@ -39,6 +39,54 @@
 
 	.edrpk {
 		position:absolute;top:0;right:0;left:0;bottom:0;border:0;margin:0;padding:5px;text-align:center;background:none;
+	}
+
+	.bg-iya {
+		background: #ccc;
+		font-weight: bold;
+	}
+
+	.bg-tdk {
+		background: #fff;
+	}
+
+	.bg-iyh {
+		text-decoration: underline;
+	}
+
+	.btn-gg {
+		background: none;
+		background: transparent;
+		margin: 0;
+		padding: 0;
+		border:0
+	}
+
+	.btn-gg2 {
+		background: none;
+		background: transparent;
+		margin: 0;
+		padding: 5px 0;
+		border:0
+	}
+
+	.btn-gg-iya {
+		background: #eee;
+		margin: 0;
+		padding: 5px;
+		border:0;
+		border-left: 3px solid #0f0;
+	}
+
+	.lbl-besar{
+		text-decoration: none;
+		padding: 5px;
+		color:#000;
+		font-weight: bold;
+	}
+
+	.lbl-besar:hover{
+		color:#000;
 	}
 </style>
 
@@ -61,18 +109,27 @@
 						<div class="box-btn" style="font-size:12px;font-weight:bold;color:#000">
 							<button onclick="btnOpsi('data')">BERJALAN</button>
 							<button onclick="btnOpsi('close')">CLOSE</button>
-							<button onclick="btnOpsi('add')">ADD RPK BARU</button>
+							<?php if($otorisasi == "all" || $otorisasi == "qc") {?>
+								<button onclick="btnOpsi('add')">ADD RPK BARU</button>
+							<?php }?>
 						</div>
 
-						<div class="box-data" style="overflow:auto;white-space:nowrap;"></div>
+						<div class="box-data" style="overflow:auto;white-space:nowrap;">
+							<!-- <div class="box-data-roll"></div> -->
+							<input type="hidden" id="box-data-id-rpk" value="">
+							<input type="hidden" id="box-data-idx" value="">
+							<div class="box-data-list">
+							</div>
+						</div>
 
 						<div class="box-close" style="overflow:auto;white-space:nowrap;">
 							CLOSE
 						</div>
 
 						<div class="box-from-loading"></div>
-						<div class="box-form" style="overflow:auto;white-space:nowrap;">
-							<table>
+						<div class="box-form" style="font-size:12px;color:#000;overflow:auto;white-space:nowrap;">
+							<div style="margin-bottom:15px;font-size:12px;font-weight:bold;color:#000"><button onclick="btnOpsi('data')">KEMBALI</button></div>
+							<table class="box-form-kop">
 								<tr>
 									<td style="padding:5px 0;font-weight:bold">TANGGAL</td>
 									<td style="padding:5px;text-align:center">:</td>
@@ -135,6 +192,8 @@
 								<tr>
 									<td colspan="3" style="padding:15px 0"></td>
 								</tr>
+							</table>
+							<table>
 								<tr>
 									<td style="padding:5px 0;font-weight:bold">ITEM</td>
 									<td style="padding:5px;text-align:center">:</td>
@@ -214,6 +273,19 @@
 	</div>
 </section>
 
+<div class="modal fade bd-example-modal-lg" id="modal-qc-list" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header"></div>
+			<div class="modal-body" style="overflow:auto;white-space:nowrap;">
+				<div class="isi-qc-terjual"></div>
+				<div class="isi-qc-edit"></div>
+			</div>
+			<div class="modal-footer"></div>
+		</div>
+	</div>
+</div>
+
 <script>
 	status = '';
 	otorisasi = $("#otorisasi").val();
@@ -223,7 +295,8 @@
 		$(".box-data").show();
 		$(".box-close").hide();
 		$(".box-form").hide();
-		loadDataRpk();
+		loadRollRpkBaru();
+		// loadDataRpk();
 	});
 
 	function kosong() {
@@ -259,36 +332,62 @@
 	function btnOpsi(opsi){
 		kosong();
 		// alert(status);
+		$(".box-btn").show();
 		if(opsi == 'data'){
 			$(".box-data").show();
 			$(".box-close").hide();
 			$(".box-form").hide();
-			loadDataRpk();
+			loadRollRpkBaru();
+			// loadDataRpk();
 		}else if(opsi == 'close'){
 			$(".box-data").hide();
 			$(".box-close").show();
 			$(".box-form").hide();
 		}else{
+			$(".box-btn").hide();
 			$(".box-data").hide();
 			$(".box-close").hide();
 			$(".box-form").show();
+			$(".box-form-kop").show();
 		}
 	}
 
+	function loadRollRpkBaru(){
+		$("#box-data-id-rpk").val("");
+		// $(".box-data-roll").html('Loading...');
+		$.ajax({
+			url: '<?php echo base_url("Master/loadRollRpkBaru")?>',
+			type: "POST",
+			// data: ({}),
+			success: function(res){
+				data = JSON.parse(res);
+				$("#box-data-id-rpk").val(data.data);
+				$("#box-data-idx").val(data.ll);
+				loadDataRpk();
+			}
+		});
+	}
+
 	function loadDataRpk(){
-		$(".box-data").html('Loading...');
+		id_rpk = $("#box-data-id-rpk").val();
+		i = $("#box-data-idx").val();
+		$(".box-data-list").html('Loading...');
 		$.ajax({
 			url: '<?php echo base_url("Master/loadDataRpk")?>',
 			type: "POST",
 			// data: ({})
 			success: function(res){
-				$(".box-data").html(res);
+				$(".box-data-list").html(res);
+				if(id_rpk != '' && i != ''){
+					btnDetailRpk(i,id_rpk)
+				}
 			}
 		});
 	}
 
 	function btnDetailRpk(i,id_rpk){
 		$(".clr-dtl").html('');
+		$(".clr-gdng").html('');
 		$(".dtl-list-rpk-"+i).html('Loading...');
 		$.ajax({
 			url: '<?php echo base_url("Master/btnDetailRpk")?>',
@@ -307,6 +406,8 @@
 		$("#tampung-id_rpk").val(id_rpk);
 		$(".cart-list-rpk").load("<?php echo base_url('Master/destroyCartRpk') ?>");
 		$(".box-data").hide();
+		$(".box-btn").hide();
+		$(".box-form-kop").hide();
 		$(".box-from-loading").html('<div style="padding:5px 0">Loading...</div>');
 		$.ajax({
 			url: '<?php echo base_url("Master/btnEditRpk")?>',
@@ -343,6 +444,65 @@
 			}
 		});
 	}
+
+	function CekListGdNg(i,idx,id_rpk,stat,width=""){
+		// alert(i+' - '+idx+' - '+id_rpk+' - '+stat+' - '+width);
+		$(".tdllgg").removeClass("bg-iya").addClass("bg-tdk");
+		$(".td-gdng-"+idx+"-"+stat).removeClass("bg-tdk").addClass("bg-iya");
+		$(".list-gd-ng-"+i).html('<div style="margin-bottom:5px">Loading...</div>');
+		$.ajax({
+			url: '<?php echo base_url("Master/CekListGdNg")?>',
+			type: "POST",
+			data: ({
+				i,idx,id_rpk,stat,width
+			}),
+			success: function(res){
+				$(".list-gd-ng-"+i).html(res);
+			}
+		});
+	}
+
+	function plhCekUkuran(width){
+		$(".bbb").removeClass("btn-gg-iya").addClass("btn-gg");
+		$(".ggww-"+width).removeClass("btn-gg-iya").addClass("btn-gg-iya");
+
+		$(".clk").removeClass("bg-iyh").addClass("bg-tdk");
+		$(".uk-"+width).removeClass("bg-tdk").addClass("bg-iyh");
+	}
+
+	function cekRollEdit(idroll,roll){
+		$(".isi-qc-terjual").html('');
+		$(".isi-qc-edit").html('Tunggu Sebentar . . .');
+		$("#modal-qc-list").modal("show");
+		$.ajax({
+			url: '<?php echo base_url('Laporan/QCShowEditRoll')?>',
+			type: "POST",
+			data: ({
+				idroll,roll
+			}),
+			success: function(response){
+				$(".isi-qc-edit").html(response);
+			}
+		});
+	}
+
+	function cek_roll(id){
+		$(".isi-qc-edit").html('');
+		$(".isi-qc-terjual").html('Tunggu Sebentar . . .');
+		$("#modal-qc-list").modal("show");
+		$.ajax({
+			url: '<?php echo base_url('Laporan/QCRollTerjual') ?>',
+			type: "POST",
+			data: ({
+				id: id
+			}),
+			success: function(response) {
+				$(".isi-qc-terjual").html(response);
+			}
+		});
+	}
+
+	//
 
 	function aksiEditRpk(idx,id_rpk){
 		// toString().length
@@ -409,7 +569,39 @@
 	}
 
 	function aksiHapusRpk(idx,id_rpk){
-		alert(idx+' - '+id_rpk);
+		swal({
+			title: "Apakah Anda Yakin ?",
+			text: "",
+			type: "warning",
+			showCancelButton: true,
+			confirmButtonClass: "btn-danger",
+			confirmButtonText: "Ya",
+			cancelButtonText: "Batal",
+			closeOnConfirm: false,
+			closeOnCancel: false
+		},
+		function(isConfirm) {
+			if(isConfirm) {
+				$.ajax({
+					url: '<?php echo base_url("Master/aksiHapusRpk")?>',
+					type: "POST",
+					data: ({
+						idx,id_rpk
+					}),
+					success: function(res){
+						data = JSON.parse(res);
+						swal("TERHAPUS!!", "", "success");
+						if(data.list == 'ada'){
+							btnEditRpk(id_rpk);
+						}else{
+							btnOpsi('data');
+						}
+					}
+				});
+			}else{
+				swal("BATAL DIHAPUS!", "", "error");
+			}
+		});
 	}
 
 	//
@@ -725,22 +917,30 @@
 
 	function simpanCartRpk(){
 		tId_rpk = $("#tampung-id_rpk").val();
-		// alert(status+' '+tId_rpk);
+		// alert(tId_rpk+' ss:'+status);
 		$(".btn-s-rpk").prop("disabled", true);
 		$.ajax({
 			url: '<?php echo base_url("Master/simpanCartRpk")?>',
+			data: ({
+				tId_rpk,status
+			}),
 			type: "POST",
 			success: function(res){
+				data = JSON.parse(res);
 				$(".btn-s-rpk").prop("disabled", false);
-				swal("BERHASIL!!!", "", "success");
-				btnEditRpk(tId_rpk);
-				$(".nm_ker").prop("disabled", true).attr('style', 'background:#e9e9e9');
-				$(".g_label").prop("disabled", true).attr('style', 'background:#e9e9e9');
-				$(".ii").val("").prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
-				$("#trimw").val(0);
-				$("#times").val("");
-				$("#ref").val("");
-				// kosong();
+				if(data.data == true){
+					swal("BERHASIL!!!", "", "success");
+					btnEditRpk(tId_rpk);
+					$(".nm_ker").prop("disabled", true).attr('style', 'background:#e9e9e9');
+					$(".g_label").prop("disabled", true).attr('style', 'background:#e9e9e9');
+					$(".ii").val("").prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
+					$("#trimw").val(0);
+					$("#times").val("");
+					$("#ref").val("");
+				}else{
+					swal("NO. RPK SUDAH TERPAKAI!!!", "", "error");
+					return;
+				}
 			}
 		});
 	}

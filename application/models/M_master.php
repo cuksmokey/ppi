@@ -220,10 +220,11 @@ class M_master extends CI_Model{
 			'weight' => $_POST['weight'],
 			'diameter' => $_POST['diameter'],
 			'joint' => $_POST['joint'],
+			'id_rpk' => $_POST['id_rpk'],
 			'rct' => $_POST['rct'],
 			'bi' => $_POST['bi'],
 			'status' => $_POST['cstatus'],
-			'ket' => $_POST['ket'],
+			'ket' => strtoupper($_POST['ket']),
 			'created_at' => date("Y-m-d H:i:s"),
 			'created_by' => $this->session->userdata('username'),
 			'pm' => $_POST['kodepm']
@@ -275,7 +276,7 @@ class M_master extends CI_Model{
         $this->db->set('weight', $_POST['weight']);
         $this->db->set('diameter', $_POST['diameter']);
         $this->db->set('joint', $_POST['joint']);
-        $this->db->set('ket', $_POST['ket']);
+        $this->db->set('ket', strtoupper($_POST['ket']));
         // $this->db->set('rct', $_POST['rct']);
         // $this->db->set('bi', $_POST['bi']);
         $this->db->set('status', $_POST['cstatus']);
@@ -991,7 +992,7 @@ class M_master extends CI_Model{
             $this->db->set('diameter', $_POST['diameter']);
             $this->db->set('weight', $_POST['weight']);
             $this->db->set('joint', $_POST['joint']);
-            $this->db->set('ket', $_POST['ket']);
+            $this->db->set('ket', strtoupper($_POST['ket']));
             $this->db->set('status', $_POST['status']);
         }
         
@@ -1790,7 +1791,7 @@ class M_master extends CI_Model{
 				'item4' => $item4,
 				'item5' => $item5,
 				'x' => $data['options']['times'],
-				'ref' => $data['options']['ref'],
+				'ref' => strtoupper($data['options']['ref']),
 				'created_at' => date("Y-m-d H:i:s"),
 				'created_by' => $this->session->userdata('username'),
 			);
@@ -1825,5 +1826,11 @@ class M_master extends CI_Model{
 		$result = $this->db->update('m_rpk');
 
 		return $result;
+	}
+
+	function aksiHapusRpk(){
+		$this->db->where('id', $_POST["idx"]);
+		$this->db->where('id_rpk', $_POST["id_rpk"]);
+		return $this->db->delete('m_rpk');
 	}
 }

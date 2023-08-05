@@ -113,21 +113,16 @@
             <div class="menu">
                 <ul class="list">
                     <li class="header">MAIN NAVIGATION</li>
-                    <?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
-						<!-- <li>
-							<a href="<?php echo base_url() ?>">
-								<span>Dashboard</span>
-							</a>
-						</li> -->
+                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG") { ?>
 						<li>
 							<a href="<?php echo base_url('Master/RPK') ?>">
-								<!-- <i class="material-icons">list</i> -->
 								<span>R P K</span>
 							</a>
 						</li>
+					<?php } ?>
+					<?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
 						<li>
 							<a href="<?php echo base_url('Master/ListTungguKirim') ?>">
-								<!-- <i class="material-icons">list</i> -->
 								<span>List Tunggu Kirim</span>
 							</a>
 						</li>
@@ -141,14 +136,12 @@
                         <?php } ?>
                         <ul class="ml-menu">
 							<?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2") { ?>
+								<!-- Master/Timbangan -->
 								<li>
-									<a href="<?php echo base_url('Master/Timbangan') ?>">Timbangan</a>
-								</li>
+                                    <a href="<?php echo base_url('Master/NewTimbangan') ?>">Timbangan</a>
+                                </li>
 							<?php } ?>
                             <?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
-								<li>
-                                    <a href="<?php echo base_url('Master/NewTimbangan') ?>">New Timbangan</a>
-                                </li>
                                 <li>
                                     <a href="<?php echo base_url('Master/Perusahaan') ?>">Perusahaan</a>
                                 </li>
