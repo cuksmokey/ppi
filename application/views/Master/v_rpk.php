@@ -107,28 +107,29 @@
 						<input type="hidden" name="otorisasi" id="otorisasi" value="<?php echo $otorisasi; ?>">
 
 						<div class="box-btn" style="font-size:12px;font-weight:bold;color:#000">
-							<button onclick="btnOpsi('data')">BERJALAN</button>
+							<button onclick="btnOpsi('data')">OPEN</button>
 							<button onclick="btnOpsi('close')">CLOSE</button>
-							<?php if($otorisasi == "all" || $otorisasi == "qc") {?>
+							<?php if($otorisasi == "all" || $otorisasi == "qc") { ?>
 								<button onclick="btnOpsi('add')">ADD RPK BARU</button>
-							<?php }?>
+							<?php } ?>
 						</div>
 
 						<div class="box-data" style="overflow:auto;white-space:nowrap;">
 							<!-- <div class="box-data-roll"></div> -->
 							<input type="hidden" id="box-data-id-rpk" value="">
 							<input type="hidden" id="box-data-idx" value="">
-							<div class="box-data-list">
-							</div>
+							<div class="box-data-list-pm"></div>
+							<div class="box-data-list" style="margin-top:5px"></div>
 						</div>
 
 						<div class="box-close" style="overflow:auto;white-space:nowrap;">
-							CLOSE
+							<div class="box-close-list-pm"></div>
+							<div class="box-close-list"></div>
 						</div>
 
 						<div class="box-from-loading"></div>
 						<div class="box-form" style="font-size:12px;color:#000;overflow:auto;white-space:nowrap;">
-							<div style="margin-bottom:15px;font-size:12px;font-weight:bold;color:#000"><button onclick="btnOpsi('data')">KEMBALI</button></div>
+							<div style="margin-bottom:15px;font-size:12px;font-weight:bold;color:#000"><button onclick="btnOpsi('kembali')">KEMBALI</button></div>
 							<table class="box-form-kop">
 								<tr>
 									<td style="padding:5px 0;font-weight:bold">TANGGAL</td>
@@ -295,7 +296,7 @@
 		$(".box-data").show();
 		$(".box-close").hide();
 		$(".box-form").hide();
-		loadRollRpkBaru();
+		// loadRollRpkBaru();
 		// loadDataRpk();
 	});
 
@@ -325,6 +326,11 @@
 
 		$(".cart-list-rpk").load("<?php echo base_url('Master/destroyCartRpk') ?>");
 		$(".edit-list-rpk").html('');
+
+		$(".box-data-list-pm").html('');
+		$(".box-data-list").html('');
+		$(".box-close-list-pm").html('');
+		$(".box-close-list").html('');
 	}
 
 	// 
@@ -337,11 +343,15 @@
 			$(".box-data").show();
 			$(".box-close").hide();
 			$(".box-form").hide();
-			loadRollRpkBaru();
-			// loadDataRpk();
+			loadPM('open');
 		}else if(opsi == 'close'){
 			$(".box-data").hide();
 			$(".box-close").show();
+			$(".box-form").hide();
+			loadPM('close');
+		}else if(opsi == 'kembali'){
+			$(".box-data").show();
+			$(".box-close").hide();
 			$(".box-form").hide();
 		}else{
 			$(".box-btn").hide();
@@ -352,40 +362,106 @@
 		}
 	}
 
-	function loadRollRpkBaru(){
-		$("#box-data-id-rpk").val("");
-		// $(".box-data-roll").html('Loading...');
+	// CLOSE
+
+	function loadCloseTahunRpk(pm){
+		$(".box-close-list").html('Loading...');
 		$.ajax({
-			url: '<?php echo base_url("Master/loadRollRpkBaru")?>',
+			url: '<?php echo base_url("Master/loadCloseTahunRpk")?>',
 			type: "POST",
-			// data: ({}),
+			data: ({
+				pm
+			}),
 			success: function(res){
-				data = JSON.parse(res);
-				$("#box-data-id-rpk").val(data.data);
-				$("#box-data-idx").val(data.ll);
-				loadDataRpk();
+				$(".box-close-list").html(res);
 			}
 		});
 	}
 
-	function loadDataRpk(){
-		id_rpk = $("#box-data-id-rpk").val();
-		i = $("#box-data-idx").val();
-		$(".box-data-list").html('Loading...');
+	function btnCloseBulanRpk(pm,tahun){
+		$(".clr-bln").html('');
+		$(".list-bulan-"+tahun).html('Loading...');
+		$.ajax({
+			url: '<?php echo base_url("Master/btnCloseBulanRpk")?>',
+			type: "POST",
+			data: ({
+				pm,tahun
+			}),
+			success: function(res){
+				$(".list-bulan-"+tahun).html(res);
+			}
+		});
+	}
+
+	// OPEN
+
+	function loadPM(opsi){
+		$(".box-data-list-pm").html('');
+		$(".box-data-list").html('');
+		$.ajax({
+			url: '<?php echo base_url("Master/loadPM")?>',
+			type: "POST",
+			data: ({
+				opsi
+			}),
+			success: function(res){
+				(opsi == 'open') ? $(".box-data-list-pm").html(res) : $(".box-close-list-pm").html(res);
+			}
+		});
+	}
+	
+	function loadRollRpkBaru(pm){
+		// $(".box-data-list").html('');
+		$("#box-data-id-rpk").val("");
+		$("#box-data-idx").val("");
+		$.ajax({
+			url: '<?php echo base_url("Master/loadRollRpkBaru")?>',
+			type: "POST",
+			data: ({
+				pm
+			}),
+			success: function(res){
+				data = JSON.parse(res);
+				$("#box-data-id-rpk").val(data.data);
+				$("#box-data-idx").val(data.ll);
+				loadDataRpk(pm,'','','open');
+			}
+		});
+	}
+
+	function loadDataRpk(pm = '',tahun = '', bulan = '', stat = 'open'){
+		// alert(tahun+' - '+bulan+' - '+stat);
+		if(tahun == '' && bulan == '' && stat == 'open'){
+			id_rpk = $("#box-data-id-rpk").val();
+			i = $("#box-data-idx").val();
+			$(".box-data-list").html('Loading...');
+		}else{
+			$(".clr-cls-dtl").html('');
+			$(".detail-list-close-"+tahun+'-'+bulan).html('Loading');
+		}
 		$.ajax({
 			url: '<?php echo base_url("Master/loadDataRpk")?>',
 			type: "POST",
-			// data: ({})
+			data: ({
+				pm,tahun,bulan,stat
+			}),
 			success: function(res){
-				$(".box-data-list").html(res);
-				if(id_rpk != '' && i != ''){
-					btnDetailRpk(i,id_rpk)
+				if(stat == 'open'){
+					$(".box-data-list").html(res);
+					if(id_rpk != '' && i != ''){
+						btnDetailRpk(i,id_rpk);
+					}
+				}else{
+					$(".detail-list-close-"+tahun+'-'+bulan).html(res);
+					// alert('nice');
 				}
+				
 			}
 		});
 	}
 
 	function btnDetailRpk(i,id_rpk){
+		// alert(i+' - '+id_rpk+' - '+tahun+' - '+sta
 		$(".clr-dtl").html('');
 		$(".clr-gdng").html('');
 		$(".dtl-list-rpk-"+i).html('Loading...');
@@ -398,7 +474,7 @@
 			success: function(res){
 				$(".dtl-list-rpk-"+i).html(res);
 			}
-		})
+		});
 	}
 
 	function btnEditRpk(id_rpk){
@@ -469,6 +545,40 @@
 		$(".clk").removeClass("bg-iyh").addClass("bg-tdk");
 		$(".uk-"+width).removeClass("bg-tdk").addClass("bg-iyh");
 	}
+
+	//
+
+	function btnAksiListRpk(i,idx,id_rpk,stat){
+		// alert(i+' - '+idx+' - '+id_rpk+' - '+stat);
+		$.ajax({
+			url: '<?php echo base_url("Master/btnAksiListRpk")?>',
+			type: "POST",
+			data: ({
+				i,idx,id_rpk,stat
+			}),
+			success: function(res){
+				data = JSON.parse(res);
+				swal(data.msg, "", "success");
+				btnDetailRpk(i,id_rpk);
+			}
+		});
+	}
+
+	function btnCloseListRpk(i,idx,id_rpk){
+		$.ajax({
+			url: '<?php echo base_url("Master/btnCloseListRpk")?>',
+			type: "POST",
+			data: ({
+				i,idx,id_rpk
+			}),
+			success: function(res){
+				swal("BERHASIL CLOSE RPK", "", "success");
+				btnDetailRpk(i,id_rpk);
+			}
+		})
+	}
+
+	//
 
 	function cekRollEdit(idroll,roll){
 		$(".isi-qc-terjual").html('');

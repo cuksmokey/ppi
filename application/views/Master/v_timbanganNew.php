@@ -18,11 +18,19 @@
 ?>
 
 <style>
-	.btn-rpk{
-		background: #e9e9e9;
+	.btn-rpk, .btn-tdk {
+		background: #ccc;
 		font-weight: bold;
 		padding: 6px 8px;
 		border: 0;
+	}
+
+	.btn-pilih{
+		background: #fff;
+		font-weight: bold;
+		padding: 6px 8px;
+		border: 3px solid #0f0;
+		border-width: 0 0 0 4px;
 	}
 
 	.bg-iya {
@@ -111,7 +119,7 @@
 						<div class="box-form" style="color:#000">
 							<input type="hidden" id="box-data-id-rpk" value="">
 							<input type="hidden" id="box-data-idx" value="">
-							<div class="box-load-rpk"></div>
+							<div class="box-load-rpk" style="padding-bottom:10px;border-bottom: 8px solid #aaa;"></div>
 
 							<table style="width:100%">
 								<tr>
@@ -235,15 +243,9 @@
 							<button onclick="simpan()" id="btn-simpan" type="button" class="btn bg-light-green btn-sm waves-effect">
 								<b><span id="txt-btn-simpan">SIMPAN</span></b>
 							</button> &nbsp;&nbsp;
-							<button onclick="kosong()" type="button" class="btn btn-default btn-sm waves-effect">
+							<!-- <button onclick="kosong()" type="button" class="btn btn-default btn-sm waves-effect">
 								<b><span>TAMBAH DATA</span></b>
-							</button>
-							<a type="button" id="btn-print" target="_blank" class="btn btn-default btn-sm waves-effect waves-float pull-right" style="display: none">
-								<b><span>LABEL BESAR</span></b>
-							</a> 
-							<a type="button" id="btn-print-kcl" target="_blank" class="btn btn-default btn-sm waves-effect waves-float pull-right" style="display: none">
-								<b><span>LABEL KECIL</span></b> 
-							</a>
+							</button> -->
 						</div>
 					</div>
 				</div>
@@ -313,19 +315,21 @@
 				data = JSON.parse(res);
 				$("#box-data-id-rpk").val(data.data);
 				$("#box-data-idx").val(data.ll);
-				getIRpk();
+				getIRpk(data.kd_pm);
 			}
 		});
 	}
 
-	function getIRpk(){
+	function getIRpk(kd_pm){
 		id_rpk = $("#box-data-id-rpk").val();
 		i = $("#box-data-idx").val();
 		$(".box-load-rpk").html('MEMUAT RPK...');
 		$.ajax({
 			url: '<?php echo base_url("Master/getIRpk")?>',
 			type: "POST",
-			// data: ({}),
+			data: ({
+				kd_pm
+			}),
 			success: function(res){
 				$(".box-load-rpk").html(res);
 				btnDetailRpk(i,id_rpk);
@@ -334,6 +338,8 @@
 	}
 
 	function btnDetailRpk(i,id_rpk){
+		$(".btn-all").removeClass("btn-pilih").addClass("btn-tdk");
+		$(".btn-rpk-"+i).removeClass("btn-tdk").addClass("btn-pilih");
 		kosong();
 		$(".clr-trpk").html('');
 		$(".clr-gdng").html('');
@@ -350,13 +356,44 @@
 		})
 	}
 
-	function plhUkRpk(idx,nm_ker,g_label,width,www){
-		$(".clr-tt").removeClass("plh-tt").addClass("not-tt");
-		$(".dtl-t-rpk-"+idx+'-'+www).removeClass("not-tt").addClass("plh-tt");
-		$("#nm_ker").val(nm_ker);
-		$("#g_label").val(g_label);
-		$("#width").val(width);
-		$("#id_rpk").val(idx);
+	function plhUkRpk(i,idx,id_rpk,nm_ker,g_label,width,www){
+		$.ajax({
+			url: '<?php echo base_url("Master/plhUkRpk")?>',
+			type: "POST",
+			data: ({
+				idx,id_rpk,nm_ker,g_label,width,www
+			}),
+			success: function(res){
+				data = JSON.parse(res);
+				if(data.data == true){
+					$(".clr-tt").removeClass("plh-tt").addClass("not-tt");
+					$(".dtl-t-rpk-"+idx+'-'+www).removeClass("not-tt").addClass("plh-tt");
+					$("#nm_ker").val(nm_ker);
+					$("#g_label").val(g_label);
+					$("#width").val(width);
+					$("#id_rpk").val(idx);
+				}else{
+					swal("LIST INI SUDAH DI CLOSE!! HUB. QC", "", "error");
+					btnDetailRpk(i,id_rpk);
+				}
+			}
+		});
+		
+	}
+
+	function btnAksiListRpk(i,idx,id_rpk,stat){
+		$.ajax({
+			url: '<?php echo base_url("Master/btnAksiListRpk")?>',
+			type: "POST",
+			data: ({
+				i,idx,id_rpk,stat
+			}),
+			success: function(res){
+				data = JSON.parse(res);
+				swal(data.msg, "", "success");
+				btnDetailRpk(i,id_rpk);
+			}
+		});
 	}
 
 	function CekListGdNg(i,idx,id_rpk,stat,width=""){
@@ -693,8 +730,6 @@
 	}
 
 	function kosong() {
-		$("#btn-print").hide();
-		$("#btn-print-kcl").hide();
 		$(".new_roll").show();
 
 		status = "insert";

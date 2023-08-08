@@ -5604,7 +5604,7 @@ class Laporan extends CI_Controller {
 
 			// TAMPIL SEMUA DATA UKURAN
             $getWidth = $this->db->query("SELECT width FROM m_timbangan
-            WHERE $Btgl $statusIdPl $where $no120
+            WHERE $Btgl $statusIdPl $where
             -- AND width BETWEEN '165' AND '170' # TESTING
             GROUP BY width");
             $i = 0;
@@ -6124,14 +6124,16 @@ class Laporan extends CI_Controller {
 					<td style="font-weight:bold" colspan="2">RPK :</td>
 				</tr>
 				<tr>
-					<td style="padding:5px">tgl</td>
-					<td style="padding:5px">no. rpk</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">TANGGAL</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NO. RPK</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">REFERENSI</td>
 				</tr>';
 			$idrpk = $qGetRPK->row()->id_rpk;
 			$isiRpk = $this->db->query("SELECT*FROM m_rpk WHERE id='$idrpk'")->row();
 			$html .='<tr>
-				<td style="padding:5px">'.$isiRpk->tgl.'</td>
-				<td style="padding:5px">'.$isiRpk->id_rpk.'</td>
+				<td style="padding:5px;border:1px solid #888">'.strtoupper($this->m_fungsi->tglInd_skt($isiRpk->tgl)).'</td>
+				<td style="padding:5px;border:1px solid #888">'.$isiRpk->id_rpk.'</td>
+				<td style="padding:5px;border:1px solid #888">'.$isiRpk->ref.'</td>
 			</tr>';
 			$html .='</table>';
 		}
@@ -6142,19 +6144,19 @@ class Laporan extends CI_Controller {
 				<td style="font-weight:bold" colspan="12">DATA :</td>
 			</tr>
 			<tr>
-				<td style="padding:5px">no</td>
-				<td style="padding:5px">roll</td>
-				<td style="padding:5px">jenis</td>
-				<td style="padding:5px">gramature</td>
-				<td style="padding:5px">ukuran</td>
-				<td style="padding:5px">diameter</td>
-				<td style="padding:5px">berat</td>
-				<td style="padding:5px">joint</td>
-				<td style="padding:5px">keterangan</td>
-				<td style="padding:5px">seset</td>
-				<td style="padding:5px">status</td>
-				<td style="padding:5px">created_at</td>
-				<td style="padding:5px">created_by</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">no</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">roll</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">jenis</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">gramature</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">ukuran</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">diameter</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">berat</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">joint</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">keterangan</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">seset</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">status</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">created_at</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">created_by</td>
 			</tr>';
 		if($getRoll->status == 0 && $getRoll->id_pl == 0){
 			$stt = 'STOK';
@@ -6198,12 +6200,20 @@ class Laporan extends CI_Controller {
 				</tr>
 				<tr>
 				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">TANGGAL KIRIM</td>
+				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">TANGGAL DI RETUR</td>
 				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NO. SURAT JALAN</td>
 				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NAMA</td>
 				<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NAMA PERUSAHAAN</td>
 			</tr>';
+			$hariKirim = strtoupper($this->m_fungsi->getHariIni($qGetPlRetur->row()->tgl));
+			$tglKirim = strtoupper($this->m_fungsi->tglInd_skt($qGetPlRetur->row()->tgl));
+
+			$hariRetur = strtoupper($this->m_fungsi->getHariIni($getRollRjt->row()->tgl));
+			$tglRetur = strtoupper($this->m_fungsi->tglInd_skt($getRollRjt->row()->tgl));
+
 			$html .='<tr>
-				<td style="padding:5px;border:1px solid #888">'.$this->m_fungsi->tglInd_skt($qGetPlRetur->row()->tgl).'</td>
+				<td style="padding:5px;border:1px solid #888">'.$hariKirim.' - '.$tglKirim.'</td>
+				<td style="padding:5px;border:1px solid #888">'.$hariRetur.' - '.$tglRetur.'</td>
 				<td style="padding:5px;border:1px solid #888">'.trim($qGetPlRetur->row()->no_surat).'</td>
 				<td style="padding:5px;border:1px solid #888">'.$qGetPlRetur->row()->nama.'</td>
 				<td style="padding:5px;border:1px solid #888">'.$qGetPlRetur->row()->nm_perusahaan.'</td>
@@ -6221,19 +6231,19 @@ class Laporan extends CI_Controller {
 					<td style="font-weight:bold" colspan="12">HISTORY EDIT :</td>
 				</tr>
 				<tr>
-				<td style="padding:5px">no</td>
-				<td style="padding:5px">roll</td>
-				<td style="padding:5px">jenis</td>
-				<td style="padding:5px">gramature</td>
-				<td style="padding:5px">ukuran</td>
-				<td style="padding:5px">diameter</td>
-				<td style="padding:5px">berat</td>
-				<td style="padding:5px">joint</td>
-				<td style="padding:5px">keterangan</td>
-				<td style="padding:5px">seset</td>
-				<td style="padding:5px">status</td>
-				<td style="padding:5px">edited_at</td>
-				<td style="padding:5px">edited_by</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">no</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">roll</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">jenis</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">gramature</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">ukuran</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">diameter</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">berat</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">joint</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">keterangan</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">seset</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">status</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">edited_at</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">edited_by</td>
 			</tr>';
 			foreach($getData->result() as $ser){
 				$i++;
@@ -6277,39 +6287,35 @@ class Laporan extends CI_Controller {
 			$exp = $roll->plat.' - '.$roll->supir.' ( '.$roll->pt.' )';
 		}
         $html.='<table style="margin:0;font-size:12px;color:#000;border-collapse:collapse">
-            <tr>
-                <td style="padding:8px 5px;font-weight:bold">TANGGAL KIRIM</td>
-                <td>:</td>
+			<tr>
+				<td style="font-weight:bold" colspan="2">TERKIRIM KE :</td>
+			</tr>
+			<tr>
+                <td style="background:#ddd;padding:8px 5px;font-weight:bold;border:1px solid #888">TANGGAL KIRIM</td>
                 <td style="padding:8px 5px">'.$this->m_fungsi->tanggal_format_indonesia($roll->tgl_pl).'</td>
             </tr>
             <tr>
-                <td style="padding:8px 5px;font-weight:bold">NO. SURAT JALAN</td>
-                <td>:</td>
+                <td style="background:#ddd;padding:8px 5px;font-weight:bold;border:1px solid #888">NO. SURAT JALAN</td>
                 <td style="padding:8px 5px">'.trim($roll->no_surat).'</td>
             </tr>
 			<tr>
-                <td style="padding:8px 5px;font-weight:bold">EKSPEDISI</td>
-                <td>:</td>
+                <td style="background:#ddd;padding:8px 5px;font-weight:bold;border:1px solid #888">EKSPEDISI</td>
                 <td style="padding:8px 5px">'.$exp.'</td>
             </tr>
             <tr>
-                <td style="padding:8px 5px;font-weight:bold">NO. PO</td>
-                <td>:</td>
+                <td style="background:#ddd;padding:8px 5px;font-weight:bold;border:1px solid #888">NO. PO</td>
                 <td style="padding:8px 5px">'.$roll->no_po.'</td>
             </tr>
             <tr>
-                <td style="padding:8px 5px;font-weight:bold">NAMA</td>
-                <td>:</td>
+                <td style="background:#ddd;padding:8px 5px;font-weight:bold;border:1px solid #888">NAMA</td>
                 <td style="padding:8px 5px">'.$roll->nama.'</td>
             </tr>
             <tr>
-                <td style="padding:8px 5px;font-weight:bold">NAMA PERUSAHAAN</td>
-                <td>:</td>
+                <td style="background:#ddd;padding:8px 5px;font-weight:bold;border:1px solid #888">NAMA PERUSAHAAN</td>
                 <td style="padding:8px 5px">'.$roll->nm_perusahaan.'</td>
             </tr>
             <tr>
-                <td style="padding:8px 5px;font-weight:bold">ALAMAT PERUSAHAAN</td>
-                <td>:</td>
+                <td style="background:#ddd;padding:8px 5px;font-weight:bold;border:1px solid #888">ALAMAT PERUSAHAAN</td>
                 <td style="padding:8px 5px">'.$roll->alamat_perusahaan.'</td>
             </tr>
         </table>';
@@ -6333,14 +6339,16 @@ class Laporan extends CI_Controller {
 					<td style="font-weight:bold" colspan="2">RPK :</td>
 				</tr>
 				<tr>
-					<td style="padding:5px">tgl</td>
-					<td style="padding:5px">no. rpk</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;border:1px solid #888;font-weight:bold">TANGGAL</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NO. RPK</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">REFERENSI</td>
 				</tr>';
 			$idrpk = $qGetRPK->row()->id_rpk;
 			$isiRpk = $this->db->query("SELECT*FROM m_rpk WHERE id='$idrpk'")->row();
 			$html .='<tr>
-				<td style="padding:5px">'.$isiRpk->tgl.'</td>
-				<td style="padding:5px">'.$isiRpk->id_rpk.'</td>
+				<td style="padding:5px;border:1px solid #888">'.strtoupper($this->m_fungsi->tglInd_skt($isiRpk->tgl)).'</td>
+				<td style="padding:5px;border:1px solid #888">'.$isiRpk->id_rpk.'</td>
+				<td style="padding:5px;border:1px solid #888">'.$isiRpk->ref.'</td>
 			</tr>';
 			$html .='</table>';
 		}
@@ -6358,16 +6366,16 @@ class Laporan extends CI_Controller {
 					<td style="font-weight:bold" colspan="5">RENCANA KIRIM :</td>
 				</tr>
 				<tr>
-					<td style="padding:5px">id rk</td>
-					<td style="padding:5px">tgl rk</td>
-					<td style="padding:5px">customer</td>
-					<td style="padding:5px">nama</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">ID RK</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">TGL RK</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">NAMA</td>
+					<td style="background:#ddd;padding:5px;border:1px solid #888;font-weight:bold">CUSTOMER</td>
 				</tr>
 				<tr>
-					<td style="padding:5px">'.$header->row()->id_rk.'</td>
-					<td style="padding:5px">'.$header->row()->tgl_pl.'</td>
-					<td style="padding:5px">'.$header->row()->nm_perusahaan.'</td>
-					<td style="padding:5px">'.$header->row()->nama.'</td>
+					<td style="padding:5px;border:1px solid #888">'.$header->row()->id_rk.'</td>
+					<td style="padding:5px;border:1px solid #888">'.strtoupper($this->m_fungsi->tglInd_skt($header->row()->tgl_pl)).'</td>
+					<td style="padding:5px;border:1px solid #888">'.$header->row()->nama.'</td>
+					<td style="padding:5px;border:1px solid #888">'.$header->row()->nm_perusahaan.'</td>
 				</tr>';
 				$html .='</table>';
 			}
@@ -6380,19 +6388,19 @@ class Laporan extends CI_Controller {
 				<td style="font-weight:bold" colspan="12">DATA :</td>
 			</tr>
 			<tr>
-				<td style="padding:5px">no</td>
-				<td style="padding:5px">roll</td>
-				<td style="padding:5px">jenis</td>
-				<td style="padding:5px">gramature</td>
-				<td style="padding:5px">ukuran</td>
-				<td style="padding:5px">diameter</td>
-				<td style="padding:5px">berat</td>
-				<td style="padding:5px">joint</td>
-				<td style="padding:5px">keterangan</td>
-				<td style="padding:5px">seset</td>
-				<td style="padding:5px">status</td>
-				<td style="padding:5px">created_at</td>
-				<td style="padding:5px">created_by</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">no</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">roll</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">jenis</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">gramature</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">ukuran</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">diameter</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">berat</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">joint</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">keterangan</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">seset</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">status</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">created_at</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">created_by</td>
 			</tr>';
 		if($getRoll->status == 0 && $getRoll->id_pl == 0){
 			$stt = 'STOK';
@@ -6469,19 +6477,19 @@ class Laporan extends CI_Controller {
 					<td style="font-weight:bold" colspan="12">HISTORY EDIT :</td>
 				</tr>
 				<tr>
-				<td style="padding:5px">no</td>
-				<td style="padding:5px">roll</td>
-				<td style="padding:5px">jenis</td>
-				<td style="padding:5px">gramature</td>
-				<td style="padding:5px">ukuran</td>
-				<td style="padding:5px">diameter</td>
-				<td style="padding:5px">berat</td>
-				<td style="padding:5px">joint</td>
-				<td style="padding:5px">keterangan</td>
-				<td style="padding:5px">seset</td>
-				<td style="padding:5px">status</td>
-				<td style="padding:5px">edited_at</td>
-				<td style="padding:5px">edited_by</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">no</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">roll</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">jenis</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">gramature</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">ukuran</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">diameter</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">berat</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">joint</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">keterangan</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">seset</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">status</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">edited_at</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">edited_by</td>
 			</tr>';
 			foreach($getData->result() as $ser){
 				$i++;

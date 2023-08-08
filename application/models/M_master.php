@@ -1833,4 +1833,11 @@ class M_master extends CI_Model{
 		$this->db->where('id_rpk', $_POST["id_rpk"]);
 		return $this->db->delete('m_rpk');
 	}
+
+	function btnAksiListRpk(){
+		($_POST["stat"] == 'open') ? $this->db->set('stat', 'open') : $this->db->set('stat', 'close') ;
+		$this->db->where('id', $_POST["idx"]);
+		$this->db->where('id_rpk', $_POST["id_rpk"]);
+		return $this->db->update('m_rpk');
+	}
 }
