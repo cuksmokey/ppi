@@ -6384,6 +6384,28 @@ class Laporan extends CI_Controller {
 		// TAMPIL DATA
         $html .='<table style="margin:0 0 20px;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND roll='$roll'")->row();
+		if($this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2"){
+			$ketKop = '';
+			$isiSetKet = '';
+		}else{
+			$ketKop = '<td style="padding:5px;border-bottom:3px solid #aaa">seset</td>
+			<td style="padding:5px;border-bottom:3px solid #aaa">status</td>';
+			if($getRoll->status == 0 && $getRoll->id_pl == 0){
+				$stt = 'STOK';
+			}else if($getRoll->status == 2){
+				$stt = 'PPI';
+			}else if($getRoll->status == 3){
+				$stt = 'BUFFER';
+			}else if($getRoll->status == 1 && $getRoll->id_pl != 0){
+				$stt = 'TERJUAL';
+			}else{
+				$stt = '-';
+			}
+			$isiSetKet = '<td style="padding:5px">'.$getRoll->seset.'</td>
+			<td style="padding:5px">'.$stt.'</td>';
+		}
+		
+
 		$html .='<tr>
 				<td style="font-weight:bold" colspan="12">DATA :</td>
 			</tr>
@@ -6397,22 +6419,11 @@ class Laporan extends CI_Controller {
 				<td style="padding:5px;border-bottom:3px solid #aaa">berat</td>
 				<td style="padding:5px;border-bottom:3px solid #aaa">joint</td>
 				<td style="padding:5px;border-bottom:3px solid #aaa">keterangan</td>
-				<td style="padding:5px;border-bottom:3px solid #aaa">seset</td>
-				<td style="padding:5px;border-bottom:3px solid #aaa">status</td>
+				'.$ketKop.'
 				<td style="padding:5px;border-bottom:3px solid #aaa">created_at</td>
 				<td style="padding:5px;border-bottom:3px solid #aaa">created_by</td>
 			</tr>';
-		if($getRoll->status == 0 && $getRoll->id_pl == 0){
-			$stt = 'STOK';
-		}else if($getRoll->status == 2){
-			$stt = 'PPI';
-		}else if($getRoll->status == 3){
-			$stt = 'BUFFER';
-		}else if($getRoll->status == 1 && $getRoll->id_pl != 0){
-			$stt = 'TERJUAL';
-		}else{
-			$stt = '-';
-		}
+		
 		$html .='<tr>
 			<td style="padding:5px">-</td>
 			<td style="padding:5px">'.$getRoll->roll.'</td>
@@ -6423,8 +6434,7 @@ class Laporan extends CI_Controller {
 			<td style="padding:5px">'.$getRoll->weight.'</td>
 			<td style="padding:5px">'.$getRoll->joint.'</td>
 			<td style="padding:5px">'.$getRoll->ket.'</td>
-			<td style="padding:5px">'.$getRoll->seset.'</td>
-			<td style="padding:5px">'.$stt.'</td>
+			'.$isiSetKet.'
 			<td style="padding:5px">'.$getRoll->created_at.'</td>
 			<td style="padding:5px">'.$getRoll->created_by.'</td>
 		</tr>';
@@ -6472,7 +6482,13 @@ class Laporan extends CI_Controller {
 			$html .='';
 		}else{
 			$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;border-collapse:collapse">';
-			$i = 0;
+			if($this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2"){
+				$edKop = '';
+			}else{
+				$edKop = '<td style="padding:5px;border-bottom:3px solid #aaa">seset</td>
+				<td style="padding:5px;border-bottom:3px solid #aaa">status</td>';
+			}
+			
 			$html .='<tr>
 					<td style="font-weight:bold" colspan="12">HISTORY EDIT :</td>
 				</tr>
@@ -6486,22 +6502,29 @@ class Laporan extends CI_Controller {
 				<td style="padding:5px;border-bottom:3px solid #aaa">berat</td>
 				<td style="padding:5px;border-bottom:3px solid #aaa">joint</td>
 				<td style="padding:5px;border-bottom:3px solid #aaa">keterangan</td>
-				<td style="padding:5px;border-bottom:3px solid #aaa">seset</td>
-				<td style="padding:5px;border-bottom:3px solid #aaa">status</td>
+				'.$edKop.'
 				<td style="padding:5px;border-bottom:3px solid #aaa">edited_at</td>
 				<td style="padding:5px;border-bottom:3px solid #aaa">edited_by</td>
 			</tr>';
+			$i = 0;
 			foreach($getData->result() as $ser){
 				$i++;
-				if($ser->status == 0){
-					$stt = 'STOK';
-				}else if($ser->status == 2){
-					$stt = 'PPI';
-				}else if($ser->status == 3){
-					$stt = 'BUFFER';
+				if($this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2"){
+					$edSetKet = '';
 				}else{
-					$stt = '-';
+					if($ser->status == 0){
+						$stt = 'STOK';
+					}else if($ser->status == 2){
+						$stt = 'PPI';
+					}else if($ser->status == 3){
+						$stt = 'BUFFER';
+					}else{
+						$stt = '-';
+					}
+					$edSetKet = '<td style="padding:5px">'.$ser->seset.'</td>
+					<td style="padding:5px">'.$stt.'</td>';
 				}
+				
 				$html .='<tr>
 					<td style="padding:5px">'.$i.'</td>
 					<td style="padding:5px">'.$ser->roll.'</td>
@@ -6512,8 +6535,7 @@ class Laporan extends CI_Controller {
 					<td style="padding:5px">'.$ser->weight.'</td>
 					<td style="padding:5px">'.$ser->joint.'</td>
 					<td style="padding:5px">'.$ser->ket.'</td>
-					<td style="padding:5px">'.$ser->seset.'</td>
-					<td style="padding:5px">'.$stt.'</td>
+					'.$edSetKet.'
 					<td style="padding:5px">'.$ser->edited_at.'</td>
 					<td style="padding:5px">'.$ser->edited_by.'</td>
 				</tr>';

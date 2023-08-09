@@ -3126,7 +3126,7 @@ class Master extends CI_Controller
 						foreach($getWidth->result() as $uk){
 							$html .='<td style="padding:5px;font-weight:bold" class="'.$bgkk.'" rowspan="'.$uk->ukroll.'">'.round($uk->width,2).' ('.$uk->ukroll.')</td>';
 							// GET NOMER ROLLNYA
-							$getRoll = $this->db->query("SELECT m.id AS idroll,m.roll AS roll,m.diameter,m.weight,m.joint,m.ket,m.seset,m.status AS statusroll,p.* FROM pl p
+							$getRoll = $this->db->query("SELECT m.id AS idroll,m.roll AS roll,m.diameter,m.weight,m.joint,m.ket,m.seset,m.status AS statusroll,m.id_rtr,p.* FROM pl p
 							INNER JOIN m_timbangan m ON p.id=m.id_pl
 							WHERE p.id_rk='$uk->id_rk' AND p.nm_ker='$uk->nm_ker' AND p.g_label='$uk->g_label' AND p.no_po='$uk->no_po' AND m.width='$uk->width'
 							GROUP BY p.id_rk,p.nm_ker,p.g_label,m.width,m.roll");
@@ -3140,7 +3140,9 @@ class Master extends CI_Controller
 									$ket = '- '.$roll->seset.'KG. '.$roll->weight.'. '.$roll->ket;
 								}
 
-								if($roll->statusroll == '3'){
+								if($roll->id_rtr != ''){
+									$bg = 'status-retur';
+								}else if($roll->statusroll == '3'){
 									$bg = 'status-buffer';
 								}else{
 									$bg = 'status-stok';
