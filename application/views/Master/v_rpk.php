@@ -187,7 +187,14 @@
 									<td style="padding:5px;text-align:center">:</td>
 									<td style="padding:5px 0">
 										<input type="hidden" id="tampung-id_rpk" value="">
-										<input type="text" name="id_rpk" id="id_rpk" class="id_rpk form-control">
+										<input type="text" name="id_rpk" id="id_rpk" style="text-align:center;font-weight:bold;border:0;padding:0;" disabled readonly>
+									</td>
+									<td style="padding:5px;text-align:center">/</td>
+									<td style="padding:5px 0">
+										<input type="text" name="id_rpk_ref" id="id_rpk_ref" class="id_rpk_ref form-control" autocomplete="off">
+									</td>
+									<td style="padding:5px">
+										<button class="btn-edit-ll" onclick="simpanCartRpk()">Edit</button>
 									</td>
 								</tr>
 								<tr>
@@ -308,6 +315,7 @@
 		$("#nm_ker").val("");
 		$("#g_label").val("");
 		$("#id_rpk").val("");
+		$("#id_rpk_ref").val("");
 		$("#item1").val("");
 		$("#item2").val("");
 		$("#item3").val("");
@@ -320,6 +328,8 @@
 		$(".form-control").prop("disabled", true).attr('style', 'background:#e9e9e9');
 		$(".pm").prop("disabled", false).removeAttr('style');
 		$(".tgl").prop("disabled", false).removeAttr('style');
+		$(".id_rpk_ref").prop("disabled", false).removeAttr('style');
+		$(".btn-edit-ll").hide();
 
 		$(".pi").prop("disabled", true).attr('style', 'background:#e9e9e9');
 		$(".ii").val("").prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
@@ -483,7 +493,8 @@
 		$(".cart-list-rpk").load("<?php echo base_url('Master/destroyCartRpk') ?>");
 		$(".box-data").hide();
 		$(".box-btn").hide();
-		$(".box-form-kop").hide();
+		$(".btn-edit-ll").show();
+		// $(".box-form-kop").hide();
 		$(".box-from-loading").html('<div style="padding:5px 0">Loading...</div>');
 		$.ajax({
 			url: '<?php echo base_url("Master/btnEditRpk")?>',
@@ -495,11 +506,14 @@
 				$(".box-from-loading").html('');
 				$(".box-form").show();
 				data = JSON.parse(res);
-				$("#tgl").val(data.tgl).prop("disabled", true).attr('style', 'background:#e9e9e9');
+				$("#tgl").val(data.tgl).prop("disabled", false).removeAttr('style');
 				$("#pm").val(data.pm).prop("disabled", true).attr('style', 'background:#e9e9e9');
-				$("#nm_ker").val(data.nm_ker);
+				$("#nm_ker").val(data.nm_ker).prop("disabled", true).attr('style', 'background:#e9e9e9');
 				$("#g_label").val(data.g_label);
-				$("#id_rpk").val(data.id_rpk);
+
+				sid_rpk = data.id_rpk.split("/");
+				$("#id_rpk").val(sid_rpk[0]+'/'+sid_rpk[1]);
+				$("#id_rpk_ref").val(sid_rpk[2]).prop("disabled", false).removeAttr('style');
 				$(".pi").prop("disabled", false).removeAttr('style');
 				loadDataEditListRpk(id_rpk);
 			}
@@ -614,7 +628,7 @@
 
 	//
 
-	function aksiEditRpk(idx,id_rpk){
+	function aksiEditRpk(idx,id_rpk,not){
 		// toString().length
 		eitem1 = $("#erpk1-"+idx).val();
 		eitem2 = $("#erpk2-"+idx).val();
@@ -666,10 +680,12 @@
 					$("#ex-"+idx).val(data.x).animateCss('fadeInRight');
 					$("#eref-"+idx).val(data.ref).animateCss('fadeInRight');
 
-					($("#erpk1-"+idx).val() != 0) ? $("#erpk2-"+idx).prop("disabled", false).removeAttr('style') : $("#erpk2-"+idx).val(0).prop("disabled", true).attr('style', 'background:#e9e9e9');
-					($("#erpk2-"+idx).val() != 0) ? $("#erpk3-"+idx).prop("disabled", false).removeAttr('style') : $("#erpk3-"+idx).val(0).prop("disabled", true).attr('style', 'background:#e9e9e9');
-					($("#erpk3-"+idx).val() != 0) ? $("#erpk4-"+idx).prop("disabled", false).removeAttr('style') : $("#erpk4-"+idx).val(0).prop("disabled", true).attr('style', 'background:#e9e9e9');
-					($("#erpk4-"+idx).val() != 0) ? $("#erpk5-"+idx).prop("disabled", false).removeAttr('style') : $("#erpk5-"+idx).val(0).prop("disabled", true).attr('style', 'background:#e9e9e9');
+					if(not != 'not'){
+						($("#erpk1-"+idx).val() != 0) ? $("#erpk2-"+idx).prop("disabled", false).removeAttr('style') : $("#erpk2-"+idx).val(0).prop("disabled", true).attr('style', 'background:#e9e9e9');
+						($("#erpk2-"+idx).val() != 0) ? $("#erpk3-"+idx).prop("disabled", false).removeAttr('style') : $("#erpk3-"+idx).val(0).prop("disabled", true).attr('style', 'background:#e9e9e9');
+						($("#erpk3-"+idx).val() != 0) ? $("#erpk4-"+idx).prop("disabled", false).removeAttr('style') : $("#erpk4-"+idx).val(0).prop("disabled", true).attr('style', 'background:#e9e9e9');
+						($("#erpk4-"+idx).val() != 0) ? $("#erpk5-"+idx).prop("disabled", false).removeAttr('style') : $("#erpk5-"+idx).val(0).prop("disabled", true).attr('style', 'background:#e9e9e9');
+					}
 				}else{
 					swal(data.msg, "", "error");
 					return;
@@ -717,7 +733,7 @@
 	//
 
 	$('#tgl').on('change', function() {
-		kosong();
+		(status == 'insert') ? kosong() : '';
 		noRpk();
 	});
 
@@ -729,7 +745,7 @@
 		$("#ref").val("").prop("disabled", true).attr('style', 'background:#e9e9e9');
 		pm = $("#pm").val();
 		if(pm == ""){
-			kosong();
+			(status == 'insert') ? kosong() : '';
 			$("#nm_ker").val("");
 			$("#g_label").val("");
 			noRpk();
@@ -750,7 +766,7 @@
 		$("#ref").val("").prop("disabled", true).attr('style', 'background:#e9e9e9');
 		nm_ker = $("#nm_ker").val();
 		if(nm_ker == ""){
-			// kosong();
+			(status == 'insert') ? kosong() : '';
 			$("#g_label").val("");
 			$(".g_label").prop("disabled", true).attr('style', 'background:#e9e9e9');
 			noRpk();
@@ -768,6 +784,7 @@
 		$("#ref").val("").prop("disabled", true).attr('style', 'background:#e9e9e9');
 		g_label = $("#g_label").val();
 		if(g_label == ""){
+			(status == 'insert') ? kosong() : '';
 			$(".pi").prop("disabled", true).attr('style', 'background:#e9e9e9');
 			noRpk();
 		}else{
@@ -781,9 +798,11 @@
 		pm = $("#pm").val();
 		nm_ker = $("#nm_ker").val();
 		g_label = $("#g_label").val();
+		id_rpk_ref = $("#id_rpk_ref").val();
 
 		if(tgl == "" || pm == "" || nm_ker == "" || g_label == ""){
 			$("#id_rpk").val("");
+			$("#id_rpk_ref").val("");
 		}else{
 			$("#id_rpk").val("loading");
 			$.ajax({
@@ -795,7 +814,7 @@
 				success: function(res){
 					data = JSON.parse(res);
 					$("#id_rpk").val(data.data);
-					$("#tampung-id_rpk").val(data.data); //hidden
+					(status == 'insert') ? $("#tampung-id_rpk").val(data.data+'/'+id_rpk_ref) : $("#tampung-id_rpk").val(); //hidden
 				}
 			});
 		}
@@ -811,7 +830,7 @@
 		$(".ii").val("").prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
 
 		$("#times").val("").prop("disabled", false).removeAttr('style');
-		$("#ref").val("").prop("disabled", false).removeAttr('style');
+		$("#ref").prop("disabled", false).removeAttr('style');
 
 		if(plh == 1){
 			$(".item1").val("").prop("disabled", false).removeAttr('style');
@@ -911,6 +930,7 @@
 		nm_ker = $("#nm_ker").val();
 		g_label = $("#g_label").val();
 		id_rpk = $("#id_rpk").val();
+		id_rpk_ref = $("#id_rpk_ref").val();
 		xplh = $("#xplh").val();
 		item1 = $("#item1").val();
 		item2 = $("#item2").val();
@@ -920,6 +940,7 @@
 		times = $("#times").val();
 		ref = $("#ref").val();
 		trimw = $("#trimw").val();
+		// alert(xid_rpk+' - '+xid_rpk_ref+' - '+id_rpk);
 
 		if(xplh == 1){
 			if(item1 == "" || item1 == 0){
@@ -982,7 +1003,7 @@
 			}
 		}
 
-		if(tgl == "" || pm == "" || nm_ker == "" || g_label == "" || id_rpk == "" || times == ""){
+		if(tgl == "" || pm == "" || nm_ker == "" || g_label == "" || id_rpk == "" || id_rpk_ref == "" || times == ""){
 			swal("HARAP LENGKAPI FORM!", "", "error");
 			return;
 		}
@@ -996,11 +1017,16 @@
 			url: '<?php echo base_url("Master/addCartRpk")?>',
 			type: "POST",
 			data: ({
-				tgl,pm,nm_ker,g_label,id_rpk,xplh,item1,item2,item3,item4,item5,times,ref,opsi: status
+				tgl,pm,nm_ker,g_label,id_rpk,id_rpk_ref,xplh,item1,item2,item3,item4,item5,times,ref,opsi: status
 			}),
 			success: function(res){
 				data = JSON.parse(res);
 				if(data.res){
+					$(".tgl").prop("disabled", true).attr('style', 'background:#e9e9e9');
+					$(".pm").prop("disabled", true).attr('style', 'background:#e9e9e9');
+					$('#nm_ker').prop("disabled", true).attr('style', 'background:#e9e9e9');
+					$('#g_label').prop("disabled", true).attr('style', 'background:#e9e9e9');
+					$(".id_rpk_ref").prop("disabled", true).attr('style', 'background:#e9e9e9');
 					$(".cart-list-rpk").load("<?php echo base_url('Master/showCartRpk') ?>");
 				}else{
 					swal(data.msg, "", "error");
@@ -1026,21 +1052,30 @@
 	//
 
 	function simpanCartRpk(){
+		tgl = $("#tgl").val();
 		tId_rpk = $("#tampung-id_rpk").val();
-		// alert(tId_rpk+' ss:'+status);
+		rpk_new = $("#id_rpk").val();
+		rpkref_new = $("#id_rpk_ref").val();
+		nRpkCuy = rpk_new+'/'+rpkref_new;
+		// alert(tId_rpk+" - "+rpk_new+" - "+rpkref_new+" - "+status);
 		$(".btn-s-rpk").prop("disabled", true);
+
+		if(rpkref_new == ""){
+			swal("NO. RPK TIDAK BOLEH KOSONG", "", "error");
+			return;
+		}
 		$.ajax({
 			url: '<?php echo base_url("Master/simpanCartRpk")?>',
 			data: ({
-				tId_rpk,status
+				tId_rpk,status,rpk_new,rpkref_new,tgl
 			}),
 			type: "POST",
 			success: function(res){
 				data = JSON.parse(res);
 				$(".btn-s-rpk").prop("disabled", false);
 				if(data.data == true){
-					swal("BERHASIL!!!", "", "success");
-					btnEditRpk(tId_rpk);
+					swal(data.msg, "", "success");
+					(tId_rpk == nRpkCuy) ? btnEditRpk(tId_rpk) : btnEditRpk(nRpkCuy);
 					$(".nm_ker").prop("disabled", true).attr('style', 'background:#e9e9e9');
 					$(".g_label").prop("disabled", true).attr('style', 'background:#e9e9e9');
 					$(".ii").val("").prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
@@ -1048,7 +1083,7 @@
 					$("#times").val("");
 					$("#ref").val("");
 				}else{
-					swal("NO. RPK SUDAH TERPAKAI!!!", "", "error");
+					swal(data.msg, "", "error");
 					return;
 				}
 			}

@@ -5882,7 +5882,8 @@ class Master extends CI_Controller
 
 		echo json_encode(
 			array(
-				'data' => 'RPK.'.$tgl[2].$tgl[1].substr($tgl[0],2,2).'.'.$pm.'.'.$nm_ker.$g_label
+				// 'data' => 'RPK.'.$tgl[2].$tgl[1].substr($tgl[0],2,2).'.'.$pm.'.'.$nm_ker.$g_label
+				'data' => $pm.$nm_ker.$g_label.'/'.substr($tgl[0],2,2).$tgl[1].$tgl[2]
 			)
 		);
 	}
@@ -5893,6 +5894,7 @@ class Master extends CI_Controller
 		$nm_ker = $_POST["nm_ker"];
 		$g_label = $_POST["g_label"];
 		$id_rpk = $_POST["id_rpk"];
+		$id_rpk_ref = $_POST["id_rpk_ref"];
 		$xplh = $_POST["xplh"];
 		$item1 = $_POST["item1"];
 		$item2 = $_POST["item2"];
@@ -5926,6 +5928,7 @@ class Master extends CI_Controller
 				'nm_ker' => $nm_ker,
 				'g_label' => $g_label,
 				'id_rpk' => $id_rpk,
+				'id_rpk_ref' => $id_rpk_ref,
 				'item1' => $item1,
 				'item2' => $item2,
 				'item3' => $item3,
@@ -5940,25 +5943,18 @@ class Master extends CI_Controller
 			echo json_encode(array('res' => false, 'msg' => 'INPUT ITEMS HANYA BOLEH ANGKA ATAU BESERTA TITIK!!'));
 		}else if(!preg_match("/^[0-9]*$/", $times)){
 			echo json_encode(array('res' => false, 'msg' => 'PAKAI ANGKA!!'));
-		}else if($opsi == 'edit'){
-			// YANG SUDAH ADA JANGANLAH
-			$qGet = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' AND item1='$item1' AND item2='$item2' AND item3='$item3' AND item4='$item4' AND item5='$item5'");
-			if($qGet->num_rows() != 0){
-				echo json_encode(array('res' => false, 'msg' => 'ITEM SUDAH DI INPUT SEBELUMNYA!!'));
-			}else{
-				$this->cart->insert($data);
-				echo json_encode(array('res' => true));
-			}
-		}else{
-			foreach($this->cart->contents() as $cart){
-				if($item1 == $cart['options']['item1'] && $item2 == $cart['options']['item2'] && $item3 == $cart['options']['item3'] && $item4 == $cart['options']['item4'] && $item5 == $cart['options']['item5'] && ($times != $cart['options']['times'] || $ref != $cart['options']['ref'])){
-					$upd = array(
-						'rowid' => $cart['rowid'],
-						'qty' => 0,
-					);
-					$this->cart->update($upd);
-				}
-			}
+		}
+		// else if($opsi == 'edit'){
+		// 	// YANG SUDAH ADA JANGANLAH
+		// 	$qGet = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' AND item1='$item1' AND item2='$item2' AND item3='$item3' AND item4='$item4' AND item5='$item5'");
+		// 	if($qGet->num_rows() != 0){
+		// 		echo json_encode(array('res' => false, 'msg' => 'ITEM SUDAH DI INPUT SEBELUMNYA!!'));
+		// 	}else{
+		// 		$this->cart->insert($data);
+		// 		echo json_encode(array('res' => true));
+		// 	}
+		// }
+		else{
 			$this->cart->insert($data);
 			echo json_encode(array('res' => true));
 		}
@@ -6011,7 +6007,7 @@ class Master extends CI_Controller
 				<td style="padding:5px;border:1px solid #333">'.$items['options']['tgl'].'</td>
 				<td style="padding:5px;border:1px solid #333">'.$items['options']['pm'].'</td>
 				<td style="padding:5px;border:1px solid #333">'.$items['options']['nm_ker'].''.$items['options']['g_label'].'</td>
-				<td style="padding:5px;border:1px solid #333">'.$items['options']['id_rpk'].'</td>
+				<td style="padding:5px;border:1px solid #333">'.$items['options']['id_rpk'].'/'.$items['options']['id_rpk_ref'].'</td>
 				<td style="padding:5px;border:1px solid #333">'.$item1.'</td>
 				<td style="padding:5px;border:1px solid #333">'.$item2.'</td>
 				<td style="padding:5px;border:1px solid #333">'.$item3.'</td>
@@ -6045,18 +6041,29 @@ class Master extends CI_Controller
 	function simpanCartRpk(){
 		$id_rpk = $_POST["tId_rpk"];
 		$status = $_POST["status"];
+		$rpkNew = $_POST["rpk_new"];
+		$rpkRefNew = $_POST["rpkref_new"];
+		$new_rpk = $rpkNew.'/'.$rpkRefNew;
 
 		if($status == 'insert'){
-			$getRpk = $this->db->query("SELECT*FROM m_rpk WHERE id_rpk='$id_rpk' GROUP BY id_rpk");
+			$getRpk = $this->db->query("SELECT*FROM m_rpk WHERE id_rpk='$new_rpk' GROUP BY id_rpk");
 			if($getRpk->num_rows() == 0){
 				$this->m_master->simpanCartRpk();
-				echo json_encode(array('data' => true));
+				echo json_encode(array('data' => true, 'msg' => 'BERHASIL!!!'));
 			}else{
-				echo json_encode(array('data' => false));
+				echo json_encode(array('data' => false, 'msg' => 'NO. RPK SUDAH TERPAKAI!!!'));
+			}
+		}else if($status == 'edit' && $id_rpk != $new_rpk){
+			$cekL = $this->db->query("SELECT*FROM m_rpk WHERE id_rpk='$new_rpk' GROUP BY id_rpk");
+			if($cekL->num_rows() == 0){
+				$this->m_master->simpanCartRpk();
+				echo json_encode(array('data' => true, 'msg' => 'BERHASIL!!!'));
+			}else{
+				echo json_encode(array('data' => false, 'msg' => 'NO. RPK SUDAH TERPAKAI!!!'));
 			}
 		}else{
 			$this->m_master->simpanCartRpk();
-			echo json_encode(array('data' => true));
+			echo json_encode(array('data' => true, 'msg' => 'BERHASIL!!!'));
 		}
 	}
 
@@ -6237,13 +6244,12 @@ class Master extends CI_Controller
 					$btnEEdit = '<td style="padding-left:5px">-</td>';
 				}
 				$html .='<table style="font-weight:bold;border-collapse:collapse'.$pdd.'">';
+				// <td style="padding:5px">'.strtoupper($this->m_fungsi->tglInd_skt($r->tgl)).'</td>
 				$html .='<tr>
 					<td>
 						<button onclick="btnDetailRpk('."'".$i."'".','."'".$r->id_rpk."'".')">DETAIL</button>
 					</td>
 					'.$btnEEdit.'
-					<td style="padding:5px">'.strtoupper($this->m_fungsi->tglInd_skt($r->tgl)).'</td>
-					<td>-</td>
 					<td style="padding:5px">'.$r->id_rpk.'</td>
 					<td>
 						<a href="'.base_url('Master/btnDetailRpk').'?i='.$i.'&id_rpk='.$r->id_rpk.'" target="_blank" rel="plcek">PDF</a>
@@ -6297,25 +6303,26 @@ class Master extends CI_Controller
 					<td style="width:6%"></td>
 					<td style="width:6%"></td>
 					<td style="width:6%"></td>';
-				$tdTmbhRef = 'style="width:30%"';
+				$tdTmbhRef = 'style="width:24%"';
 			}else if($getKopItem->item5 != 0){
 				$tdTmbh = '<td style="width:6%"></td>
 					<td style="width:6%"></td>
 					<td style="width:6%"></td>
 					<td style="width:6%"></td>
 					<td style="width:6%"></td>';
-				$tdTmbhRef = 'style="width:24%"';
+				$tdTmbhRef = 'style="width:18%"';
 			}else{
 				$tdTmbh = '<td style="width:8%"></td>
 					<td style="width:8%"></td>
 					<td style="width:8%"></td>';
-				$tdTmbhRef = 'style="width:30%"';
+				$tdTmbhRef = 'style="width:24%"';
 			}
 
 			$kopWidth = '<tr>
 				<td style="width:4%"></td>
 				'.$tdTmbh.'
 				<td style="width:8%"></td>
+				<td style="width:6%"></td>
 				<td style="width:8%"></td>
 				<td style="width:8%"></td>
 				<td style="width:8%"></td>
@@ -6371,6 +6378,7 @@ class Master extends CI_Controller
 				<td style="border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">NO.</td>
 				<td style="border:1px solid #000;font-weight:bold;padding:5px" colspan="'.$kopBrICls.'">WIDTH(CM)</td>
 				<td style="border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">TIMES <br>( X )</td>
+				<td style="border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">SET <br>( X )</td>
 				<td style="border:1px solid #000;font-weight:bold;padding:5px" colspan="2">SUDAH POTONG</td>
 				<td style="border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">TRIM <br>WIDTH</td>
 				<td style="border:1px solid #000;font-weight:bold;padding:5px" rowspan="2">WEIGHT <br>( TON )</td>
@@ -6381,7 +6389,7 @@ class Master extends CI_Controller
 				<td style="border:1px solid #000;font-weight:bold;padding:5px">NG</td>
 			</tr>';
 		
-			$n = 0; $x = 0; $t = 0; $sumGood = 0; $sumNotGood = 0;
+			$n = 0; $x = 0; $yy = 0; $t = 0; $sumGood = 0; $sumNotGood = 0;
 			foreach($getIsi->result() as $isi){
 				$n++;
 
@@ -6436,8 +6444,32 @@ class Master extends CI_Controller
 					';
 				}
 
+				($isi->stat == 'open') ? $bgOc = '' : $bgOc = ';background:#ff0' ;
+				// TIMES
 				$x += $isi->x;
-				$html .='<td style="border:1px solid #000;padding:5px">'.$isi->x.'</td>';
+				$html .='<td style="border:1px solid #000;padding:5px'.$bgOc.'">'.$isi->x.'</td>';
+				
+				// SET
+				$qSet =  $this->db->query("SELECT * FROM m_timbangan t WHERE id_rpk='$isi->id'");
+				if($qSet->num_rows() == 0){
+					$set = 0;
+					$btnSet = 0;
+				}else{
+					if($isi->item1 != 0 && $isi->item2 == 0 && $isi->item3 == 0 && $isi->item4 == 0 && $isi->item5 == 0){
+						$set = ceil($qSet->num_rows() / 1);
+					}else if($isi->item1 != 0 && $isi->item2 != 0 && $isi->item3 == 0 && $isi->item4 == 0 && $isi->item5 == 0){
+						$set = ceil($qSet->num_rows() / 2);
+					}else if($isi->item1 != 0 && $isi->item2 != 0 && $isi->item3 != 0 && $isi->item4 == 0 && $isi->item5 == 0){
+						$set = ceil($qSet->num_rows() / 3);
+					}else if($isi->item1 != 0 && $isi->item2 != 0 && $isi->item3 != 0 && $isi->item4 != 0 && $isi->item5 == 0){
+						$set = ceil($qSet->num_rows() / 4);
+					}else{
+						$set = ceil($qSet->num_rows() / 5);
+					}
+					$btnSet = '<button class="btn-gg" onclick="CekListGdNg('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".','."'set'".')">'.$set.'</button>';
+				}
+				$html .='<td class="tdllgg td-gdng-'.$isi->id.'-set" style="border:1px solid #000;padding:5px">'.$btnSet.'</td>';
+				$yy += $set;
 				
 				// CARI YANG BAGUS DONG
 				$qGood = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE (t.status='0' OR t.status='2' OR t.status='4' OR t.status='5') AND id_rpk='$isi->id' GROUP BY id_rpk");
@@ -6501,6 +6533,7 @@ class Master extends CI_Controller
 			$html .='<tr '.$kopBgTr.'>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold" colspan="'.$clsTot.'"></td>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$x.'</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$yy.'</td>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$sumGood.'</td>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$sumNotGood.'</td>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold"></td>
@@ -6548,7 +6581,14 @@ class Master extends CI_Controller
 		$html = '';
 		$html .='<table style="margin-bottom:10px;text-align:center;border-collapse:collapse">';
 
-		($stat == 0) ? $opt = "AND t.status!='3'" : $opt = "AND t.status='3'";
+		if($stat == '0'){
+			$opt = "AND t.status!='3'";
+		}else if($stat == '3'){
+			$opt = "AND t.status='3'";
+		}else{
+			$opt = "";
+		}
+
 		$qGetCount = $this->db->query("SELECT width,COUNT(roll) AS jml_roll FROM m_timbangan t WHERE id_rpk='$idx' $opt GROUP BY width");
 		if($width != ''){
 			$bgWdAll = 'style="background:#fff;padding:5px 2px;border:0"';
@@ -6559,8 +6599,6 @@ class Master extends CI_Controller
 		<button '.$bgWdAll.' onclick="CekListGdNg('."'".$i."'".','."'".$idx."'".','."'".$id_rpk."'".','."'".$stat."'".','."'"."'".')">SEMUA</button> ';
 		if($qGetCount->num_rows() != 1){
 			foreach($qGetCount->result() as $c){
-				// CekListGdNg(i,idx,id_rpk,stat,width="")
-				// $html .= '<button class="bbb btn-gg2 ggww-'.round($c->width,2).'" onclick="plhCekUkuran('."".round($c->width,2)."".')">[ '.round($c->width,2).' = '.$c->jml_roll.' ]</button> ';
 				if($width == round($c->width,2)){
 					$bgWd = 'style="background:#ddd;padding:5px 8px;border:0;border-left:3px solid #0f0"';
 				}else{
@@ -6694,11 +6732,21 @@ class Master extends CI_Controller
 			$item5 = ($r->item5 != 0) ? round($r->item5,2) : 0;
 			$trimW = $item1+$item2+$item3+$item4+$item5;
 
-			$dis1 = ($r->item1 != 0) ? '' : 'style="background:#e9e9e9" disabled';
-			$dis2 = ($r->item2 != 0) ? '' : 'style="background:#e9e9e9" disabled';
-			$dis3 = ($r->item3 != 0) ? '' : 'style="background:#e9e9e9" disabled';
-			$dis4 = ($r->item4 != 0) ? '' : 'style="background:#e9e9e9" disabled';
-			$dis5 = ($r->item5 != 0) ? '' : 'style="background:#e9e9e9" disabled';
+			$qGetTimbangan = $this->db->query("SELECT COUNT(roll) AS roll FROM m_timbangan WHERE id_rpk='$r->id' GROUP BY id_rpk");
+			if($qGetTimbangan->num_rows() == 0){
+				$not = '';
+				$adaIsi = '';
+				$btnAksi = ' - <button onclick="aksiHapusRpk('."'".$r->id."'".','."'".$id_rpk."'".')">HAPUS</button>';
+			}else{
+				$not = 'not';
+				$adaIsi = 'style="background:#e9e9e9" disabled';
+				$btnAksi = '';
+			}
+			$dis1 = ($r->item1 != 0) ? $adaIsi : 'style="background:#e9e9e9" disabled';
+			$dis2 = ($r->item2 != 0) ? $adaIsi : 'style="background:#e9e9e9" disabled';
+			$dis3 = ($r->item3 != 0) ? $adaIsi : 'style="background:#e9e9e9" disabled';
+			$dis4 = ($r->item4 != 0) ? $adaIsi : 'style="background:#e9e9e9" disabled';
+			$dis5 = ($r->item5 != 0) ? $adaIsi : 'style="background:#e9e9e9" disabled';
 
 			$html .='<tr>
 				<td style="padding:5px;border:1px solid #000">'.$i.'</td>
@@ -6711,17 +6759,7 @@ class Master extends CI_Controller
 				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="etrimw-'.$r->id.'" value="'.$trimW.'" autocomplete="off" disabled></td>
 				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="eref-'.$r->id.'" maxlength="50" value="'.$r->ref.'" autocomplete="off" style="text-align:left"></td>';
 
-				$qGetTimbangan = $this->db->query("SELECT COUNT(roll) AS roll FROM m_timbangan WHERE id_rpk='$r->id' GROUP BY id_rpk");
-				if($qGetTimbangan->num_rows() != 0){
-					$btnAksi = '-';
-				}else{
-					if($r->stat == 'open'){
-						$btnAksi = '<button onclick="aksiEditRpk('."'".$r->id."'".','."'".$id_rpk."'".')">EDIT</button> - <button onclick="aksiHapusRpk('."'".$r->id."'".','."'".$id_rpk."'".')">HAPUS</button>';
-					}else{
-						$btnAksi = '-';
-					}
-				}
-				$html .='<td style="padding:5px;border:1px solid #000">'.$btnAksi.'</td>
+				$html .='<td style="padding:5px;border:1px solid #000"><button onclick="aksiEditRpk('."'".$r->id."'".','."'".$id_rpk."'".','."'".$not."'".')">EDIT</button>'.$btnAksi.'</td>
 			</tr>';
 		}
 		
@@ -6753,29 +6791,23 @@ class Master extends CI_Controller
 		}else if(!preg_match("/^[0-9]*$/", $ex)){
 			echo json_encode(array('data' => false, 'msg' => 'PERIKSA LAGI, DI TIMES!!'));
 		}else if(($eitem1 != 0 && $eitem2 == 0 && $eitem3 == 0 && $eitem4 == 0 && $eitem5 == 0) || ($eitem1 != 0 && $eitem2 != 0 && $eitem3 == 0 && $eitem4 == 0 && $eitem5 == 0) || ($eitem1 != 0 && $eitem2 != 0 && $eitem3 != 0 && $eitem4 == 0 && $eitem5 == 0) || ($eitem1 != 0 && $eitem2 != 0 && $eitem3 != 0 && $eitem4 != 0 && $eitem5 == 0) || ($eitem1 != 0 && $eitem2 != 0 && $eitem3 != 0 && $eitem4 != 0 && $eitem5 != 0)){
-			// YANG SUDAH ADA JANGANLAH
-			$qGet = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' AND item1='$eitem1' AND item2='$eitem2' AND item3='$eitem3' AND item4='$eitem4' AND item5='$eitem5' AND x='$ex' AND ref='$eref'");
-			if($qGet->num_rows() != 0){
-				echo json_encode(array('data' => false, 'msg' => 'ITEM SUDAH ADA SEBELUMNYA!!'));
-			}else{
-				$result = $this->m_master->aksiEditRpk();
-				$RpkNew = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' AND id='$idx'")->row();
-				$trimW = $RpkNew->item1+$RpkNew->item2+$RpkNew->item3+$RpkNew->item4+$RpkNew->item5;
-				echo json_encode(
-					array(
-						'data' => $result,
-						'item1' => round($RpkNew->item1,2),
-						'item2' => round($RpkNew->item2,2),
-						'item3' => round($RpkNew->item3,2),
-						'item4' => round($RpkNew->item4,2),
-						'item5' => round($RpkNew->item5,2),
-						'x' => $RpkNew->x,
-						'ref' => $RpkNew->ref,
-						'trimw' => $trimW,
-						'msg' => 'BERHASIL!!'
-					)
-				);
-			}
+			$result = $this->m_master->aksiEditRpk();
+			$RpkNew = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' AND id='$idx'")->row();
+			$trimW = $RpkNew->item1+$RpkNew->item2+$RpkNew->item3+$RpkNew->item4+$RpkNew->item5;
+			echo json_encode(
+				array(
+					'data' => $result,
+					'item1' => round($RpkNew->item1,2),
+					'item2' => round($RpkNew->item2,2),
+					'item3' => round($RpkNew->item3,2),
+					'item4' => round($RpkNew->item4,2),
+					'item5' => round($RpkNew->item5,2),
+					'x' => $RpkNew->x,
+					'ref' => $RpkNew->ref,
+					'trimw' => $trimW,
+					'msg' => 'BERHASIL!!'
+				)
+			);
 		}else{
 			echo json_encode(array('data' => false, 'msg' => 'ADA YANG SALAH, PERIKSA KEMBALI!!'));
 		}

@@ -1765,37 +1765,55 @@ class M_master extends CI_Model{
 	}
 
 	function simpanCartRpk(){
-		// $opsi = $_POST['opsi'];
-		foreach($this->cart->contents() as $data){
-			// tgl nm_ker g_label pm id_rpk item1 item2 item3 item4 item5 x ref
-			$tgl = $data['options']['tgl'];
-			$nm_ker = $data['options']['nm_ker'];
-			$g_label = $data['options']['g_label'];
-			$pm = $data['options']['pm'];
-			$id_rpk = $data['options']['id_rpk'];
-			$item1 = ($data['options']['item1'] != "") ? $data['options']['item1'] : 0;
-			$item2 = ($data['options']['item2'] != "") ? $data['options']['item2'] : 0;
-			$item3 = ($data['options']['item3'] != "") ? $data['options']['item3'] : 0;
-			$item4 = ($data['options']['item4'] != "") ? $data['options']['item4'] : 0;
-			$item5 = ($data['options']['item5'] != "") ? $data['options']['item5'] : 0;
+		if($this->cart->total_items() != 0){
+			foreach($this->cart->contents() as $data){
+				$tgl = $data['options']['tgl'];
+				$nm_ker = $data['options']['nm_ker'];
+				$g_label = $data['options']['g_label'];
+				$pm = $data['options']['pm'];
+				$id_rpk = $data['options']['id_rpk'].'/'.$data['options']['id_rpk_ref'];
+				$item1 = ($data['options']['item1'] != "") ? $data['options']['item1'] : 0;
+				$item2 = ($data['options']['item2'] != "") ? $data['options']['item2'] : 0;
+				$item3 = ($data['options']['item3'] != "") ? $data['options']['item3'] : 0;
+				$item4 = ($data['options']['item4'] != "") ? $data['options']['item4'] : 0;
+				$item5 = ($data['options']['item5'] != "") ? $data['options']['item5'] : 0;
 
-			$data = array(
-				'tgl' => $tgl,
-				'nm_ker' => $nm_ker,
-				'g_label' => $g_label,
-				'pm' => $pm,
-				'id_rpk' => $id_rpk,
-				'item1' => $item1,
-				'item2' => $item2,
-				'item3' => $item3,
-				'item4' => $item4,
-				'item5' => $item5,
-				'x' => $data['options']['times'],
-				'ref' => strtoupper($data['options']['ref']),
-				'created_at' => date("Y-m-d H:i:s"),
-				'created_by' => $this->session->userdata('username'),
-			);
-			$result = $this->db->insert('m_rpk', $data);
+				$data = array(
+					'tgl' => $tgl,
+					'nm_ker' => $nm_ker,
+					'g_label' => $g_label,
+					'pm' => $pm,
+					'id_rpk' => strtoupper($id_rpk),
+					'item1' => $item1,
+					'item2' => $item2,
+					'item3' => $item3,
+					'item4' => $item4,
+					'item5' => $item5,
+					'x' => $data['options']['times'],
+					'ref' => strtoupper($data['options']['ref']),
+					'created_at' => date("Y-m-d H:i:s"),
+					'created_by' => $this->session->userdata('username'),
+				);
+				$result = $this->db->insert('m_rpk', $data);
+			}
+		}
+
+		// UPDATE JIKA NOMER RPK BEDA
+		$ntgl = $_POST["tgl"];
+		$rpkLama = $_POST["tId_rpk"];
+		$rpkNew = $_POST["rpk_new"];
+		$rpkRefNew = $_POST["rpkref_new"];
+		$new_rpk = $rpkNew.'/'.$rpkRefNew;
+		if($_POST["status"] == 'edit' && $rpkLama != $new_rpk){
+			$getRpk = $this->db->query("SELECT*FROM m_rpk WHERE id_rpk='$rpkLama'");
+			foreach($getRpk->result() as $r){
+				$this->db->set('tgl', $ntgl);
+				$this->db->set('id_rpk', strtoupper($new_rpk));
+				$this->db->set('edited_at', date("Y-m-d H:i:s"));
+				$this->db->set('edited_by', $this->session->userdata('username'));
+				$this->db->where('id_rpk', $r->id_rpk);
+				$result = $this->db->update('m_rpk');
+			}
 		}
 
 		return $result;

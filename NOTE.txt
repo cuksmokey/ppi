@@ -167,13 +167,13 @@ CREATE TABLE `n1576051_db_ppi_fix`.`t_gsm`(
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `db_ppi2`.`m_rpk`(  
+CREATE TABLE ``.`m_rpk`(  
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `tgl` DATE,
   `nm_ker` VARCHAR(11),
   `g_label` INT(11),
   `pm` INT(2),
-  `id_rpk` VARCHAR(25),
+  `id_rpk` VARCHAR(50),
   `item1` DECIMAL(11,2),
   `item2` DECIMAL(11,2),
   `item3` DECIMAL(11,2),
