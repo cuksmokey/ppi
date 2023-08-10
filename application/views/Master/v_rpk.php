@@ -629,7 +629,6 @@
 	//
 
 	function aksiEditRpk(idx,id_rpk,not){
-		// toString().length
 		eitem1 = $("#erpk1-"+idx).val();
 		eitem2 = $("#erpk2-"+idx).val();
 		eitem3 = $("#erpk3-"+idx).val();
@@ -668,9 +667,7 @@
 			success: function(res){
 				data = JSON.parse(res);
 				if(data.data == true){
-					// swal(data.msg, "", "success");
 					showNotification("alert-success", data.msg, "top", "center", "", "");
-					// loadDataEditListRpk(id_rpk);
 					$("#erpk1-"+idx).val(data.item1).animateCss('fadeInRight');
 					$("#erpk2-"+idx).val(data.item2).animateCss('fadeInRight');
 					$("#erpk3-"+idx).val(data.item3).animateCss('fadeInRight');

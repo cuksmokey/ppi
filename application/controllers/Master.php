@@ -6238,8 +6238,8 @@ class Master extends CI_Controller
 			foreach($getDataRpk->result() as $r){
 				$i++;
 				if($r->stat == "open" && ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC")){
-					$btnEEdit = '<td style="padding:5px">-</td>
-						<td><button onclick="btnEditRpk('."'".$r->id_rpk."'".')">EDIT</button></td>';
+					$btnEEdit = '<td style="padding-left:3px"><button onclick="btnEditRpk('."'".$r->id_rpk."'".')">EDIT</button></td>
+					<td style="padding-left:5px">-</td>';
 				}else{
 					$btnEEdit = '<td style="padding-left:5px">-</td>';
 				}
@@ -6733,15 +6733,24 @@ class Master extends CI_Controller
 			$trimW = $item1+$item2+$item3+$item4+$item5;
 
 			$qGetTimbangan = $this->db->query("SELECT COUNT(roll) AS roll FROM m_timbangan WHERE id_rpk='$r->id' GROUP BY id_rpk");
-			if($qGetTimbangan->num_rows() == 0){
-				$not = '';
-				$adaIsi = '';
-				$btnAksi = ' - <button onclick="aksiHapusRpk('."'".$r->id."'".','."'".$id_rpk."'".')">HAPUS</button>';
-			}else{
+			if($r->stat == 'close'){
 				$not = 'not';
 				$adaIsi = 'style="background:#e9e9e9" disabled';
 				$btnAksi = '';
+				$bgCo = ';background:#ff0';
+			}else{
+				if($qGetTimbangan->num_rows() == 0){
+					$not = '';
+					$adaIsi = '';
+					$btnAksi = ' - <button onclick="aksiHapusRpk('."'".$r->id."'".','."'".$id_rpk."'".')">HAPUS</button>';
+				}else{
+					$not = 'not';
+					$adaIsi = 'style="background:#e9e9e9" disabled';
+					$btnAksi = '';
+				}
+				$bgCo = '';
 			}
+			
 			$dis1 = ($r->item1 != 0) ? $adaIsi : 'style="background:#e9e9e9" disabled';
 			$dis2 = ($r->item2 != 0) ? $adaIsi : 'style="background:#e9e9e9" disabled';
 			$dis3 = ($r->item3 != 0) ? $adaIsi : 'style="background:#e9e9e9" disabled';
@@ -6755,7 +6764,7 @@ class Master extends CI_Controller
 				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="erpk3-'.$r->id.'" maxlength="6" value="'.$item3.'" autocomplete="off" '.$dis3.'></td>
 				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="erpk4-'.$r->id.'" maxlength="6" value="'.$item4.'" autocomplete="off" '.$dis4.'></td>
 				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="erpk5-'.$r->id.'" maxlength="6" value="'.$item5.'" autocomplete="off" '.$dis5.'></td>
-				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="ex-'.$r->id.'" maxlength="3" value="'.$r->x.'" autocomplete="off"></td>
+				<td style="position:relative;padding:5px;border:1px solid #000'.$bgCo.'"><input type="text" class="edrpk" id="ex-'.$r->id.'" maxlength="3" value="'.$r->x.'" autocomplete="off"></td>
 				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="etrimw-'.$r->id.'" value="'.$trimW.'" autocomplete="off" disabled></td>
 				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="eref-'.$r->id.'" maxlength="50" value="'.$r->ref.'" autocomplete="off" style="text-align:left"></td>';
 
@@ -6792,8 +6801,8 @@ class Master extends CI_Controller
 			echo json_encode(array('data' => false, 'msg' => 'PERIKSA LAGI, DI TIMES!!'));
 		}else if(($eitem1 != 0 && $eitem2 == 0 && $eitem3 == 0 && $eitem4 == 0 && $eitem5 == 0) || ($eitem1 != 0 && $eitem2 != 0 && $eitem3 == 0 && $eitem4 == 0 && $eitem5 == 0) || ($eitem1 != 0 && $eitem2 != 0 && $eitem3 != 0 && $eitem4 == 0 && $eitem5 == 0) || ($eitem1 != 0 && $eitem2 != 0 && $eitem3 != 0 && $eitem4 != 0 && $eitem5 == 0) || ($eitem1 != 0 && $eitem2 != 0 && $eitem3 != 0 && $eitem4 != 0 && $eitem5 != 0)){
 			$result = $this->m_master->aksiEditRpk();
-			$RpkNew = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND id_rpk='$id_rpk' AND id='$idx'")->row();
-			$trimW = $RpkNew->item1+$RpkNew->item2+$RpkNew->item3+$RpkNew->item4+$RpkNew->item5;
+			$RpkNew = $this->db->query("SELECT*FROM m_rpk WHERE id_rpk='$id_rpk' AND id='$idx'")->row();
+			$trimW = $RpkNew->item1 + $RpkNew->item2 + $RpkNew->item3 + $RpkNew->item4 + $RpkNew->item5;
 			echo json_encode(
 				array(
 					'data' => $result,
