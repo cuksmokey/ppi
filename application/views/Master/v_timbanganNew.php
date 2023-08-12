@@ -64,6 +64,10 @@
 		font-weight: bold;
 		background: #e9e9e9 !important;
 	}
+
+	.tr-dtl-rpk:hover{
+		background: rgba(230, 230, 230, 0.5);
+	}
 </style>
 
 <section class="content">
@@ -405,12 +409,16 @@
 			url: '<?php echo base_url("Master/CekListGdNg")?>',
 			type: "POST",
 			data: ({
-				i,idx,id_rpk,stat,width
+				i,idx,id_rpk,stat,width,timbangan: 'timbangan'
 			}),
 			success: function(res){
 				$(".list-gd-ng-"+i).html(res);
 			}
 		});
+	}
+
+	function xclgd(i){
+		$(".list-gd-ng-"+i).html("");
 	}
 
 	function cekRollEdit(idroll,roll){
@@ -623,74 +631,74 @@
 		$("#getid").val(id);
 		
 		$.ajax({
-				url: '<?php echo base_url('Master/get_edit'); ?>', // 1030
-				type: 'POST',
-				data: {
-					id: id,
-					jenis: "Timbangan"
-				},
-			})
-			.done(function(data) {
-				json = JSON.parse(data);
+			url: '<?php echo base_url('Master/get_edit'); ?>', // 1030
+			type: 'POST',
+			data: {
+				id: id,
+				jenis: "Timbangan"
+			},
+		})
+		.done(function(data) {
+			json = JSON.parse(data);
 
-				if(json.status == 0 || json.status == 2 || json.status == 3){
-					$(".box-data").show();
-					$(".box-form").hide();
-					swal("ROLL SUDAH DICEK OK!, TIDAL BISA EDIT DATA ROLL, HARAP HUB. QC", "", "error");
-					load_data();
-				}else if(json.ctk == 1){
-					$(".box-data").show();
-					$(".box-form").hide();
-					swal("ROLL SUDAH DICETAK, TIDAL BISA EDIT DATA ROLL, HARAP HUB. QC", "", "error");
-					load_data();
-				}else{
-					$(".box-load-rpk").html('');
-					$(".box-data").hide();
-					$(".box-form").show();
-					$(".new_roll").show();
-					status = "update";
+			if(json.status == 0 || json.status == 2 || json.status == 3){
+				$(".box-data").show();
+				$(".box-form").hide();
+				swal("ROLL SUDAH DICEK OK!, TIDAL BISA EDIT DATA ROLL, HARAP HUB. QC", "", "error");
+				load_data();
+			}else if(json.ctk == 1){
+				$(".box-data").show();
+				$(".box-form").hide();
+				swal("ROLL SUDAH DICETAK, TIDAL BISA EDIT DATA ROLL, HARAP HUB. QC", "", "error");
+				load_data();
+			}else{
+				$(".box-load-rpk").html('');
+				$(".box-data").hide();
+				$(".box-form").show();
+				$(".new_roll").show();
+				status = "update";
 
-					a = json.roll.split("/");
-					textthnbln = a[2].toString();
-					athn = textthnbln.substr(0, 2);
-					abln = textthnbln.substr(2, 1);
-					textsetr = a[3].toString();
-					anka = textsetr.substr(0, 1);
-					ankod = textsetr.substr(1, 1);
+				a = json.roll.split("/");
+				textthnbln = a[2].toString();
+				athn = textthnbln.substr(0, 2);
+				abln = textthnbln.substr(2, 1);
+				textsetr = a[3].toString();
+				anka = textsetr.substr(0, 1);
+				ankod = textsetr.substr(1, 1);
 
-					$("#id1kode").val(a[0]);
-					$("#id11").val(a[1]).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
-					$("#id22").val(athn).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
-					$("#id2bln").val(abln).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
-					$("#id44").val(anka).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
-					$("#id4kode").val(ankod).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
+				$("#id1kode").val(a[0]);
+				$("#id11").val(a[1]).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
+				$("#id22").val(athn).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
+				$("#id2bln").val(abln).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
+				$("#id44").val(anka).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
+				$("#id4kode").val(ankod).prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
 
-					$("#tgl").val(json.tgl);
-					$("#nm_ker").val(json.nm_ker);
-					$("#g_ac").val(json.g_ac);
-					$("#g_label").val(json.g_label);
-					$("#width").val(json.width);
-					$("#weight").val(json.weight);
-					$("#diameter").val(json.diameter);
-					$("#joint").val(json.joint);
-					$("#rct").val(json.rct);
-					$("#bi").val(json.bi);
-					$("#cek_status").val(json.status);
-					$("textarea#ket").val(json.ket);
-					$("#id_rpk").val(json.id_rpk);
+				$("#tgl").val(json.tgl);
+				$("#nm_ker").val(json.nm_ker);
+				$("#g_ac").val(json.g_ac);
+				$("#g_label").val(json.g_label);
+				$("#width").val(json.width);
+				$("#weight").val(json.weight);
+				$("#diameter").val(json.diameter);
+				$("#joint").val(json.joint);
+				$("#rct").val(json.rct);
+				$("#bi").val(json.bi);
+				$("#cek_status").val(json.status);
+				$("textarea#ket").val(json.ket);
+				$("#id_rpk").val(json.id_rpk);
 
-					// cocok data lama
-					$("#l-tgl").val(json.tgl);
-					$("#l-nm_ker").val(json.nm_ker);
-					$("#l-g_label").val(json.g_label);
-					$("#l-width").val(json.width);
-					$("#l-weight").val(json.weight);
-					$("#l-diameter").val(json.diameter);
-					$("#l-joint").val(json.joint);
-					$("#l-ket").val(json.ket);
-					$("#l-status").val(json.status);
-				}
-			})
+				// cocok data lama
+				$("#l-tgl").val(json.tgl);
+				$("#l-nm_ker").val(json.nm_ker);
+				$("#l-g_label").val(json.g_label);
+				$("#l-width").val(json.width);
+				$("#l-weight").val(json.weight);
+				$("#l-diameter").val(json.diameter);
+				$("#l-joint").val(json.joint);
+				$("#l-ket").val(json.ket);
+				$("#l-status").val(json.status);
+			}
+		});
 	}
 
 	function deleteData(id, nm) { //

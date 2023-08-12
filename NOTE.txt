@@ -182,9 +182,23 @@ CREATE TABLE ``.`m_rpk`(
   `x` INT(3),
   `ref` TEXT,
   `stat` VARCHAR(5) DEFAULT 'open',
+  `k_length` INT(5),
+  `k_speed` INT(5),
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by` VARCHAR(11),
   `edited_at` TIMESTAMP,
   `edited_by` VARCHAR(11),
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE ``.`m_rpk_noted`(  
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `id_rpk` VARCHAR(50) NOT NULL,
+  `note_list` TEXT,
+  `typ` VARCHAR(6) NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by` VARCHAR(50),
+  `edited_at` TIMESTAMP,
+  `edited_by` VARCHAR(50),
   PRIMARY KEY (`id`)
 );

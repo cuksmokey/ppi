@@ -1791,6 +1791,8 @@ class M_master extends CI_Model{
 					'item5' => $item5,
 					'x' => $data['options']['times'],
 					'ref' => strtoupper($data['options']['ref']),
+					'k_length' => $data['options']['k_length'],
+					'k_speed' => $data['options']['k_speed'],
 					'created_at' => date("Y-m-d H:i:s"),
 					'created_by' => $this->session->userdata('username'),
 				);
@@ -1803,16 +1805,33 @@ class M_master extends CI_Model{
 		$rpkLama = $_POST["tId_rpk"];
 		$rpkNew = $_POST["rpk_new"];
 		$rpkRefNew = $_POST["rpkref_new"];
+		$k_length = $_POST["k_length"];
+		$k_speed = $_POST["k_speed"];
 		$new_rpk = $rpkNew.'/'.$rpkRefNew;
-		if($_POST["status"] == 'edit' && $rpkLama != $new_rpk){
+		// if($_POST["status"] == 'edit' && $rpkLama != $new_rpk){
+		if($_POST["status"] == 'edit'){
 			$getRpk = $this->db->query("SELECT*FROM m_rpk WHERE id_rpk='$rpkLama'");
 			foreach($getRpk->result() as $r){
 				$this->db->set('tgl', $ntgl);
+				$this->db->set('k_length', $k_length);
+				$this->db->set('k_speed', $k_speed);
 				$this->db->set('id_rpk', strtoupper($new_rpk));
 				$this->db->set('edited_at', date("Y-m-d H:i:s"));
 				$this->db->set('edited_by', $this->session->userdata('username'));
 				$this->db->where('id_rpk', $r->id_rpk);
 				$result = $this->db->update('m_rpk');
+			}
+
+			// UPDATE NOTE LIST JIKA SUDAH ADA
+			$getNoteList = $this->db->query("SELECT*FROM m_rpk_noted WHERE id_rpk='$rpkLama'");
+			if($getNoteList->num_rows() != 0){
+				foreach($getNoteList->result() as $ll){
+					$this->db->set('id_rpk', strtoupper($new_rpk));
+					$this->db->set('edited_at', date("Y-m-d H:i:s"));
+					$this->db->set('edited_by', $this->session->userdata('username'));
+					$this->db->where('id_rpk', $ll->id_rpk);
+					$result = $this->db->update('m_rpk_noted');
+				}
 			}
 		}
 
@@ -1857,5 +1876,41 @@ class M_master extends CI_Model{
 		$this->db->where('id', $_POST["idx"]);
 		$this->db->where('id_rpk', $_POST["id_rpk"]);
 		return $this->db->update('m_rpk');
+	}
+
+	function noted(){
+		if($_POST["stat"] == 'insert'){
+			// INSERT
+			$data = array(
+				'id_rpk' => $_POST["id_rpk"],
+				'note_list' => $_POST["note_list"],
+				'typ' => 000,
+				'created_at' => date("Y-m-d H:i:s"),
+				'created_by' => $this->session->userdata('username'),
+			);
+			$result = $this->db->insert('m_rpk_noted', $data);
+		}else if($_POST["stat"] == 'edit'){
+			// EDIT
+			$this->db->set('note_list', $_POST["note_list"]);
+			$this->db->set('edited_at', date("Y-m-d H:i:s"));
+			$this->db->set('edited_by', $this->session->userdata('username'));
+			$this->db->where('id', $_POST["idx"]);
+			$this->db->where('id_rpk', $_POST["id_rpk"]);
+			$result =  $this->db->update('m_rpk_noted');
+		}else if($_POST["stat"] == 'hapus'){
+			// HAPUS
+			$this->db->where('id', $_POST["idx"]);
+			$this->db->where('id_rpk', $_POST["id_rpk"]);
+			$result =  $this->db->delete('m_rpk_noted');
+		}else{
+			// UBAH WARNA
+			$this->db->set('typ', $_POST["stat"]);
+			$this->db->set('edited_at', date("Y-m-d H:i:s"));
+			$this->db->set('edited_by', $this->session->userdata('username'));
+			$this->db->where('id', $_POST["idx"]);
+			$this->db->where('id_rpk', $_POST["id_rpk"]);
+			$result =  $this->db->update('m_rpk_noted');
+		}
+		return $result;
 	}
 }

@@ -19,7 +19,7 @@
 ?>
 
 <style>
-	.box-data, .box-close {
+	.box-data, .box-close, .box-k-note {
 		padding-top:15px;
 		font-size:12px;
 		color: #000
@@ -87,6 +87,34 @@
 
 	.lbl-besar:hover{
 		color:#000;
+	}
+
+	.btn-ntd {
+		background: none;
+		background: transparent;
+		margin: 0;
+		padding: 0 6px;
+		border:0;
+		font-weight: bold;
+	}
+
+	.btn-ntd:hover{
+		text-decoration: underline;
+	}
+
+	.ff-ll-note{
+		width: 100%;
+		background: none;
+		background: transparent;
+		border: 0;
+		padding: 6px 120px 6px 6px;
+	}
+
+	.td-ntd:hover{
+		background: rgba(225, 225, 225, 0.5);
+	}
+	.tr-dtl-rpk:hover{
+		background: rgba(230, 230, 230, 0.5);
 	}
 </style>
 
@@ -187,19 +215,35 @@
 									<td style="padding:5px;text-align:center">:</td>
 									<td style="padding:5px 0">
 										<input type="hidden" id="tampung-id_rpk" value="">
-										<input type="text" name="id_rpk" id="id_rpk" style="text-align:center;font-weight:bold;border:0;padding:0;" disabled readonly>
+										<input type="text" name="id_rpk" id="id_rpk" style="background:none;width:100%;font-weight:bold;border:0;padding:0;text-align:center" disabled readonly>
 									</td>
 									<td style="padding:5px;text-align:center">/</td>
 									<td style="padding:5px 0">
-										<input type="text" name="id_rpk_ref" id="id_rpk_ref" class="id_rpk_ref form-control" autocomplete="off">
-									</td>
-									<td style="padding:5px">
-										<button class="btn-edit-ll" onclick="simpanCartRpk()">Edit</button>
+										<input type="text" name="id_rpk_ref" id="id_rpk_ref" class="id_rpk_ref form-control" placeholder="NO-RPK" autocomplete="off">
 									</td>
 								</tr>
 								<tr>
-									<td colspan="3" style="padding:15px 0"></td>
+									<td style="padding:5px 0;font-weight:bold">LENGTH</td>
+									<td style="padding:5px 3px;text-align:center">:</td>
+									<td style="padding:5px 0">
+										<input type="hidden" id="h_length" value="">
+										<input type="text" name="k_length" id="k_length" class="form-control" placeholder="0" autocomplete="off">
+									</td>
 								</tr>
+								<tr>
+									<td style="padding:5px 0;font-weight:bold">SPEED</td>
+									<td style="padding:5px 3px;text-align:center">:</td>
+									<td style="padding:5px 0">
+										<input type="hidden" id="h_speed" value="">
+										<input type="text" name="k_speed" id="k_speed" class="form-control" placeholder="0" autocomplete="off">
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:5px" colspan="2"></td>
+									<td style="padding:5px 0">
+										<button class="btn-edit-ll" style="font-weight:bold" onclick="simpanCartRpk()">EDIT</button>
+									</td>
+								<tr>
 							</table>
 							<table>
 								<tr>
@@ -260,10 +304,11 @@
 									<td style="padding:5px 0">
 										<textarea name="ref" id="ref" class="ref form-control" style="resize:none;" placeholder="KET" autocomplete="off"></textarea>
 									</td>
-								</tr><tr>
+								</tr>
+								<tr>
 									<td style="padding:5px 0" colspan="2"></td>
 									<td style="padding:5px 0">
-										<button onclick="addCartRpk()" style="font-weight:bold">ADD</button>
+										<button onclick="addCartRpk()" style="font-weight:bold">ADD ITEM</button>
 									</td>
 								</tr>
 							</table>
@@ -273,6 +318,9 @@
 
 							<!-- CART EDIT LIST RPK -->
 							<div class="edit-list-rpk"></div>
+
+							<!-- NOTE LIST -->
+							<div class="box-note-list"></div>
 						</div>
 					</div>
 				</div>
@@ -322,13 +370,18 @@
 		$("#item4").val("");
 		$("#item5").val("");
 		$("#times").val("");
+		$("#k_length").val("");
+		$("#k_speed").val("");
 		$("#trimw").val(0);
 		$("#ref").val("");
 
 		$(".form-control").prop("disabled", true).attr('style', 'background:#e9e9e9');
 		$(".pm").prop("disabled", false).removeAttr('style');
 		$(".tgl").prop("disabled", false).removeAttr('style');
+		$(".note-list").prop("disabled", false).removeAttr('style');
 		$(".id_rpk_ref").prop("disabled", false).removeAttr('style');
+		$("#k_length").prop("disabled", false).removeAttr('style');
+		$("#k_speed").prop("disabled", false).removeAttr('style');
 		$(".btn-edit-ll").hide();
 
 		$(".pi").prop("disabled", true).attr('style', 'background:#e9e9e9');
@@ -489,6 +542,7 @@
 
 	function btnEditRpk(id_rpk){
 		status = 'edit';
+		$(".box-note-list").html('');
 		$("#tampung-id_rpk").val(id_rpk);
 		$(".cart-list-rpk").load("<?php echo base_url('Master/destroyCartRpk') ?>");
 		$(".box-data").hide();
@@ -510,6 +564,8 @@
 				$("#pm").val(data.pm).prop("disabled", true).attr('style', 'background:#e9e9e9');
 				$("#nm_ker").val(data.nm_ker).prop("disabled", true).attr('style', 'background:#e9e9e9');
 				$("#g_label").val(data.g_label);
+				$("#k_length").val(data.k_length);
+				$("#k_speed").val(data.k_speed);
 
 				sid_rpk = data.id_rpk.split("/");
 				$("#id_rpk").val(sid_rpk[0]+'/'+sid_rpk[1]);
@@ -531,6 +587,49 @@
 			}),
 			success: function(res){
 				$(".edit-list-rpk").html(res);
+				loadDataNoteList(id_rpk);
+			}
+		});
+	}
+	
+	function loadDataNoteList(id_rpk){
+		// alert(id_rpk);
+		$(".box-note-list").html('Loading');
+		$.ajax({
+			url: '<?php echo base_url("Master/loadDataNoteList")?>',
+			type: "POST",
+			data: ({
+				id_rpk
+			}),
+			success: function(res){
+				$(".box-note-list").html(res);
+			}
+		});
+	}
+
+	function noted(id_rpk,idx,stat){
+		$(".btn-add-noted").prop("disabled", true);
+		// alert(id_rpk+' - '+idx+' - '+stat);
+		if(stat == 'insert'){
+			note_list = $(".note-list").val();
+		}else{
+			note_list = $(".enote-list-"+idx).val();
+		}
+		$.ajax({
+			url: '<?php echo base_url("Master/noted")?>',
+			type: "POST",
+			data: ({
+				id_rpk,note_list,idx,stat
+			}),
+			success: function(res){
+				data = JSON.parse(res);
+				if(data.data == true){
+					swal(data.msg, "", "success");
+					loadDataNoteList(id_rpk);
+				}else{
+					swal(data.msg, "", "error");
+				}
+				$(".btn-add-noted").prop("disabled", false);
 			}
 		});
 	}
@@ -544,12 +643,17 @@
 			url: '<?php echo base_url("Master/CekListGdNg")?>',
 			type: "POST",
 			data: ({
-				i,idx,id_rpk,stat,width
+				i,idx,id_rpk,stat,width,timbangan: ''
 			}),
 			success: function(res){
 				$(".list-gd-ng-"+i).html(res);
 			}
 		});
+	}
+
+	function xclgd(i){
+		$(".bg-iya").removeClass("btn-iya").addClass("btn-gg");
+		$(".list-gd-ng-"+i).html("");
 	}
 
 	function plhCekUkuran(width){
@@ -937,6 +1041,8 @@
 		times = $("#times").val();
 		ref = $("#ref").val();
 		trimw = $("#trimw").val();
+		k_length = $("#k_length").val();
+		k_speed = $("#k_speed").val();
 		// alert(xid_rpk+' - '+xid_rpk_ref+' - '+id_rpk);
 
 		if(xplh == 1){
@@ -1000,11 +1106,10 @@
 			}
 		}
 
-		if(tgl == "" || pm == "" || nm_ker == "" || g_label == "" || id_rpk == "" || id_rpk_ref == "" || times == ""){
+		if(tgl == "" || pm == "" || nm_ker == "" || g_label == "" || id_rpk == "" || id_rpk_ref == "" || times == "" || k_length == "" ||k_speed == ""){
 			swal("HARAP LENGKAPI FORM!", "", "error");
 			return;
 		}
-
 		if(trimw == 0 || trimw == ""){
 			swal("TRIM TIDAK BOLEH KOSONG!", "", "error");
 			return;
@@ -1014,7 +1119,7 @@
 			url: '<?php echo base_url("Master/addCartRpk")?>',
 			type: "POST",
 			data: ({
-				tgl,pm,nm_ker,g_label,id_rpk,id_rpk_ref,xplh,item1,item2,item3,item4,item5,times,ref,opsi: status
+				tgl,pm,nm_ker,g_label,id_rpk,id_rpk_ref,k_length,k_speed,xplh,item1,item2,item3,item4,item5,times,ref,opsi: status
 			}),
 			success: function(res){
 				data = JSON.parse(res);
@@ -1054,6 +1159,8 @@
 		rpk_new = $("#id_rpk").val();
 		rpkref_new = $("#id_rpk_ref").val();
 		nRpkCuy = rpk_new+'/'+rpkref_new;
+		k_length = $("#k_length").val();
+		k_speed = $("#k_speed").val();
 		// alert(tId_rpk+" - "+rpk_new+" - "+rpkref_new+" - "+status);
 		$(".btn-s-rpk").prop("disabled", true);
 
@@ -1064,7 +1171,7 @@
 		$.ajax({
 			url: '<?php echo base_url("Master/simpanCartRpk")?>',
 			data: ({
-				tId_rpk,status,rpk_new,rpkref_new,tgl
+				tId_rpk,status,rpk_new,rpkref_new,tgl,k_length,k_speed
 			}),
 			type: "POST",
 			success: function(res){
@@ -1077,8 +1184,8 @@
 					$(".g_label").prop("disabled", true).attr('style', 'background:#e9e9e9');
 					$(".ii").val("").prop("disabled", true).attr('style', 'background:#e9e9e9;text-align:center');
 					$("#trimw").val(0);
-					$("#times").val("");
-					$("#ref").val("");
+					$("#times").val("").prop("disabled", true).attr('style', 'background:#e9e9e9');
+					$("#ref").val("").prop("disabled", true).attr('style', 'background:#e9e9e9');
 				}else{
 					swal(data.msg, "", "error");
 					return;
