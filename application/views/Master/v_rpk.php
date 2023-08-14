@@ -116,6 +116,13 @@
 	.tr-dtl-rpk:hover{
 		background: rgba(230, 230, 230, 0.5);
 	}
+
+	.inpt-idrpk-ref{
+		margin:0;
+		padding:6px 12px;
+		border: 3px solid #888;
+		border-width: 0 0 3px;
+	}
 </style>
 
 <section class="content">
@@ -217,9 +224,9 @@
 										<input type="hidden" id="tampung-id_rpk" value="">
 										<input type="text" name="id_rpk" id="id_rpk" style="background:none;width:100%;font-weight:bold;border:0;padding:0;text-align:center" disabled readonly>
 									</td>
-									<td style="padding:5px;text-align:center">/</td>
+									<td style="padding:5px;text-align:center">-</td>
 									<td style="padding:5px 0">
-										<input type="text" name="id_rpk_ref" id="id_rpk_ref" class="id_rpk_ref form-control" placeholder="NO-RPK" autocomplete="off">
+										<input type="text" name="id_rpk_ref" id="id_rpk_ref" class="id_rpk_ref inpt-idrpk-ref" placeholder="RINCIAN-RPK" autocomplete="off">
 									</td>
 								</tr>
 								<tr>

@@ -6117,11 +6117,12 @@ class Master extends CI_Controller
 		}else{
 			$i = 0;
 			foreach($getNoRpk->result() as $r){
+				$xRpk = explode("/", $r->id_rpk);
 				$i++;
 				$html .='<table style="border-collapse:collapse">';
 				$html .='<tr>
 					<td style="padding:5px 0">
-						<button class="btn-all btn-rpk-'.$i.'" onclick="btnDetailRpk('."'".$i."'".','."'".$r->id_rpk."'".')">'.$r->id_rpk.'</button>
+						<button class="btn-all btn-rpk-'.$i.'" onclick="btnDetailRpk('."'".$i."'".','."'".$r->id_rpk."'".')">'.$xRpk[0].'/'.$xRpk[1].'-'.$xRpk[2].'</button>
 					</td>
 				</tr>';
 				$html .='</table>';
@@ -6244,6 +6245,7 @@ class Master extends CI_Controller
 			$i = 0;
 			foreach($getDataRpk->result() as $r){
 				$i++;
+				$xRpk = explode("/", $r->id_rpk);
 				if($r->stat == "open" && ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC")){
 					$btnEEdit = '<td style="padding-left:3px"><button onclick="btnEditRpk('."'".$r->id_rpk."'".')">EDIT</button></td>
 					<td style="padding-left:5px">-</td>';
@@ -6257,7 +6259,7 @@ class Master extends CI_Controller
 						<button onclick="btnDetailRpk('."'".$i."'".','."'".$r->id_rpk."'".')">DETAIL</button>
 					</td>
 					'.$btnEEdit.'
-					<td style="padding:5px">'.$r->id_rpk.'</td>
+					<td style="padding:5px">'.$xRpk[0].'/'.$xRpk[1].'-'.$xRpk[2].'</td>
 					<td>
 						<a href="'.base_url('Master/btnDetailRpk').'?i='.$i.'&id_rpk='.$r->id_rpk.'" target="_blank" rel="plcek">PDF</a>
 					</td>
@@ -6282,6 +6284,7 @@ class Master extends CI_Controller
 			$tblWidth = ';width:100%';
 
 			$qGetKopJdl = $this->db->query("SELECT*FROM m_rpk WHERE id_rpk='$id_rpk' LIMIT 1")->row();
+			$xRpk = explode("/", $qGetKopJdl->id_rpk);
 			$kopJudul = '<table style="border-collapse:collapse;text-align:center;font-size:22px;font-weight:bold;width:100%">
 				<tr>
 					<td style="width:20%;padding:46px 5px;border:1px solid #000;background:url('.base_url().'assets/images/logo_ppi_inv.png)center no-repeat"></td>
@@ -6298,7 +6301,7 @@ class Master extends CI_Controller
 				<tr>
 					<td style="padding:5px 0">NO. RPK</td>
 					<td style="padding:5px">:</td>
-					<td style="padding:5px 0">'.$qGetKopJdl->id_rpk.'</td>
+					<td style="padding:5px 0">'.$xRpk[0].'/'.$xRpk[1].'-'.$xRpk[2].'</td>
 				</tr>
 			</table>';
 
@@ -6499,8 +6502,8 @@ class Master extends CI_Controller
 				$sumGood += $good; 
 				$sumNotGood += $notGood;
 				$weight = ($isi->g_label * $isi->k_length / 2) * $isi->x * $trimW / 100000000;
-				$t += ceil($weight);
-				$html .='<td style="border:1px solid #000;padding:5px">'.ceil($weight).'</td>';
+				$t += round($weight);
+				$html .='<td style="border:1px solid #000;padding:5px">'.round($weight).'</td>';
 
 				if(isset($_GET["i"]) && isset($_GET["id_rpk"])){
 					$ketRef = $isi->ref;
@@ -6592,6 +6595,8 @@ class Master extends CI_Controller
 			$getNoteList = $this->db->query("SELECT*FROM m_rpk_noted WHERE id_rpk='$id_rpk' ORDER BY typ,id");
 			if($getNoteList->num_rows() == 0){
 				$ntList = '';
+				$xtks = 0;
+				$xRntL = 6;
 			}else{
 				$ntList = '<table style="border-collapse:collapse;margin:0;padding:0;font-weight:bold">';
 				$ntList .= '<tr><td style="padding:1px 0">NOTE :</td></tr>';
@@ -6654,11 +6659,13 @@ class Master extends CI_Controller
 					<td style="padding:1px 3px;text-align:right">'.round($totHour).'</td>
 					<td style="padding:1px;text-align:left">total hour</td>
 				</tr>';
-				for ($fntL = 1; $fntL <= $xtks; $fntL++) {
-					$html .= '<tr>
-						<td style="padding:8px"></td>
-						<td style="padding:8px"></td>
-					</tr>';
+				if($getNoteList->num_rows() != 0){
+					for ($fntL = 1; $fntL <= $xtks; $fntL++) {
+						$html .= '<tr>
+							<td style="padding:8px"></td>
+							<td style="padding:8px"></td>
+						</tr>';
+					}
 				}
 			}
 
@@ -6883,9 +6890,10 @@ class Master extends CI_Controller
 		$id_rpk = $_POST["id_rpk"];
 		$html ='';
 
+		$xRpk = explode("/", $id_rpk);
 		$html .='<table style="margin-top:15px;text-align:center;border-collapse:collapse">';
 		$html .='<tr>
-			<td style="text-align:left;font-weight:bold" colspan="10">'.$id_rpk.'</td>
+			<td style="text-align:left;font-weight:bold" colspan="10">'.$xRpk[0].'/'.$xRpk[1].'-'.$xRpk[2].'</td>
 		</tr>
 		<tr>
 			<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #000">NO.</td>
