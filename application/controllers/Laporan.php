@@ -2138,8 +2138,8 @@ class Laporan extends CI_Controller {
 
                 // ambil data
                 $data_detail_all = $this->db->query("SELECT*FROM m_timbangan
-				WHERE g_label='$r->g_label' AND width='$r->width' AND $where AND status='$status' AND id_pl='0'
-				ORDER BY g_label ASC, roll ASC");
+				WHERE g_label='$r->g_label' AND width='$r->width' AND $where AND status='$status' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
+				ORDER BY tgl ASC,nm_ker,g_label,width,pm,roll");
 
                 $no = 1;
                 foreach ($data_detail_all->result() as $risi ) {

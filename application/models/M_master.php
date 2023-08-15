@@ -1784,6 +1784,7 @@ class M_master extends CI_Model{
 					'g_label' => $g_label,
 					'pm' => $pm,
 					'id_rpk' => strtoupper($id_rpk),
+					'id_rpk_ref' => strtoupper($data['options']['id_rpk_ref']),
 					'item1' => $item1,
 					'item2' => $item2,
 					'item3' => $item3,
@@ -1816,6 +1817,7 @@ class M_master extends CI_Model{
 				$this->db->set('k_length', $k_length);
 				$this->db->set('k_speed', $k_speed);
 				$this->db->set('id_rpk', strtoupper($new_rpk));
+				$this->db->set('id_rpk_ref', strtoupper($rpkRefNew));
 				$this->db->set('edited_at', date("Y-m-d H:i:s"));
 				$this->db->set('edited_by', $this->session->userdata('username'));
 				$this->db->where('id_rpk', $r->id_rpk);

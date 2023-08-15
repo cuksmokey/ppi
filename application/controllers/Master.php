@@ -5943,8 +5943,8 @@ class Master extends CI_Controller
 			),
 		);
 
-		if(!preg_match("/^[-A-Z0-9]*$/", $id_rpk_ref)){
-			echo json_encode(array('res' => false, 'msg' => 'HANYA BOLEH HURUF BESAR DAN TANDA - !!'));
+		if($id_rpk_ref == ""){
+			echo json_encode(array('res' => false, 'msg' => 'RINCIAN RPK TIDAK BOLEH KOSONG!!'));
 		}else if(!preg_match("/^[0-9.]*$/", $items)){
 			echo json_encode(array('res' => false, 'msg' => 'INPUT ITEMS HANYA BOLEH ANGKA ATAU BESERTA TITIK!!'));
 		}else if(!preg_match("/^[0-9]*$/", $times)){
@@ -6006,7 +6006,7 @@ class Master extends CI_Controller
 				<td style="padding:5px;border:1px solid #333">'.$items['options']['tgl'].'</td>
 				<td style="padding:5px;border:1px solid #333">'.$items['options']['pm'].'</td>
 				<td style="padding:5px;border:1px solid #333">'.$items['options']['nm_ker'].''.$items['options']['g_label'].'</td>
-				<td style="padding:5px;border:1px solid #333">'.$items['options']['id_rpk'].'/'.$items['options']['id_rpk_ref'].'</td>
+				<td style="padding:5px;border:1px solid #333">'.$items['options']['id_rpk'].'-'.$items['options']['id_rpk_ref'].'</td>
 				<td style="padding:5px;border:1px solid #333">'.$item1.'</td>
 				<td style="padding:5px;border:1px solid #333">'.$item2.'</td>
 				<td style="padding:5px;border:1px solid #333">'.$item3.'</td>
@@ -6046,8 +6046,8 @@ class Master extends CI_Controller
 		$k_length = $_POST["k_length"];
 		$k_speed = $_POST["k_speed"];
 
-		if(!preg_match("/^[-A-Z0-9]*$/", $rpkRefNew)){
-			echo json_encode(array('res' => false, 'msg' => 'HANYA BOLEH HURUF BESAR DAN TANDA - !!'));
+		if($rpkRefNew == ""){
+			echo json_encode(array('res' => false, 'msg' => 'RINCIAN RPK TIDAK BOLEH KOSONG!!'));
 		}else if(!preg_match("/^[0-9]*$/", $k_length)){
 			echo json_encode(array('res' => false, 'msg' => 'LENGTH PAKAI ANGKA!!'));
 		}else if(!preg_match("/^[0-9]*$/", $k_speed)){
@@ -6111,7 +6111,7 @@ class Master extends CI_Controller
 		}
 
 		$html = '';
-		$getNoRpk = $this->db->query("SELECT tgl,id_rpk FROM m_rpk WHERE stat='open' $pm GROUP BY tgl,id_rpk");
+		$getNoRpk = $this->db->query("SELECT tgl,id_rpk,id_rpk_ref FROM m_rpk WHERE stat='open' $pm GROUP BY tgl,id_rpk");
 		if($getNoRpk->num_rows() == 0){
 			$html .='<div style="font-weight:bold">BELUM ADA RPK</div>';
 		}else{
@@ -6122,7 +6122,7 @@ class Master extends CI_Controller
 				$html .='<table style="border-collapse:collapse">';
 				$html .='<tr>
 					<td style="padding:5px 0">
-						<button class="btn-all btn-rpk-'.$i.'" onclick="btnDetailRpk('."'".$i."'".','."'".$r->id_rpk."'".')">'.$xRpk[0].'/'.$xRpk[1].'-'.$xRpk[2].'</button>
+						<button class="btn-all btn-rpk-'.$i.'" onclick="btnDetailRpk('."'".$i."'".','."'".$r->id_rpk."'".')">'.$xRpk[0].'/'.$xRpk[1].'-'.$r->id_rpk_ref.'</button>
 					</td>
 				</tr>';
 				$html .='</table>';
@@ -6259,7 +6259,7 @@ class Master extends CI_Controller
 						<button onclick="btnDetailRpk('."'".$i."'".','."'".$r->id_rpk."'".')">DETAIL</button>
 					</td>
 					'.$btnEEdit.'
-					<td style="padding:5px">'.$xRpk[0].'/'.$xRpk[1].'-'.$xRpk[2].'</td>
+					<td style="padding:5px">'.$xRpk[0].'/'.$xRpk[1].'-'.$r->id_rpk_ref.'</td>
 					<td>
 						<a href="'.base_url('Master/btnDetailRpk').'?i='.$i.'&id_rpk='.$r->id_rpk.'" target="_blank" rel="plcek">PDF</a>
 					</td>
@@ -6301,7 +6301,7 @@ class Master extends CI_Controller
 				<tr>
 					<td style="padding:5px 0">NO. RPK</td>
 					<td style="padding:5px">:</td>
-					<td style="padding:5px 0">'.$xRpk[0].'/'.$xRpk[1].'-'.$xRpk[2].'</td>
+					<td style="padding:5px 0">'.$xRpk[0].'/'.$xRpk[1].'-'.$qGetKopJdl->id_rpk_ref.'</td>
 				</tr>
 			</table>';
 
@@ -6880,6 +6880,7 @@ class Master extends CI_Controller
 				'g_label' => $qGetKop->g_label,
 				'pm' => $qGetKop->pm,
 				'id_rpk' => $qGetKop->id_rpk,
+				'id_rpk_ref' => $qGetKop->id_rpk_ref,
 				'k_length' => $qGetKop->k_length,
 				'k_speed' => $qGetKop->k_speed,
 			)
@@ -6890,10 +6891,11 @@ class Master extends CI_Controller
 		$id_rpk = $_POST["id_rpk"];
 		$html ='';
 
+		$qGetData = $this->db->query("SELECT*FROM m_rpk WHERE id_rpk='$id_rpk'");
 		$xRpk = explode("/", $id_rpk);
 		$html .='<table style="margin-top:15px;text-align:center;border-collapse:collapse">';
 		$html .='<tr>
-			<td style="text-align:left;font-weight:bold" colspan="10">'.$xRpk[0].'/'.$xRpk[1].'-'.$xRpk[2].'</td>
+			<td style="text-align:left;font-weight:bold" colspan="10">'.$xRpk[0].'/'.$xRpk[1].'-'.$qGetData->row()->id_rpk_ref.'</td>
 		</tr>
 		<tr>
 			<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #000">NO.</td>
@@ -6909,10 +6911,7 @@ class Master extends CI_Controller
 			<td style="background:#ddd;padding:5px;font-weight:bold;border:1px solid #000">AKSI</td>
 		</tr>';
 
-		$qGetData = $this->db->query("SELECT*FROM m_rpk WHERE id_rpk='$id_rpk'");
-		$i = 0;
-		$x = 0;
-		$totWeight = 0;
+		$i = 0; $x = 0; $totWeight = 0;
 		foreach($qGetData->result() as $r){
 			$i++;
 			$item1 = ($r->item1 != 0) ? round($r->item1,2) : 0;
@@ -6948,7 +6947,7 @@ class Master extends CI_Controller
 			$dis5 = ($r->item5 != 0) ? $adaIsi : 'style="background:#e9e9e9" disabled';
 
 			$weight = ($r->g_label * $r->k_length / 2) * $r->x * $trimW / 100000000;
-			$totWeight += ceil($weight);
+			$totWeight += round($weight);
 
 			$html .='<tr>
 				<td style="padding:5px;border:1px solid #000">'.$i.'</td>
@@ -6959,7 +6958,7 @@ class Master extends CI_Controller
 				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="erpk5-'.$r->id.'" maxlength="6" value="'.$item5.'" autocomplete="off" '.$dis5.'></td>
 				<td style="position:relative;padding:5px;border:1px solid #000'.$bgCo.'"><input type="text" class="edrpk" id="ex-'.$r->id.'" maxlength="3" value="'.$r->x.'" autocomplete="off"></td>
 				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="etrimw-'.$r->id.'" value="'.$trimW.'" autocomplete="off" disabled></td>
-				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="eweight-'.$r->id.'" value="'.ceil($weight).'" autocomplete="off" disabled></td>
+				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="eweight-'.$r->id.'" value="'.round($weight).'" autocomplete="off" disabled></td>
 				<td style="position:relative;padding:5px;border:1px solid #000"><input type="text" class="edrpk" id="eref-'.$r->id.'" maxlength="50" value="'.$r->ref.'" autocomplete="off" style="text-align:left"></td>
 				<td style="padding:5px;border:1px solid #000"><button onclick="aksiEditRpk('."'".$r->id."'".','."'".$id_rpk."'".','."'".$not."'".')">EDIT</button>'.$btnAksi.'</td>
 			</tr>';

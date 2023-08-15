@@ -576,7 +576,7 @@
 
 				sid_rpk = data.id_rpk.split("/");
 				$("#id_rpk").val(sid_rpk[0]+'/'+sid_rpk[1]);
-				$("#id_rpk_ref").val(sid_rpk[2]).prop("disabled", false).removeAttr('style');
+				$("#id_rpk_ref").val(data.id_rpk_ref).prop("disabled", false).removeAttr('style');
 				$(".pi").prop("disabled", false).removeAttr('style');
 				loadDataEditListRpk(id_rpk);
 			}
@@ -659,7 +659,7 @@
 	}
 
 	function xclgd(i){
-		$(".bg-iya").removeClass("btn-iya").addClass("btn-gg");
+		// $(".bg-iya").removeClass("btn-iya").addClass("btn-gg");
 		$(".list-gd-ng-"+i).html("");
 	}
 
