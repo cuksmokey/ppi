@@ -6246,7 +6246,7 @@ class Master extends CI_Controller
 			foreach($getDataRpk->result() as $r){
 				$i++;
 				$xRpk = explode("/", $r->id_rpk);
-				if($r->stat == "open" && ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC")){
+				if($r->stat == "open" && ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG")){
 					$btnEEdit = '<td style="padding-left:3px"><button onclick="btnEditRpk('."'".$r->id_rpk."'".')">EDIT</button></td>
 					<td style="padding-left:5px">-</td>';
 				}else{
