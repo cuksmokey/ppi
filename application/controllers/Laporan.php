@@ -6894,14 +6894,14 @@ class Laporan extends CI_Controller {
 				<td style="padding:5px;font-weight:bold;border-bottom:2px solid #000">KETERANGAN</td>
 			</tr>';
 
-			$i = 0;
-			$sumSisaPenj = 0;
+			$i = 0; $ii = 0; $sumSisaPenj = 0;
 			foreach($qGetPOMaster->result() as $po){
 				$html .='<tr>
 					<td colspan="6" style="padding:5px"></td>
 				</tr>';
 
 				$i++;
+				$ii++;
 				$html .='<tr class="all-list-gg">
 					<td style="padding:5px;font-weight:bold;text-align:center">'.$i.'.</td>
 					<td style="padding:5px;font-weight:bold">'.$po->no_po.'</td>
@@ -6911,7 +6911,6 @@ class Laporan extends CI_Controller {
 					<td style="padding:5px;font-weight:bold">'.$po->ket.'</td>
 				</tr>';
 
-				// $this->m_fungsi->tglInd_skt($kirim->tgl)
 				$qGetKiriman = $this->db->query("SELECT p.tgl,p.id_perusahaan,p.no_po,p.no_surat,p.no_pkb,t.nm_ker,t.g_label,t.width,COUNT(t.roll) AS jmlkir FROM m_timbangan t
 				INNER JOIN pl p ON t.id_pl=p.id
 				WHERE p.id_perusahaan='$id' AND p.no_po='$po->no_po'
@@ -6919,21 +6918,20 @@ class Laporan extends CI_Controller {
 				GROUP BY p.tgl,p.id_perusahaan,p.no_po,p.no_pkb,t.nm_ker,t.g_label,t.width");
 				$sumKir = 0;
 				foreach($qGetKiriman->result() as $kir){
-					$i++;
+					$ii++;
 					$html .='<tr class="all-list-gg">
 						<td style="padding:5px"></td>
 						<td style="padding:5px" colspan="3">- '.$this->m_fungsi->tglInd_skt($kir->tgl).' - '.trim($kir->no_surat).'</td>
 						<td style="padding:5px;text-align:right">
-							<button class="lnk" style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cekKirimanTkRoll('."'".trim($kir->no_surat)."'".','."'".$po->no_po."'".','."'".$po->nm_ker."'".','."'".$po->g_label."'".','."'".$po->width."'".','."'".$i."'".')">'.$kir->jmlkir.'</button>
+							<button class="lnk" style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cekKirimanTkRoll('."'".trim($kir->no_surat)."'".','."'".$po->no_po."'".','."'".$po->nm_ker."'".','."'".$po->g_label."'".','."'".$po->width."'".','."'".$ii."'".')">'.$kir->jmlkir.'</button>
 						</td>
 					</tr>';
-					// <td style="padding:5px;text-align:right">'.$kir->jmlkir.'</td>
 					$sumKir += $kir->jmlkir;
 
 					$html .='<tr>
 						<td></td>
 						<td colspan="5">
-							<div class="clear-tmpl-roll tmpl-roll-tk-kirim-'.$i.'"></div>
+							<div class="clear-tmpl-roll tmpl-roll-tk-kirim-'.$ii.'"></div>
 						</td>
 					</tr>';
 				}
