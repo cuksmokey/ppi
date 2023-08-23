@@ -6174,7 +6174,7 @@ class Master extends CI_Controller
 	}
 
 	function loadRollRpkBaru(){
-		if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC"){
+		if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG"){
 			if($_POST["pm"] == 1){
 				$wPM = "AND t.pm='1'";
 			}else if($_POST["pm"] == 2){
