@@ -6531,7 +6531,7 @@ class Master extends CI_Controller
 				if(isset($_GET["i"]) && isset($_GET["id_rpk"])){
 					$ketRef = $isi->ref;
 				}else{
-					$ketRef = '<textarea style="width:100%;border:0;padding:0;resize:none" disabled>'.$isi->ref.'</textarea>';
+					($isi->ref == "") ? $ketRef = '' : $ketRef = '<textarea style="width:100%;border:0;padding:0;resize:none" disabled>'.$isi->ref.'</textarea>';
 				}
 				$html .='<td style="border:1px solid #000;position:relative;padding:5px;text-align:left">
 					'.$ketRef.'
