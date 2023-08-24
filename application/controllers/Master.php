@@ -6083,9 +6083,9 @@ class Master extends CI_Controller
 		}else{
 			if($stat == 'open'){
 				$cekOPm1 = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND pm='1' GROUP BY id_rpk");
-				($cekOPm1->num_rows() != 0) ? $btnOpm1 = '<button style="font-size:12px;font-weight:bold;color:#000" onclick="loadRollRpkBaru(1)">PM 1</button> ' : $btnOpm1 = '';
+				($cekOPm1->num_rows() != 0) ? $btnOpm1 = '<button style="font-size:12px;font-weight:bold;color:#000" onclick="loadJnmKer(1)">PM 1</button> ' : $btnOpm1 = '';
 				$cekOPm2 = $this->db->query("SELECT*FROM m_rpk WHERE stat='open' AND pm='2' GROUP BY id_rpk");
-				($cekOPm2->num_rows() != 0) ? $btnOpm2 = '<button style="font-size:12px;font-weight:bold;color:#000" onclick="loadRollRpkBaru(2)">PM 2</button>' : $btnOpm2 = '';
+				($cekOPm2->num_rows() != 0) ? $btnOpm2 = '<button style="font-size:12px;font-weight:bold;color:#000" onclick="loadJnmKer(2)">PM 2</button>' : $btnOpm2 = '';
 				$html = $btnOpm1.$btnOpm2;
 			}else{
 				$cekCPm1 = $this->db->query("SELECT*FROM m_rpk WHERE stat='close' AND pm='1' GROUP BY id_rpk");
@@ -6099,15 +6099,35 @@ class Master extends CI_Controller
 		echo $html;
 	}
 
-	function getIRpk(){
-		if($_POST["kd_pm"] == 'all'){
-			$pm = "";
-		}else if($_POST["kd_pm"] == 'r1'){
-			$pm = "AND pm='1'";
-		}else if($_POST["kd_pm"] == 'r2'){
-			$pm = "AND pm='2'";
+	function loadJnmKer(){
+		$html = '';
+		
+		if($this->session->userdata('level') == "Rewind1"){
+			$pm = 1;
+		}else if($this->session->userdata('level') == "Rewind2"){
+			$pm = 2;
 		}else{
-			$pm = "AND pm=''";
+			$pm = $_POST["pm"];
+		}
+		$qGetNmKer = $this->db->query("SELECT pm,nm_ker FROM m_rpk WHERE pm='$pm' AND stat='open' GROUP BY nm_ker");
+		$html .='<div style="display:block;margin:5px 0">
+			<button style="font-size:12px;font-weight:bold;color:#000" disabled>PM '.$pm.' : </button> - ';
+		foreach($qGetNmKer->result() as $r){
+			$html .='<button style="font-size:12px;font-weight:bold;color:#000" onclick="loadRollRpkBaru('."'".$pm."'".','."'".$r->nm_ker."'".')">'.$r->nm_ker.'</button> ';
+		}
+		$html .='</div>';
+
+		echo $html;
+	}
+
+	function getIRpk(){
+		$nmker = $_POST["nmker"];
+		if($_POST["kd_pm"] == 'r1'){
+			$pm = "AND pm='1' AND nm_ker='$nmker'";
+		}else if($_POST["kd_pm"] == 'r2'){
+			$pm = "AND pm='2' AND nm_ker='$nmker'";
+		}else{
+			$pm = "";
 		}
 
 		$html = '';
@@ -6163,7 +6183,7 @@ class Master extends CI_Controller
 		foreach($qBulan->result() as $r){
 			$html .='<table style="border-collapse:collapse">';
 			$html .='<tr>
-				<td style="padding:5px 0 0 10px;font-weight:bold"><button onclick="loadDataRpk('."'".$pm."'".','."'".$tahun."'".','."'".$r->bulan."'".','."'close'".')">'.strtoupper($this->m_fungsi->getBulan($r->bulan)).'</button></td>
+				<td style="padding:5px 0 0 10px;font-weight:bold"><button onclick="loadDataRpk('."'".$pm."'".','."''".','."'".$tahun."'".','."'".$r->bulan."'".','."'close'".')">'.strtoupper($this->m_fungsi->getBulan($r->bulan)).'</button></td>
 			</tr>';
 			$html .='</table>';
 
@@ -6174,24 +6194,26 @@ class Master extends CI_Controller
 	}
 
 	function loadRollRpkBaru(){
+		$nmker = $_POST["nmker"];
 		if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG"){
 			if($_POST["pm"] == 1){
-				$wPM = "AND t.pm='1'";
+				$wPM = "AND t.pm='1' AND t.nm_ker='$nmker'";
 			}else if($_POST["pm"] == 2){
-				$wPM = "AND t.pm='2'";
+				$wPM = "AND t.pm='2' AND t.nm_ker='$nmker'";
 			}else{
 				$wPM = "";
 			}
 			$kodePm = 'all';
 		}else if($this->session->userdata('level') == "Rewind1"){
 			$kodePm = 'r1';
-			$wPM = "AND t.pm='1'";
+			$wPM = "AND t.pm='1' AND t.nm_ker='$nmker'";
 		}else if($this->session->userdata('level') == "Rewind2"){
 			$kodePm = 'r2';
-			$wPM = "AND t.pm='2'";
+			$wPM = "AND t.pm='2' AND t.nm_ker='$nmker'";
 		}else{
 			$kodePm = '';
 			$wPM = "AND t.pm=''";
+			$nmker = '';
 		}
 
 		$qGetRpkNew = $this->db->query("SELECT p.id_rpk FROM m_timbangan t
@@ -6199,7 +6221,7 @@ class Master extends CI_Controller
 		WHERE t.id_rpk IS NOT NULL $wPM
 		ORDER BY t.id DESC LIMIT 1");
 		if($qGetRpkNew->num_rows() == 0){
-			echo json_encode(array('data' => '', 'll' => '', 'kd_pm' => $kodePm));
+			echo json_encode(array('data' => '', 'll' => '', 'kd_pm' => $kodePm, 'nmker' => $nmker));
 		}else{
 			$qRpkSama = $qGetRpkNew->row()->id_rpk;
 			$cekRpkMshOpen = $this->db->query("SELECT*FROM m_rpk t WHERE stat='open' AND id_rpk='$qRpkSama' $wPM GROUP BY tgl,id_rpk");
@@ -6217,19 +6239,20 @@ class Master extends CI_Controller
 					}
 				}
 			}
-			echo json_encode(array('data' => $roo, 'll' => $no, 'kd_pm' => $kodePm));
+			echo json_encode(array('data' => $roo, 'll' => $no, 'kd_pm' => $kodePm, 'nmker' => $nmker));
 		}
 	}
 
 	function loadDataRpk(){
 		$pm = $_POST["pm"];
+		$nmker = $_POST["nmker"];
 		$tahun = $_POST["tahun"];
 		$bulan = $_POST["bulan"];
 		$stat = $_POST["stat"];
 		$html='';
 
 		if($tahun == '' && $bulan == '' && $stat == 'open'){
-			$wh = "stat='open'";
+			$wh = "stat='open' AND nm_ker='$nmker'";
 			$pdd = '';
 		}else{
 			$thBln = $tahun.'-'.$bulan;

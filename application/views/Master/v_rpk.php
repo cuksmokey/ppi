@@ -152,8 +152,10 @@
 						<div class="box-data" style="overflow:auto;white-space:nowrap;">
 							<!-- <div class="box-data-roll"></div> -->
 							<input type="hidden" id="box-data-id-rpk" value="">
+							<input type="hidden" id="box-data-nm-ker" value="">
 							<input type="hidden" id="box-data-idx" value="">
 							<div class="box-data-list-pm"></div>
+							<div class="box-data-list-nmker"></div>
 							<div class="box-data-list" style="margin-top:5px"></div>
 						</div>
 
@@ -358,8 +360,6 @@
 		$(".box-data").show();
 		$(".box-close").hide();
 		$(".box-form").hide();
-		// loadRollRpkBaru();
-		// loadDataRpk();
 	});
 
 	function kosong() {
@@ -398,6 +398,7 @@
 		$(".edit-list-rpk").html('');
 
 		$(".box-data-list-pm").html('');
+		$(".box-data-list-nmker").html('');
 		$(".box-data-list").html('');
 		$(".box-close-list-pm").html('');
 		$(".box-close-list").html('');
@@ -466,7 +467,8 @@
 	// OPEN
 
 	function loadPM(opsi){
-		$(".box-data-list-pm").html('');
+		$(".box-data-list-pm").html('...');
+		$(".box-data-list-nmker").html('');
 		$(".box-data-list").html('');
 		$.ajax({
 			url: '<?php echo base_url("Master/loadPM")?>',
@@ -479,28 +481,45 @@
 			}
 		});
 	}
-	
-	function loadRollRpkBaru(pm){
-		// $(".box-data-list").html('');
-		$("#box-data-id-rpk").val("");
-		$("#box-data-idx").val("");
+
+	function loadJnmKer(pm){
+		// alert(pm);
+		$(".box-data-list-nmker").html('...');
+		$(".box-data-list").html('');
 		$.ajax({
-			url: '<?php echo base_url("Master/loadRollRpkBaru")?>',
+			url: '<?php echo base_url('Master/loadJnmKer')?>',
 			type: "POST",
 			data: ({
 				pm
 			}),
 			success: function(res){
+				$(".box-data-list-nmker").html(res);
+			}
+		})
+	}
+	
+	function loadRollRpkBaru(pm,nmker = ''){
+		// $(".box-data-list").html('');
+		$("#box-data-id-rpk").val("");
+		$("#box-data-nm-ker").val("");
+		$("#box-data-idx").val("");
+		$.ajax({
+			url: '<?php echo base_url("Master/loadRollRpkBaru")?>',
+			type: "POST",
+			data: ({
+				pm,nmker
+			}),
+			success: function(res){
 				data = JSON.parse(res);
 				$("#box-data-id-rpk").val(data.data);
+				$("#box-data-nm-ker").val(data.nmker);
 				$("#box-data-idx").val(data.ll);
-				loadDataRpk(pm,'','','open');
+				loadDataRpk(pm,nmker,'','','open');
 			}
 		});
 	}
 
-	function loadDataRpk(pm = '',tahun = '', bulan = '', stat = 'open'){
-		// alert(tahun+' - '+bulan+' - '+stat);
+	function loadDataRpk(pm = '', nmker = '',tahun = '', bulan = '', stat = 'open'){
 		if(tahun == '' && bulan == '' && stat == 'open'){
 			id_rpk = $("#box-data-id-rpk").val();
 			i = $("#box-data-idx").val();
@@ -513,7 +532,7 @@
 			url: '<?php echo base_url("Master/loadDataRpk")?>',
 			type: "POST",
 			data: ({
-				pm,tahun,bulan,stat
+				pm,nmker,tahun,bulan,stat
 			}),
 			success: function(res){
 				if(stat == 'open'){
@@ -523,9 +542,7 @@
 					}
 				}else{
 					$(".detail-list-close-"+tahun+'-'+bulan).html(res);
-					// alert('nice');
 				}
-				
 			}
 		});
 	}

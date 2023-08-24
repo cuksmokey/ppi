@@ -6162,6 +6162,10 @@ class Laporan extends CI_Controller {
 			$stt = 'STOK';
 		}else if($getRoll->status == 2){
 			$stt = 'PPI';
+		}else if($getRoll->status == 4){
+			$stt = 'PPI SIZING';
+		}else if($getRoll->status == 5){
+			$stt = 'PPI CALENDER';
 		}else if($getRoll->status == 3){
 			$stt = 'BUFFER';
 		}else if($getRoll->status == 1 && $getRoll->id_pl != 0){
@@ -6251,6 +6255,10 @@ class Laporan extends CI_Controller {
 					$stt = 'STOK';
 				}else if($ser->status == 2){
 					$stt = 'PPI';
+				}else if($ser->status == 4){
+					$stt = 'PPI SIZING';
+				}else if($ser->status == 5){
+					$stt = 'PPI CALENDER';
 				}else if($ser->status == 3){
 					$stt = 'BUFFER';
 				}else{
@@ -6394,6 +6402,10 @@ class Laporan extends CI_Controller {
 				$stt = 'STOK';
 			}else if($getRoll->status == 2){
 				$stt = 'PPI';
+			}else if($getRoll->status == 4){
+				$stt = 'PPI SIZING';
+			}else if($getRoll->status == 5){
+				$stt = 'PPI CALENDER';
 			}else if($getRoll->status == 3){
 				$stt = 'BUFFER';
 			}else if($getRoll->status == 1 && $getRoll->id_pl != 0){
@@ -6516,6 +6528,10 @@ class Laporan extends CI_Controller {
 						$stt = 'STOK';
 					}else if($ser->status == 2){
 						$stt = 'PPI';
+					}else if($ser->status == 4){
+						$stt = 'PPI SIZING';
+					}else if($ser->status == 5){
+						$stt = 'PPI CALENDER';
 					}else if($ser->status == 3){
 						$stt = 'BUFFER';
 					}else{

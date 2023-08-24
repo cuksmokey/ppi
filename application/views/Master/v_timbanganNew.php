@@ -123,6 +123,7 @@
 						<div class="box-form" style="color:#000">
 							<input type="hidden" id="box-data-id-rpk" value="">
 							<input type="hidden" id="box-data-idx" value="">
+							<div class="box-load-nmker"></div>
 							<div class="box-load-rpk" style="padding-bottom:10px;border-bottom: 8px solid #aaa;"></div>
 
 							<table style="width:100%">
@@ -296,7 +297,8 @@
 		kosong();
 		getThnBlnRoll();
 		// getIRpk();
-		loadRollRpkBaru();
+		// loadRollRpkBaru();
+		loadJnmKer();
 		$(".box-data").hide();
 		$(".new_roll").show();
 		$(".box-form").show();
@@ -308,23 +310,38 @@
 		load_data();
 	});
 
-	function loadRollRpkBaru(){
+	function loadJnmKer(){
+		// alert(pm);
+		$(".box-load-nmker").html('MEMUAT JENIS KERTAS ...');
+		$(".box-load-rpk").html('');
+		$.ajax({
+			url: '<?php echo base_url('Master/loadJnmKer')?>',
+			type: "POST",
+			success: function(res){
+				$(".box-load-nmker").html(res);
+			}
+		})
+	}
+
+	function loadRollRpkBaru(pm = '',nmker){
 		$(".box-load-rpk").html('');
 		$("#box-data-id-rpk").val("");
 		$.ajax({
 			url: '<?php echo base_url("Master/loadRollRpkBaru")?>',
 			type: "POST",
-			// data: ({}),
+			data: ({
+				nmker
+			}),
 			success: function(res){
 				data = JSON.parse(res);
 				$("#box-data-id-rpk").val(data.data);
 				$("#box-data-idx").val(data.ll);
-				getIRpk(data.kd_pm);
+				getIRpk(data.kd_pm,nmker);
 			}
 		});
 	}
 
-	function getIRpk(kd_pm){
+	function getIRpk(kd_pm,nmker){
 		id_rpk = $("#box-data-id-rpk").val();
 		i = $("#box-data-idx").val();
 		$(".box-load-rpk").html('MEMUAT RPK...');
@@ -332,7 +349,7 @@
 			url: '<?php echo base_url("Master/getIRpk")?>',
 			type: "POST",
 			data: ({
-				kd_pm
+				kd_pm,nmker
 			}),
 			success: function(res){
 				$(".box-load-rpk").html(res);
@@ -613,7 +630,7 @@
 					if(status == 'insert'){
 						status = 'insert';
 						kosong();
-						loadRollRpkBaru();
+						loadRollRpkBaru('',nm_ker);
 					}else{
 						status = 'update';
 						$("#txt-btn-simpan").html("UPDATE");
