@@ -207,6 +207,7 @@
 											<option value="PPI">PPI</option>
 											<option value="PPISIZING">PPI SIZING</option>
 											<option value="PPICALENDER">PPI CALENDER</option>
+											<option value="PPIWARNA">PPI WARNA</option>
 										</select>
 									</td>
 								</tr>

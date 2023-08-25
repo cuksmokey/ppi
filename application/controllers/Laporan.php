@@ -5875,6 +5875,8 @@ class Laporan extends CI_Controller {
 				$plhStat = "AND status='4'";
 			}else if($plh_status == "PPICALENDER"){
 				$plhStat = "AND status='5'";
+			}else if($plh_status == "PPIWARNA"){
+				$plhStat = "AND status='6'";
 			}else{
 				$plhStat = "";
 			}
@@ -5924,7 +5926,7 @@ class Laporan extends CI_Controller {
 						$cBre = '';
 					}
                 }else{
-                    if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3 || $roll->status == 4) && $roll->id_pl != 0){
+                    if($roll->status != 0 && $roll->id_pl != 0){
                         $oBre = '';
                         $cBre = '';
                     }else{
@@ -5951,7 +5953,7 @@ class Laporan extends CI_Controller {
 					}
 					$oBtn = '';
 					$cBtn = '';
-				}else if(($roll->status == 0 && $roll->id_pl == 0) || ($roll->status == 2 && $roll->id_pl == 0)){ // STOK + PPI
+				}else if($roll->status == 0 && $roll->id_pl == 0){ // STOK + PPI
                     $bgStt = 'cek-status-stok';
 					if($opsi == 'cekRollStok' || $otori == 'all' || $otori == 'admin' || $otori == 'qc'){
 						$diss = '';
@@ -5969,7 +5971,7 @@ class Laporan extends CI_Controller {
 					}
 					$oBtn = '';
 					$cBtn = '';
-				}else if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3 || $roll->status == 4) && $roll->id_pl != 0){ // PENJUALAN
+				}else if($roll->status != 0 && $roll->id_pl != 0){ // PENJUALAN
                     $bgStt = 'cek-status-terjual';
 					$diss = 'disabled';
 					$oBtn = '<button class="tmbl-cek-roll" onclick="cek_roll('."'".$roll->id."'".')">';
@@ -6059,6 +6061,9 @@ class Laporan extends CI_Controller {
                         }else if($roll->status == 5 && $roll->id_pl == 0){
                             $oStt = 5;
                             $pStt = 'PPI CALENDER';
+                        }else if($roll->status == 6 && $roll->id_pl == 0){
+                            $oStt = 6;
+                            $pStt = 'PPI WARNA';
                         }else if($roll->status == 3 && $roll->id_pl == 0){
                             $oStt = 3;
                             $pStt = 'BUFFER';
@@ -6070,10 +6075,11 @@ class Laporan extends CI_Controller {
                             <option value="'.$oStt.'">'.$pStt.'</option>
                             <option value="1">-</option>
                             <option value="0">STOK</option>
+                            <option value="3">BUFFER</option>
                             <option value="2">PPI</option>
                             <option value="4">PPI SIZING</option>
                             <option value="5">PPI CALENDER</option>
-                            <option value="3">BUFFER</option>
+                            <option value="6">PPI WARNA</option>
                         </select>';
                         $html .='<td style="border:1px solid #999;text-align:center">'.$opt.'</td>';
                         
@@ -6166,6 +6172,8 @@ class Laporan extends CI_Controller {
 			$stt = 'PPI SIZING';
 		}else if($getRoll->status == 5){
 			$stt = 'PPI CALENDER';
+		}else if($getRoll->status == 6){
+			$stt = 'PPI WARNA';
 		}else if($getRoll->status == 3){
 			$stt = 'BUFFER';
 		}else if($getRoll->status == 1 && $getRoll->id_pl != 0){
@@ -6259,6 +6267,8 @@ class Laporan extends CI_Controller {
 					$stt = 'PPI SIZING';
 				}else if($ser->status == 5){
 					$stt = 'PPI CALENDER';
+				}else if($ser->status == 6){
+					$stt = 'PPI WARNA';
 				}else if($ser->status == 3){
 					$stt = 'BUFFER';
 				}else{
@@ -6406,6 +6416,8 @@ class Laporan extends CI_Controller {
 				$stt = 'PPI SIZING';
 			}else if($getRoll->status == 5){
 				$stt = 'PPI CALENDER';
+			}else if($getRoll->status == 6){
+				$stt = 'PPI WARNA';
 			}else if($getRoll->status == 3){
 				$stt = 'BUFFER';
 			}else if($getRoll->status == 1 && $getRoll->id_pl != 0){
@@ -6532,6 +6544,8 @@ class Laporan extends CI_Controller {
 						$stt = 'PPI SIZING';
 					}else if($ser->status == 5){
 						$stt = 'PPI CALENDER';
+					}else if($ser->status == 6){
+						$stt = 'PPI WARNA';
 					}else if($ser->status == 3){
 						$stt = 'BUFFER';
 					}else{
