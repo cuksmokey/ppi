@@ -218,6 +218,8 @@ class Laporan extends CI_Controller {
 								$stat = 'PPI SIZING';
 							}else if($r->status == 5){
 								$stat = 'PPI CALENDER';
+							}else if($r->status == 6){
+								$stat = 'PPI WARNA';
 							}else{
 								if($r->id_rtr != null){
 									$stat = 'RETUR';
