@@ -304,7 +304,6 @@ class Master extends CI_Controller
 
 				foreach ($query->result() as $r) {
 					$id = "$r->id";
-					// $print = base_url("Master/print_timbangan?id=").$r->roll;
 
 					$row = array();
 					$row[] = '<div style="color:#000;font-weight:bold">' . $r->roll . '</div>';
@@ -346,7 +345,6 @@ class Master extends CI_Controller
 				$i = 1;
 				foreach ($query->result() as $r) {
 					$id = "$r->id";
-					// $print = base_url("Master/print_timbangan?id=").$r->roll;
 
 					$row = array();
 					$row[] = $r->roll;
@@ -1415,7 +1413,7 @@ class Master extends CI_Controller
 		}
 	}
 
-	function print_timbangan() { //
+	function print_timbangan() {
 		$id = $_GET['id'];
 		$data = $this->db->query("SELECT * FROM m_timbangan WHERE roll = '$id'")->row();
 		if($data->status == 0){
@@ -1429,6 +1427,9 @@ class Master extends CI_Controller
 			$sty = '';
 		}else if($data->status == 5){
 			$ket = 'PPI CALENDER';
+			$sty = '';
+		}else if($data->status == 6){
+			$ket = 'PPI WARNA';
 			$sty = '';
 		}else{
 			if($data->ket == ''){
@@ -1508,6 +1509,9 @@ class Master extends CI_Controller
 			$sty = '';
 		}else if($data->status == 5){
 			$ket = 'PPI CALENDER';
+			$sty = '';
+		}else if($data->status == 6){
+			$ket = 'PPI WARNA';
 			$sty = '';
 		}else{
 			if($data->ket == ''){
