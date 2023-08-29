@@ -414,6 +414,7 @@ class Laporan extends CI_Controller {
 
     function print_surat_jalan(){ //
         $jenis = $_GET['jenis'];
+        $jarak = $_GET['jarak'];
         $ctk = $_GET['ctk'];
         $html = '';
 
@@ -433,17 +434,22 @@ class Laporan extends CI_Controller {
         ORDER BY a.g_label,width,b.no_po ASC")->num_rows();
 
         // pengurangan jarak jika data terlalu banyak
-        if($count_kop >= '10' || ($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '7' )){
-            $px = '0';
-        }else if($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' || $data_kop->id_perusahaan == 192 && $count_kop >= '6' ){
-            $px = '20px';
-        }else if($count_kop >= '8' || ($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '5' )){
-            $px = '40px';
-        }else if($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '2'){
-            $px = '60px';
-        }else{
-            $px = '80px';
-        }
+        // if($count_kop >= '10' || ($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '7' )){
+        //     $px = '0';
+        // }else if($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' || $data_kop->id_perusahaan == 192 && $count_kop >= '6' ){
+        //     $px = '20px';
+        // }else if($count_kop >= '8' || ($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '5' )){
+        //     $px = '40px';
+        // }else if($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '2'){
+        //     $px = '60px';
+        // }else{
+        //     $px = '80px';
+        // }
+		if($jarak == 0){
+			$px = '80px';
+		}else{
+			$px = $jarak.'px';
+		}
 
         if($count_kop >= '16'){
             $pxsj = '3px';
