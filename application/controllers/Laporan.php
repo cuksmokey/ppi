@@ -420,7 +420,7 @@ class Laporan extends CI_Controller {
 		# # # # # # # # # K O P # # # # # # # # # #
 
         // AMBIL DATA KOP
-        $data_kop = $this->db->query("SELECT b.tgl AS tgl_kop,a.nm_ker AS ker,b.nama AS nama,b.nm_perusahaan AS pt,b.no_po AS popo,b.no_pkb AS no_pkb,b.no_surat FROM m_timbangan a
+        $data_kop = $this->db->query("SELECT b.tgl AS tgl_kop,a.nm_ker AS ker,b.nama AS nama,b.nm_perusahaan AS pt,b.id_perusahaan,b.no_po AS popo,b.no_pkb AS no_pkb,b.no_surat FROM m_timbangan a
         INNER JOIN pl b ON a.id_pl=b.id
         WHERE b.no_pkb='$jenis'
         GROUP BY ker LIMIT 1;")->row();
@@ -435,11 +435,11 @@ class Laporan extends CI_Controller {
         // pengurangan jarak jika data terlalu banyak
         if($count_kop >= '10' || ($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '7' )){
             $px = '0';
-        }else if($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '6' ){
+        }else if($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' || $data_kop->id_perusahaan == 192 && $count_kop >= '6' ){
             $px = '20px';
         }else if($count_kop >= '8' || ($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '5' )){
             $px = '40px';
-        }else if($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '2' ){
+        }else if($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '2'){
             $px = '60px';
         }else{
             $px = '80px';
