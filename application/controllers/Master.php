@@ -3189,10 +3189,10 @@ class Master extends CI_Controller
 						$btnSJ = 'TAMBAHKAN NOPOL!';
 					}else{
 						$btnSJ = '<div style="display:inline-block;font-weight:bold;margin:0 5px">
-							<a href="'.base_url('Laporan/print_surat_jalan').'?jenis='.$sj->no_pkb.'&jarak=0&ctk=0" target="_blank" rel="plcek">SURAT JALAN</a>
+							<a href="'.base_url('Laporan/print_surat_jalan').'?jenis='.$sj->no_pkb.'&jarak=80&ctk=0" target="_blank" rel="plcek">SURAT JALAN</a>
 						</div>
 						<div style="display:inline-block;font-weight:bold;margin:0 5px">
-							<a href="'.base_url('Laporan/print_surat_jalan').'?jenis='.$sj->no_pkb.'&jarak=0&ctk=1" target="_blank" rel="plcek">PACKING LIST</a>
+							<a href="'.base_url('Laporan/print_surat_jalan').'?jenis='.$sj->no_pkb.'&jarak=80&ctk=1" target="_blank" rel="plcek">PACKING LIST</a>
 						</div>';
 					}
 				}else{

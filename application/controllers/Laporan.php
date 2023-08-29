@@ -433,22 +433,16 @@ class Laporan extends CI_Controller {
         GROUP BY a.g_label,width,b.no_po
         ORDER BY a.g_label,width,b.no_po ASC")->num_rows();
 
-        // pengurangan jarak jika data terlalu banyak
-        // if($count_kop >= '10' || ($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '7' )){
-        //     $px = '0';
-        // }else if($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' || $data_kop->id_perusahaan == 192 && $count_kop >= '6' ){
-        //     $px = '20px';
-        // }else if($count_kop >= '8' || ($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '5' )){
-        //     $px = '40px';
-        // }else if($data_kop->pt == 'PT. DAYACIPTA KEMASINDO' || $data_kop->nama == 'PT. DAYACIPTA KEMASINDO' && $count_kop >= '2'){
-        //     $px = '60px';
-        // }else{
-        //     $px = '80px';
-        // }
-		if($jarak == 0){
+        // PENGURANGAN JARAK JIKA DATA TERLALU BANYAK
+		// 80 60 40 20 0 - PX
+		if($jarak == 80){ // DEFAULT
 			$px = '80px';
 		}else{
-			$px = $jarak.'px';
+			if($jarak == 0){
+				$px = 0;
+			}else{
+				$px = $jarak.'px';
+			}
 		}
 
         if($count_kop >= '16'){
@@ -731,13 +725,17 @@ class Laporan extends CI_Controller {
             $px_ttd = '10px';
             $px_note = '5px';
             $akeh = 1;
-        }else if($count_kop >= '13'){ // 13
+        }else if($count_kop >= '13'){
             $px_ttd = '15px';
             $px_note = '20px';
             $akeh = 1;
-        }else if($count_kop >= '12'){ // KHUSUS QINGDA
+        }else if($count_kop >= '12'){
             $px_ttd = '20px';
             $px_note = '20px';
+            $akeh = '';
+        }else if($jarak != 80){
+            $px_ttd = '30px';
+            $px_note = '35px';
             $akeh = '';
         }else{
             $px_ttd = '35px';
