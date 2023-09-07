@@ -563,6 +563,16 @@
 	</div>
 </div>
 
+<div class="modal fade bd-example-modal-lg" id="modal-p-cek-po" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content" >
+			<div class="modal-body" style="overflow:auto;white-space:nowrap;">
+				<div class="isi-p-cek-po"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <script>
 	otorisasi = $("#otorisasi").val();
 	option = '';
@@ -2295,6 +2305,24 @@
 			}),
 			success: function(response){
 				$(".isi-qc-edit").html(response);
+			}
+		});
+	}
+
+	//
+
+	function btnPCekPO(id_rk){
+		$(".isi-p-cek-po").html('');
+		$(".isi-p-cek-po").html('Loading . . .');
+		$("#modal-p-cek-po").modal("show");
+		$.ajax({
+			url: '<?php echo base_url('Master/btnPCekPO')?>',
+			type: "POST",
+			data: ({
+				id_rk
+			}),
+			success: function(response){
+				$(".isi-p-cek-po").html(response);
 			}
 		});
 	}

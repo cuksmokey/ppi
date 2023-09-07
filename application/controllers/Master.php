@@ -3371,13 +3371,99 @@ class Master extends CI_Controller
 				$sumjrll += $totjmlroll;
 				$sumjIrll += $totIjmlroll;
 			}
+
+			// CEK PO
+			($this->session->userdata('level') == "SuperAdmin") ? $btnCPo = '<button onclick="btnPCekPO('."'".$idrk."'".')">CEK</button> - ' : $btnCPo = '';
 			$html .='<tr style="background:#e9e9e9">
-				<td style="padding:5px;font-weight:bold" colspan="2">TOTAL</td>
+				<td style="padding:5px;font-weight:bold" colspan="2">'.$btnCPo.'TOTAL</td>
 				<td style="padding:5px;font-weight:bold">'.number_format($sumjrll).'</td>
 				<td style="padding:5px;font-weight:bold">'.number_format($sumjIrll).'</td>
 			</tr>';
 			$html .='</table>';
 		}
+		echo $html;
+	}
+
+	function btnPCekPO(){
+		$id_rk = $_POST["id_rk"];
+		$html = '';
+
+		$html .='<table style="font-size:12px;color:#000;border-collapse:collapse">
+		<tr>
+			<td style="background:#e9e9e9;border:1px solid #000;font-weight:bold;padding:5px">NO. PO</td>
+			<td style="background:#e9e9e9;border:1px solid #000;font-weight:bold;padding:5px">JPO</td>
+			<td style="background:#e9e9e9;border:1px solid #000;font-weight:bold;padding:5px">JKR</td>
+			<td style="background:#e9e9e9;border:1px solid #000;font-weight:bold;padding:5px">SUS</td>
+			<td style="background:#e9e9e9;border:1px solid #000;font-weight:bold;padding:5px">KETERANGAN</td>
+		</tr>';
+		$qGetRk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' ORDER BY nm_ker,g_label,width");
+		foreach($qGetRk->result() as $r){
+			if(($r->nm_ker == 'MH' || $r->nm_ker == 'MN') && ($r->g_label == 105 || $r->g_label == 110)){
+				$bgtr = 'list-p-biru';
+			}else if($r->nm_ker == 'MH' && ($r->g_label == 120 || $r->g_label == 125)){
+				$bgtr = 'list-p-kuning';
+			}else if(($r->nm_ker == 'MH' || $r->nm_ker == 'MN') && $r->g_label == 150){
+				$bgtr = 'list-p-merah';
+			}else if($r->nm_ker == 'WP'){
+				$bgtr = 'list-p-hijau';
+			}else{
+				$bgtr = 'list-p-putih';
+			}
+			$html .='<tr class='.$bgtr.' style="border-top:1px solid #000">
+				<td style="font-weight:bold;padding:5px 5px 0" colspan="5">'.$r->nm_ker.''.$r->g_label.' - '.round($r->width,2).' - '.$r->jml_roll.'</td>
+			</tr>';
+			
+			$qGetKirr = $this->db->query("SELECT (SELECT COUNT(t.roll) FROM m_timbangan t INNER JOIN pl p
+			WHERE t.id_pl=p.id AND p.no_po=po.no_po AND t.nm_ker=po.nm_ker AND t.g_label=po.g_label AND t.width=po.width AND p.id_perusahaan=po.id_perusahaan) AS kir,po.no_po,po.nm_ker,po.g_label,po.width,po.jml_roll,po.id_perusahaan,po.ket
+			FROM po_master po
+			INNER JOIN pl pl ON pl.no_po=po.no_po AND pl.nm_ker=po.nm_ker AND pl.g_label=po.g_label AND pl.id_perusahaan=po.id_perusahaan
+			WHERE pl.id_rk='$id_rk' AND po.nm_ker='$r->nm_ker' AND po.g_label='$r->g_label' AND po.width='$r->width'");
+			foreach($qGetKirr->result() as $kir){
+
+				$sus = $kir->kir - $kir->jml_roll;
+				$html .='<tr class='.$bgtr.'>
+					<td style="padding:5px">'.$kir->no_po.'</td>
+					<td style="padding:5px;text-align:right">'.$kir->jml_roll.'</td>
+					<td style="padding:5px;text-align:right">'.$kir->kir.'</td>
+					<td style="padding:5px;text-align:right">'.$sus.'</td>
+					<td style="padding:5px;text-align:center">'.$kir->ket.'</td>
+				</tr>';
+
+				// CEK PO YG BENER
+				if($kir->jml_roll == 0){
+					if($kir->g_label == 68 || $kir->g_label == 70){
+						$kglbl = "AND (po.g_label='68' OR po.g_label='70')";
+					}else if($kir->g_label == 120 || $kir->g_label == 125){
+						$kglbl = "AND (po.g_label='120' OR po.g_label='125')";
+					}else{
+						$kglbl = "AND po.g_label='$kir->g_label'";
+					}
+					$qCekPOk = $this->db->query("SELECT (SELECT COUNT(t.roll) FROM m_timbangan t INNER JOIN pl p
+					WHERE t.id_pl=p.id AND p.no_po=po.no_po AND t.nm_ker=po.nm_ker AND t.g_label=po.g_label AND t.width=po.width AND p.id_perusahaan=po.id_perusahaan) AS kir,
+					po.jml_roll,po.no_po,po.nm_ker,po.g_label,po.width,po.ket,po.status
+					FROM po_master po
+					INNER JOIN pl pl ON pl.no_po=po.no_po AND pl.nm_ker=po.nm_ker AND pl.g_label=po.g_label AND pl.id_perusahaan=po.id_perusahaan
+					WHERE po.id_perusahaan='$kir->id_perusahaan' AND po.nm_ker='$kir->nm_ker' $kglbl AND po.width='$kir->width' AND po.jml_roll!='0' AND po.status='open' GROUP BY po.no_po,po.nm_ker,po.g_label,po.width");
+					foreach($qCekPOk->result() as $pp){
+						if($pp->kir != $pp->jml_roll){
+							$sus2 = $pp->kir - $pp->jml_roll;
+							$html .='<tr class='.$bgtr.'>
+								<td style="padding:5px">> '.$pp->no_po.'</td>
+								<td style="padding:5px;text-align:right">'.$pp->jml_roll.'</td>
+								<td style="padding:5px;text-align:right">'.$pp->kir.'</td>
+								<td style="padding:5px;text-align:right">'.$sus2.'</td>
+								<td style="padding:5px;text-align:center">'.$pp->ket.'</td>
+								</tr>';
+						}else{
+							$html .='';
+						}
+					}
+				}
+				
+			}
+		}
+		$html .='</table>';
+		
 		echo $html;
 	}
 
