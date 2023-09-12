@@ -3419,47 +3419,49 @@ class Master extends CI_Controller
 			INNER JOIN pl pl ON pl.no_po=po.no_po AND pl.nm_ker=po.nm_ker AND pl.g_label=po.g_label AND pl.id_perusahaan=po.id_perusahaan
 			WHERE pl.id_rk='$id_rk' AND po.nm_ker='$r->nm_ker' AND po.g_label='$r->g_label' AND po.width='$r->width'");
 			foreach($qGetKirr->result() as $kir){
+				if($kir->jml_roll != $kir->kir){
+					$sus = $kir->kir - $kir->jml_roll;
+					$html .='<tr class='.$bgtr.'>
+						<td style="padding:5px">'.$kir->no_po.'</td>
+						<td style="padding:5px;text-align:right">'.$kir->jml_roll.'</td>
+						<td style="padding:5px;text-align:right">'.$kir->kir.'</td>
+						<td style="padding:5px;text-align:right">'.$sus.'</td>
+						<td style="padding:5px;text-align:center">'.$kir->ket.'</td>
+					</tr>';
 
-				$sus = $kir->kir - $kir->jml_roll;
-				$html .='<tr class='.$bgtr.'>
-					<td style="padding:5px">'.$kir->no_po.'</td>
-					<td style="padding:5px;text-align:right">'.$kir->jml_roll.'</td>
-					<td style="padding:5px;text-align:right">'.$kir->kir.'</td>
-					<td style="padding:5px;text-align:right">'.$sus.'</td>
-					<td style="padding:5px;text-align:center">'.$kir->ket.'</td>
-				</tr>';
-
-				// CEK PO YG BENER
-				if($kir->jml_roll == 0){
-					if($kir->g_label == 68 || $kir->g_label == 70){
-						$kglbl = "AND (po.g_label='68' OR po.g_label='70')";
-					}else if($kir->g_label == 120 || $kir->g_label == 125){
-						$kglbl = "AND (po.g_label='120' OR po.g_label='125')";
-					}else{
-						$kglbl = "AND po.g_label='$kir->g_label'";
-					}
-					$qCekPOk = $this->db->query("SELECT (SELECT COUNT(t.roll) FROM m_timbangan t INNER JOIN pl p
-					WHERE t.id_pl=p.id AND p.no_po=po.no_po AND t.nm_ker=po.nm_ker AND t.g_label=po.g_label AND t.width=po.width AND p.id_perusahaan=po.id_perusahaan) AS kir,
-					po.jml_roll,po.no_po,po.nm_ker,po.g_label,po.width,po.ket,po.status
-					FROM po_master po
-					INNER JOIN pl pl ON pl.no_po=po.no_po AND pl.nm_ker=po.nm_ker AND pl.g_label=po.g_label AND pl.id_perusahaan=po.id_perusahaan
-					WHERE po.id_perusahaan='$kir->id_perusahaan' AND po.nm_ker='$kir->nm_ker' $kglbl AND po.width='$kir->width' AND po.jml_roll!='0' AND po.status='open' GROUP BY po.no_po,po.nm_ker,po.g_label,po.width");
-					foreach($qCekPOk->result() as $pp){
-						if($pp->kir != $pp->jml_roll){
-							$sus2 = $pp->kir - $pp->jml_roll;
-							$html .='<tr class='.$bgtr.'>
-								<td style="padding:5px">> '.$pp->no_po.'</td>
-								<td style="padding:5px;text-align:right">'.$pp->jml_roll.'</td>
-								<td style="padding:5px;text-align:right">'.$pp->kir.'</td>
-								<td style="padding:5px;text-align:right">'.$sus2.'</td>
-								<td style="padding:5px;text-align:center">'.$pp->ket.'</td>
-								</tr>';
+					// CEK PO YG BENER
+					if($kir->jml_roll == 0){
+						if($kir->g_label == 68 || $kir->g_label == 70){
+							$kglbl = "AND (po.g_label='68' OR po.g_label='70')";
+						}else if($kir->g_label == 120 || $kir->g_label == 125){
+							$kglbl = "AND (po.g_label='120' OR po.g_label='125')";
 						}else{
-							$html .='';
+							$kglbl = "AND po.g_label='$kir->g_label'";
+						}
+						$qCekPOk = $this->db->query("SELECT (SELECT COUNT(t.roll) FROM m_timbangan t INNER JOIN pl p
+						WHERE t.id_pl=p.id AND p.no_po=po.no_po AND t.nm_ker=po.nm_ker AND t.g_label=po.g_label AND t.width=po.width AND p.id_perusahaan=po.id_perusahaan) AS kir,
+						po.jml_roll,po.no_po,po.nm_ker,po.g_label,po.width,po.ket,po.status
+						FROM po_master po
+						INNER JOIN pl pl ON pl.no_po=po.no_po AND pl.nm_ker=po.nm_ker AND pl.g_label=po.g_label AND pl.id_perusahaan=po.id_perusahaan
+						WHERE po.id_perusahaan='$kir->id_perusahaan' AND po.nm_ker='$kir->nm_ker' $kglbl AND po.width='$kir->width' AND po.jml_roll!='0' AND po.status='open' GROUP BY po.no_po,po.nm_ker,po.g_label,po.width");
+						foreach($qCekPOk->result() as $pp){
+							if($pp->kir != $pp->jml_roll){
+								$sus2 = $pp->kir - $pp->jml_roll;
+								$html .='<tr class='.$bgtr.'>
+									<td style="padding:5px">> '.$pp->no_po.'</td>
+									<td style="padding:5px;text-align:right">'.$pp->jml_roll.'</td>
+									<td style="padding:5px;text-align:right">'.$pp->kir.'</td>
+									<td style="padding:5px;text-align:right">'.$sus2.'</td>
+									<td style="padding:5px;text-align:center">'.$pp->ket.'</td>
+									</tr>';
+							}else{
+								$html .='';
+							}
 						}
 					}
+				}else{
+					$html .='';
 				}
-				
 			}
 		}
 		$html .='</table>';
