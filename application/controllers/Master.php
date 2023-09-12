@@ -3420,7 +3420,7 @@ class Master extends CI_Controller
 			WHERE pl.id_rk='$id_rk' AND po.nm_ker='$r->nm_ker' AND po.g_label='$r->g_label' AND po.width='$r->width'");
 			foreach($qGetKirr->result() as $kir){
 				if($kir->jml_roll != $kir->kir){
-					$sus = $kir->kir - $kir->jml_roll;
+					// $sus = $kir->kir - $kir->jml_roll;
 					$html .='<tr class='.$bgtr.'>
 						<td style="padding:5px">'.$kir->no_po.'</td>
 						<td style="padding:5px;text-align:right">'.$kir->jml_roll.'</td>
@@ -3459,9 +3459,9 @@ class Master extends CI_Controller
 							}
 						}
 					}
-				}else{
-					$html .='';
-				}
+				// }else{
+				// 	$html .='';
+				// }
 			}
 		}
 		$html .='</table>';
