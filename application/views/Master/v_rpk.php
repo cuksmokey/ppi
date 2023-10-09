@@ -351,6 +351,16 @@
 	</div>
 </div>
 
+<div class="modal fade bd-example-modal-lg" id="modal-p-rpk" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content" >
+			<div class="modal-body" style="overflow:auto;white-space:nowrap;">
+				<div class="isi-p-rpk"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <script>
 	status = '';
 	otorisasi = $("#otorisasi").val();
@@ -431,6 +441,24 @@
 			$(".box-form").show();
 			$(".box-form-kop").show();
 		}
+	}
+
+	//
+
+	function cekPRPK(idrpk){
+		$(".isi-p-rpk").html('');
+		$(".isi-p-rpk").html('Loading . . .');
+		$("#modal-p-rpk").modal("show");
+		$.ajax({
+			url: '<?php echo base_url('Master/btnPCekRPK')?>',
+			type: "POST",
+			data: ({
+				idrpk
+			}),
+			success: function(response){
+				$(".isi-p-rpk").html(response);
+			}
+		});
 	}
 
 	// CLOSE

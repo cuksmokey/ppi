@@ -330,7 +330,7 @@
 			url: '<?php echo base_url("Master/loadRollRpkBaru")?>',
 			type: "POST",
 			data: ({
-				nmker
+				pm,nmker
 			}),
 			success: function(res){
 				data = JSON.parse(res);

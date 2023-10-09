@@ -6196,12 +6196,15 @@ class Master extends CI_Controller
 		
 		if($this->session->userdata('level') == "Rewind1"){
 			$pm = 1;
+			$pmKet = "AND pm='1'";
 		}else if($this->session->userdata('level') == "Rewind2"){
 			$pm = 2;
+			$pmKet = "AND pm='2'";
 		}else{
-			$pm = $_POST["pm"];
+			$pm = $_POST["pm"];;
+			$pmKet = "AND pm='$pm'";
 		}
-		$qGetNmKer = $this->db->query("SELECT pm,nm_ker FROM m_rpk WHERE pm='$pm' AND stat='open' GROUP BY nm_ker");
+		$qGetNmKer = $this->db->query("SELECT pm,nm_ker FROM m_rpk WHERE stat='open' $pmKet GROUP BY nm_ker");
 		$html .='<div style="display:block;margin:5px 0">
 			<button style="font-size:12px;font-weight:bold;color:#000" disabled>PM '.$pm.' : </button> - ';
 		foreach($qGetNmKer->result() as $r){
@@ -6304,7 +6307,7 @@ class Master extends CI_Controller
 			$wPM = "AND t.pm='2' AND t.nm_ker='$nmker'";
 		}else{
 			$kodePm = '';
-			$wPM = "AND t.pm=''";
+			$wPM = "";
 			$nmker = '';
 		}
 
@@ -6352,7 +6355,7 @@ class Master extends CI_Controller
 			$pdd = ';margin-left:25px';
 		}
 
-		$kdPm = "AND pm='$pm'";
+		($pm == '') ? $kdPm = "" : $kdPm = "AND pm='$pm'" ;
 		$getDataRpk = $this->db->query("SELECT*FROM m_rpk WHERE $wh $kdPm GROUP BY tgl,id_rpk");
 		if($getDataRpk->num_rows() == 0){
 			$html .= 'BELUM ADA RPK';
@@ -6591,7 +6594,7 @@ class Master extends CI_Controller
 				$yy += $set;
 				
 				// CARI YANG BAGUS DONG
-				$qGood = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE ((t.status='0' OR t.status='2' OR t.status='4' OR t.status='5' OR t.status='6' AND id_pl='0') OR (t.status='1' OR t.status='2' OR t.status='4' OR t.status='5' OR t.status='6' AND id_pl!='0')) AND id_rpk='$isi->id' GROUP BY id_rpk");
+				$qGood = $this->db->query("SELECT COUNT(roll) AS roll FROM m_timbangan t WHERE ((t.status='0' OR t.status='2' OR t.status='4' OR t.status='5' OR t.status='6' AND id_pl='0') AND (t.status='1' OR t.status='2' OR t.status='4' OR t.status='5' OR t.status='6' AND id_pl!='0')) AND id_rpk='$isi->id' GROUP BY id_rpk");
 				if($qGood->num_rows() != 0){
 					$good = $qGood->row()->roll;
 					$btnGood = '<button class="btn-gg" onclick="CekListGdNg('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".',0)">'.$good.'</button>';
@@ -6602,7 +6605,7 @@ class Master extends CI_Controller
 				$html .='<td class="tdllgg td-gdng-'.$isi->id.'-0" style="border:1px solid #000;padding:5px">'.$btnGood.'</td>';
 
 				// CARI YANG JELEK DONG
-				$qNotGood = $this->db->query("SELECT COUNT(roll) AS roll,SUM(weight) AS berat FROM m_timbangan t WHERE t.status='3' AND id_rpk='$isi->id' GROUP BY id_rpk");
+				$qNotGood = $this->db->query("SELECT COUNT(roll) AS roll FROM m_timbangan t WHERE t.status='3' AND id_rpk='$isi->id' GROUP BY id_rpk");
 				if($qNotGood->num_rows() != 0){
 					$notGood = $qNotGood->row()->roll;
 					$btnNotGood = '<button class="btn-gg" onclick="CekListGdNg('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".',3)">'.$notGood.'</button>';
@@ -6690,6 +6693,7 @@ class Master extends CI_Controller
 
 			// TOTAL
 			$clsTot = $kopBrICls + 1;
+			// <button onclick="cekPRPK('."'".$id_rpk."'".')">CEK</button>
 			$html .='<tr '.$kopBgTr.'>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold" colspan="'.$clsTot.'"></td>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$x.'</td>
@@ -6837,6 +6841,13 @@ class Master extends CI_Controller
 		}
 	}
 
+	function btnPCekRPK(){
+		$idrpk = $_POST["idrpk"];
+		$html = "";
+
+		echo $html;
+	}
+
 	function plhUkRpk(){
 		$idx = $_POST["idx"];
 		$id_rpk = $_POST["id_rpk"];
@@ -6866,7 +6877,6 @@ class Master extends CI_Controller
 		$stat = $_POST["stat"];
 		$width = $_POST["width"];
 		$html = '';
-		$html .='<table style="margin-bottom:10px;text-align:center;border-collapse:collapse">';
 
 		if($stat == '0'){
 			$opt = "AND t.status!='3'";
@@ -6875,6 +6885,35 @@ class Master extends CI_Controller
 		}else{
 			$opt = "";
 		}
+		
+		if($this->session->userdata('level') == "SuperAdmin"){
+			$getRollSBJ = $this->db->query("SELECT m.width,COUNT(m.roll) AS total,
+			(SELECT COUNT(s.roll) FROM m_timbangan s WHERE s.id_rpk=m.id_rpk AND s.width=m.width AND s.status!='1' AND s.status!='3' AND s.id_pl='0') AS stok,
+			(SELECT COUNT(s.roll) FROM m_timbangan s WHERE s.id_rpk=m.id_rpk AND s.width=m.width AND s.status='3') AS jelek,
+			(SELECT COUNT(s.roll) FROM m_timbangan s WHERE s.id_rpk=m.id_rpk AND s.width=m.width AND s.id_pl!='0') AS terjual
+			FROM m_timbangan m WHERE m.id_rpk='$idx'
+			GROUP BY m.width");
+			$html .='<table style="border-collapse:collapse;text-align:center">';
+			$html .='<tr>
+				<td style="padding:5px;font-weight:bold;border-bottom:3px solid #aaa">UKURAN</td>
+				<td style="padding:5px;font-weight:bold;border-bottom:3px solid #aaa">STOK</td>
+				<td style="padding:5px;font-weight:bold;border-bottom:3px solid #aaa">BUFFER</td>
+				<td style="padding:5px;font-weight:bold;border-bottom:3px solid #aaa">TERJUAL</td>
+				<td style="padding:5px;font-weight:bold;border-bottom:3px solid #aaa">TOTAL</td>
+			</tr>';
+			foreach($getRollSBJ->result() as $r){
+				$html .='<tr class="tr-dtl-rpk">
+					<td style="padding:5px">'.round($r->width,2).'</td>
+					<td style="padding:5px">'.$r->stok.'</td>
+					<td style="padding:5px">'.$r->jelek.'</td>
+					<td style="padding:5px">'.$r->terjual.'</td>
+					<td style="padding:5px">'.$r->total.'</td>
+				</tr>';
+			}
+			$html .='</table>';
+		}
+		
+		$html .='<table style="margin-bottom:10px;text-align:center;border-collapse:collapse">';
 
 		$qGetCount = $this->db->query("SELECT width,COUNT(roll) AS jml_roll FROM m_timbangan t WHERE id_rpk='$idx' $opt GROUP BY width");
 		if($width != ''){
