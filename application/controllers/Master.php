@@ -3491,7 +3491,7 @@ class Master extends CI_Controller
 		</div>
 		';
 		
-		if($g_label == 68 || $g_label == 68 || $g_label == 70){
+		if($g_label == 65 || $g_label == 68 || $g_label == 70){
 			$ukRGLabel = "AND (g_label='65' OR g_label='68' OR g_label='70')";
 		}else if($g_label == 120 || $g_label == 125){
 			$ukRGLabel = "AND (g_label='120' OR g_label='125')";
