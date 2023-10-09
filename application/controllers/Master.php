@@ -6594,7 +6594,7 @@ class Master extends CI_Controller
 				$yy += $set;
 				
 				// CARI YANG BAGUS DONG
-				$qGood = $this->db->query("SELECT COUNT(roll) AS roll FROM m_timbangan t WHERE ((t.status='0' OR t.status='2' OR t.status='4' OR t.status='5' OR t.status='6' AND id_pl='0') AND (t.status='1' OR t.status='2' OR t.status='4' OR t.status='5' OR t.status='6' AND id_pl!='0')) AND id_rpk='$isi->id' GROUP BY id_rpk");
+				$qGood = $this->db->query("SELECT COUNT(roll) AS roll FROM m_timbangan t WHERE ((t.status='0' OR t.status='2' OR t.status='4' OR t.status='5' OR t.status='6' AND id_pl='0') OR (t.status='1' OR t.status='2' OR t.status='4' OR t.status='5' OR t.status='6' AND id_pl!='0')) AND id_rpk='$isi->id' GROUP BY id_rpk");
 				if($qGood->num_rows() != 0){
 					$good = $qGood->row()->roll;
 					$btnGood = '<button class="btn-gg" onclick="CekListGdNg('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".',0)">'.$good.'</button>';
