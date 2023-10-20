@@ -194,6 +194,7 @@
 											<option value="">PILIH</option>
 											<option value="BK">BK</option>
 											<option value="MH">MH</option>
+											<option value="MS">MS</option>
 											<option value="MN">MN</option>
 											<option value="WP">WP</option>
 											<option value="WS">WS</option>
