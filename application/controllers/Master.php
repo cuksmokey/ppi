@@ -5731,12 +5731,22 @@ class Master extends CI_Controller
 			}
 
 			// VALIDASI
-			if($r->id_rk != '' && $r->id_rtr == null){
-				$bgRjt = '';
-				$btnAdd = '<button onclick="addListReject('."'".$l."'".','."'".$r->id."'".','."'".$r->roll."'".','."'".$r->id_rk."'".')">ADD</button>';
+			if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "FG"){
+				if($r->id_rk != '' && $r->id_rtr == null){
+					$bgRjt = '';
+					$btnAdd = '<button onclick="addListReject('."'".$l."'".','."'".$r->id."'".','."'".$r->roll."'".','."'".$r->id_rk."'".')">ADD</button>';
+				}else{
+					$bgRjt = 'style="background:#ddd"';
+					$btnAdd = '-';
+				}
 			}else{
-				$bgRjt = 'style="background:#ddd"';
-				$btnAdd = '-';
+				if($r->id_rk != '' && $r->id_rtr == null){
+					$bgRjt = '';
+					$btnAdd = '-';
+				}else{
+					$bgRjt = 'style="background:#ddd"';
+					$btnAdd = '-';
+				}
 			}
 
 			$html .= '<tr class="list-p-putih" '.$bgRjt.'>
@@ -5812,17 +5822,23 @@ class Master extends CI_Controller
 				}
 
 				// MASUK RENCANA KIRIM LAGI TIDAK BISA DIEDIT
-				if($rjt->id_rk != ''){
+				if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "FG"){
+					if($rjt->id_rk != ''){
+						$btnEdit = '-';
+						$btnHapus = '-';
+					}else{
+						$btnEdit = '<button onclick="editInputRollReject('."'".$i."'".','."'".$no_surat."'".','."'".$id_rk."'".','."'".$nm_ker."'".','."'".$rjt->id."'".','."'".$rjt->roll."'".')">EDIT</button>';
+						if($this->session->userdata('level') == "SuperAdmin"){
+							$btnHapus = '<button onclick="hapusInputRollReject('."'".$i."'".','."'".$no_surat."'".','."'".$id_rk."'".','."'".$nm_ker."'".','."'".$rjt->id."'".','."'".$rjt->roll."'".')">HAPUS</button>';
+						}else{
+							$btnHapus = '-';
+						}
+					}
+				}else{
 					$btnEdit = '-';
 					$btnHapus = '-';
-				}else{
-					$btnEdit = '<button onclick="editInputRollReject('."'".$i."'".','."'".$no_surat."'".','."'".$id_rk."'".','."'".$nm_ker."'".','."'".$rjt->id."'".','."'".$rjt->roll."'".')">EDIT</button>';
-					if($this->session->userdata('level') == "SuperAdmin"){
-						$btnHapus = '<button onclick="hapusInputRollReject('."'".$i."'".','."'".$no_surat."'".','."'".$id_rk."'".','."'".$nm_ker."'".','."'".$rjt->id."'".','."'".$rjt->roll."'".')">HAPUS</button>';
-					}else{
-						$btnHapus = '-';
-					}
 				}
+				
 
 				if($rjt->id_rk == $rjt->id_rtr){
 					$html .= '';

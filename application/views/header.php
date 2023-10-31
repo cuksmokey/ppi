@@ -195,7 +195,7 @@
                             </a>
                         </li>
 					<?php } ?>
-					<?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "FG") { ?>
+					<?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC") { ?>
 						<li>
                             <a href="<?php echo base_url('Master/Retur_Roll') ?>">
                                 <!-- <i class="material-icons">list</i> -->
