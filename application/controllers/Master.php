@@ -263,28 +263,29 @@ class Master extends CI_Controller
 					$row[] = $r->joint;
 					$row[] = $r->ket;
 					$aksi ="";
-					// #FF9800 - #fff edit
-					// #FB483A - #fff hapus
-					// #fff - #333333 kcl
-					// #4CAF50 - besar
-					if($r->ctk == 1){
-						$aksi .='SUDAH CETAK LABEL!';
-					}else if($r->ctk == 0){
-						// CEK OLEH QC DULU
-						$edit = '<button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange">EDIT</button>';
-						$hapus = '<button type="button" onclick="deleteData('.$id.','."'".$r->roll."'".')" class="btn btn-danger">HAPUS</button>';
-						if($r->status == 1){
-							$aksi .='STATUS CEK QC! '.$edit.' '.$hapus;
-						}else{
-							$aksi = '
-							<a type="button" href="'.$print.'" target="_blank" class="btn btn-default">
-								L BESAR
-							</a>
-							<a type="button" href="'.$print2.'" target="_blank" class="btn bg-green">
-								L KECIL
-							</a>';
+					if($this->session->userdata('level') == "Admin"){
+						$aksi .='-';
+					}else{
+						if($r->ctk == 1){
+							$aksi .='SUDAH CETAK LABEL!';
+						}else if($r->ctk == 0){
+							// CEK OLEH QC DULU
+							$edit = '<button type="button" onclick="tampil_edit('.$id.')" class="btn bg-orange">EDIT</button>';
+							$hapus = '<button type="button" onclick="deleteData('.$id.','."'".$r->roll."'".')" class="btn btn-danger">HAPUS</button>';
+							if($r->status == 1){
+								$aksi .='STATUS CEK QC! '.$edit.' '.$hapus;
+							}else{
+								$aksi = '
+								<a type="button" href="'.$print.'" target="_blank" class="btn btn-default">
+									L BESAR
+								</a>
+								<a type="button" href="'.$print2.'" target="_blank" class="btn bg-green">
+									L KECIL
+								</a>';
+							}
 						}
 					}
+
 
                     $row[] = $aksi;
                     $data[] = $row;
@@ -6217,8 +6218,8 @@ class Master extends CI_Controller
 			$pm = 2;
 			$pmKet = "AND pm='2'";
 		}else{
-			$pm = $_POST["pm"];;
-			$pmKet = "AND pm='$pm'";
+			$pm = 2;
+			$pmKet = "AND pm='2'";
 		}
 		$qGetNmKer = $this->db->query("SELECT pm,nm_ker FROM m_rpk WHERE stat='open' $pmKet GROUP BY nm_ker");
 		$html .='<div style="display:block;margin:5px 0">

@@ -113,7 +113,7 @@
             <div class="menu">
                 <ul class="list">
                     <li class="header">MAIN NAVIGATION</li>
-                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG") { ?>
+                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG") { ?>
 						<li>
 							<a href="<?php echo base_url('Master/RPK') ?>">
 								<span>R P K</span>
@@ -128,14 +128,14 @@
 						</li>
                     <?php } ?>
                     <li>
-                        <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2") { ?>
+                        <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2" || $this->session->userdata('level') == "Admin") { ?>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <!-- <i class="material-icons">book</i> -->
                             <span>Master</span>
                         </a>
                         <?php } ?>
                         <ul class="ml-menu">
-							<?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2") { ?>
+							<?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Rewind1" || $this->session->userdata('level') == "Rewind2" || $this->session->userdata('level') == "Admin") { ?>
 								<!-- Master/Timbangan -->
 								<li>
                                     <a href="<?php echo base_url('Master/NewTimbangan') ?>">Timbangan</a>
@@ -224,7 +224,7 @@
                                     <a href="<?php echo base_url('Laporan/Timbangan') ?>">TIMBANGAN</a>
                                 </li>
                             <?php } ?>
-                            <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin") { ?>
+                            <?php if ($this->session->userdata('level') == "SuperAdmin") { ?>
                                 <li>
                                     <a href="<?php echo base_url('Laporan/PenjualanHarian') ?>">PENJUALAN HARIAN</a>
                                 </li>
@@ -259,7 +259,7 @@
                         </ul>
                     </li>
                     <?php
-						if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "Corrugated") {
+						if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "Corrugated") {
 							$level = $this->session->userdata('username');
 							$cek = $this->db->query("SELECT*FROM user WHERE username='$level' AND (id='5' OR id='4' OR id='6' OR id='18')");
 							if($cek->num_rows() > 0) {

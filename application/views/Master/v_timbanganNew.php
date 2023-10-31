@@ -245,9 +245,11 @@
 							<button type="button" class="btn-kembali btn btn-dark btn-default btn-sm waves-effect">
 								<b><span>BACK</span></b>
 							</button> &nbsp;&nbsp;
+							<?php if($otorisasi != 'admin') { ?>
 							<button onclick="simpan()" id="btn-simpan" type="button" class="btn bg-light-green btn-sm waves-effect">
 								<b><span id="txt-btn-simpan">SIMPAN</span></b>
 							</button> &nbsp;&nbsp;
+							<?php } ?>
 							<!-- <button onclick="kosong()" type="button" class="btn btn-default btn-sm waves-effect">
 								<b><span>TAMBAH DATA</span></b>
 							</button> -->

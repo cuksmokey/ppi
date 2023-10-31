@@ -6090,11 +6090,11 @@ class Laporan extends CI_Controller {
                         $html .='<td style="border:1px solid #999;text-align:center">'.$opt.'</td>';
                         
                         // TOMBOL EDIT
-                        if(($otori == 'all' || $otori == 'admin' || $otori == 'qc' || $otori == 'fg') && $roll->id_rtr == null ){
+                        if(($otori == 'all' || $otori == 'qc' || $otori == 'fg') && $roll->id_rtr == null ){
                             $print = base_url("Master/print_timbangan?id=").$roll->roll;
                             // $print2 = base_url("Master/print_timbangan2?id=").$roll->roll;
                             $plabel = '<a type="button" href="'.$print.'" target="_blank" style="padding:3px 5px;background:#fff">LABEL</a>';
-							if(($otori == 'all' || $otori == 'admin' || $otori == 'qc')){
+							if(($otori == 'all' || $otori == 'qc')){
 								if($roll->status == 1){
 									$aksii = '';
 								}else{
@@ -6104,7 +6104,7 @@ class Laporan extends CI_Controller {
 								$aksii = '';
 							}
 
-							if($otori == 'all' || $otori == 'admin' || $otori == 'qc' || ($otori == 'fg' && $roll->nm_ker == 'WP')){
+							if($otori == 'all' || $otori == 'qc' || ($otori == 'fg' && $roll->nm_ker == 'WP')){
 								$html .='<td class="edit-roll" style="padding:3px"><button id="btnn-edit-roll-'.$i.'" style="background:#fff;border:0;padding:3px 5px" onclick="editRoll('."'".$i."'".')">EDIT</button> '.$aksii.'</td>';
 							}else{
 								$html .='';
@@ -6581,7 +6581,7 @@ class Laporan extends CI_Controller {
 		$html .='</div>';
 
 		if($getRollRk->num_rows() == 0){
-			if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC"){
+			if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "QC"){
 				$print = base_url("Master/print_timbangan?id=").$roll;
 				$print2 = base_url("Master/print_timbangan2?id=").$roll;
 				$html .='<div style="margin-top:15px;color:#000;font-size:12px">
