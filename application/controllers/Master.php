@@ -5584,7 +5584,7 @@ class Master extends CI_Controller
 				$ketBln = 'SEP';
 			}else if($bln->bulan == 10){
 				$ketBln = 'OKT';
-			}else if($bln->bulan == 111){
+			}else if($bln->bulan == 11){
 				$ketBln = 'NOV';
 			}else if($bln->bulan == 12){
 				$ketBln = 'DES';
