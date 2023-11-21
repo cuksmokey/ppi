@@ -4961,6 +4961,7 @@ class Master extends CI_Controller
 						$getKiriman = $this->db->query("SELECT COUNT(t.roll) AS kroll FROM m_timbangan t
 						INNER JOIN pl p ON t.id_pl=p.id
 						WHERE no_po='$nopo->no_po' AND t.nm_ker='$nopo->nm_ker' AND t.g_label='$nopo->g_label' AND width='$nopo->width'
+						AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
 						GROUP BY no_po,t.nm_ker,t.g_label,width");
 						if($getKiriman->num_rows() == 0){
 							$jmlroll = $nopo->jml_roll;
