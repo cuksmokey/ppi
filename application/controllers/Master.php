@@ -4982,7 +4982,7 @@ class Master extends CI_Controller
 					if($otfg == 'ofgtuan' || $otfg == 'ofgtuanf' || $otfg == 'ofgtdktuan'){
 						$getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
 						WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width'
-						AND t.tgl BETWEEN '2020-04-01' AND '9999-01-01'
+						AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
 						AND status='0' AND id_pl='0'
 						-- GROUP BY nm_ker,g_label,width
 						");
