@@ -4871,7 +4871,7 @@ class Master extends CI_Controller
 		// echo $html;
 	}
 
-	function loadDataOFG(){
+	function loadDataOFG(){ //
 		$jenis = $_POST['jenis'];
 		$otfg = $_POST['otfg'];
 		$otorisasi = $_POST['otorisasi'];
@@ -5014,6 +5014,196 @@ class Master extends CI_Controller
 						}
 					}else{
 						// ofgtdktuan
+						$tuanOrTidak = $vWidth - $jmlRoll;
+					}
+
+					if(($lbl->nm_ker == 'MH' || $lbl->nm_ker == 'MI' || $lbl->nm_ker == 'ML') && ($tuanOrTidak == 0 || $tuanOrTidak <= 0) ){
+						$gbLbl = '#ffc';
+					}else if($lbl->nm_ker == 'MN' && ($tuanOrTidak == 0 || $tuanOrTidak <= 0)){
+						$gbLbl = '#fcc';
+					}else if(($lbl->nm_ker == 'BK' || $lbl->nm_ker == 'BL') && ($tuanOrTidak == 0 || $tuanOrTidak <= 0)){
+						$gbLbl = '#ccc';
+					}else if($lbl->nm_ker == 'WP' && ($tuanOrTidak == 0 || $tuanOrTidak <= 0)){
+						$gbLbl = '#cfc';
+					}else if($lbl->nm_ker == 'MH COLOR' && ($tuanOrTidak == 0 || $tuanOrTidak <= 0)){
+						$gbLbl = '#ccf';
+					}else{
+						$gbLbl = '#fff';
+					}
+
+					$html .= '<td style="padding:5px;background:'.$gbLbl.'">
+						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$tuanOrTidak.'</button>
+					</td>';
+				}
+				$html .='</tr>';
+			}
+
+			$html .='</table>';
+		}
+
+		echo $html;
+	}
+
+	function loadDataOFGNew(){ //
+		$jenis = $_POST['jenis'];
+		$otfg = $_POST['otfg'];
+		$otorisasi = $_POST['otorisasi'];
+		$html = '';
+
+		// mh bk mhbk nonspek wp all
+		if($jenis == 'mh'){
+			$nmKer = "AND nm_ker='MH'";
+			$nmKer2 = "nm_ker='MH' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
+		}else if($jenis == 'bk'){
+			$nmKer = "AND nm_ker='BK'";
+			$nmKer2 = "nm_ker='BK' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
+		}else if($jenis == 'mhbk'){
+			$nmKer = "AND (nm_ker='MH' OR nm_ker='BK')";
+			$nmKer2 = "(nm_ker='MH' OR nm_ker='BK') AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
+		}else if($jenis == 'nonspek'){
+			$nmKer = "AND nm_ker='MN'";
+			$nmKer2 = "nm_ker='MN' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
+		}else if($jenis == 'wp'){
+			$nmKer = "AND nm_ker='WP'";
+			$nmKer2 = "nm_ker='WP' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
+		}else{
+			$nmKer = "";
+			$nmKer2 = "";
+		}
+
+		$html .='<table style="font-size:12px;color:#000;text-align:center" border="1">';
+		// INTI DATA
+		$getNmKer = $this->db->query("SELECT nm_ker FROM (
+			SELECT nm_ker FROM m_timbangan
+			WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' $nmKer AND g_label!='120'
+			UNION ALL
+			SELECT nm_ker FROM po_master
+			WHERE $nmKer2
+		) AS m_timbangan
+		GROUP BY nm_ker");
+		if($getNmKer->num_rows() == 0){
+			$html .='<td style="padding:5px">TIDAK ADA DATA</td>';
+		}else{
+			$html .='<tr style="background:#e9e9e9;font-weight:bold">
+			<td style="padding:5px" rowspan="2">NO</td>
+			<td style="padding:5px" rowspan="2">Ukuran</td>';
+
+			// TAMPIL JENIS KERTAS
+			foreach($getNmKer->result() as $ker){
+				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM (
+					SELECT nm_ker,g_label FROM m_timbangan
+					WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' AND nm_ker='$ker->nm_ker' AND g_label!='120'
+					UNION ALL
+					SELECT nm_ker,g_label FROM po_master
+					WHERE nm_ker='$ker->nm_ker' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'
+				) AS m_timbangan
+				GROUP BY nm_ker,g_label");
+				$html .='<td style="padding:5px" colspan="'.$getgLabel->num_rows().'">'.$ker->nm_ker.'</td>';
+			}
+			$html .='</tr>';
+			
+			// TAMPIL GSM
+			$html .='<tr>';
+			foreach($getNmKer->result() as $ker){
+				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM (
+					SELECT nm_ker,g_label FROM m_timbangan
+					WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' AND nm_ker='$ker->nm_ker' AND g_label!='120'
+					UNION ALL
+					SELECT nm_ker,g_label FROM po_master
+					WHERE nm_ker='$ker->nm_ker' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'
+				) AS m_timbangan
+				GROUP BY nm_ker,g_label");
+				foreach($getgLabel->result() as $glabel){
+					$html .='<td style="padding:5px">'.$glabel->g_label.'</td>';
+				}
+			}
+			$html .='</tr>';
+			
+			// TAMPIL UKURANNYA
+			$html .='<tr>';
+			$getUkuran = $this->db->query("SELECT width FROM (
+				SELECT width FROM m_timbangan
+				WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' $nmKer
+				UNION ALL
+				SELECT width FROM po_master
+				WHERE $nmKer2
+			) AS m_timbangan
+			-- WHERE width BETWEEN '190' AND '240'
+			GROUP BY width");
+			$i = 0;
+			foreach($getUkuran->result() as $uk){
+				$i++;
+				$html .='<td style="padding:5px">'.$i.'</td><td style="padding:5px">'.round($uk->width,2).'</td>';
+
+				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
+				WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' $nmKer AND g_label!='120'
+				GROUP BY nm_ker,g_label");
+				foreach($getgLabel->result() as $lbl){
+					if($lbl->g_label == 125 || $lbl->g_label == "125"){
+						$wGLabel1 = "(g_label='120' OR g_label='125')";
+					}else{
+						$wGLabel1 = "g_label='$lbl->g_label'";
+					}
+
+					// GET PO
+					$getPO = $this->db->query("SELECT*FROM po_master
+					WHERE status='open' AND nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width' AND status_roll='0' AND jml_roll!='0'
+					GROUP BY no_po");
+					$jmlRoll = 0;
+					// PILIHAN SISA OS / BERTUAN / TIDAK BERTUAN
+					// GET PO
+					foreach($getPO->result() as $nopo){
+						// GET KIRIMAN
+						$getKiriman = $this->db->query("SELECT COUNT(t.roll) AS kroll FROM m_timbangan t
+						INNER JOIN pl p ON t.id_pl=p.id
+						WHERE no_po='$nopo->no_po' AND t.nm_ker='$nopo->nm_ker' AND t.g_label='$nopo->g_label' AND width='$nopo->width'
+						AND t.tgl BETWEEN '2020-04-01' AND '9999-01-01'
+						GROUP BY no_po,t.nm_ker,t.g_label,width");
+						if($getKiriman->num_rows() == 0){
+							$jmlroll = $nopo->jml_roll;
+						}else{
+							foreach($getKiriman->result() as $qk){
+								if($qk->kroll >= $nopo->jml_roll){
+									$jmlroll = 0;
+								}else{
+									$jmlroll = $nopo->jml_roll - $qk->kroll;
+								}
+							}
+						}
+						$jmlRoll += $jmlroll;
+					}
+
+					// GET UKURAN STOK
+					$vWidth = 0;
+					if($otfg == 'ofgtuan' || $otfg == 'ofgtuanf' || $otfg == 'ofgtdktuan'){
+						$getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
+						WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width'
+						AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
+						AND status='0' AND id_pl='0'");
+						if($getWidth->num_rows() == 0){
+							$vW = 0;
+						}else{
+							$vW = $getWidth->row()->jml;
+						}
+						$vWidth = $vW;
+					}
+
+					// SISA OS - BERTUAN - TIDAK BERTUAN
+					if($otfg == 'ofg'){
+						$tuanOrTidak = $jmlRoll;
+					}else if($otfg == 'ofgtuan'){
+						if($vWidth >= $jmlRoll){
+							$tuanOrTidak = $jmlRoll;
+						}else{
+							$tuanOrTidak = $vWidth - $jmlRoll;
+						}
+					}else if($otfg == 'ofgtuanf'){
+						if($vWidth >= $jmlRoll){
+							$tuanOrTidak = $jmlRoll;
+						}else{
+							$tuanOrTidak = $vWidth;
+						}
+					}else{
 						$tuanOrTidak = $vWidth - $jmlRoll;
 					}
 

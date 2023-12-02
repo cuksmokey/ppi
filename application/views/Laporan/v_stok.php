@@ -485,13 +485,16 @@
 	function loadDataOFG(jenis){
 		otorisasi = $("#otorisasi").val();
 		otfg = $("#otfg").val();
+		// stok ofg ofgtuanf ofgtdktuan
 		// alert(jenis+' - '+otorisasi+' - '+otfg);
 		$(".tmbl-plh").prop("disabled", true);
 		$(".tmbl-stok").prop("disabled", true).attr('style', 'background:#ccc');
 		$(".tmbl-buffer").prop("disabled", true).attr('style', 'background:#ccc');
 		$(".box-data").show().html(`Memuat data ROLL Tunggu Sebentar . . .`);
+		let load = '';
+		(otfg == 'ofgtdktuan') ? load= 'loadDataOFGNew' : load = 'loadDataOFG';
 		$.ajax({
-			url: '<?php echo base_url('Master/loadDataOFG')?>',
+			url: '<?php echo base_url('Master/')?>'+load,
 			type: "POST",
 			data: ({
 				jenis,otfg,otorisasi
