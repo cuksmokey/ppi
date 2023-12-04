@@ -199,10 +199,11 @@
 						<input type="hidden" id="otfg" value="">
 
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('stok')">STOK GUDANG</button>
-						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'office') {?>
-							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofg')">OUTSTANDING FG</button>
-							<!-- <button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtuan')">STOK BERTUAN:BEFORE</button> -->
-							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtuanf')">STOK FG BERTUAN</button>
+						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'cor') { ?>
+							<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi != 'cor') { ?>
+								<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofg')">OUTSTANDING FG</button>
+								<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtuanf')">STOK FG BERTUAN</button>
+							<?php } ?>
 							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('ofgtdktuan')">STOK FG TIDAK BERTUAN</button>
 						<?php } ?>
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('produksi')">PRODUKSI</button>
@@ -227,7 +228,7 @@
 							<button class="tmbl-buffer" onclick="load_data('rall','buffer')">SEMUA</button>
 						</div>
 
-						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'office') {?>
+						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'office' || $otorisasi == 'cor') {?>
 							<div class="menu-out-fg" style="padding-top:10px;font-size:12px">
 								<button class="txt-ofg" disabled></button>
 								<button class="tmbl-stok" onclick="loadDataOFG('mh')">MEDIUM</button>
