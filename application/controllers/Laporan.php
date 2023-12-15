@@ -3313,7 +3313,6 @@ class Laporan extends CI_Controller {
 
                                 # # # # # # # # # K O P # # # # # # # # # #
 
-        //  http://localhost/SI_timbangan/assets/images/logo_ppi_1.png
         $kop = '<table cellspacing="0" style="font-size:11px;color:#000;border-collapse:collapse;vertical-align:top;width:100%;text-align:center;font-weight:bold;font-family:Arial !important">
             <tr>
                 <th style="width:25% !important;height:'.$px.'"></th>
@@ -3321,7 +3320,7 @@ class Laporan extends CI_Controller {
             </tr>
 
             <tr>
-                <td style="border:0;background:url(http://localhost/SI_timbangan_v2/assets/images/logo_ppi_inv.png)center no-repeat" rowspan="4"></td>
+                <td style="border:0;background:url('.base_url().'assets/images/logo_ppi_inv.png)center no-repeat" rowspan="4"></td>
                 <td style="border:0;font-size:32px;padding:20px 0 0">PT. PRIMA PAPER INDONESIA</td>
             </tr>
             <tr>
