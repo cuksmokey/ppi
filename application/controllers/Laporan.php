@@ -3303,6 +3303,10 @@ class Laporan extends CI_Controller {
             $px = '60';
         }else if($count >= 9){
             $px = '20';
+        }else if($data_pl->id_perusahaan == '101'){
+            $px = '40';
+        }else if($count >= 2 && ($data_pl->id_perusahaan == '255' || $data_pl->id_perusahaan == '228')){
+            $px = '40';
         }else{
             $px = '80';
         }
@@ -3777,9 +3781,13 @@ class Laporan extends CI_Controller {
             $i = 0;
             foreach($getQPlat->result() as $rPlat){
                 $i++;
-                // <td>RIT '.$i.'. PENGIRIMAN KE - '.$rPlat->no_kendaraan.'</td>
+                if($ctk == 0){
+                    $plat = '';
+                }else{
+                    $plat = ' - ( '.$rPlat->no_kendaraan.' )';
+                }
                 $html .= '<tr>
-                    <td>RIT '.$i.', PENGIRIMAN BOX KE</td>
+                    <td>RIT '.$i.', PENGIRIMAN BOX KE'.$plat.'</td>
                 </tr>';
 
                 $getQCust = $this->db->query("SELECT a.tgl,a.id_perusahaan,b.nm_perusahaan,SUBSTRING_INDEX(SUBSTRING_INDEX(a.no_surat, '/', 2), '/', -1) AS sstr,a.no_kendaraan FROM pl_box a
@@ -3818,8 +3826,15 @@ class Laporan extends CI_Controller {
 					}else{
 						$rNmPt = $rCust->nm_perusahaan;
 					}
+
+					if($ctk == 0){
+						$idPt = '';
+					}else{
+						$idPt = ' - '.$rCust->id_perusahaan;
+					}
+
                     $html .= '<tr>
-                        <td>'.$ii.'. '.$rNmPt.'</td>
+                        <td>'.$ii.'. '.$rNmPt.$idPt.'</td>
                     </tr>';
 
                     if($rCust->sstr == 'BOX'){
@@ -3925,10 +3940,11 @@ class Laporan extends CI_Controller {
                     <td style="border:0;padding:0;width:6%"></td>
                     <td style="border:0;padding:0;width:6%"></td>';
                 $kopDetail = '
+                    <td style="font-weight:bold;border:1px solid #000;padding:5px">PLAT</td>
                     <td style="font-weight:bold;border:1px solid #000;padding:5px">BB</td>
                     <td style="font-weight:bold;border:1px solid #000;padding:5px">TOTAL BERAT</td>';
                 $sheetIsi = '';
-                $where = '';
+                $where = ',a.no_kendaraan';
             }else{
                 $wdth = '43%';
                 $kopWidth = '';
@@ -3968,13 +3984,16 @@ class Laporan extends CI_Controller {
 			-- WHERE a.no_pkb LIKE '%$jenis%' AND a.tgl BETWEEN '$tgl1' AND '$tgl2' -- SHEET DOANG
 			-- WHERE a.no_pkb LIKE '%BOX%' AND b.ukuran LIKE '%BOX%' AND a.tgl BETWEEN '$tgl1' AND '$tgl2' -- BOX DOANG
 			WHERE (a.no_pkb LIKE '%SHEET%' OR a.no_pkb LIKE '%BOX%') AND a.tgl BETWEEN '$tgl1' AND '$tgl2' -- SHEET BOX JADI SATU
-            AND a.id_perusahaan LIKE '%$tttt%'
-            -- AND (a.id_perusahaan = '99' OR a.id_perusahaan = '77')
+            -- AND c.nm_perusahaan LIKE '%%'
+            -- AND a.id_perusahaan='214'
+            -- AND (a.id_perusahaan='68' OR a.id_perusahaan='73' OR a.id_perusahaan='69' OR a.id_perusahaan='71' OR a.id_perusahaan='135' OR a.id_perusahaan='70' OR a.id_perusahaan='148' OR a.id_perusahaan='132' OR a.id_perusahaan='153') -- DUNIATEX
             -- AND a.no_kendaraan LIKE '%%'
 			GROUP BY a.tgl,b.ukuran,b.flute,c.pimpinan,a.no_pkb
 			ORDER BY a.tgl ASC $where ,a.no_pkb ASC,b.flute DESC,b.ukuran ASC");
 
             $sumTotBB = 0;
+            $sumTotbb = 0;
+            $sumTotQty = 0;
 			foreach($getQIsi->result() as $isi){
                 if($isi->sj == 'ok' && ($opsi == 0 || $opsi == 2)){
                     $clr = '#74C69D';
@@ -3998,6 +4017,8 @@ class Laporan extends CI_Controller {
                     $noPlat = '
 						<td style="background:'.$clr.';border:1px solid #000;padding:5px">'.$isi->no_kendaraan.'</td>
 						<td style="background:'.$clr.';border:1px solid #000;padding:5px">'.$cekSJ.'</td>';
+                }else if($opsi == 3){
+                    $noPlat = '<td style="background:'.$clr.';border:1px solid #000;padding:5px">'.$isi->no_kendaraan.'</td>';
                 }else{
                     $noPlat = '';
                 }
@@ -4036,7 +4057,8 @@ class Laporan extends CI_Controller {
                         <td class="str" style="background:'.$clr.';border:1px solid #000;padding:5px;text-align:right">'.number_format($bbxQty).'</td>';
 
                     $sumTotBB += $bbxQty;
-                    
+                    $sumTotbb += $bb;
+                    $sumTotQty += $isi->qty;
                 }else{
                     $kolBB = '';
                 }
@@ -4047,7 +4069,7 @@ class Laporan extends CI_Controller {
 					<td style="background:'.$clr.';border:1px solid #000;padding:5px;text-align:left">'.$isi->nm_perusahaan.'</td>
 					<td class="str" style="background:'.$clr.';border:1px solid #000;padding:5px;text-align:left">'.$isi->no_po.'</td>
 					<td class="str" style="background:'.$clr.';border:1px solid #000;padding:5px;text-align:left">'.$isi->ukuran.'</td>
-					<td class="str" style="background:'.$clr.';border:1px solid #000;padding:5px;text-align:right">'.number_format($isi->qty).'</td>
+					<td class="str" style="background:'.$clr.';border:1px solid #000;padding:5px;text-align:right">'.$isi->qty.'</td>
                     '.$noPlat.'
                     '.$kolBB.'
                     '.$sheetIsi.'
@@ -4056,8 +4078,11 @@ class Laporan extends CI_Controller {
 
             if($opsi == 3){
                 $html .= '<tr>
-                    <td style="border:1px solid #000;padding:5px" colspan="7"></td>
-                    <td style="border:1px solid #000;padding:5px;text-align:right">'.number_format($sumTotBB).'</td>
+                    <td style="border:1px solid #000;padding:5px;font-weight:bold" colspan="5">TOTAL</td>
+                    <td class="str" style="border:1px solid #000;padding:5px;font-weight:bold;text-align:right">'.number_format($sumTotQty).'</td>
+                    <td style="border:1px solid #000;padding:5px"></td>
+                    <td class="str" style="border:1px solid #000;padding:5px;font-weight:bold;text-align:right">'.number_format($sumTotbb,2).'</td>
+                    <td class="str" style="border:1px solid #000;padding:5px;font-weight:bold;text-align:right">'.number_format($sumTotBB).'</td>
                 </tr>';
             }else{
                 $html .= '';
@@ -4735,12 +4760,22 @@ class Laporan extends CI_Controller {
         $html = '';
 		$html .= '<style>.str{mso-number-format:\@}</style>';
 
+        if($po == '' && $pt == ''){
+            $where = "a.id_perusahaan LIKE '%%' AND a.id_po LIKE '%%'";
+        }else if($po != '' && $pt == ''){
+            $where = "a.id_perusahaan LIKE '%%' AND a.id_po='$po'";
+        }else if($po == '' && $pt != ''){
+            $where = "a.id_perusahaan='$pt' AND a.id_po LIKE '%%'";
+        }else{
+            $where = "a.id_perusahaan='$pt' AND a.id_po='$po'";
+        }
+
         // BOX
         if($opsi == 3 || $opsi == 4){
             $html .= '<table style="border-collapse:collapse" border="1" cellpadding="5">';
             $sqlBOX = $this->db->query("SELECT a.id_perusahaan,c.nm_perusahaan,c.pimpinan FROM po_box_master a
             INNER JOIN m_perusahaan c ON a.id_perusahaan=c.id
-            WHERE a.po='box'
+            WHERE $where AND a.po='box'
             GROUP BY a.id_perusahaan
             ORDER BY c.nm_perusahaan");
             foreach($sqlBOX->result() as $gpt){
@@ -4816,19 +4851,9 @@ class Laporan extends CI_Controller {
             }
         }else{ // SHEET
             $html .= '<table style="border-collapse:collapse" border="1">';
-            if($po == '' && $pt == ''){
-                $where = "a.id_perusahaan LIKE '%%' AND a.id_po LIKE '%%'";
-            }else if($po != '' && $pt == ''){
-                $where = "a.id_perusahaan LIKE '%%' AND a.id_po='$po'";
-            }else if($po == '' && $pt != ''){
-                $where = "a.id_perusahaan='$pt' AND a.id_po LIKE '%%'";
-            }else{
-                $where = "a.id_perusahaan='$pt' AND a.id_po='$po'";
-            }
-
             $getPT = $this->db->query("SELECT a.*,b.nm_perusahaan FROM po_box_master a
             INNER JOIN m_perusahaan b ON a.id_perusahaan=b.id
-            WHERE $where AND (po IS NULL OR po='sheet')
+            WHERE $where AND (po IS NULL OR po='sheet') AND status='open'
             GROUP BY b.nm_perusahaan ASC");
             foreach($getPT->result() as $prepet){
                 if($opsi == 2){
@@ -4862,15 +4887,15 @@ class Laporan extends CI_Controller {
                 }
                 $getPO = $this->db->query("SELECT*FROM po_box_master
                 -- WHERE id_perusahaan='$prepet->id_perusahaan' AND $getIDPO
-                WHERE id_perusahaan='$prepet->id_perusahaan' AND id_po LIKE '%%'
-                GROUP BY id_po,no_po ASC");
+                WHERE id_perusahaan='$prepet->id_perusahaan' AND id_po LIKE '%%' AND (po IS NULL OR po='sheet') AND status='open'
+                GROUP BY id_po,no_po ASC ");
                 foreach($getPO->result() as $po){
                     $html .= '<tr>
                         <td style="background:#adb5bd;padding:5px;font-weight:bold" colspan="'.$colspan.'">'.$po->no_po.'</td>
                     </tr>';
 
                     $getUkuran = $this->db->query("SELECT*FROM po_box_master
-                    WHERE id_perusahaan='$po->id_perusahaan' AND id_po='$po->id_po'
+                    WHERE id_perusahaan='$po->id_perusahaan' AND id_po='$po->id_po' AND (po IS NULL OR po='sheet') AND status='open'
                     GROUP BY no_po, id ASC");
                     $i = 0;
                     foreach($getUkuran->result() as $uk){
