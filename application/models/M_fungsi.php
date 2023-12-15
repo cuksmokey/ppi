@@ -243,8 +243,10 @@ class M_fungsi extends CI_Model {
         $this->mpdf->SetLeftMargin = $lMargin;
         $this->mpdf->SetRightMargin = $rMargin;
 
-        if($font == 1){
+		if($font == 1){
 			$this->mpdf->AddPage($orientasi,'','','','',$lMargin,$rMargin,4,2);
+        }else if($font == 2){
+			$this->mpdf->AddPage($orientasi,'','','','',$lMargin,$rMargin,1,1);
         }else if($font == 999){
 			$this->mpdf->AddPage($orientasi,'','','','',5,5,10,10);
         }else{

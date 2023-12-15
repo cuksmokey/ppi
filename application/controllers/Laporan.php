@@ -3278,7 +3278,7 @@ class Laporan extends CI_Controller {
         $html = '';
 
         $data_pl = $this->db->query("SELECT DISTINCT a.*, b.nm_perusahaan,b.pimpinan AS nama,b.alamat,b.no_telp FROM pl_box a
-        INNER JOIN m_perusahaan b ON a.id_perusahaan = b.id
+        INNER JOIN m_perusahaan2 b ON a.id_perusahaan = b.id
         WHERE a.no_pkb='$jenis'
         GROUP BY a.no_pkb")->row();
 
@@ -3637,7 +3637,7 @@ class Laporan extends CI_Controller {
 
             // CARI PLAT KENDARAAN
             $getTglnIDpt = $this->db->query("SELECT a.tgl,a.id_perusahaan,a.no_kendaraan FROM pl_box a
-            INNER JOIN m_perusahaan c ON a.id_perusahaan=c.id
+            INNER JOIN m_perusahaan2 c ON a.id_perusahaan=c.id
             INNER JOIN m_box b ON a.id=b.id_pl
             WHERE a.no_pkb LIKE '%SHEET%' AND a.tgl='$r->tgl'
             GROUP BY a.no_kendaraan
@@ -3658,7 +3658,7 @@ class Laporan extends CI_Controller {
 
                 // GET ID DARI PLAT
                 $getIsiPlat = $this->db->query("SELECT a.tgl,a.id_perusahaan,a.no_pkb,c.nm_perusahaan,a.no_kendaraan,SUM(b.qty) AS qty FROM pl_box a
-                INNER JOIN m_perusahaan c ON a.id_perusahaan=c.id
+                INNER JOIN m_perusahaan2 c ON a.id_perusahaan=c.id
                 INNER JOIN m_box b ON a.id=b.id_pl
                 WHERE a.no_pkb LIKE '%SHEET%' AND a.tgl='$rr->tgl' AND a.no_kendaraan='$rr->no_kendaraan'
                 GROUP BY a.id_perusahaan
@@ -3676,7 +3676,7 @@ class Laporan extends CI_Controller {
 
                     // SENGGOL ISI NYA DONG
                     $getSenggolIsi = $this->db->query("SELECT a.tgl,a.id_perusahaan,a.no_pkb,a.no_po,b.ukuran,b.flute,b.qty,b.qty_ket,c.nm_perusahaan,a.no_kendaraan FROM pl_box a
-                    INNER JOIN m_perusahaan c ON a.id_perusahaan=c.id
+                    INNER JOIN m_perusahaan2 c ON a.id_perusahaan=c.id
                     INNER JOIN m_box b ON a.id=b.id_pl
                     WHERE a.no_pkb LIKE '%SHEET%' AND a.tgl='$rrr->tgl' AND a.no_kendaraan='$rrr->no_kendaraan' AND a.id_perusahaan='$rrr->id_perusahaan'
                     ORDER BY a.no_pkb ASC,a.no_po,b.flute DESC,b.ukuran ASC");
@@ -3791,7 +3791,7 @@ class Laporan extends CI_Controller {
                 </tr>';
 
                 $getQCust = $this->db->query("SELECT a.tgl,a.id_perusahaan,b.nm_perusahaan,SUBSTRING_INDEX(SUBSTRING_INDEX(a.no_surat, '/', 2), '/', -1) AS sstr,a.no_kendaraan FROM pl_box a
-                INNER JOIN m_perusahaan b ON a.id_perusahaan=b.id
+                INNER JOIN m_perusahaan2 b ON a.id_perusahaan=b.id
                 WHERE tgl='$rPlat->tgl' AND no_kendaraan='$rPlat->no_kendaraan'
                 GROUP BY a.id_perusahaan
                 ORDER BY sstr,a.no_pkb");
@@ -3844,7 +3844,7 @@ class Laporan extends CI_Controller {
                     }
 
                     $getQisi = $this->db->query("SELECT a.tgl,a.id_perusahaan,a.no_pkb,a.no_po,b.ukuran,b.flute,b.qty,b.qty_ket,c.nm_perusahaan,a.no_kendaraan FROM pl_box a
-                    INNER JOIN m_perusahaan c ON a.id_perusahaan=c.id
+                    INNER JOIN m_perusahaan2 c ON a.id_perusahaan=c.id
                     INNER JOIN m_box b ON a.id=b.id_pl
                     WHERE a.no_pkb LIKE '%$rCust->sstr%' $wHere AND a.tgl='$rCust->tgl' AND a.no_kendaraan='$rCust->no_kendaraan' AND a.id_perusahaan='$rCust->id_perusahaan'");
 
@@ -3979,7 +3979,7 @@ class Laporan extends CI_Controller {
 			}
 
 			$getQIsi = $this->db->query("SELECT a.tgl,a.no_surat,a.id_perusahaan,c.nm_perusahaan,a.no_po,b.ukuran,b.qty,b.flute,a.no_kendaraan,a.sj,a.sj_blk FROM pl_box a
-			INNER JOIN m_perusahaan c ON a.id_perusahaan=c.id
+			INNER JOIN m_perusahaan2 c ON a.id_perusahaan=c.id
 			INNER JOIN m_box b ON a.id=b.id_pl
 			-- WHERE a.no_pkb LIKE '%$jenis%' AND a.tgl BETWEEN '$tgl1' AND '$tgl2' -- SHEET DOANG
 			-- WHERE a.no_pkb LIKE '%BOX%' AND b.ukuran LIKE '%BOX%' AND a.tgl BETWEEN '$tgl1' AND '$tgl2' -- BOX DOANG
@@ -4092,37 +4092,37 @@ class Laporan extends CI_Controller {
 		}else if($jenis == 'BOX'){
 			
             if($ctk != '2'){
-    			$html .= '<tr>
-    				<td style="border:0;padding:0;width:5%"></td>
-    				<td style="border:0;padding:0;width:8%"></td>
-    				<td style="border:0;padding:0;width:10%"></td>
-    				<td style="border:0;padding:0;width:18.5%"></td>
-    				<td style="border:0;padding:0;width:14.5%"></td>
-    				<td style="border:0;padding:0;width:6%"></td>
-    				<td style="border:0;padding:0;width:10%"></td>
-    				<td style="border:0;padding:0;width:10%"></td>
-    				<td style="border:0;padding:0;width:10%"></td>
-    				<td style="border:0;padding:0;width:8%"></td>
-    			</tr>';
+                $html .= '<tr>
+                    <td style="border:0;padding:0;width:5%"></td>
+                    <td style="border:0;padding:0;width:8%"></td>
+                    <td style="border:0;padding:0;width:10%"></td>
+                    <td style="border:0;padding:0;width:18.5%"></td>
+                    <td style="border:0;padding:0;width:14.5%"></td>
+                    <td style="border:0;padding:0;width:6%"></td>
+                    <td style="border:0;padding:0;width:10%"></td>
+                    <td style="border:0;padding:0;width:10%"></td>
+                    <td style="border:0;padding:0;width:10%"></td>
+                    <td style="border:0;padding:0;width:8%"></td>
+                </tr>';
             }
 
             if($ctk != '1'){
-    			$html .= '<tr>
-    				<td style="font-weight:bold;border:1px solid #000;padding:5px">NO</td>
-    				<td style="font-weight:bold;border:1px solid #000;padding:5px">TANGGAL</td>
-    				<td style="font-weight:bold;border:1px solid #000;padding:5px">NO SJ</td>
-    				<td style="font-weight:bold;border:1px solid #000;padding:5px">CUSTOMER</td>
-    				<td style="font-weight:bold;border:1px solid #000;padding:5px">UKURAN</td>
-    				<td style="font-weight:bold;border:1px solid #000;padding:5px">PCS</td>
-    				<td style="font-weight:bold;border:1px solid #000;padding:5px">TONASE</td>
-    				<td style="font-weight:bold;border:1px solid #000;padding:5px">HARGA</td>
-    				<td style="font-weight:bold;border:1px solid #000;padding:5px">SALES</td>
-    				<td style="font-weight:bold;border:1px solid #000;padding:5px">NO PLAT</td>
-    			</tr>';
+                $html .= '<tr>
+                    <td style="font-weight:bold;border:1px solid #000;padding:5px">NO</td>
+                    <td style="font-weight:bold;border:1px solid #000;padding:5px">TANGGAL</td>
+                    <td style="font-weight:bold;border:1px solid #000;padding:5px">NO SJ</td>
+                    <td style="font-weight:bold;border:1px solid #000;padding:5px">CUSTOMER</td>
+                    <td style="font-weight:bold;border:1px solid #000;padding:5px">UKURAN</td>
+                    <td style="font-weight:bold;border:1px solid #000;padding:5px">PCS</td>
+                    <td style="font-weight:bold;border:1px solid #000;padding:5px">TONASE</td>
+                    <td style="font-weight:bold;border:1px solid #000;padding:5px">HARGA</td>
+                    <td style="font-weight:bold;border:1px solid #000;padding:5px">SALES</td>
+                    <td style="font-weight:bold;border:1px solid #000;padding:5px">NO PLAT</td>
+                </tr>';
             }
 
 			$getQIsi = $this->db->query("SELECT a.tgl,a.no_surat,c.id AS id_pt,c.nm_perusahaan,c.pimpinan,b.ukuran,b.qty,a.no_kendaraan FROM pl_box a
-			INNER JOIN m_perusahaan c ON a.id_perusahaan=c.id
+			INNER JOIN m_perusahaan2 c ON a.id_perusahaan=c.id
 			INNER JOIN m_box b ON a.id=b.id_pl
 			WHERE a.no_pkb LIKE '%$jenis%' AND b.ukuran LIKE '%BOX%'
 			AND a.tgl BETWEEN '$tgl1' AND '$tgl2'
@@ -4774,7 +4774,7 @@ class Laporan extends CI_Controller {
         if($opsi == 3 || $opsi == 4){
             $html .= '<table style="border-collapse:collapse" border="1" cellpadding="5">';
             $sqlBOX = $this->db->query("SELECT a.id_perusahaan,c.nm_perusahaan,c.pimpinan FROM po_box_master a
-            INNER JOIN m_perusahaan c ON a.id_perusahaan=c.id
+            INNER JOIN m_perusahaan2 c ON a.id_perusahaan=c.id
             WHERE $where AND a.po='box'
             GROUP BY a.id_perusahaan
             ORDER BY c.nm_perusahaan");
@@ -4811,7 +4811,7 @@ class Laporan extends CI_Controller {
                         </tr>';
 
                         $getBii = $this->db->query("SELECT a.tgl,a.no_surat,a.no_po,a.no_kendaraan,a.sj AS cek_sj,a.sj_blk,b.ukuran,b.flute,b.qty,b.ket FROM pl_box a
-                        INNER JOIN m_perusahaan c ON a.id_perusahaan=c.id
+                        INNER JOIN m_perusahaan2 c ON a.id_perusahaan=c.id
                         INNER JOIN m_box b ON a.id=b.id_pl
                         INNER JOIN po_box_master d ON a.no_po=d.no_po
                         WHERE a.id_perusahaan='$ukkk->id_perusahaan' AND a.no_po='$ukkk->no_po' AND b.ukuran='$ukkk->ukuran'
@@ -4852,7 +4852,7 @@ class Laporan extends CI_Controller {
         }else{ // SHEET
             $html .= '<table style="border-collapse:collapse" border="1">';
             $getPT = $this->db->query("SELECT a.*,b.nm_perusahaan FROM po_box_master a
-            INNER JOIN m_perusahaan b ON a.id_perusahaan=b.id
+            INNER JOIN m_perusahaan2 b ON a.id_perusahaan=b.id
             WHERE $where AND (po IS NULL OR po='sheet') AND status='open'
             GROUP BY b.nm_perusahaan ASC");
             foreach($getPT->result() as $prepet){
@@ -4932,7 +4932,7 @@ class Laporan extends CI_Controller {
                         }
 
                         $getUkItem = $this->db->query("SELECT a.tgl,a.no_surat,a.no_po,a.no_kendaraan,a.sj AS cek_sj,a.sj_blk,b.ukuran,b.flute,b.qty,b.ket FROM pl_box a
-                        INNER JOIN m_perusahaan c ON a.id_perusahaan=c.id
+                        INNER JOIN m_perusahaan2 c ON a.id_perusahaan=c.id
                         INNER JOIN m_box b ON a.id=b.id_pl
                         INNER JOIN po_box_master d ON a.no_po=d.no_po
                         WHERE a.id_perusahaan='$uk->id_perusahaan' AND a.no_po='$uk->no_po' AND b.ukuran='$uk->ukuran' AND b.flute='$uk->flute'
