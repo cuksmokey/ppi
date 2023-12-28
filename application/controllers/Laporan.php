@@ -7143,4 +7143,79 @@ class Laporan extends CI_Controller {
 		$html ='REKAP';
 		echo $html;
 	}
+
+	function lodaStokRPK(){
+		$jenis = $_POST["jenis"];
+		$html = '';
+
+		$html .='<table style="font-size:12px;color:#000;text-align:center;border-collapse:collapse">';
+
+		$getKop = $this->db->query("SELECT*FROM m_rpk r
+		WHERE r.stat='open' AND r.nm_ker='$jenis'
+		GROUP BY r.id_rpk,r.nm_ker,r.g_label,r.item1,r.item2,r.item3,r.item4,r.item5");
+		$item1 = 0;
+		$item2 = 0;
+		$item3 = 0;
+		$item4 = 0;
+		$item5 = 0;
+		foreach($getKop->result() as $kop){
+			$item1 += round($kop->item1);
+			$item2 += round($kop->item2);
+			$item3 += round($kop->item3);
+			$item4 += round($kop->item4);
+			$item5 += round($kop->item5);
+		}
+
+		($item1 > 0) ? $ketKop1 = '<th style="padding:5px;border:1px solid #000">ITEM1</th>' : $ketKop1 = '';
+		($item2 > 0) ? $ketKop2 = '<th style="padding:5px;border:1px solid #000">ITEM2</th>' : $ketKop2 = '';
+		($item3 > 0) ? $ketKop3 = '<th style="padding:5px;border:1px solid #000">ITEM3</th>' : $ketKop3 = '';
+		($item4 > 0) ? $ketKop4 = '<th style="padding:5px;border:1px solid #000">ITEM4</th>' : $ketKop4 = '';
+		($item5 > 0) ? $ketKop5 = '<th style="padding:5px;border:1px solid #000">ITEM5</th>' : $ketKop5 = '';
+
+		($item1 > 0) ? $ketKr1 = '<th style="padding:5px;border:1px solid #000">KURANG PRODUKSI ITEM1</th>' : $ketKr1 = '';
+		($item2 > 0) ? $ketKr2 = '<th style="padding:5px;border:1px solid #000">KURANG PRODUKSI ITEM2</th>' : $ketKr2 = '';
+		($item3 > 0) ? $ketKr3 = '<th style="padding:5px;border:1px solid #000">KURANG PRODUKSI ITEM3</th>' : $ketKr3 = '';
+		($item4 > 0) ? $ketKr4 = '<th style="padding:5px;border:1px solid #000">KURANG PRODUKSI ITEM4</th>' : $ketKr4 = '';
+		($item5 > 0) ? $ketKr5 = '<th style="padding:5px;border:1px solid #000">KURANG PRODUKSI ITEM5</th>' : $ketKr5 = '';
+
+		if($getKop->num_rows() == 0){
+			$html .='<tr>
+				<th>TIDAK ADA DATA RPK!</th>
+			</tr>';
+		}else{
+			$html .='<tr>
+				<th style="padding:5px;border:1px solid #000">ID RPK</th>
+				<th style="padding:5px;border:1px solid #000">JENIS</th>
+				'.$ketKop1.'
+				'.$ketKop2.'
+				'.$ketKop3.'
+				'.$ketKop4.'
+				'.$ketKop5.'
+				<th style="padding:5px;border:1px solid #000">JML. POTONG</th>
+				'.$ketKr1.'
+				'.$ketKr2.'
+				'.$ketKr3.'
+				'.$ketKr4.'
+				'.$ketKr5.'
+			</tr>';
+
+			($item1 > 0) ? $qIsi1 = ",(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item1=t.width GROUP BY t.nm_ker,t.g_label) AS t_item1" : $qIsi1 = '';
+			($item2 > 0) ? $qIsi2 = ",(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item2=t.width GROUP BY t.nm_ker,t.g_label) AS t_item2" : $qIsi2 = '';
+			($item3 > 0) ? $qIsi3 = ",(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item3=t.width GROUP BY t.nm_ker,t.g_label) AS t_item3" : $qIsi3 = '';
+			($item4 > 0) ? $qIsi4 = ",(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item4=t.width GROUP BY t.nm_ker,t.g_label) AS t_item4" : $qIsi4 = '';
+			($item5 > 0) ? $qIsi5 = ",(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item5=t.width GROUP BY t.nm_ker,t.g_label) AS t_item5" : $qIsi5 = '';
+			$getIsi = $this->db->query("SELECT r.id_rpk,r.nm_ker,r.g_label,r.item1,r.item2,r.item3,r.item4,r.item5,r.x $qIsi1 $qIsi2 $qIsi3 $qIsi4 $qIsi5
+			FROM m_rpk r LEFT JOIN m_timbangan t ON r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label
+			WHERE r.stat='open' AND r.nm_ker='$jenis'
+			GROUP BY r.id_rpk,r.nm_ker,r.g_label,r.item1,r.item2,r.item3,r.item4,r.item5,r.x");
+			foreach($getIsi->result() as $r){
+				$html .= '<tr>
+					<td style="padding:5px;border:1px solid #000;text-align:left">'.$r->id_rpk.'</td>
+				</tr>';
+			}
+		}
+
+		$html .='</table">';
+		echo $html;
+	}
 }

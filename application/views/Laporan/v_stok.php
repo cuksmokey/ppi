@@ -198,6 +198,9 @@
 						<input type="hidden" id="stat" value="">
 						<input type="hidden" id="otfg" value="">
 
+						<?php if($otorisasi == 'all') { ?>
+							<!-- <button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('rpk')">RPK BELUM TERPOTONG</button> -->
+						<?php } ?>
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('stok')">STOK GUDANG</button>
 						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'cor') { ?>
 							<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi != 'cor') { ?>
@@ -208,7 +211,15 @@
 						<?php } ?>
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('produksi')">PRODUKSI</button>
 
-						<div class="menu-stok" style="padding-top:10px;font-size:12px">
+						<div class="menu-rpk" style="padding-top:10px;font-size:12px;display:none">
+							<button disabled>RPK : </button>
+							<button class="tmbl-stok" onclick="lodaStokRPK('mh')">MEDIUM</button>
+							<button class="tmbl-stok" onclick="lodaStokRPK('bk')">B - KRAFT</button>
+							<button class="tmbl-stok" onclick="lodaStokRPK('mn')">MEDIUM NON SPEK</button>
+							<button class="tmbl-stok" onclick="lodaStokRPK('wp')">W P</button>
+						</div>
+
+						<div class="menu-stok" style="padding-top:10px;font-size:12px;display:none">
 							<button disabled>STOK : </button>
 							<button class="tmbl-stok" onclick="load_data('mh','stok')">MEDIUM</button>
 							<button class="tmbl-stok" onclick="load_data('bk','stok')">B - KRAFT</button>
@@ -229,7 +240,7 @@
 						</div>
 
 						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'office' || $otorisasi == 'cor') {?>
-							<div class="menu-out-fg" style="padding-top:10px;font-size:12px">
+							<div class="menu-out-fg" style="padding-top:10px;font-size:12px;display:none">
 								<button class="txt-ofg" disabled></button>
 								<button class="tmbl-stok" onclick="loadDataOFG('mh')">MEDIUM</button>
 								<button class="tmbl-stok" onclick="loadDataOFG('bk')">B - KRAFT</button>
@@ -241,7 +252,7 @@
 							</div>
 						<?php } ?>
 						
-						<div class="menu-produksi" style="padding-top:10px;font-size:12px">
+						<div class="menu-produksi" style="padding-top:10px;font-size:12px;display:none">
 							<button disabled>PILIH : </button>
 							<button class="tmbl-stok" onclick="p_pm(1)">PM 1</button>
 							<button class="tmbl-stok" onclick="p_pm(2)">PM 2</button>
@@ -309,6 +320,7 @@
 	$(document).ready(function(){
 		$(".box-data").html('').hide();
 		$(".tmpl-roll").html('').hide();
+		$(".menu-rpk").hide();
 		$(".menu-stok").hide();
 		$(".menu-out-fg").hide();
 		$(".menu-produksi").hide();
@@ -329,8 +341,14 @@
 		$(".tmbl-buffer").prop("disabled", false).removeAttr( "style");
 		$(".box-data").html('').hide();
 		$(".tmpl-roll").html('').hide();
-		if(plh == 'stok'){
+		if(plh == 'rpk'){
+			$(".menu-rpk").show();
+			$(".menu-stok").hide();
+			$(".menu-out-fg").hide();
+			$(".menu-produksi").hide();
+		}else if(plh == 'stok'){
 			$(".menu-stok").show();
+			$(".menu-rpk").hide();
 			$(".menu-out-fg").hide();
 			$(".menu-produksi").hide();
 		}else if(plh == 'ofg' || plh == 'ofgtuan' || plh == 'ofgtuanf' || plh == 'ofgtdktuan'){
@@ -347,8 +365,10 @@
 			$(".txt-ofg").html(txtplh);
 			$(".menu-out-fg").show();
 			$(".menu-stok").hide();
+			$(".menu-rpk").hide();
 			$(".menu-produksi").hide();
 		}else{
+			$(".menu-rpk").hide();
 			$(".menu-stok").hide();
 			$(".menu-out-fg").hide();
 			$(".menu-produksi").show();
@@ -504,6 +524,26 @@
 				$(".tmbl-plh").prop("disabled", false);
 				$(".tmbl-stok").prop("disabled", false).removeAttr( "style");
 				$(".tmbl-buffer").prop("disabled", false).removeAttr( "style");
+				$(".box-data").show().html(res);
+			}
+		})
+	}
+
+	function lodaStokRPK(jenis){
+		console.log(jenis)
+		$(".tmbl-plh").prop("disabled", true);
+		$(".tmbl-stok").prop("disabled", true).attr('style', 'background:#ccc');
+		$(".box-data").show().html(`Memuat data ROLL Tunggu Sebentar . . .`);
+
+		$.ajax({
+			url: '<?php echo base_url('Laporan/lodaStokRPK')?>',
+			type: "POST",
+			data: ({
+				jenis
+			}),
+			success: function(res){
+				$(".tmbl-plh").prop("disabled", false);
+				$(".tmbl-stok").prop("disabled", false).removeAttr( "style");
 				$(".box-data").show().html(res);
 			}
 		})
