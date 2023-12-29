@@ -233,7 +233,7 @@
 						<input type="hidden" id="stat" value="">
 						<input type="hidden" id="otfg" value="">
 
-						<?php if($otorisasi == 'all') { ?>
+						<?php if($otorisasi == 'all' || $otorisasi == 'qc') { ?>
 							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('rpk')">RPK BELUM TERPOTONG</button>
 						<?php } ?>
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('stok')">STOK GUDANG</button>
