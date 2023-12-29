@@ -7148,7 +7148,7 @@ class Laporan extends CI_Controller {
 		$jenis = $_POST["jenis"];
 		$html = '';
 
-		$html .='<table style="font-size:12px;color:#000;text-align:center;border-collapse:collapse">';
+		$html .='<div style="overflow:auto;white-space:nowrap"><table style="font-size:12px;color:#000;text-align:center;border-collapse:collapse">';
 
 		$getKop = $this->db->query("SELECT*FROM m_rpk r
 		WHERE r.stat='open' AND r.nm_ker='$jenis'
@@ -7166,56 +7166,181 @@ class Laporan extends CI_Controller {
 			$item5 += round($kop->item5);
 		}
 
-		($item1 > 0) ? $ketKop1 = '<th style="padding:5px;border:1px solid #000">ITEM1</th>' : $ketKop1 = '';
-		($item2 > 0) ? $ketKop2 = '<th style="padding:5px;border:1px solid #000">ITEM2</th>' : $ketKop2 = '';
-		($item3 > 0) ? $ketKop3 = '<th style="padding:5px;border:1px solid #000">ITEM3</th>' : $ketKop3 = '';
 		($item4 > 0) ? $ketKop4 = '<th style="padding:5px;border:1px solid #000">ITEM4</th>' : $ketKop4 = '';
 		($item5 > 0) ? $ketKop5 = '<th style="padding:5px;border:1px solid #000">ITEM5</th>' : $ketKop5 = '';
 
-		($item1 > 0) ? $ketKr1 = '<th style="padding:5px;border:1px solid #000">KURANG PRODUKSI ITEM1</th>' : $ketKr1 = '';
-		($item2 > 0) ? $ketKr2 = '<th style="padding:5px;border:1px solid #000">KURANG PRODUKSI ITEM2</th>' : $ketKr2 = '';
-		($item3 > 0) ? $ketKr3 = '<th style="padding:5px;border:1px solid #000">KURANG PRODUKSI ITEM3</th>' : $ketKr3 = '';
-		($item4 > 0) ? $ketKr4 = '<th style="padding:5px;border:1px solid #000">KURANG PRODUKSI ITEM4</th>' : $ketKr4 = '';
-		($item5 > 0) ? $ketKr5 = '<th style="padding:5px;border:1px solid #000">KURANG PRODUKSI ITEM5</th>' : $ketKr5 = '';
+		($item4 > 0) ? $ketKr4 = '<th style="padding:5px;border:1px solid #000">- P. ITEM4</th>' : $ketKr4 = '';
+		($item5 > 0) ? $ketKr5 = '<th style="padding:5px;border:1px solid #000">- P. ITEM5</th>' : $ketKr5 = '';
 
 		if($getKop->num_rows() == 0){
 			$html .='<tr>
 				<th>TIDAK ADA DATA RPK!</th>
 			</tr>';
 		}else{
-			$html .='<tr>
-				<th style="padding:5px;border:1px solid #000">ID RPK</th>
-				<th style="padding:5px;border:1px solid #000">JENIS</th>
-				'.$ketKop1.'
-				'.$ketKop2.'
-				'.$ketKop3.'
-				'.$ketKop4.'
-				'.$ketKop5.'
+			if($item1 > 0 && $item2 == 0 && $item3 == 0 && $item4 == 0 && $item5 == 0){
+				$cKop = 'colspan="7"';
+			}else if($item1 > 0 && $item2 > 0 && $item3 == 0 && $item4 == 0 && $item5 == 0){
+				$cKop = 'colspan="7"';
+			}else if($item1 > 0 && $item2 > 0 && $item3 > 0 && $item4 == 0 && $item5 == 0){
+				$cKop = 'colspan="7"';
+			}else if($item1 > 0 && $item2 > 0 && $item3 > 0 && $item4 > 0 && $item5 == 0){
+				$cKop = 'colspan="9"';
+			}else{
+				$cKop = 'colspan="11"';
+			}
+
+			$html .='<tr style="background:#e9e9e9">
+				<th style="padding:5px;border:1px solid #000">ITEM1</th>
+				<th style="padding:5px;border:1px solid #000">ITEM2</th>
+				<th style="padding:5px;border:1px solid #000">ITEM3</th>
+				'.$ketKop4.''.$ketKop5.'
 				<th style="padding:5px;border:1px solid #000">JML. POTONG</th>
-				'.$ketKr1.'
-				'.$ketKr2.'
-				'.$ketKr3.'
-				'.$ketKr4.'
-				'.$ketKr5.'
+				<th style="padding:5px;border:1px solid #000">- P. ITEM1</th>
+				<th style="padding:5px;border:1px solid #000">- P. ITEM2</th>
+				<th style="padding:5px;border:1px solid #000">- P. ITEM3</th>
+				'.$ketKr4.''.$ketKr5.'
 			</tr>';
 
-			($item1 > 0) ? $qIsi1 = ",(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item1=t.width GROUP BY t.nm_ker,t.g_label) AS t_item1" : $qIsi1 = '';
-			($item2 > 0) ? $qIsi2 = ",(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item2=t.width GROUP BY t.nm_ker,t.g_label) AS t_item2" : $qIsi2 = '';
-			($item3 > 0) ? $qIsi3 = ",(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item3=t.width GROUP BY t.nm_ker,t.g_label) AS t_item3" : $qIsi3 = '';
-			($item4 > 0) ? $qIsi4 = ",(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item4=t.width GROUP BY t.nm_ker,t.g_label) AS t_item4" : $qIsi4 = '';
-			($item5 > 0) ? $qIsi5 = ",(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item5=t.width GROUP BY t.nm_ker,t.g_label) AS t_item5" : $qIsi5 = '';
-			$getIsi = $this->db->query("SELECT r.id_rpk,r.nm_ker,r.g_label,r.item1,r.item2,r.item3,r.item4,r.item5,r.x $qIsi1 $qIsi2 $qIsi3 $qIsi4 $qIsi5
-			FROM m_rpk r LEFT JOIN m_timbangan t ON r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label
-			WHERE r.stat='open' AND r.nm_ker='$jenis'
-			GROUP BY r.id_rpk,r.nm_ker,r.g_label,r.item1,r.item2,r.item3,r.item4,r.item5,r.x");
-			foreach($getIsi->result() as $r){
-				$html .= '<tr>
-					<td style="padding:5px;border:1px solid #000;text-align:left">'.$r->id_rpk.'</td>
+			$getIsiKop = $this->db->query("SELECT*FROM m_rpk r WHERE r.stat='open' AND r.nm_ker='$jenis' GROUP BY r.id_rpk");
+			foreach($getIsiKop->result() as $r){
+				if(($r->nm_ker == 'MH' || $r->nm_ker == 'MN') && $r->g_label == 110){
+					$bgtrt = 'list-p-biru';
+				}else if(($r->nm_ker == 'MH') && ($r->g_label == 120 || $r->g_label == 125)){
+					$bgtrt = 'list-p-kuning';
+				}else if(($r->nm_ker == 'MH' || $r->nm_ker == 'MN') && $r->g_label == 150){
+					$bgtrt = 'list-p-merah';
+				}else if($r->nm_ker == 'WP'){
+					$bgtrt = 'list-p-hijau';
+				}else{
+					$bgtrt = 'list-p-putih';
+				}
+
+				$html .= '<tr class="'.$bgtrt.'">
+					<td style="padding:5px;border:1px solid #000;text-align:left;font-weight:bold" '.$cKop.'>'.$r->id_rpk.'</td>
 				</tr>';
+
+				$getIsi = $this->db->query("SELECT r.id_rpk,r.nm_ker,r.g_label,r.item1,r.item2,r.item3,r.item4,r.item5,r.x
+				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item1=t.width GROUP BY t.nm_ker,t.g_label) AS t_item1
+				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item2=t.width GROUP BY t.nm_ker,t.g_label) AS t_item2
+				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item3=t.width GROUP BY t.nm_ker,t.g_label) AS t_item3
+				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item4=t.width GROUP BY t.nm_ker,t.g_label) AS t_item4
+				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item5=t.width GROUP BY t.nm_ker,t.g_label) AS t_item5
+				FROM m_rpk r LEFT JOIN m_timbangan t ON r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label
+				WHERE r.stat='open' AND r.nm_ker='$jenis' AND r.id_rpk='$r->id_rpk'
+				GROUP BY r.id_rpk,r.nm_ker,r.g_label,r.item1,r.item2,r.item3,r.item4,r.item5,r.x");
+
+				foreach($getIsi->result() as $isi){
+					$html .= '<tr class="new-stok-gg">';
+
+						$i_item1 = ($isi->item1 != 0) ? round($isi->item1,2) : '-';
+						$i_item2 = ($isi->item2 != 0) ? round($isi->item2,2) : '-';
+						$i_item3 = ($isi->item3 != 0) ? round($isi->item3,2) : '-';
+						$i_item4 = ($isi->item4 != 0) ? round($isi->item4,2) : '-';
+						$i_item5 = ($isi->item5 != 0) ? round($isi->item5,2) : '-';
+
+						if(($isi->t_item1 == $isi->t_item2) && ($isi->t_item1 == $isi->t_item3) && ($isi->t_item1 == $isi->t_item4) && ($isi->t_item1 == $isi->t_item5) && ($isi->t_item2 == $isi->t_item3) && ($isi->t_item2 == $isi->t_item4) && ($isi->t_item2 == $isi->t_item5) && ($isi->t_item3 == $isi->t_item4) && ($isi->t_item3 == $isi->t_item5) && ($isi->t_item4 == $isi->t_item5) ){
+							$s_item1 = ceil($isi->t_item1/5);
+							$s_item2 = ceil($isi->t_item2/5);
+							$s_item3 = ceil($isi->t_item3/5);
+							$s_item4 = ceil($isi->t_item4/5);
+							$s_item5 = ceil($isi->t_item5/5);
+						}else if(($isi->t_item1 == $isi->t_item2) && ($isi->t_item1 == $isi->t_item3) && ($isi->t_item1 == $isi->t_item4) && ($isi->t_item2 == $isi->t_item3) && ($isi->t_item2 == $isi->t_item4) && ($isi->t_item3 == $isi->t_item4)){
+							$s_item1 = ceil($isi->t_item1/4);
+							$s_item2 = ceil($isi->t_item2/4);
+							$s_item3 = ceil($isi->t_item3/4);
+							$s_item4 = ceil($isi->t_item4/4);
+							$s_item5 = $isi->t_item5;
+						}else if(($isi->t_item1 == $isi->t_item2) && ($isi->t_item1 == $isi->t_item3) && ($isi->t_item2 == $isi->t_item3)){
+							$s_item1 = ceil($isi->t_item1/3);
+							$s_item2 = ceil($isi->t_item2/3);
+							$s_item3 = ceil($isi->t_item3/3);
+							$s_item4 = $isi->t_item4;
+							$s_item5 = $isi->t_item5;
+						}else if($isi->t_item1 == $isi->t_item2){
+							$s_item1 = ceil($isi->t_item1/2);
+							$s_item2 = ceil($isi->t_item2/2);
+							$s_item3 = $isi->t_item3;
+							$s_item4 = $isi->t_item4;
+							$s_item5 = $isi->t_item5;
+						}else if($isi->t_item2 == $isi->t_item3){
+							$s_item1 = $isi->t_item1;
+							$s_item2 = ceil($isi->t_item2/2);
+							$s_item3 = ceil($isi->t_item3/2);
+							$s_item4 = $isi->t_item4;
+							$s_item5 = $isi->t_item5;
+						}else if($isi->t_item1 == $isi->t_item3){
+							$s_item1 = ceil($isi->t_item1/2);
+							$s_item2 = $isi->t_item2;
+							$s_item3 = ceil($isi->t_item3/2);
+							$s_item4 = $isi->t_item4;
+							$s_item5 = $isi->t_item5;
+						}else{
+							$s_item1 = $isi->t_item1;
+							$s_item2 = $isi->t_item2;
+							$s_item3 = $isi->t_item3;
+							$s_item4 = $isi->t_item4;
+							$s_item5 = $isi->t_item5;
+						}
+
+						($isi->t_item1 > 0) ? $t_item1 = $s_item1 - $isi->x : $t_item1 = '-';
+						($isi->t_item2 > 0) ? $t_item2 = $s_item2 - $isi->x : $t_item2 = '-';
+						($isi->t_item3 > 0) ? $t_item3 = $s_item3 - $isi->x : $t_item3 = '-';
+						($isi->t_item4 > 0) ? $t_item4 = $s_item4 - $isi->x : $t_item4 = '-';
+						($isi->t_item5 > 0) ? $t_item5 = $s_item5 - $isi->x : $t_item5 = '-';
+
+						if($item1 > 0 && $item2 == 0 && $item3 == 0 && $item4 == 0 && $item5 == 0){
+							$html .= '<td style="padding:5px;border:1px solid #000">'.$i_item1.'</td>
+								<td style="padding:5px;border:1px solid #000">-</td>
+								<td style="padding:5px;border:1px solid #000">-</td>
+                                <td style="padding:5px;border:1px solid #000">'.$isi->x.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item1.'</td>
+                                <td style="padding:5px;border:1px solid #000">-</td>
+								<td style="padding:5px;border:1px solid #000">-</td>';
+						}else if($item1 > 0 && $item2 > 0 && $item3 == 0 && $item4 == 0 && $item5 == 0){
+							$html .= '<td style="padding:5px;border:1px solid #000">'.$i_item1.'</td>
+								<td style="padding:5px;border:1px solid #000">'.$i_item2.'</td>
+								<td style="padding:5px;border:1px solid #000">-</td>
+                                <td style="padding:5px;border:1px solid #000">'.$isi->x.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item1.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item2.'</td>
+                                <td style="padding:5px;border:1px solid #000">-</td>';
+						}else if($item1 > 0 && $item2 > 0 && $item3 > 0 && $item4 == 0 && $item5 == 0){
+							$html .= '<td style="padding:5px;border:1px solid #000">'.$i_item1.'</td>
+								<td style="padding:5px;border:1px solid #000">'.$i_item2.'</td>
+								<td style="padding:5px;border:1px solid #000">'.$i_item3.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$isi->x.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item1.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item2.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item3.'</td>';
+						}else if($item1 > 0 && $item2 > 0 && $item3 > 0 && $item4 > 0 && $item5 == 0){
+							$html .= '<td style="padding:5px;border:1px solid #000">'.$i_item1.'</td>
+								<td style="padding:5px;border:1px solid #000">'.$i_item2.'</td>
+								<td style="padding:5px;border:1px solid #000">'.$i_item3.'</td>
+								<td style="padding:5px;border:1px solid #000">'.$i_item4.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$isi->x.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item1.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item2.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item3.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item4.'</td>';
+						}else{
+							$html .= '<td style="padding:5px;border:1px solid #000">'.$i_item1.'</td>
+								<td style="padding:5px;border:1px solid #000">'.$i_item2.'</td>
+								<td style="padding:5px;border:1px solid #000">'.$i_item3.'</td>
+								<td style="padding:5px;border:1px solid #000">'.$i_item4.'</td>
+								<td style="padding:5px;border:1px solid #000">'.$i_item5.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$isi->x.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item1.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item2.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item3.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item4.'</td>
+                                <td style="padding:5px;border:1px solid #000">'.$t_item5.'</td>';
+						}
+					$html .= '</tr>';
+				}
 			}
 		}
 
-		$html .='</table">';
+		$html .='</table"></div>';
 		echo $html;
 	}
 }

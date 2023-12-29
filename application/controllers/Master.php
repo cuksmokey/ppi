@@ -6731,11 +6731,11 @@ class Master extends CI_Controller
 
 				// TIMBANGAN
 				if(isset($_POST["timbangan"]) && $isi->stat == 'open'){
-					$item1 = ($isi->item1 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item1,2)."'".','."'".round($isi->item1+1)."'".')">'.round($isi->item1,2).'</button>' : '-';
-					$item2 = ($isi->item2 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item2,2)."'".','."'".round($isi->item2+2)."'".')">'.round($isi->item2,2).'</button>' : '-';
-					$item3 = ($isi->item3 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item3,2)."'".','."'".round($isi->item3+3)."'".')">'.round($isi->item3,2).'</button>' : '-';
-					$item4 = ($isi->item4 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item4,2)."'".','."'".round($isi->item4+4)."'".')">'.round($isi->item4,2).'</button>' : '-';
-					$item5 = ($isi->item5 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item5,2)."'".','."'".round($isi->item5+5)."'".')">'.round($isi->item5,2).'</button>' : '-';
+					$item1 = ($isi->item1 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item1,2)."'".','."'".round($isi->item1+1)."'".','."'1'".')">'.round($isi->item1,2).'</button>' : '-';
+					$item2 = ($isi->item2 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item2,2)."'".','."'".round($isi->item2+2)."'".','."'2'".')">'.round($isi->item2,2).'</button>' : '-';
+					$item3 = ($isi->item3 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item3,2)."'".','."'".round($isi->item3+3)."'".','."'3'".')">'.round($isi->item3,2).'</button>' : '-';
+					$item4 = ($isi->item4 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item4,2)."'".','."'".round($isi->item4+4)."'".','."'4'".')">'.round($isi->item4,2).'</button>' : '-';
+					$item5 = ($isi->item5 != 0) ? '<button class="btn-gg" onclick="plhUkRpk('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".','."'".$isi->nm_ker."'".','."'".$isi->g_label."'".','."'".round($isi->item5,2)."'".','."'".round($isi->item5+5)."'".','."'5'".')">'.round($isi->item5,2).'</button>' : '-';
 				}else{
 					$item1 = ($isi->item1 != 0) ? round($isi->item1,2) : '-';
 					$item2 = ($isi->item2 != 0) ? round($isi->item2,2) : '-';
@@ -7060,6 +7060,7 @@ class Master extends CI_Controller
 	function plhUkRpk(){
 		$idx = $_POST["idx"];
 		$id_rpk = $_POST["id_rpk"];
+		$i_rpk = $_POST["i_rpk"];
 		$nm_ker = $_POST["nm_ker"];
 		$g_label = $_POST["g_label"];
 		$width = $_POST["width"];

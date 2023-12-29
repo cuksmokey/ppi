@@ -157,6 +157,41 @@
 	.new-stok-gg:hover {
 		background: rgba(238, 238, 238, 0.5);
 	}
+
+	.list-p-biru {
+		background: #ccf
+	}
+	.list-p-biru:hover {
+		background: #dde
+	}
+
+	.list-p-kuning {
+		background: #ffc
+	}
+	.list-p-kuning:hover {
+		background: #eed
+	}
+
+	.list-p-merah {
+		background: #fcc
+	}
+	.list-p-merah:hover {
+		background: #edd
+	}
+
+	.list-p-hijau {
+		background: #cfc
+	}
+	.list-p-hijau:hover {
+		background: #ded
+	}
+
+	.list-p-putih {
+		background: #fff
+	}
+	.list-p-putih:hover {
+		background: rgba(233, 233, 233, 0.5);
+	}
 </style>
 
 <?php
@@ -199,7 +234,7 @@
 						<input type="hidden" id="otfg" value="">
 
 						<?php if($otorisasi == 'all') { ?>
-							<!-- <button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('rpk')">RPK BELUM TERPOTONG</button> -->
+							<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('rpk')">RPK BELUM TERPOTONG</button>
 						<?php } ?>
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('stok')">STOK GUDANG</button>
 						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'cor') { ?>

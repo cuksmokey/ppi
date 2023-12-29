@@ -151,6 +151,7 @@
 												} 
 											?>
 											<input type="hidden" id="id_rpk" value="">
+											<input type="hidden" id="i_rpk" value="">
 											<input type="hidden" id="getid" value="">
 											<input type="hidden" id="l-tgl" value="">
 											<input type="hidden" id="l-nm_ker" value="">
@@ -379,12 +380,12 @@
 		})
 	}
 
-	function plhUkRpk(i,idx,id_rpk,nm_ker,g_label,width,www){
+	function plhUkRpk(i,idx,id_rpk,nm_ker,g_label,width,www,i_rpk){
 		$.ajax({
 			url: '<?php echo base_url("Master/plhUkRpk")?>',
 			type: "POST",
 			data: ({
-				idx,id_rpk,nm_ker,g_label,width,www
+				idx,id_rpk,nm_ker,g_label,width,www,i_rpk
 			}),
 			success: function(res){
 				data = JSON.parse(res);
@@ -395,13 +396,13 @@
 					$("#g_label").val(g_label);
 					$("#width").val(width);
 					$("#id_rpk").val(idx);
+					$("#i_rpk").val(i_rpk);
 				}else{
 					swal("LIST INI SUDAH DI CLOSE!! HUB. QC", "", "error");
 					btnDetailRpk(i,id_rpk);
 				}
 			}
 		});
-		
 	}
 
 	function btnAksiListRpk(i,idx,id_rpk,stat){
@@ -570,13 +571,14 @@
 		lstatus = $("#l-status").val();
 		getid = $("#getid").val();
 		id_rpk = $("#id_rpk").val();
+		i_rpk = $("#i_rpk").val();
 		// alert(lnm_ker+' - '+lg_label+' - '+lwidth+' - '+lweight+' - '+ldiameter+' - '+ljoint+' - '+lket+' - '+lstatus+' - '+getid);
 
 		if (kodepm == "" || $("#id11").val() == "" || $("#id22").val() == "" || $("#id2bln").val() == "" || $("#id44").val() == "" || $("#id4kode").val() == "") {
 			showNotification("alert-info", "HARAP ISI NOMER ROLL LENGKAP", "bottom", "center", "", "");
 			return;
 		}
-		if (tgl == "" || nm_ker == "" || g_label == "" || width == "" || diameter == "" || joint == "" || id_rpk == "") {
+		if (tgl == "" || nm_ker == "" || g_label == "" || width == "" || diameter == "" || joint == "" || id_rpk == "" || i_rpk == "") {
 			showNotification("alert-info", "HARAP LENGKAPI FORM", "bottom", "center", "", "");
 			return;
 		}
@@ -605,6 +607,7 @@
 				rct: 0,
 				bi: 0,
 				id_rpk,
+				i_rpk,
 				cstatus: 1,
 				ltgl: ltgl,
 				lnm_ker: lnm_ker,
@@ -705,6 +708,7 @@
 				$("#cek_status").val(json.status);
 				$("textarea#ket").val(json.ket);
 				$("#id_rpk").val(json.id_rpk);
+				$("#i_rpk").val(json.i_rpk);
 
 				// cocok data lama
 				$("#l-tgl").val(json.tgl);
@@ -790,6 +794,7 @@
 		$("#ket").val("");
 
 		$("#id_rpk").val("");
+		$("#i_rpk").val("");
 		$("#getid").val("");
 		$("#l-tgl").val("");
 		$("#l-nm_ker").val("");

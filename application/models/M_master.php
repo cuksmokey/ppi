@@ -221,6 +221,7 @@ class M_master extends CI_Model{
 			'diameter' => $_POST['diameter'],
 			'joint' => $_POST['joint'],
 			'id_rpk' => $_POST['id_rpk'],
+			'i_rpk' => $_POST['i_rpk'],
 			'rct' => $_POST['rct'],
 			'bi' => $_POST['bi'],
 			'status' => $_POST['cstatus'],
