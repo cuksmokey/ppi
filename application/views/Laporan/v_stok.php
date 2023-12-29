@@ -598,6 +598,10 @@
 		}
 	}
 
+	function cek2(nm_ker,g_label,width,otori,statcor){
+		cekPenjualan(nm_ker,g_label,width,statcor);
+	}
+
 	function cekPenjualan(nm_ker,g_label,width,statcor){
 		$(".isi-stok-tuan").html('');
 		$("#modal-stok-list").modal("show");

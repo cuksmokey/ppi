@@ -5729,7 +5729,7 @@ class Laporan extends CI_Controller {
 
 		$html = '';
         $html .= '<div style="overflow:auto;white-space:nowrap;">';
-		$html .= '<div style="color:#000;font-weight:bold">CEK PENJUALAN BERDASARKAN PO</div><br/>';
+		$html .= '<div style="color:#000;font-weight:bold">CEK PENJUALAN BERDASARKAN PO</div>';
 		$html .='<table style="margin:0;padding:0;font-size:12px;color:#000;vertical-align:middle;border-collapse:collapse">';
 
 		if($g_label == 120 || $g_label == '120' || $g_label == 125 || $g_label == '125'){
@@ -5847,6 +5847,63 @@ class Laporan extends CI_Controller {
 				<td style="padding:5px"></td>
 			</tr>';
 		}
+		$html .='</table>';
+		
+		$html .= '<table style="margin-top:20px;padding:0;font-size:12px;color:#000;vertical-align:middle;border-collapse:collapse">
+			<tr>
+				<th style="font-size:14px">RENCANA PRODUKSI KIRIM</th>
+			</tr>';
+
+			$getKop = $this->db->query("SELECT*FROM m_rpk
+			WHERE stat='open' AND nm_ker='$nm_ker' AND g_label='$g_label'
+			AND (item1='$width' OR item2='$width' OR item3='$width' OR item4='$width' OR item5='$width') ORDER BY id_rpk,item1,item2,item3,item4,item5");
+			if($getKop->num_rows() == 0){
+				$html .='<tr>
+					<td style="padding:5px 0;font-weight:bold">TIDAK ADA DATA</td>
+				</tr>';
+			}else{
+				$html .='<tr>
+					<th style="padding:5px;border:1px solid #000">ID. RPK</th>
+					<th style="padding:5px;border:1px solid #000;text-align:center">X</th>
+					<th style="padding:5px;border:1px solid #000">PRODUKSI</th>
+					<th style="padding:5px;border:1px solid #000">SISA</th>
+				</tr>';
+
+				$sumJmlRoll = 0;
+				$sumSisa = 0;
+				foreach($getKop->result() as $krpk){
+					$getProd = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan WHERE id_rpk='$krpk->id' AND nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width'
+					GROUP BY id_rpk,nm_ker,g_label,width");
+					if($getProd->num_rows() == 0){
+						$jml_roll = 0;
+						$sisa = $krpk->x;
+					}else{
+						$jml_roll = $getProd->row()->jml_roll;
+						if($getProd->row()->jml_roll >= $krpk->x){
+							$sisa = 0;
+						}else{
+							$sisa = $krpk->x - $getProd->row()->jml_roll;
+						}
+					}
+
+					$html .='<tr>
+						<td style="border:1px solid #000;padding:5px">'.$krpk->id_rpk.'</td>
+						<td style="border:1px solid #000;padding:5px;text-align:right">'.$krpk->x.'</td>
+						<td style="border:1px solid #000;padding:5px;text-align:right">'.$jml_roll.'</td>
+						<td style="border:1px solid #000;padding:5px;text-align:right">'.$sisa.'</td>
+					</tr>';
+
+					$sumJmlRoll += $jml_roll;
+					$sumSisa += $sisa;
+				}
+
+				$html .='<tr>
+					<td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:center" colspan="2">TOTAL</td>
+					<td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:center">'.$sumJmlRoll.'</td>
+					<td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:center">'.$sumSisa.'</td>
+				</tr>';
+			}
+
 		$html .='</table></div>';
 		
         echo $html;

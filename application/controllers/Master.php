@@ -5032,7 +5032,7 @@ class Master extends CI_Controller
 					}
 
 					$html .= '<td style="padding:5px;background:'.$gbLbl.'">
-						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$tuanOrTidak.'</button>
+						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek2('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$tuanOrTidak.'</button>
 					</td>';
 				}
 				$html .='</tr>';
@@ -5128,7 +5128,7 @@ class Master extends CI_Controller
 				SELECT width FROM po_master
 				WHERE $nmKer2
 			) AS m_timbangan
-			-- WHERE width BETWEEN '190' AND '240'
+			-- WHERE width BETWEEN '150' AND '175'
 			GROUP BY width");
 			$i = 0;
 			foreach($getUkuran->result() as $uk){
@@ -5188,6 +5188,27 @@ class Master extends CI_Controller
 						$vWidth = $vW;
 					}
 
+					// GET RPK
+					$getRPK = $this->db->query("SELECT*FROM m_rpk
+					WHERE stat='open' AND nm_ker='$lbl->nm_ker' AND $wGLabel1
+					AND (item1='$uk->width' OR item2='$uk->width' OR item3='$uk->width' OR item4='$uk->width' OR item5='$uk->width')");
+					$jmlRPK = 0;
+					foreach($getRPK->result() as $rpk){
+						$getRpkTimb = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan WHERE id_rpk='$rpk->id' AND nm_ker='$rpk->nm_ker' AND g_label='$rpk->g_label' AND width='$uk->width' GROUP BY id_rpk,nm_ker,g_label,width");
+						if($getRpkTimb->num_rows() == 0){
+							$i_jmlrpk = $rpk->x;
+						}else{
+							foreach($getRpkTimb->result() as $rpkTimb){
+								if($rpkTimb->jml_roll >= $rpk->x){
+									$i_jmlrpk = 0;
+								}else{
+									$i_jmlrpk = $rpk->x - $rpkTimb->jml_roll;
+								}
+							}
+						}
+						$jmlRPK += $i_jmlrpk;
+					}
+
 					// SISA OS - BERTUAN - TIDAK BERTUAN
 					if($otfg == 'ofg'){
 						$tuanOrTidak = $jmlRoll;
@@ -5207,22 +5228,26 @@ class Master extends CI_Controller
 						$tuanOrTidak = $vWidth - $jmlRoll;
 					}
 
-					if(($lbl->nm_ker == 'MH' || $lbl->nm_ker == 'MI' || $lbl->nm_ker == 'ML') && ($tuanOrTidak == 0 || $tuanOrTidak <= 0) ){
+					$sumRpk = ($jmlRPK + $vWidth) - $jmlRoll;
+					if(($lbl->nm_ker == 'MH' || $lbl->nm_ker == 'MI' || $lbl->nm_ker == 'ML') && ($sumRpk == 0 || $sumRpk <= 0) ){
 						$gbLbl = '#ffc';
-					}else if($lbl->nm_ker == 'MN' && ($tuanOrTidak == 0 || $tuanOrTidak <= 0)){
+					}else if($lbl->nm_ker == 'MN' && ($sumRpk == 0 || $sumRpk <= 0)){
 						$gbLbl = '#fcc';
-					}else if(($lbl->nm_ker == 'BK' || $lbl->nm_ker == 'BL') && ($tuanOrTidak == 0 || $tuanOrTidak <= 0)){
+					}else if(($lbl->nm_ker == 'BK' || $lbl->nm_ker == 'BL') && ($sumRpk == 0 || $sumRpk <= 0)){
 						$gbLbl = '#ccc';
-					}else if($lbl->nm_ker == 'WP' && ($tuanOrTidak == 0 || $tuanOrTidak <= 0)){
+					}else if($lbl->nm_ker == 'WP' && ($sumRpk == 0 || $sumRpk <= 0)){
 						$gbLbl = '#cfc';
-					}else if($lbl->nm_ker == 'MH COLOR' && ($tuanOrTidak == 0 || $tuanOrTidak <= 0)){
+					}else if($lbl->nm_ker == 'MH COLOR' && ($sumRpk == 0 || $sumRpk <= 0)){
 						$gbLbl = '#ccf';
 					}else{
 						$gbLbl = '#fff';
 					}
 
+					// $html .= '<td style="padding:5px;background:'.$gbLbl.'">
+					// 	<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek2('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$tuanOrTidak.' - '.$sumRpk.'</button>
+					// </td>';
 					$html .= '<td style="padding:5px;background:'.$gbLbl.'">
-						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$tuanOrTidak.'</button>
+						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek2('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$sumRpk.'</button>
 					</td>';
 				}
 				$html .='</tr>';
