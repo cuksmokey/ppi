@@ -224,6 +224,9 @@ class M_master extends CI_Model{
 			'i_rpk' => $_POST['i_rpk'],
 			'rct' => $_POST['rct'],
 			'bi' => $_POST['bi'],
+			'cobb' => $_POST['cobb'],
+			'moisture' => $_POST['moisture'],
+			'rm' => $_POST['rm'],
 			'status' => $_POST['cstatus'],
 			'ket' => strtoupper($_POST['ket']),
 			'created_at' => date("Y-m-d H:i:s"),
@@ -987,6 +990,9 @@ class M_master extends CI_Model{
             $this->db->set('g_ac', $_POST['g_ac']);
             $this->db->set('rct', $_POST['rct']);
             $this->db->set('bi', $_POST['bi']);
+            $this->db->set('cobb', $_POST['cobb']);
+            $this->db->set('moisture', $_POST['moisture']);
+            $this->db->set('rm', $_POST['rm']);
             $this->db->set('nm_ker', $_POST['nm_ker']);
             $this->db->set('g_label', $_POST['g_label']);
             $this->db->set('width', $_POST['width']);

@@ -247,7 +247,7 @@
 						<button class="tmbl-plh" style="font-size:12px;color:#000" onclick="plh_menu('produksi')">PRODUKSI</button>
 
 						<div class="menu-rpk" style="padding-top:10px;font-size:12px;display:none">
-							<button disabled>RPK : </button>
+							<button style="font-weight:bold" disabled>RPK : </button>
 							<button class="tmbl-stok" onclick="lodaStokRPK('mh')">MEDIUM</button>
 							<button class="tmbl-stok" onclick="lodaStokRPK('bk')">B - KRAFT</button>
 							<button class="tmbl-stok" onclick="lodaStokRPK('mn')">MEDIUM NON SPEK</button>
@@ -255,7 +255,7 @@
 						</div>
 
 						<div class="menu-stok" style="padding-top:10px;font-size:12px;display:none">
-							<button disabled>STOK : </button>
+							<button style="font-weight:bold" disabled>STOK : </button>
 							<button class="tmbl-stok" onclick="load_data('mh','stok')">MEDIUM</button>
 							<button class="tmbl-stok" onclick="load_data('bk','stok')">B - KRAFT</button>
 							<button class="tmbl-stok" onclick="load_data('mhbk','stok')">MEDIUM - B-KRAFT</button>
@@ -264,7 +264,7 @@
 							<button class="tmbl-stok" onclick="load_data('all','stok')">SEMUA</button>
 							<div class="clear"></div>
 
-							<button disabled>BUFFER : </button>
+							<button style="font-weight:bold" disabled>BUFFER : </button>
 							<button class="tmbl-buffer" onclick="load_data('rmh','buffer')">MEDIUM</button>
 							<button class="tmbl-buffer" onclick="load_data('rbk','buffer')">B - KRAFT</button>
 							<button class="tmbl-buffer" onclick="load_data('rmhbk','buffer')">MEDIUM - B-KRAFT</button>
@@ -276,19 +276,19 @@
 
 						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'office' || $otorisasi == 'cor') {?>
 							<div class="menu-out-fg" style="padding-top:10px;font-size:12px;display:none">
-								<button class="txt-ofg" disabled></button>
+								<button class="txt-ofg" style="font-weight:bold" disabled></button>
 								<button class="tmbl-stok" onclick="loadDataOFG('mh')">MEDIUM</button>
 								<button class="tmbl-stok" onclick="loadDataOFG('bk')">B - KRAFT</button>
-								<button class="tmbl-stok" onclick="loadDataOFG('mhbk')">MEDIUM - B-KRAFT</button>
+								<!-- <button class="tmbl-stok" onclick="loadDataOFG('mhbk')">MEDIUM - B-KRAFT</button> -->
 								<button class="tmbl-stok" onclick="loadDataOFG('nonspek')">MEDIUM NON SPEK</button>
 								<button class="tmbl-stok" onclick="loadDataOFG('wp')">W P</button>
-								<button class="tmbl-stok" onclick="loadDataOFG('all')">SEMUA</button>
+								<!-- <button class="tmbl-stok" onclick="loadDataOFG('all')">SEMUA</button> -->
 								<div class="clear"></div>
 							</div>
 						<?php } ?>
 						
 						<div class="menu-produksi" style="padding-top:10px;font-size:12px;display:none">
-							<button disabled>PILIH : </button>
+							<button style="font-weight:bold" disabled>PILIH : </button>
 							<button class="tmbl-stok" onclick="p_pm(1)">PM 1</button>
 							<button class="tmbl-stok" onclick="p_pm(2)">PM 2</button>
 							<button class="tmbl-stok" onclick="p_pm(12)">PM 1-2</button>
@@ -296,7 +296,7 @@
 							<input type="hidden" id="p-pm-v" value="">
 							<div class="clear"></div>
 
-							<button disabled>PILIH : </button>
+							<button style="font-weight:bold" disabled>PILIH : </button>
 							<button class="tmbl-stok" onclick="p_jenis('mh')">MEDIUM</button>
 							<button class="tmbl-stok" onclick="p_jenis('bk')">B - KRAFT</button>
 							<button class="tmbl-stok" onclick="p_jenis('mhbk')">MEDIUM - B-KRAFT</button>
@@ -307,7 +307,7 @@
 							<input type="hidden" id="p-jenis-v" value="">
 							<div class="clear"></div>
 
-							<button disabled>PILIH : </button>
+							<button style="font-weight:bold" disabled>PILIH : </button>
 							<input type="date" name="tgl" id="tgl" style="padding:3px 5px;border:1px solid #ccc;border-radius:5px">
 							s/d
 							<input type="date" name="tgl2" id="tgl2" style="padding:3px 5px;border:1px solid #ccc;border-radius:5px">
@@ -638,6 +638,7 @@
 				ukroll: width,
 				plh_status: '',
 				roll: '',
+				keterangan: '',
 				tgl1: '',
 				tgl2: '',
 				opsi: 'cekRollStok',
@@ -728,6 +729,9 @@
 				$("#eg_ac-"+i).val(json.g_ac).animateCss('fadeInRight');
 				$("#erct-"+i).val(json.rct).animateCss('fadeInRight');
 				$("#ebi-"+i).val(json.bi).animateCss('fadeInRight');
+				$("#ecobb-"+i).val(json.cobb).animateCss('fadeInRight');
+				$("#emoisture-"+i).val(json.moisture).animateCss('fadeInRight');
+				$("#erm-"+i).val(json.rm).animateCss('fadeInRight');
 				$("#enm_ker-"+i).val(json.nm_ker).animateCss('fadeInRight');
 				$("#eg_label-"+i).val(json.g_label).animateCss('fadeInRight');
 				$("#ewidth-"+i).val(json.width).animateCss('fadeInRight');

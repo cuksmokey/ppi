@@ -181,6 +181,9 @@ class Laporan extends CI_Controller {
                         <td align="center">Joint</td>
                         <td align="center">Rct</td>
                         <td align="center">BI</td>
+                        <td align="center">COBB</td>
+                        <td align="center">Moisture</td>
+                        <td align="center">RM</td>
                         <td align="center">Status</td>
                         ';
                         // if ($jenis != "1") {
@@ -239,6 +242,9 @@ class Laporan extends CI_Controller {
 								<td align="center">'.$r->joint.'</td>
 								<td align="center">'.$r->rct.'</td>
 								<td align="center">'.$r->bi.'</td>
+								<td align="center">'.$r->cobb.'</td>
+								<td align="center">'.$r->moisture.'</td>
+								<td align="center">'.$r->rm.'</td>
 								<td align="center">'.$stat.'</td>
 								';
 								// if ($jenis != "1") {
@@ -262,7 +268,7 @@ class Laporan extends CI_Controller {
 						$html .= '<tr bgcolor="#CCCCCC">
 							<td align="center" colspan="7">TOTAL BERAT</td>
 							<td align="center">'.number_format($tot_weight).'</td>
-							<td colspan="6"></td>
+							<td colspan="9"></td>
 						</tr>';
                     }
 
@@ -5811,7 +5817,7 @@ class Laporan extends CI_Controller {
 			}
 
 			$getStokGudang = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan
-			WHERE nm_ker='$nm_ker' AND $gLabel1 AND width='$width'
+			WHERE nm_ker='$nm_ker' AND $gLabel1 AND width='$width' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
 			AND status='$statcor' AND id_pl='0'
 			-- GROUP BY nm_ker,g_label,width
 			");
@@ -5874,21 +5880,39 @@ class Laporan extends CI_Controller {
 				foreach($getKop->result() as $krpk){
 					$getProd = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan WHERE id_rpk='$krpk->id' AND nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width'
 					GROUP BY id_rpk,nm_ker,g_label,width");
+
+					if(($krpk->item1 == $krpk->item2) && ($krpk->item1 == $krpk->item3) && ($krpk->item1 == $krpk->item4) && ($krpk->item1 == $krpk->item5) && ($krpk->item2 == $krpk->item3) && ($krpk->item2 == $krpk->item4) && ($krpk->item2 == $krpk->item5) && ($krpk->item3 == $krpk->item4) && ($krpk->item3 == $krpk->item5) && ($krpk->item4 == $krpk->item5) ){
+						$xx = $krpk->x * 5;
+						$ketXX = '<span style="font-size:10px;font-weight:bold;vertical-align:top;font-style:italic">*5</span>';
+					}else if(($krpk->item1 == $krpk->item2) && ($krpk->item1 == $krpk->item3) && ($krpk->item1 == $krpk->item4) && ($krpk->item2 == $krpk->item3) && ($krpk->item2 == $krpk->item4) && ($krpk->item3 == $krpk->item4)){
+						$xx = $krpk->x * 4;
+						$ketXX = '<span style="font-size:10px;font-weight:bold;vertical-align:top;font-style:italic">*4</span>';
+					}else if(($krpk->item1 == $krpk->item2) && ($krpk->item1 == $krpk->item3) && ($krpk->item2 == $krpk->item3)){
+						$xx = $krpk->x * 3;
+						$ketXX = '<span style="font-size:10px;font-weight:bold;vertical-align:top;font-style:italic">*3</span>';
+					}else if($krpk->item1 == $krpk->item2 || $krpk->item2 == $krpk->item3 || $krpk->item1 == $krpk->item3){
+						$xx = $krpk->x * 2;
+						$ketXX = '<span style="font-size:10px;font-weight:bold;vertical-align:top;font-style:italic">*2</span>';
+					}else{
+						$xx = $krpk->x;
+						$ketXX = '';
+					}
+
 					if($getProd->num_rows() == 0){
 						$jml_roll = 0;
-						$sisa = $krpk->x;
+						$sisa = $xx - 0;
 					}else{
 						$jml_roll = $getProd->row()->jml_roll;
-						if($getProd->row()->jml_roll >= $krpk->x){
+						if($getProd->row()->jml_roll >= $xx){
 							$sisa = 0;
 						}else{
-							$sisa = $krpk->x - $getProd->row()->jml_roll;
+							$sisa = $xx - $getProd->row()->jml_roll;
 						}
 					}
 
 					$html .='<tr>
 						<td style="border:1px solid #000;padding:5px">'.$krpk->id_rpk.'</td>
-						<td style="border:1px solid #000;padding:5px;text-align:right">'.$krpk->x.'</td>
+						<td style="border:1px solid #000;padding:5px;text-align:right">'.$krpk->x.''.$ketXX.'</td>
 						<td style="border:1px solid #000;padding:5px;text-align:right">'.$jml_roll.'</td>
 						<td style="border:1px solid #000;padding:5px;text-align:right">'.$sisa.'</td>
 					</tr>';
@@ -5899,8 +5923,8 @@ class Laporan extends CI_Controller {
 
 				$html .='<tr>
 					<td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:center" colspan="2">TOTAL</td>
-					<td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:center">'.$sumJmlRoll.'</td>
-					<td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:center">'.$sumSisa.'</td>
+					<td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:right">'.$sumJmlRoll.'</td>
+					<td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:right">'.$sumSisa.'</td>
 				</tr>';
 			}
 
@@ -5915,6 +5939,7 @@ class Laporan extends CI_Controller {
         $ukroll = $_POST['ukroll'];
         $plh_status = $_POST['plh_status'];
         $roll = $_POST['roll'];
+        $keterangan = $_POST['keterangan'];
         $tgl1 = $_POST['tgl1'];
         $tgl2 = $_POST['tgl2'];
         $opsi = $_POST['opsi'];
@@ -5967,10 +5992,16 @@ class Laporan extends CI_Controller {
 			}else{
 				$plhStat = "";
 			}
+			
+			if($keterangan == ''){
+				$ket = '';
+			}else{
+				$ket = "AND ket LIKE '%$keterangan%'";
+			}
 
 			// OPSI PER ROLL / PER TANGGAL
 			if($opsi == 'rroll'){
-				$where = "nm_ker LIKE '%$jnsroll%' AND g_label LIKE '%$gsmroll%' AND width LIKE '%$ukroll%' AND roll LIKE '%$roll%' $plhStat";
+				$where = "nm_ker LIKE '%$jnsroll%' AND g_label LIKE '%$gsmroll%' AND width LIKE '%$ukroll%' AND roll LIKE '%$roll%' $plhStat $ket";
 			}else{
 				$where = "tgl BETWEEN '$tgl1' AND '$tgl2' $plhStat";
 			}
@@ -5979,8 +6010,8 @@ class Laporan extends CI_Controller {
 		$html .='<div style="overflow:auto;white-space:nowrap;">';
         $html .='<table style="margin:0;padding:0;font-size:12px;color:#000;vertical-align:center;border-collapse:collapse">';
 		$getRoll = $this->db->query("SELECT*FROM m_timbangan WHERE $where ORDER BY pm,id");
-		if($opsi == 'rroll' && ($jnsroll == '' || $gsmroll == '' || $ukroll == '') && $roll == ''){
-            $html .='<tr><td style="font-weight:bold;text-align:center">LENGKAPI DATA JENIS, GSM, UKURAN ATAU CUMA ISI NO. ROLL!</td></tr>';
+		if($opsi == 'rroll' && ($jnsroll == '' || $gsmroll == '' || $ukroll == '') && $roll == '' && $keterangan == ''){
+            $html .='<tr><td style="font-weight:bold;text-align:center">LENGKAPI DATA JENIS, GSM, UKURAN ATAU CUMA ISI NO. ROLL ATAU KETERANGAN!</td></tr>';
 		}else if($opsi == 'ttgl' && ($tgl1 == '' || $tgl2 == '')){
             $html .='<tr><td style="font-weight:bold;text-align:center">MASUKKAN TANGGAL...</td></tr>';
 		}else if($getRoll->num_rows() == 0){
@@ -5992,6 +6023,9 @@ class Laporan extends CI_Controller {
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">BW</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">RCT</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">BI</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">COBB</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">MOIST</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">R. M.</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">JENIS</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">GSM</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">UK</th>
@@ -6094,7 +6128,11 @@ class Laporan extends CI_Controller {
 					<td style="padding:0 3px;border:1px solid #999">'.$oBre.''.$oBtn.''.$roll->roll.''.$cBtn.''.$cBre.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_ac-'.$i.'" value="'.$roll->g_ac.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="erct-'.$i.'" value="'.$roll->rct.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>';
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ecobb-'.$i.'" value="'.$roll->cobb.'" '.$diss.' maxlength="5" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="emoisture-'.$i.'" value="'.$roll->moisture.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="erm-'.$i.'" value="'.$roll->rm.'" '.$diss.' onkeypress="return aK(event)" maxlength="8" style="width:50px;text-align:center">'.$cBtn.'</td>
+					';
                 
                 // PLH JENIS KERTAS
                 if(($roll->status == 1 || $roll->status == 2 || $roll->status == 3) && $roll->id_pl != 0){

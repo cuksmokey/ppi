@@ -1364,22 +1364,10 @@ class Master extends CI_Controller
 
 		$idOldRoll = $this->m_master->get_data_one("m_timbangan", "id", $id)->row();
 		$data = array(
-			'data' => false,
-			'msg' => 'DATA SUDAH MASUK RENCANA KIRIM!',
-			'id_roll' => $idOldRoll->id,
-			'roll' => $idOldRoll->roll,
-			'tgl' => $idOldRoll->tgl,
-			'g_ac' => $idOldRoll->g_ac,
-			'rct' => $idOldRoll->rct,
-			'bi' => $idOldRoll->bi,
-			'nm_ker' => $idOldRoll->nm_ker,
-			'g_label' => $idOldRoll->g_label,
-			'width' => $idOldRoll->width,
-			'diameter' => $idOldRoll->diameter,
-			'weight' => $idOldRoll->weight,
-			'joint' => $idOldRoll->joint,
-			'ket' => $idOldRoll->ket,
-			'status' => $idOldRoll->status,
+			'data' => false, 'msg' => 'DATA SUDAH MASUK RENCANA KIRIM!', 'id_roll' => $idOldRoll->id, 'roll' => $idOldRoll->roll, 'tgl' => $idOldRoll->tgl, 'g_ac' => $idOldRoll->g_ac, 'rct' => $idOldRoll->rct, 'bi' => $idOldRoll->bi, 'cobb' => $idOldRoll->cobb, 'moisture' => $idOldRoll->moisture, 'rm' => $idOldRoll->rm, 'nm_ker' => $idOldRoll->nm_ker, 'g_label' => $idOldRoll->g_label, 'width' => $idOldRoll->width, 'diameter' => $idOldRoll->diameter, 'weight' => $idOldRoll->weight, 'joint' => $idOldRoll->joint, 'ket' => $idOldRoll->ket, 'status' => $idOldRoll->status,
+		);
+		$data2 = array(
+			'data' => false, 'msg' => 'TIDAK SESUAI FORMAT COBB!', 'id_roll' => $idOldRoll->id, 'roll' => $idOldRoll->roll, 'tgl' => $idOldRoll->tgl, 'g_ac' => $idOldRoll->g_ac, 'rct' => $idOldRoll->rct, 'bi' => $idOldRoll->bi, 'cobb' => $idOldRoll->cobb, 'moisture' => $idOldRoll->moisture, 'rm' => $idOldRoll->rm, 'nm_ker' => $idOldRoll->nm_ker, 'g_label' => $idOldRoll->g_label, 'width' => $idOldRoll->width, 'diameter' => $idOldRoll->diameter, 'weight' => $idOldRoll->weight, 'joint' => $idOldRoll->joint, 'ket' => $idOldRoll->ket, 'status' => $idOldRoll->status,
 		);
 
 		// CEK JIKA SUDAH MASUK RENCANA KIRIM
@@ -1388,6 +1376,8 @@ class Master extends CI_Controller
 			echo json_encode($data);
 		}else if((($_POST['lnm_ker'] != $_POST['nm_ker']) || ($_POST['lg_label'] != $_POST['g_label']) || ($_POST['lwidth'] != $_POST['width']) || ($_POST['lweight'] != $_POST['weight']) || ($_POST['ldiameter'] != $_POST['diameter']) || ($_POST['ljoint'] != $_POST['joint']) || ($_POST['lket'] != $_POST['ket']) || ($_POST['lstatus'] != $_POST['status'])) && $_POST['edit'] == 'LapQC' && $cek_rk->num_rows() == 0){
 			echo json_encode($data);
+		}else if((!preg_match("/^[0-9\/\/]*$/", $_POST["cobb"])) && $_POST['edit'] == 'LapQC'){
+			echo json_encode($data2);
 		}else{
 			$this->m_master->updateQCRoll();
 			$idNewRoll = $this->m_master->get_data_one("m_timbangan", "id", $id)->row();
@@ -1400,6 +1390,9 @@ class Master extends CI_Controller
 					'g_ac' => $idNewRoll->g_ac,
 					'rct' => $idNewRoll->rct,
 					'bi' => $idNewRoll->bi,
+					'cobb' => $idNewRoll->cobb,
+					'moisture' => $idNewRoll->moisture,
+					'rm' => $idNewRoll->rm,
 					'nm_ker' => $idNewRoll->nm_ker,
 					'g_label' => $idNewRoll->g_label,
 					'width' => $idNewRoll->width,
@@ -5031,8 +5024,9 @@ class Master extends CI_Controller
 						$gbLbl = '#fff';
 					}
 
+					($getPO->num_rows() != 0) ? $txtU = ';text-decoration:underline' : $txtU = 0;
 					$html .= '<td style="padding:5px;background:'.$gbLbl.'">
-						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek2('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$tuanOrTidak.'</button>
+						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0'.$txtU.'" onclick="cek2('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$tuanOrTidak.'</button>
 					</td>';
 				}
 				$html .='</tr>';
@@ -5151,7 +5145,6 @@ class Master extends CI_Controller
 					GROUP BY no_po");
 					$jmlRoll = 0;
 					// PILIHAN SISA OS / BERTUAN / TIDAK BERTUAN
-					// GET PO
 					foreach($getPO->result() as $nopo){
 						// GET KIRIMAN
 						$getKiriman = $this->db->query("SELECT COUNT(t.roll) AS kroll FROM m_timbangan t
@@ -5177,9 +5170,7 @@ class Master extends CI_Controller
 					$vWidth = 0;
 					if($otfg == 'ofgtuan' || $otfg == 'ofgtuanf' || $otfg == 'ofgtdktuan'){
 						$getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
-						WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width'
-						AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
-						AND status='0' AND id_pl='0'");
+						WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width' AND tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0'");
 						if($getWidth->num_rows() == 0){
 							$vW = 0;
 						}else{
@@ -5195,38 +5186,47 @@ class Master extends CI_Controller
 					$jmlRPK = 0;
 					foreach($getRPK->result() as $rpk){
 						$getRpkTimb = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan WHERE id_rpk='$rpk->id' AND nm_ker='$rpk->nm_ker' AND g_label='$rpk->g_label' AND width='$uk->width' GROUP BY id_rpk,nm_ker,g_label,width");
-						if($getRpkTimb->num_rows() == 0){
-							$i_jmlrpk = $rpk->x;
+						if(($rpk->item1 == $rpk->item2) && ($rpk->item1 == $rpk->item3) && ($rpk->item1 == $rpk->item4) && ($rpk->item1 == $rpk->item5) && ($rpk->item2 == $rpk->item3) && ($rpk->item2 == $rpk->item4) && ($rpk->item2 == $rpk->item5) && ($rpk->item3 == $rpk->item4) && ($rpk->item3 == $rpk->item5) && ($rpk->item4 == $rpk->item5) ){
+							$xx = $rpk->x * 5;
+						}else if(($rpk->item1 == $rpk->item2) && ($rpk->item1 == $rpk->item3) && ($rpk->item1 == $rpk->item4) && ($rpk->item2 == $rpk->item3) && ($rpk->item2 == $rpk->item4) && ($rpk->item3 == $rpk->item4)){
+							$xx = $rpk->x * 4;
+						}else if(($rpk->item1 == $rpk->item2) && ($rpk->item1 == $rpk->item3) && ($rpk->item2 == $rpk->item3)){
+							$xx = $rpk->x * 3;
+						}else if($rpk->item1 == $rpk->item2 || $rpk->item2 == $rpk->item3 || $rpk->item1 == $rpk->item3){
+							$xx = $rpk->x * 2;
 						}else{
-							foreach($getRpkTimb->result() as $rpkTimb){
-								if($rpkTimb->jml_roll >= $rpk->x){
-									$i_jmlrpk = 0;
-								}else{
-									$i_jmlrpk = $rpk->x - $rpkTimb->jml_roll;
-								}
+							$xx = $rpk->x;
+						}
+						if($getRpkTimb->num_rows() == 0){
+							$i_jmlrpk = $xx;
+						}else{
+							if($getRpkTimb->row()->jml_roll >= $xx){
+								$i_jmlrpk = 0;
+							}else{
+								$i_jmlrpk = $xx - $getRpkTimb->row()->jml_roll;
 							}
 						}
 						$jmlRPK += $i_jmlrpk;
 					}
 
 					// SISA OS - BERTUAN - TIDAK BERTUAN
-					if($otfg == 'ofg'){
-						$tuanOrTidak = $jmlRoll;
-					}else if($otfg == 'ofgtuan'){
-						if($vWidth >= $jmlRoll){
-							$tuanOrTidak = $jmlRoll;
-						}else{
-							$tuanOrTidak = $vWidth - $jmlRoll;
-						}
-					}else if($otfg == 'ofgtuanf'){
-						if($vWidth >= $jmlRoll){
-							$tuanOrTidak = $jmlRoll;
-						}else{
-							$tuanOrTidak = $vWidth;
-						}
-					}else{
-						$tuanOrTidak = $vWidth - $jmlRoll;
-					}
+					// if($otfg == 'ofg'){
+					// 	$tuanOrTidak = $jmlRoll;
+					// }else if($otfg == 'ofgtuan'){
+					// 	if($vWidth >= $jmlRoll){
+					// 		$tuanOrTidak = $jmlRoll;
+					// 	}else{
+					// 		$tuanOrTidak = $vWidth - $jmlRoll;
+					// 	}
+					// }else if($otfg == 'ofgtuanf'){
+					// 	if($vWidth >= $jmlRoll){
+					// 		$tuanOrTidak = $jmlRoll;
+					// 	}else{
+					// 		$tuanOrTidak = $vWidth;
+					// 	}
+					// }else{
+					// 	$tuanOrTidak = $vWidth - $jmlRoll;
+					// }
 
 					$sumRpk = ($jmlRPK + $vWidth) - $jmlRoll;
 					if(($lbl->nm_ker == 'MH' || $lbl->nm_ker == 'MI' || $lbl->nm_ker == 'ML') && ($sumRpk == 0 || $sumRpk <= 0) ){
@@ -5246,8 +5246,9 @@ class Master extends CI_Controller
 					// $html .= '<td style="padding:5px;background:'.$gbLbl.'">
 					// 	<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek2('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$tuanOrTidak.' - '.$sumRpk.'</button>
 					// </td>';
+					($getPO->num_rows() != 0 || $getRPK->num_rows() != 0) ? $txtU = ';text-decoration:underline' : $txtU = 0;
 					$html .= '<td style="padding:5px;background:'.$gbLbl.'">
-						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek2('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$sumRpk.'</button>
+						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0'.$txtU.'" onclick="cek2('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$sumRpk.'</button>
 					</td>';
 				}
 				$html .='</tr>';

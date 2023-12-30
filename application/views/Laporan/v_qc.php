@@ -196,6 +196,13 @@
 									</td>
 								</tr>
 								<tr>
+									<td style="padding:5px 0;font-weight:bold">KETERANGAN</td>
+									<td style="padding:5px 3px;text-align:center">:</td>
+									<td style="padding:5px 0">
+										<input type="text" name="keterangan" id="keterangan" class="form-control" autocomplete="off" placeholder="KETERANGAN">
+									</td>
+								</tr>
+								<tr>
 									<td style="padding:5px 0;font-weight:bold">STATUS</td>
 									<td style="padding:5px 3px;text-align:center">:</td>
 									<td style="padding:5px 0">
@@ -302,6 +309,7 @@
 		$("#plh_status").val("ALL");
 		
 		$("#proll").val("");
+		$("#keterangan").val("");
 		$("#tgl1").val("");
 		$("#tgl2").val("");
 		$("#plh_status_tgl").val("ALL");
@@ -361,6 +369,7 @@
 		}
 
 		roll = $("#proll").val();
+		keterangan = $("#keterangan").val();
 		tgl1 = $("#tgl1").val();
 		tgl2 = $("#tgl2").val();
 		// alert(jnsroll+' '+gsmroll+' '+ukroll+' '+roll+' '+tgl1+' '+tgl2+' '+opsi);
@@ -374,6 +383,7 @@
 				ukroll: ukroll,
 				plh_status: plh_status,
 				roll: roll,
+				keterangan: keterangan,
 				tgl1: tgl1,
 				tgl2: tgl2,
 				opsi: opsi, // ROLL, TGL
@@ -431,6 +441,9 @@
 		g_ac = $("#eg_ac-"+i).val();
 		rct = $("#erct-"+i).val();
 		bi = $("#ebi-"+i).val();
+		cobb = $("#ecobb-"+i).val();
+		moisture = $("#emoisture-"+i).val();
+		rm = $("#erm-"+i).val();
 		nm_ker = $("#enm_ker-"+i).val().toUpperCase();
 		g_label = $("#eg_label-"+i).val();
 		width = $("#ewidth-"+i).val();
@@ -468,6 +481,9 @@
 				g_ac : g_ac,
 				rct : rct,
 				bi : bi,
+				cobb : cobb,
+				moisture : moisture,
+				rm : rm,
 				nm_ker : nm_ker,
 				g_label : g_label,
 				width : width,
@@ -499,6 +515,9 @@
 				$("#eg_ac-"+i).val(json.g_ac).animateCss('fadeInRight');
 				$("#erct-"+i).val(json.rct).animateCss('fadeInRight');
 				$("#ebi-"+i).val(json.bi).animateCss('fadeInRight');
+				$("#ecobb-"+i).val(json.cobb).animateCss('fadeInRight');
+				$("#emoisture-"+i).val(json.moisture).animateCss('fadeInRight');
+				$("#erm-"+i).val(json.rm).animateCss('fadeInRight');
 				$("#enm_ker-"+i).val(json.nm_ker).animateCss('fadeInRight');
 				$("#eg_label-"+i).val(json.g_label).animateCss('fadeInRight');
 				$("#ewidth-"+i).val(json.width).animateCss('fadeInRight');
