@@ -7314,18 +7314,37 @@ class Laporan extends CI_Controller {
 					<td style="padding:5px;border:1px solid #000;text-align:left;font-weight:bold" '.$cKop.'>'.$r->id_rpk.'</td>
 				</tr>';
 
-				$getIsi = $this->db->query("SELECT r.id_rpk,r.nm_ker,r.g_label,r.item1,r.item2,r.item3,r.item4,r.item5,r.x
-				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item1=t.width GROUP BY t.nm_ker,t.g_label) AS t_item1
-				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item2=t.width GROUP BY t.nm_ker,t.g_label) AS t_item2
-				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item3=t.width GROUP BY t.nm_ker,t.g_label) AS t_item3
-				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item4=t.width GROUP BY t.nm_ker,t.g_label) AS t_item4
-				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item5=t.width GROUP BY t.nm_ker,t.g_label) AS t_item5
+				$getIsi = $this->db->query("SELECT r.id,r.id_rpk,r.nm_ker,r.g_label,r.item1,r.item2,r.item3,r.item4,r.item5,r.x
+				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item1=t.width AND t.status!='3' GROUP BY t.nm_ker,t.g_label) AS t_item1
+				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item2=t.width AND t.status!='3' GROUP BY t.nm_ker,t.g_label) AS t_item2
+				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item3=t.width AND t.status!='3' GROUP BY t.nm_ker,t.g_label) AS t_item3
+				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item4=t.width AND t.status!='3' GROUP BY t.nm_ker,t.g_label) AS t_item4
+				,(SELECT COUNT(t.roll) FROM m_timbangan t WHERE r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label AND r.item5=t.width AND t.status!='3' GROUP BY t.nm_ker,t.g_label) AS t_item5
 				FROM m_rpk r LEFT JOIN m_timbangan t ON r.id=t.id_rpk AND r.nm_ker=t.nm_ker AND r.g_label=t.g_label
 				WHERE r.stat='open' AND r.nm_ker='$jenis' AND r.id_rpk='$r->id_rpk'
 				GROUP BY r.id_rpk,r.nm_ker,r.g_label,r.item1,r.item2,r.item3,r.item4,r.item5,r.x");
 
 				foreach($getIsi->result() as $isi){
 					$html .= '<tr class="new-stok-gg">';
+
+					if($isi->g_label == 125){
+						$get120_1 = $this->db->query("SELECT nm_ker,g_label,width,COUNT(roll) AS roll1 FROM m_timbangan WHERE id_rpk='$isi->id' AND nm_ker='$isi->nm_ker' AND g_label='120' AND width='$isi->item1' AND status!='3' GROUP BY nm_ker,g_label,width");
+						$get120_2 = $this->db->query("SELECT nm_ker,g_label,width,COUNT(roll) AS roll2 FROM m_timbangan WHERE id_rpk='$isi->id' AND nm_ker='$isi->nm_ker' AND g_label='120' AND width='$isi->item2' AND status!='3' GROUP BY nm_ker,g_label,width");
+						$get120_3 = $this->db->query("SELECT nm_ker,g_label,width,COUNT(roll) AS roll3 FROM m_timbangan WHERE id_rpk='$isi->id' AND nm_ker='$isi->nm_ker' AND g_label='120' AND width='$isi->item3' AND status!='3' GROUP BY nm_ker,g_label,width");
+						$get120_4 = $this->db->query("SELECT nm_ker,g_label,width,COUNT(roll) AS roll4 FROM m_timbangan WHERE id_rpk='$isi->id' AND nm_ker='$isi->nm_ker' AND g_label='120' AND width='$isi->item4' AND status!='3' GROUP BY nm_ker,g_label,width");
+						$get120_5 = $this->db->query("SELECT nm_ker,g_label,width,COUNT(roll) AS roll5 FROM m_timbangan WHERE id_rpk='$isi->id' AND nm_ker='$isi->nm_ker' AND g_label='120' AND width='$isi->item5' AND status!='3' GROUP BY nm_ker,g_label,width");
+						($get120_1->num_rows() != 0) ? $isi120_1 = $get120_1->row()->roll1 : $isi120_1 = 0;
+						($get120_2->num_rows() != 0) ? $isi120_2 = $get120_2->row()->roll2 : $isi120_2 = 0;
+						($get120_3->num_rows() != 0) ? $isi120_3 = $get120_3->row()->roll3 : $isi120_3 = 0;
+						($get120_4->num_rows() != 0) ? $isi120_4 = $get120_4->row()->roll4 : $isi120_4 = 0;
+						($get120_5->num_rows() != 0) ? $isi120_5 = $get120_5->row()->roll5 : $isi120_5 = 0;
+					}else{
+						$isi120_1 = 0;
+						$isi120_2 = 0;
+						$isi120_3 = 0;
+						$isi120_4 = 0;
+						$isi120_5 = 0;
+					}
 
 						$i_item1 = ($isi->item1 != 0) ? round($isi->item1,2) : '-';
 						$i_item2 = ($isi->item2 != 0) ? round($isi->item2,2) : '-';
@@ -7377,11 +7396,11 @@ class Laporan extends CI_Controller {
 							$s_item5 = $isi->t_item5;
 						}
 
-						($isi->t_item1 > 0) ? $t_item1 = $s_item1 - $isi->x : $t_item1 = '-';
-						($isi->t_item2 > 0) ? $t_item2 = $s_item2 - $isi->x : $t_item2 = '-';
-						($isi->t_item3 > 0) ? $t_item3 = $s_item3 - $isi->x : $t_item3 = '-';
-						($isi->t_item4 > 0) ? $t_item4 = $s_item4 - $isi->x : $t_item4 = '-';
-						($isi->t_item5 > 0) ? $t_item5 = $s_item5 - $isi->x : $t_item5 = '-';
+						($isi->t_item1 > 0) ? $t_item1 = ($s_item1 - $isi->x) + $isi120_1 : $t_item1 = '-';
+						($isi->t_item2 > 0) ? $t_item2 = ($s_item2 - $isi->x) + $isi120_2 : $t_item2 = '-';
+						($isi->t_item3 > 0) ? $t_item3 = ($s_item3 - $isi->x) + $isi120_3 : $t_item3 = '-';
+						($isi->t_item4 > 0) ? $t_item4 = ($s_item4 - $isi->x) + $isi120_4 : $t_item4 = '-';
+						($isi->t_item5 > 0) ? $t_item5 = ($s_item5 - $isi->x) + $isi120_5 : $t_item5 = '-';
 
 						if($item1 > 0 && $item2 == 0 && $item3 == 0 && $item4 == 0 && $item5 == 0){
 							$html .= '<td style="padding:5px;border:1px solid #000">'.$i_item1.'</td>
