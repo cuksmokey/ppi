@@ -5861,7 +5861,7 @@ class Laporan extends CI_Controller {
 			</tr>';
 
 			$getKop = $this->db->query("SELECT*FROM m_rpk
-			WHERE stat='open' AND nm_ker='$nm_ker' AND g_label='$g_label'
+			WHERE stat='open' AND nm_ker='$nm_ker' AND $gLabel1
 			AND (item1='$width' OR item2='$width' OR item3='$width' OR item4='$width' OR item5='$width') ORDER BY id_rpk,item1,item2,item3,item4,item5");
 			if($getKop->num_rows() == 0){
 				$html .='<tr>
@@ -5878,8 +5878,8 @@ class Laporan extends CI_Controller {
 				$sumJmlRoll = 0;
 				$sumSisa = 0;
 				foreach($getKop->result() as $krpk){
-					$getProd = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan WHERE id_rpk='$krpk->id' AND nm_ker='$nm_ker' AND g_label='$g_label' AND width='$width'
-					GROUP BY id_rpk,nm_ker,g_label,width");
+					$getProd = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan WHERE id_rpk='$krpk->id' AND nm_ker='$nm_ker' AND $gLabel1 AND width='$width'
+					GROUP BY id_rpk,nm_ker,width");
 
 					if(($krpk->item1 == $krpk->item2) && ($krpk->item1 == $krpk->item3) && ($krpk->item1 == $krpk->item4) && ($krpk->item1 == $krpk->item5) && ($krpk->item2 == $krpk->item3) && ($krpk->item2 == $krpk->item4) && ($krpk->item2 == $krpk->item5) && ($krpk->item3 == $krpk->item4) && ($krpk->item3 == $krpk->item5) && ($krpk->item4 == $krpk->item5) ){
 						$xx = $krpk->x * 5;

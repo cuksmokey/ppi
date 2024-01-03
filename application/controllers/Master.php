@@ -5122,7 +5122,7 @@ class Master extends CI_Controller
 				SELECT width FROM po_master
 				WHERE $nmKer2
 			) AS m_timbangan
-			-- WHERE width BETWEEN '150' AND '175'
+			WHERE width BETWEEN '170' AND '185'
 			GROUP BY width");
 			$i = 0;
 			foreach($getUkuran->result() as $uk){
@@ -5185,7 +5185,7 @@ class Master extends CI_Controller
 					AND (item1='$uk->width' OR item2='$uk->width' OR item3='$uk->width' OR item4='$uk->width' OR item5='$uk->width')");
 					$jmlRPK = 0;
 					foreach($getRPK->result() as $rpk){
-						$getRpkTimb = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan WHERE id_rpk='$rpk->id' AND nm_ker='$rpk->nm_ker' AND g_label='$rpk->g_label' AND width='$uk->width' GROUP BY id_rpk,nm_ker,g_label,width");
+						$getRpkTimb = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan WHERE id_rpk='$rpk->id' AND nm_ker='$rpk->nm_ker' AND $wGLabel1 AND width='$uk->width' GROUP BY id_rpk,nm_ker,width");
 						if(($rpk->item1 == $rpk->item2) && ($rpk->item1 == $rpk->item3) && ($rpk->item1 == $rpk->item4) && ($rpk->item1 == $rpk->item5) && ($rpk->item2 == $rpk->item3) && ($rpk->item2 == $rpk->item4) && ($rpk->item2 == $rpk->item5) && ($rpk->item3 == $rpk->item4) && ($rpk->item3 == $rpk->item5) && ($rpk->item4 == $rpk->item5) ){
 							$xx = $rpk->x * 5;
 						}else if(($rpk->item1 == $rpk->item2) && ($rpk->item1 == $rpk->item3) && ($rpk->item1 == $rpk->item4) && ($rpk->item2 == $rpk->item3) && ($rpk->item2 == $rpk->item4) && ($rpk->item3 == $rpk->item4)){
