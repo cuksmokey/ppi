@@ -5122,7 +5122,7 @@ class Master extends CI_Controller
 				SELECT width FROM po_master
 				WHERE $nmKer2
 			) AS m_timbangan
-			WHERE width BETWEEN '170' AND '185'
+			-- WHERE width BETWEEN '170' AND '185'
 			GROUP BY width");
 			$i = 0;
 			foreach($getUkuran->result() as $uk){
