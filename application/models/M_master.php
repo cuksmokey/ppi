@@ -280,6 +280,7 @@ class M_master extends CI_Model{
         $this->db->set('weight', $_POST['weight']);
         $this->db->set('diameter', $_POST['diameter']);
         $this->db->set('joint', $_POST['joint']);
+        $this->db->set('rm', $_POST['rm']);
         $this->db->set('ket', strtoupper($_POST['ket']));
         // $this->db->set('rct', $_POST['rct']);
         // $this->db->set('bi', $_POST['bi']);

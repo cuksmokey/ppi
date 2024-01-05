@@ -261,6 +261,7 @@ class Master extends CI_Controller
 					$row[] = $r->diameter;
 					$row[] = $r->weight;
 					$row[] = $r->joint;
+					$row[] = $r->rm;
 					$row[] = $r->ket;
 					$aksi ="";
 					if($this->session->userdata('level') == "Admin"){

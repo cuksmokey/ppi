@@ -110,6 +110,7 @@
 											<th>DIAMETER</th>
 											<th>BERAT</th>
 											<th>JOINT</th>
+											<th>RM</th>
 											<th>KETERANGAN</th>
 											<th width="15%">AKSI</th>
 										</tr>
@@ -229,6 +230,13 @@
 									<td style="padding:3px 5px">:</td>
 									<td style="padding:3px 0">
 										<input type="text" class="angka form-control" placeholder="0" id="joint" maxlength="3" autocomplete="off">
+									</td>
+								</tr>
+								<tr>
+									<td style="padding:3px 0;font-weight:bold">RM</td>
+									<td style="padding:3px 5px">:</td>
+									<td style="padding:3px 0">
+										<input type="text" class="angka form-control" placeholder="0" id="rm" value="0" maxlength="4" autocomplete="off">
 									</td>
 								</tr>
 								<tr>
@@ -556,6 +564,7 @@
 		weight = $("#weight").val();
 		diameter = $("#diameter").val();
 		joint = $("#joint").val();
+		rm = $("#rm").val();
 		cstatus = $("#cek_status").val();
 		ket = $("textarea#ket").val();
 
@@ -578,7 +587,7 @@
 			showNotification("alert-info", "HARAP ISI NOMER ROLL LENGKAP", "bottom", "center", "", "");
 			return;
 		}
-		if (tgl == "" || nm_ker == "" || g_label == "" || width == "" || diameter == "" || joint == "" || id_rpk == "" || i_rpk == "") {
+		if (tgl == "" || nm_ker == "" || g_label == "" || width == "" || diameter == "" || joint == "" || rm == "" || id_rpk == "" || i_rpk == "") {
 			showNotification("alert-info", "HARAP LENGKAPI FORM", "bottom", "center", "", "");
 			return;
 		}
@@ -603,12 +612,12 @@
 				weight: weight,
 				diameter: diameter,
 				joint: joint,
+				rm: rm,
 				ket: ket,
 				rct: 0,
 				bi: 0,
 				cobb: 0,
 				moisture: 0,
-				rm: 0,
 				id_rpk,
 				i_rpk,
 				cstatus: 1,
@@ -706,6 +715,7 @@
 				$("#weight").val(json.weight);
 				$("#diameter").val(json.diameter);
 				$("#joint").val(json.joint);
+				$("#rm").val(json.rm);
 				$("#rct").val(json.rct);
 				$("#bi").val(json.bi);
 				$("#cek_status").val(json.status);
@@ -791,6 +801,7 @@
 		$("#weight").val("");
 		$("#diameter").val("");
 		$("#joint").val("");
+		$("#rm").val(0);
 		$("#rct").val("");
 		$("#bi").val("");
 		$("#cek_status").val("");

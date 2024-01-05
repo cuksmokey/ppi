@@ -6129,9 +6129,9 @@ class Laporan extends CI_Controller {
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_ac-'.$i.'" value="'.$roll->g_ac.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="erct-'.$i.'" value="'.$roll->rct.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ecobb-'.$i.'" value="'.$roll->cobb.'" '.$diss.' maxlength="5" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ecobb-'.$i.'" value="'.$roll->cobb.'" '.$diss.' maxlength="7" style="width:50px;text-align:center">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="emoisture-'.$i.'" value="'.$roll->moisture.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="erm-'.$i.'" value="'.$roll->rm.'" '.$diss.' onkeypress="return aK(event)" maxlength="8" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="erm-'.$i.'" value="'.$roll->rm.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" style="width:50px;text-align:center">'.$cBtn.'</td>
 					';
                 
                 // PLH JENIS KERTAS
