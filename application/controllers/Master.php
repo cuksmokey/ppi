@@ -5130,8 +5130,16 @@ class Master extends CI_Controller
 				$i++;
 				$html .='<td style="padding:5px">'.$i.'</td><td style="padding:5px">'.round($uk->width,2).'</td>';
 
-				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
-				WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' $nmKer AND g_label!='120'
+				// $getgLabel = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
+				// WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' $nmKer AND g_label!='120'
+				// GROUP BY nm_ker,g_label");
+				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM (
+					SELECT nm_ker,g_label FROM m_timbangan
+					WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' $nmKer AND g_label!='120'
+					UNION ALL
+					SELECT nm_ker,g_label FROM po_master
+					WHERE $nmKer2
+				) AS m_timbangan
 				GROUP BY nm_ker,g_label");
 				foreach($getgLabel->result() as $lbl){
 					if($lbl->g_label == 125 || $lbl->g_label == "125"){
