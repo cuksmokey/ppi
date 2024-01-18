@@ -6145,6 +6145,7 @@ class Laporan extends CI_Controller {
                         <option value="MH">MH</option>
                         <option value="MN">MN</option>
                         <option value="BK">BK</option>
+                        <option value="BL">BL</option>
                         <option value="WP">WP</option>
                         <option value="WS">WS</option>
                         <option value="MH COLOR">MH COLOR</option>
