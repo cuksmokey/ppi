@@ -3279,6 +3279,7 @@ class Laporan extends CI_Controller {
 
 	function printSJBOX(){
         $jenis = $_GET['jenis'];
+        $top = $_GET['top'];
         $ctk = $_GET['ctk'];
 
         $html = '';
@@ -3321,8 +3322,8 @@ class Laporan extends CI_Controller {
 
         $kop = '<table cellspacing="0" style="font-size:11px;color:#000;border-collapse:collapse;vertical-align:top;width:100%;text-align:center;font-weight:bold;font-family:Arial !important">
             <tr>
-                <th style="width:25% !important;height:'.$px.'"></th>
-                <th style="width:75% !important;height:'.$px.'"></th>
+                <th style="width:25% !important"></th>
+                <th style="width:75% !important"></th>
             </tr>
 
             <tr>
@@ -3612,7 +3613,8 @@ class Laporan extends CI_Controller {
             if($count >= 7 && $data_pl->id_perusahaan == '80'){
                 $this->m_fungsi->_mpdf('',$html,10,10,1,'P');
             }else{
-                $this->m_fungsi->_mpdf('',$html,10,10,10,'P');
+                // $this->m_fungsi->_mpdf('',$html,10,10,10,'P');
+                $this->m_fungsi->newMpdf($html, $top, 10, 10, 10, 'P', 'A4');
             }
         }else{
             echo $html;
