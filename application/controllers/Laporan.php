@@ -3325,7 +3325,6 @@ class Laporan extends CI_Controller {
                 <th style="width:25% !important"></th>
                 <th style="width:75% !important"></th>
             </tr>
-
             <tr>
                 <td style="border:0;background:url('.base_url().'assets/images/logo_ppi_inv.png)center no-repeat" rowspan="4"></td>
                 <td style="border:0;font-size:32px;padding:20px 0 0">PT. PRIMA PAPER INDONESIA</td>
@@ -3340,12 +3339,10 @@ class Laporan extends CI_Controller {
                 <td style="border:0;font-size:12px !important;padding:0 0 4px">http://primapaperindonesia.com</td>
             </tr>
         </table>
-
         <table cellspacing="0" style="font-size:18px;color:#000;border-collapse:collapse;vertical-align:top;width:100%;text-align:center;font-weight:bold;font-family:Arial !important">
             <tr>
                 <th style="width:15% !important;height:8px"></th>
             </tr>
-
             <tr>
                 <td style="border-top:2px solid #000;padding:10px 0 5px;text-decoration:underline">SURAT JALAN</td>
             </tr>
@@ -3353,9 +3350,8 @@ class Laporan extends CI_Controller {
 
         $gak_kop = '<table cellspacing="0" style="font-size:18px;color:#000;border-collapse:collapse;vertical-align:top;width:100%;text-align:center;font-weight:bold;font-family:Arial !important">
             <tr>
-                <th style="width:15% !important;height:150px"></th>
+                <th style="width:15% !important"></th>
             </tr>
-
             <tr>
                 <td style="border-top:2px solid #000;padding:10px 0 5px;text-decoration:underline">SURAT JALAN</td>
             </tr>
@@ -3366,9 +3362,9 @@ class Laporan extends CI_Controller {
         }else{
             $html .= $kop;
         }
-        
-                        # # # # # # # # # D E T A I L # # # # # # # # # #
 
+
+                        # # # # # # # # # D E T A I L # # # # # # # # # #
 
         $html .= '<table cellspacing="0" style="font-size:11px !important;color:#000;border-collapse:collapse;vertical-align:top;width:100%;font-family:Arial !important">
             <tr>

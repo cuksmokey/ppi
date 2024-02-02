@@ -4542,124 +4542,113 @@ class Master extends CI_Controller
 		GROUP BY a.id_rk");
 		
 		if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
-			$html .='<table style="width:100%;margin-bottom:3px;color:#000;font-size:11px;font-weight:bold;border-collapse:collapse">';
-			$html .='<tr>
-				<td style="width:20%;border:0;padding:0"></td>
-				<td style="width:45%;border:0;padding:0"></td>
-				<td style="width:15%;border:0;padding:0"></td>
-				<td style="width:20%;border:0;padding:0"></td>
-			</tr>
-			<tr>
-				<td style="background:url('.base_url().'assets/images/logo_ppi_cor.png)center no-repeat;border:1px solid #000" rowspan="4"></td>
-				<td style="border:1px solid #000;padding:5px;font-size:14px;text-align:center;letter-spacing:1px" colspan="3">PT. PRIMA PAPER INDONESIA</td>
-			</tr>
-			<tr>
-				<td style="border:1px solid #000;font-size:14px;text-align:center;letter-spacing:1px" rowspan="3">DATA INCOMING PAPER ROLL</td>
-				<td style="border:1px solid #000;padding:3px">DITERBITKAN</td>
-				<td style="border:1px solid #000;padding:3px">27 SEPTEMBER 2022</td>
-			</tr>
-			<tr>
-				<td style="border:1px solid #000;padding:3px">REVISI</td>
-				<td style="border:1px solid #000;padding:3px">0</td>
-			</tr>
-			<tr>
-				<td style="border:1px solid #000;padding:3px">NO.</td>
-				<td style="border:1px solid #000;padding:3px">FR-GDB-01</td>
-			</tr>
-			<tr>
-				<td style="padding:3px" colspan="2"></td>
-				<td style="padding:3px" colspan="2">TGL DATANG</td>
-				<td style="padding:3px"></td>
-			</tr>
-			';
-			$html .='</table>';
-		}else{
-			$html .='<table style="width:100%;font-size:11px;border-collapse:collapse;color:#000">
-			<tr>
-				<td style="width:15%"></td>
-				<td style="width:1%"></td>
-				<td style="width:84%"></td>
-			</tr>
-			<tr>
-				<td style="font-weight:bold;text-align:center;text-decoration:underline" colspan="3">PACKING LIST CEK</td>
-			</tr>';
-			$html .='<tr>
-				<td style="padding:2px">ID RK</td>
-				<td style="padding:2px">:</td>
-				<td style="padding:2px">'.$header->row()->id_rk.'</td>
-			</tr>
-			<tr>
-				<td style="padding:2px">RENCANA KIRIM</td>
-				<td style="padding:2px">:</td>
-				<td style="padding:2px">'.$header->row()->tgl_pl.'</td>
-			</tr>
-			<tr>
-				<td style="padding:2px">CUSTOMER</td>
-				<td style="padding:2px">:</td>
-				<td style="padding:2px">'.$header->row()->nm_perusahaan.'</td>
-			</tr>
-			<tr>
-				<td style="padding:2px">NAMA</td>
-				<td style="padding:2px">:</td>
-				<td style="padding:2px">'.$header->row()->nama.'</td>
-			</tr>
-			<tr>
-				<td style="padding:2px">ALAMAT</td>
-				<td style="padding:2px">:</td>
-				<td style="padding:2px">'.$header->row()->alamat_perusahaan.'</td>
-			</tr>';
-			$html .='</table>';
+			$html .='<table style="width:100%;margin-bottom:3px;color:#000;font-size:11px;font-weight:bold;border-collapse:collapse">
+				<tr>
+					<td style="width:20%;border:0;padding:0"></td>
+					<td style="width:45%;border:0;padding:0"></td>
+					<td style="width:15%;border:0;padding:0"></td>
+					<td style="width:20%;border:0;padding:0"></td>
+				</tr>
+				<tr>
+					<td style="background:url('.base_url().'assets/images/logo_ppi_cor.png)center no-repeat;border:1px solid #000" rowspan="4"></td>
+					<td style="border:1px solid #000;padding:5px;font-size:14px;text-align:center;letter-spacing:1px" colspan="3">PT. PRIMA PAPER INDONESIA</td>
+				</tr>
+				<tr>
+					<td style="border:1px solid #000;font-size:14px;text-align:center;letter-spacing:1px" rowspan="3">DATA INCOMING PAPER ROLL</td>
+					<td style="border:1px solid #000;padding:3px">DITERBITKAN</td>
+					<td style="border:1px solid #000;padding:3px">27 SEPTEMBER 2022</td>
+				</tr>
+				<tr>
+					<td style="border:1px solid #000;padding:3px">REVISI</td>
+					<td style="border:1px solid #000;padding:3px">0</td>
+				</tr>
+				<tr>
+					<td style="border:1px solid #000;padding:3px">NO.</td>
+					<td style="border:1px solid #000;padding:3px">FR-GDB-01</td>
+				</tr>
+				<tr>
+					<td style="padding:3px" colspan="2"></td>
+					<td style="padding:3px" colspan="2">TGL DATANG</td>
+					<td style="padding:3px"></td>
+				</tr>
+			</table>';
 		}
 
-		
 		// ISI
-		$html .='<table style="width:100%;font-size:11px;text-align:center;border-collapse:collapse;color:#000" cellpadding="5" border="1">';
-
 		$kop_detail = $this->db->query("SELECT id_rk,nm_ker,COUNT(*) AS jml_roll,SUM(weight) AS berat,SUM(seset) AS seset FROM m_timbangan
 		WHERE id_rk='$idrk' GROUP BY nm_ker ORDER BY nm_ker DESC");
 
-		if($kop_detail->row()->nm_ker == 'WP'){
-			$html .= '<tr>
-				<th style="border:0;padding:2px 0;width:5%"></th>
-				<th style="border:0;padding:2px 0;width:9%"></th>
-				<th style="border:0;padding:2px 0;width:9%"></th>
-				<th style="border:0;padding:2px 0;width:10%"></th>
-				<th style="border:0;padding:2px 0;width:10%"></th>
-				<th style="border:0;padding:2px 0;width:10%"></th>
-				<th style="border:0;padding:2px 0;width:10%"></th>
-				<th style="border:0;padding:2px 0;width:10%"></th>
-				<th style="border:0;padding:2px 0;width:27%"></th>
-			</tr>';
-			$cs = '4';
-		}else if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
-			$html .= '<tr>
-				<th style="border:0;padding:2px 0;width:5%"></th>
-				<th style="border:0;padding:2px 0;width:8%"></th>
-				<th style="border:0;padding:2px 0;width:8%"></th>
-				<th style="border:0;padding:2px 0;width:8%"></th>
-				<th style="border:0;padding:2px 0;width:8%"></th>
-				<th style="border:0;padding:2px 0;width:8%"></th>
-				<th style="border:0;padding:2px 0;width:8%"></th>
-				<th style="border:0;padding:2px 0;width:8%"></th>
-				<th style="border:0;padding:2px 0;width:8%"></th>
-				<th style="border:0;padding:2px 0;width:26%"></th>
-			</tr>';
-			$cs = '3';
-		}else{
-			$html .= '<tr>
-				<th style="border:0;padding:2px 0;width:5%"></th>
-				<th style="border:0;padding:2px 0;width:8%"></th>
-				<th style="border:0;padding:2px 0;width:8%"></th>
-				<th style="border:0;padding:2px 0;width:9%"></th>
-				<th style="border:0;padding:2px 0;width:9%"></th>
-				<th style="border:0;padding:2px 0;width:9%"></th>
-				<th style="border:0;padding:2px 0;width:9%"></th>
-				<th style="border:0;padding:2px 0;width:9%"></th>
-				<th style="border:0;padding:2px 0;width:6%"></th>
-				<th style="border:0;padding:2px 0;width:28%"></th>
-			</tr>';
-			$cs = '5';
-		}
+		$html .= '<table style="width:100%;font-size:11px;text-align:center;border-collapse:collapse;color:#000" cellpadding="5" border="1">';
+		$html .= '<thead>';
+			if($kop_detail->row()->nm_ker == 'WP'){
+				$html .= '<tr>
+					<th style="border:0;padding:0;width:5%"></th>
+					<th style="border:0;padding:0;width:9%"></th>
+					<th style="border:0;padding:0;width:9%"></th>
+					<th style="border:0;padding:0;width:10%"></th>
+					<th style="border:0;padding:0;width:10%"></th>
+					<th style="border:0;padding:0;width:10%"></th>
+					<th style="border:0;padding:0;width:10%"></th>
+					<th style="border:0;padding:0;width:10%"></th>
+					<th style="border:0;padding:0;width:27%"></th>
+				</tr>';
+				$cs = '4'; $cs2 = '9'; $cs22 = '7';
+			}else if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
+				$html .= '<tr>
+					<th style="border:0;padding:2px 0;width:5%"></th>
+					<th style="border:0;padding:2px 0;width:8%"></th>
+					<th style="border:0;padding:2px 0;width:8%"></th>
+					<th style="border:0;padding:2px 0;width:8%"></th>
+					<th style="border:0;padding:2px 0;width:8%"></th>
+					<th style="border:0;padding:2px 0;width:8%"></th>
+					<th style="border:0;padding:2px 0;width:8%"></th>
+					<th style="border:0;padding:2px 0;width:8%"></th>
+					<th style="border:0;padding:2px 0;width:8%"></th>
+					<th style="border:0;padding:2px 0;width:26%"></th>
+				</tr>';
+				$cs = '3'; $cs2 = ''; $cs22 = '';
+			}else{
+				$html .= '<tr>
+					<th style="border:0;padding:0;width:5%"></th>
+					<th style="border:0;padding:0;width:8%"></th>
+					<th style="border:0;padding:0;width:8%"></th>
+					<th style="border:0;padding:0;width:9%"></th>
+					<th style="border:0;padding:0;width:9%"></th>
+					<th style="border:0;padding:0;width:9%"></th>
+					<th style="border:0;padding:0;width:9%"></th>
+					<th style="border:0;padding:0;width:9%"></th>
+					<th style="border:0;padding:0;width:6%"></th>
+					<th style="border:0;padding:0;width:28%"></th>
+				</tr>';
+				$cs = '5'; $cs2 = '10'; $cs22 = '8';
+			}
+			//
+			if($expIdRk[1] != 210 || $expIdRk[1] != '210'){
+				$html .= '<tr>
+					<th style="font-weight:bold;text-align:center;text-decoration:underline;border:0" colspan="'.$cs2.'">PACKING LIST CEK</th>
+				</tr>
+				<tr>
+					<th style="padding:2px;text-align:left;border:0;font-weight:normal" colspan="2">ID RK</th>
+					<th style="padding:2px;text-align:left;border:0;font-weight:normal" colspan="'.$cs22.'">: '.$header->row()->id_rk.'</th>
+				</tr>
+				<tr>
+					<th style="padding:2px;text-align:left;border:0;font-weight:normal" colspan="2">HARI, TGL RK</th>
+					<th style="padding:2px;text-align:left;border:0;font-weight:normal" colspan="'.$cs22.'">: '.$bo.strtoupper($this->m_fungsi->getHariIni($header->row()->tgl_pl)).', '.strtoupper($this->m_fungsi->tanggal_format_indonesia($header->row()->tgl_pl)).'</th>
+				</tr>
+				<tr>
+					<th style="padding:2px;text-align:left;border:0;font-weight:normal" colspan="2">CUSTOMER</th>
+					<th style="padding:2px;text-align:left;border:0;font-weight:normal" colspan="'.$cs22.'">: '.$header->row()->nm_perusahaan.'</th>
+				</tr>
+				<tr>
+					<th style="padding:2px;text-align:left;border:0;font-weight:normal" colspan="2">NAMA</th>
+					<th style="padding:2px;text-align:left;border:0;font-weight:normal" colspan="'.$cs22.'">: '.$header->row()->nama.'</th>
+				</tr>
+				<tr>
+					<th style="padding:2px 2px 6px;text-align:left;border:0;font-weight:normal" colspan="2">ALAMAT</th>
+					<th style="padding:2px 2px 6px;text-align:left;border:0;font-weight:normal" colspan="'.$cs22.'">: '.$header->row()->alamat_perusahaan.'</th>
+				</tr>';
+			}
+		$html .= '</thead>';
 
 		$totalRoll = 0;
 		$totalBerat = 0;
@@ -4699,7 +4688,8 @@ class Master extends CI_Controller
 				$ketCor = '<td style="border:1px solid #000;font-weight:bold">KETERANGAN</td>';
 			}
 
-			$html .= '<tr>
+			$html .= '<tbody>
+			<tr>
 				<td style="border:1px solid #000;font-weight:bold">NO</td>
 				<td style="border:1px solid #000;font-weight:bold" colspan="2">ROLL - '.$tnmKer.'</td>
 				'.$dkop.'
@@ -4838,7 +4828,7 @@ class Master extends CI_Controller
 				}
 			$html .='</td></tr>';
 		}
-		$html .='</table>';
+		$html .='</tbody></table>';
 
 		if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
 			$html .='<table style="width:100%;text-align:center;font-size:11px;border-collapse:collapse;color:#000">
@@ -4859,7 +4849,6 @@ class Master extends CI_Controller
 			';
 			$html .='</table>';
 		}
-
 
 		$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',3);
 		// echo $html;
