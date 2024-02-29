@@ -3361,7 +3361,7 @@ class Laporan extends CI_Controller {
 					<td style="border:1px solid #000;padding:3px" rowspan="5">KEPADA : '.$nm_pelanggan.'<br>'.$data_pl->alamat.'</td>
 					<td style="padding:3px 5px">Nomer Surat Jalan</td>
 					<td style="padding:3px 0">:</td>
-					<td style="padding:3px 0">001/KSM/24</td>
+					<td style="padding:3px 0">'.$data_pl->no_surat.'</td>
 				</tr>
 				<tr>
 					<td style="padding:3px 5px">Tanggal</td>
