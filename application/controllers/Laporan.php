@@ -6248,6 +6248,7 @@ class Laporan extends CI_Controller {
                         <option value="">-</option>
                         <option value="MH">MH</option>
                         <option value="MN">MN</option>
+                        <option value="MS">MS</option>
                         <option value="BK">BK</option>
                         <option value="BL">BL</option>
                         <option value="WP">WP</option>

@@ -2372,9 +2372,10 @@ class Master extends CI_Controller
 				// JIKA MASIH RENCANA KIRIM MASIH BISA DIHAPUS TAPI ROLL YANG ADA DI RENCANA KIRIM JUGA HILANG
 				$edit = '<button onclick="btnRencanaEdit('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">EDIT</button>';
 				$hapus = '<button onclick="btnRencanaHapus('."'".$cust->idrk."'".','."'".$cust->opl."'".','."'".$cust->tgl_pl."'".','."'".$i."'".')">HAPUS</button>';
-				if($cust->qc_rk == 'proses' && $otorisasi == 'fg'){
-					$aksi = $edit;
-				}else if($cust->qc_rk == 'proses' && ($otorisasi == 'all' || $otorisasi == 'admin')){
+				// if($cust->qc_rk == 'proses' && $otorisasi == 'fg'){
+				// 	$aksi = $edit;
+				// }else
+				if($cust->qc_rk == 'proses' && ($otorisasi == 'all' || $otorisasi == 'admin')){
 					$aksi = $edit.' '.$hapus;
 				}else if($cust->qc_rk == 'ok' && ($otorisasi == 'all' || $otorisasi == 'admin')){
 					$aksi = $edit;
