@@ -780,7 +780,7 @@ class Laporan extends CI_Controller {
                 <td style="border:1px solid #000;height:80px"></td>
             </tr>
             <tr>
-                <td style="border:1px solid #000;padding:5px 0">ARGA <br>ADMIN</td>
+                <td style="border:1px solid #000;padding:5px 0">ANGGRA <br>ADMIN</td>
                 <td style="border:1px solid #000;padding:5px 0">BP. DAMIRI <br>LAB./QC</td>
                 <td style="border:1px solid #000;padding:5px 0">TITUT <br>SPV GUDANG</td>
                 <td style="border:1px solid #000;padding:5px 0">BP. RIDWAN <br>MGR GUDANG</td>
