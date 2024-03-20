@@ -3671,11 +3671,11 @@ class Laporan extends CI_Controller {
 				<td style="border:1px solid #000;height:80px"></td>
 			</tr>
 			<tr>
-				<td style="border:1px solid #000;padding:5px 0">ARGA <br>ADMIN</td>
+				<td style="border:1px solid #000;padding:5px 0">ADMIN</td>
 				<td style="border:1px solid #000;padding:5px 0">DION<br>PPIC</td>
 				<td style="border:1px solid #000;padding:5px 0">BP. SUMARTO<br>SPV GUDANG</td>
 				<td style="border:1px solid #000;padding:5px 0"></td>
-				<td style="border:1px solid #000;padding:5px 0">BP. WEINARTO <br>GM</td>
+				<td style="border:1px solid #000;padding:5px 0"></td>
 				<td style="border:1px solid #000"></td>
 				<td style="border:1px solid #000"></td>
 			</tr>
