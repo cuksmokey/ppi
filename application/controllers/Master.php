@@ -5176,52 +5176,41 @@ class Master extends CI_Controller
 					}
 
 					// GET RPK
-					// $getRPK = $this->db->query("SELECT*FROM m_rpk
-					// WHERE stat='open' AND nm_ker='$lbl->nm_ker' AND $wGLabel1
-					// AND (item1='$uk->width' OR item2='$uk->width' OR item3='$uk->width' OR item4='$uk->width' OR item5='$uk->width')");
-					// $jmlRPK = 0;
-					// foreach($getRPK->result() as $rpk){
-					// 	$getRpkTimb = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan WHERE id_rpk='$rpk->id' AND nm_ker='$rpk->nm_ker' AND $wGLabel1 AND width='$uk->width' GROUP BY id_rpk,nm_ker,width");
-					// 	if(($rpk->item1 == $rpk->item2) && ($rpk->item1 == $rpk->item3) && ($rpk->item1 == $rpk->item4) && ($rpk->item1 == $rpk->item5) && ($rpk->item2 == $rpk->item3) && ($rpk->item2 == $rpk->item4) && ($rpk->item2 == $rpk->item5) && ($rpk->item3 == $rpk->item4) && ($rpk->item3 == $rpk->item5) && ($rpk->item4 == $rpk->item5) ){
-					// 		$xx = $rpk->x * 5;
-					// 	}else if(($rpk->item1 == $rpk->item2) && ($rpk->item1 == $rpk->item3) && ($rpk->item1 == $rpk->item4) && ($rpk->item2 == $rpk->item3) && ($rpk->item2 == $rpk->item4) && ($rpk->item3 == $rpk->item4)){
-					// 		$xx = $rpk->x * 4;
-					// 	}else if(($rpk->item1 == $rpk->item2) && ($rpk->item1 == $rpk->item3) && ($rpk->item2 == $rpk->item3)){
-					// 		$xx = $rpk->x * 3;
-					// 	}else if($rpk->item1 == $rpk->item2 || $rpk->item2 == $rpk->item3 || $rpk->item1 == $rpk->item3){
-					// 		$xx = $rpk->x * 2;
-					// 	}else{
-					// 		$xx = $rpk->x;
-					// 	}
-					// 	if($getRpkTimb->num_rows() == 0){
-					// 		$i_jmlrpk = $xx;
-					// 	}else{
-					// 		if($getRpkTimb->row()->jml_roll >= $xx){
-					// 			$i_jmlrpk = 0;
-					// 		}else{
-					// 			$i_jmlrpk = $xx - $getRpkTimb->row()->jml_roll;
-					// 		}
-					// 	}
-					// 	$jmlRPK += $i_jmlrpk;
-					// }
+					$getRPK = $this->db->query("SELECT*FROM m_rpk
+					WHERE stat='open' AND nm_ker='$lbl->nm_ker' AND $wGLabel1
+					AND (item1='$uk->width' OR item2='$uk->width' OR item3='$uk->width' OR item4='$uk->width' OR item5='$uk->width')");
+					$jmlRPK = 0;
+					foreach($getRPK->result() as $rpk){
+						$getRpkTimb = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan WHERE id_rpk='$rpk->id' AND nm_ker='$rpk->nm_ker' AND $wGLabel1 AND width='$uk->width' GROUP BY id_rpk,nm_ker,width");
+						if(($rpk->item1 == $rpk->item2) && ($rpk->item1 == $rpk->item3) && ($rpk->item1 == $rpk->item4) && ($rpk->item1 == $rpk->item5) && ($rpk->item2 == $rpk->item3) && ($rpk->item2 == $rpk->item4) && ($rpk->item2 == $rpk->item5) && ($rpk->item3 == $rpk->item4) && ($rpk->item3 == $rpk->item5) && ($rpk->item4 == $rpk->item5) ){
+							$xx = $rpk->x * 5;
+						}else if(($rpk->item1 == $rpk->item2) && ($rpk->item1 == $rpk->item3) && ($rpk->item1 == $rpk->item4) && ($rpk->item2 == $rpk->item3) && ($rpk->item2 == $rpk->item4) && ($rpk->item3 == $rpk->item4)){
+							$xx = $rpk->x * 4;
+						}else if(($rpk->item1 == $rpk->item2) && ($rpk->item1 == $rpk->item3) && ($rpk->item2 == $rpk->item3)){
+							$xx = $rpk->x * 3;
+						}else if($rpk->item1 == $rpk->item2 || $rpk->item2 == $rpk->item3 || $rpk->item1 == $rpk->item3){
+							$xx = $rpk->x * 2;
+						}else{
+							$xx = $rpk->x;
+						}
+						if($getRpkTimb->num_rows() == 0){
+							$i_jmlrpk = $xx;
+						}else{
+							if($getRpkTimb->row()->jml_roll >= $xx){
+								$i_jmlrpk = 0;
+							}else{
+								$i_jmlrpk = $xx - $getRpkTimb->row()->jml_roll;
+							}
+						}
+						$jmlRPK += $i_jmlrpk;
+					}
 
-					// SISA OS - BERTUAN - TIDAK BERTUAN
-					if($otfg == 'ofg'){
-						$tuanOrTidak = $jmlRoll;
-					}else if($otfg == 'ofgtuan'){
-						if($vWidth >= $jmlRoll){
-							$tuanOrTidak = $jmlRoll;
-						}else{
-							$tuanOrTidak = $vWidth - $jmlRoll;
-						}
-					}else if($otfg == 'ofgtuanf'){
-						if($vWidth >= $jmlRoll){
-							$tuanOrTidak = $jmlRoll;
-						}else{
-							$tuanOrTidak = $vWidth;
-						}
+					// SISA OS TIDAK BERTUAN
+					$hitung = $vWidth - $jmlRoll;
+					if($hitung == 0){
+						$tuanOrTidak = $jmlRPK;
 					}else{
-						$tuanOrTidak = $vWidth - $jmlRoll;
+						$tuanOrTidak = $hitung;
 					}
 
 					if(($lbl->nm_ker == 'MH' || $lbl->nm_ker == 'MI' || $lbl->nm_ker == 'ML') && ($tuanOrTidak == 0 || $tuanOrTidak <= 0) ){
@@ -5238,8 +5227,7 @@ class Master extends CI_Controller
 						$gbLbl = '#fff';
 					}
 
-					// ($getPO->num_rows() != 0 || $getRPK->num_rows() != 0) ? $txtU = ';text-decoration:underline' : $txtU = 0;
-					($getPO->num_rows() != 0) ? $txtU = ';text-decoration:underline' : $txtU = 0;
+					($getPO->num_rows() != 0 || $getRPK->num_rows() != 0) ? $txtU = ';text-decoration:underline' : $txtU = 0;
 					$html .= '<td style="padding:5px;background:'.$gbLbl.'">
 						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0'.$txtU.'" onclick="cek2('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$tuanOrTidak.'</button>
 					</td>';
