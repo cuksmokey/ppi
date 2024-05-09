@@ -208,6 +208,7 @@
 									<td style="padding:5px 0">
 										<select name="g_label" id="g_label" class="g_label form-control">
 											<option value="">PILIH</option>
+											<option value="65">65</option>
 											<option value="68">68</option>
 											<option value="70">70</option>
 											<option value="105">105</option>
