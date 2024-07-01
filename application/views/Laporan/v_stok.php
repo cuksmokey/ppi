@@ -261,7 +261,7 @@
 							<button class="tmbl-stok" onclick="load_data('mhbk','stok')">MEDIUM - B-KRAFT</button>
 							<button class="tmbl-stok" onclick="load_data('nonspek','stok')">MEDIUM NON SPEK</button>
 							<button class="tmbl-stok" onclick="load_data('wp','stok')">W P</button>
-							<button class="tmbl-stok" onclick="load_data('all','stok')">SEMUA</button>
+							<!-- <button class="tmbl-stok" onclick="load_data('all','stok')">SEMUA</button> -->
 							<div class="clear"></div>
 
 							<button style="font-weight:bold" disabled>BUFFER : </button>
@@ -271,7 +271,7 @@
 							<button class="tmbl-buffer" onclick="load_data('rnonspek','buffer')">MEDIUM NON SPEK</button>
 							<button class="tmbl-buffer" onclick="load_data('rwp','buffer')">W P</button>
 							<button class="tmbl-buffer" onclick="load_data('rmhc','buffer')">MH COLOR</button>
-							<button class="tmbl-buffer" onclick="load_data('rall','buffer')">SEMUA</button>
+							<!-- <button class="tmbl-buffer" onclick="load_data('rall','buffer')">SEMUA</button> -->
 						</div>
 
 						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'office' || $otorisasi == 'cor') {?>

@@ -196,6 +196,9 @@
 											<option value="BL">BL</option>
 											<option value="MH">MH</option>
 											<option value="MS">MS</option>
+											<option value="MS-A">MS-A</option>
+											<option value="MS-B">MS-B</option>
+											<option value="MS-C">MS-C</option>
 											<option value="MN">MN</option>
 											<option value="WP">WP</option>
 											<option value="WS">WS</option>
