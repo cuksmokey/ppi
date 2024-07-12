@@ -22,8 +22,10 @@ class Master extends CI_Controller
 		if($this->session->userdata('level') == "SuperAdmin"){
 			// $this->load->view('home');
 			$this->load->view('Laporan/v_stok');
-		}else if($this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "Office" || $this->session->userdata('level') == "Finance" || $this->session->userdata('level') == "Corrugated"){
+		}else if($this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC" || $this->session->userdata('level') == "FG" || $this->session->userdata('level') == "Office" || $this->session->userdata('level') == "Corrugated"){
 			$this->load->view('Laporan/v_stok');
+		}else if($this->session->userdata('level') == "Finance"){
+			$this->load->view('Laporan/v_penjualan_po');
 		}else{
 			// $this->load->view('Master/v_timbangan');
 			$this->load->view('Master/v_timbanganNew');
@@ -4153,7 +4155,7 @@ class Master extends CI_Controller
 		}else{
 			$getData = $this->db->query("SELECT pt.pimpinan,pt.nm_perusahaan,pt.alamat,m.* FROM po_master m
 			INNER JOIN m_perusahaan pt ON m.id_perusahaan=pt.id
-			WHERE status='$opsi' AND (pt.pimpinan LIKE '%$caripo%' OR pt.nm_perusahaan LIKE '%$caripo%') AND m.jml_roll!='0'
+			WHERE status='$opsi' AND (pt.pimpinan LIKE '%$caripo%' OR pt.nm_perusahaan LIKE '%$caripo%') AND m.jml_roll!='0' AND m.id_perusahaan!='210' AND m.id_perusahaan!='217'
 			GROUP BY id_perusahaan
 			ORDER BY pt.pimpinan,pt.nm_perusahaan");
 		}
@@ -4322,16 +4324,20 @@ class Master extends CI_Controller
 			GROUP BY a.id_perusahaan,a.no_po");
 			if($opsi == 'open'){
 				$edit = '<button class="btn-c-po" onclick="editPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">edit</button>';
-				if($cek->num_rows() == 0){
-					// CEK LAGI KALAU ADA PACKING LIST ATAU RENCANA KIRIM TIDAK BISA HAPUS
-					$cek2 = $this->db->query("SELECT*FROM pl WHERE id_perusahaan='$id' AND no_po='$r->no_po' GROUP BY no_po;");
-					if($cek2->num_rows() == 0){
-						$aksi = $edit.' <button class="btn-c-po" onclick="hapusPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">hapus</button>';
+				if($this->session->userdata('level') == "SuperAdmin"){
+					if($cek->num_rows() == 0){
+						// CEK LAGI KALAU ADA PACKING LIST ATAU RENCANA KIRIM TIDAK BISA HAPUS
+						$cek2 = $this->db->query("SELECT*FROM pl WHERE id_perusahaan='$id' AND no_po='$r->no_po' GROUP BY no_po;");
+						if($cek2->num_rows() == 0){
+							$aksi = $edit.' <button class="btn-c-po" onclick="hapusPO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">hapus</button>';
+						}else{
+							$aksi = '';
+						}
 					}else{
-						$aksi = '';
+						$aksi = $edit.' <button class="btn-c-po" onclick="closePO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">close</button>';
 					}
 				}else{
-					$aksi = $edit.' <button class="btn-c-po" onclick="closePO('."'".$id."'".','."'".$r->id_po."'".','."'".$r->no_po."'".','."'".$i."'".')">close</button>';
+					$aksi = '';
 				}
 			}else{ //CLOSE TIDAK ADA AKSI
 				$aksi = '';
@@ -4350,7 +4356,7 @@ class Master extends CI_Controller
 
 			$html .='<div class="ll-open btn-open-list-'.$i.'"></div>';
 		}
-		$html .='<div style="padding:5px;font-size:12px;color:#000"><button class="btn-c-po" onclick="btnCekRekap('."'".$id."'".','."'".$opsi."'".','."'".$li."'".')">REKAP</button></div>';
+		// $html .='<div style="padding:5px;font-size:12px;color:#000"><button class="btn-c-po" onclick="btnCekRekap('."'".$id."'".','."'".$opsi."'".','."'".$li."'".')">REKAP</button></div>';
 		$html .='</div>';
 
 		echo $html;

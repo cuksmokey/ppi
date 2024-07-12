@@ -68,12 +68,14 @@
 						
 						<div style="font-size:12px;color:#000">
 							<button class="btn-c-po" onclick="add_box('open')">OPEN PO</button>
-							<button class="btn-c-po" onclick="add_box('close')">CLOSE PO</button>
-							<?php if($otorisasi != 'cor') { ?>
+							<?php if($otorisasi != 'finance') { ?>
+								<button class="btn-c-po" onclick="add_box('close')">CLOSE PO</button>
+							<?php } ?>
+							<?php if($otorisasi != 'finance' && $otorisasi != 'cor') { ?>
 								<button class="btn-c-po" onclick="add_box('routpo')">REKAP OUTSTANDING PO</button>
 							<?php } ?>
 
-							<?php if($otorisasi != 'cor') { ?>
+							<?php if($otorisasi != 'finance' && $otorisasi != 'cor') { ?>
 								<br/><br/>
 								<form action="<?php echo base_url(); ?>Master/AllListPO" method="get">
 									<input type="hidden" id="ctk" name="ctk" value="0">
@@ -83,7 +85,7 @@
 
 						</div>
 
-						<?php if($otorisasi != 'cor') { ?>
+						<?php if($otorisasi != 'finance' && $otorisasi != 'cor') { ?>
 							<!-- FORM PENCARIAN -->
 							<input type="hidden" id="pilihan-cari" value="">
 							<div class="table-cari" style="margin-top:15px">

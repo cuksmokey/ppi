@@ -163,7 +163,7 @@
                             </a>
                         </li> -->
                     <?php } ?>
-                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "Office" || $this->session->userdata('level') == "Corrugated") { ?>
+                    <?php if ($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "Office" || $this->session->userdata('level') == "Corrugated" || $this->session->userdata('level') == "Finance") { ?>
                         <li>
                             <a href="<?php echo base_url('Laporan/Penjualan_PO') ?>">
                                 <!-- <i class="material-icons">list</i> -->
