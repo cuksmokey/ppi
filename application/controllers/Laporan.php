@@ -6166,7 +6166,11 @@ class Laporan extends CI_Controller {
 					}else{
 						$bgStt = 'cek-status-rk-rtr';
 					}
-					$diss = 'disabled';
+                    if($roll->id_rtr != null){
+                        $diss = '';
+                    }else{
+                        $diss = 'disabled';
+                    }
 					$oBtn = '';
 					$cBtn = '';
 				}else if($roll->id_pl == 0 && ($roll->id_rk != null || $roll->id_rk != '')){ // MASUK RENCANA KIRIM
@@ -6230,12 +6234,12 @@ class Laporan extends CI_Controller {
 				$html .='<tr class="'.$bgStt.'">
 					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<input class="ttggll" type="date" id="etgl-'.$i.'" value="'.$roll->tgl.'" '.$diss.' style="width:85px">'.$cBtn.'</td>
 					<td style="padding:0 3px;border:1px solid #999">'.$oBre.''.$oBtn.''.$roll->roll.''.$cBtn.''.$cBre.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_ac-'.$i.'" value="'.$roll->g_ac.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="erct-'.$i.'" value="'.$roll->rct.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ecobb-'.$i.'" value="'.$roll->cobb.'" '.$diss.' maxlength="7" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="emoisture-'.$i.'" value="'.$roll->moisture.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="erm-'.$i.'" value="'.$roll->rm.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" style="width:50px;text-align:center">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_ac-'.$i.'" value="'.$roll->g_ac.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="erct-'.$i.'" value="'.$roll->rct.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ecobb-'.$i.'" value="'.$roll->cobb.'" '.$diss.' maxlength="7" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="emoisture-'.$i.'" value="'.$roll->moisture.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="erm-'.$i.'" value="'.$roll->rm.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
 					';
                 
                 // PLH JENIS KERTAS
@@ -6261,18 +6265,18 @@ class Laporan extends CI_Controller {
                 }
                 $html .= '<td style="border:1px solid #999;text-align:center">'.$oBtn.''.$optKer.''.$cBtn.'</td>';
                 
-                // KHUSUS EDIT DI KETERANGAN DAN STATUS
+                // KHUSUS EDIT STATUS
                 if(($otori == 'all' || $otori == 'admin' || $otori == 'qc' || $otori == 'fg') && $roll->id_rtr == null){
 					$fgdiss = '';
                 }else{
                     $fgdiss = 'disabled';
                 }
-                $html .='<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_label-'.$i.'" value="'.$roll->g_label.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ewidth-'.$i.'" value="'.round($roll->width,2).'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ediameter-'.$i.'" value="'.$roll->diameter.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" maxlength="3" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eweight-'.$i.'" value="'.$roll->weight.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" onkeypress="return hanyaAngka(event)" maxlength="5" style="width:50px;text-align:center">'.$cBtn.'</td>
-					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ejoint-'.$i.'" value="'.$roll->joint.'" '.$diss.' onkeypress="return aK(event)" maxlength="2" onkeypress="return hanyaAngka(event)" maxlength="3" style="width:30px;text-align:center">'.$cBtn.'</td>
-					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$fgdiss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
+                $html .='<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eg_label-'.$i.'" value="'.$roll->g_label.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ewidth-'.$i.'" value="'.round($roll->width,2).'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ediameter-'.$i.'" value="'.$roll->diameter.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" maxlength="3" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eweight-'.$i.'" value="'.$roll->weight.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" onkeypress="return hanyaAngka(event)" maxlength="5" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ejoint-'.$i.'" value="'.$roll->joint.'" '.$diss.' onkeypress="return aK(event)" maxlength="2" onkeypress="return hanyaAngka(event)" maxlength="3" style="width:30px;text-align:center" autocomplete="off">'.$cBtn.'</td>
+					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
 
                     // PILIH STATUS
 					$opsRoll = substr($roll->id_rk,0,6);
@@ -6318,7 +6322,7 @@ class Laporan extends CI_Controller {
                         $html .='<td style="border:1px solid #999;text-align:center">'.$opt.'</td>';
                         
                         // TOMBOL EDIT
-                        if(($otori == 'all' || $otori == 'qc' || $otori == 'fg') && $roll->id_rtr == null ){
+                        if(($otori == 'all' || $otori == 'qc' || $otori == 'fg')){
                             $print = base_url("Master/print_timbangan?id=").$roll->roll;
                             // $print2 = base_url("Master/print_timbangan2?id=").$roll->roll;
                             $plabel = '<a type="button" href="'.$print.'" target="_blank" style="padding:3px 5px;background:#fff">LABEL</a>';
