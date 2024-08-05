@@ -2185,7 +2185,6 @@
 		v_opl = $("#v-opl").val();
 		v_tgl_pl = $("#v-tgl-pl").val();
 		v_ii = $("#v-ii").val();
-		// alert(v_id_rk+' - '+v_opl+' - '+v_tgl_pl+' - '+v_ii);
 		$.ajax({
 			url: '<?php echo base_url('Master/simpanInputRoll')?>',
 			type: "POST",
@@ -2323,6 +2322,34 @@
 			}),
 			success: function(response){
 				$(".isi-p-cek-po").html(response);
+			}
+		});
+	}
+
+	//
+
+	function editGSMPengiriman(id_rk, nm_ker, g_label, width, z)
+	{
+		// let v_id_rk = $("#v-id-pl").val()
+		let v_opl = $("#v-opl").val()
+		let v_tgl_pl = $("#v-tgl-pl").val()
+		let v_ii = $("#v-ii").val()
+		let egsm = $("#egsm-"+z).val()
+		console.log("id_rk : ", id_rk)
+		console.log("nm_ker : ", nm_ker)
+		console.log("g_label : ", g_label)
+		console.log("width : ", width)
+		console.log("egsm : ", egsm)
+		$.ajax({
+			url: '<?php echo base_url('Master/editGSMPengiriman')?>',
+			type: "POST",
+			data: ({
+				egsm, id_rk, nm_ker, g_label, width, z
+			}),
+			success: function(res){
+				data = JSON.parse(res)
+				console.log(data)
+				btnRencana(id_rk,v_opl,v_tgl_pl,pilihbtnrencana,v_ii)
 			}
 		});
 	}

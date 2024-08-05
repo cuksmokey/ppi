@@ -1099,6 +1099,28 @@ class M_master extends CI_Model{
 		return $result;
 	}
 
+	function editGSMPengiriman()
+	{
+		$egsm = $_POST["egsm"];
+		$id_rk = $_POST["id_rk"];
+		$nm_ker = $_POST["nm_ker"];
+		$g_label = $_POST["g_label"];
+		$width = $_POST["width"];
+		$z = $_POST["z"];
+
+		$this->db->set('g_label', $egsm);
+		$this->db->where('nm_ker', $nm_ker);
+		$this->db->where('g_label', $g_label);
+		$this->db->where('width', $width);
+		$this->db->where('id_pl', 0);
+		$this->db->where('id_rk', $id_rk);
+		$result = $this->db->update('m_timbangan');
+
+		return [
+			'data' => $result,
+		];
+	}
+
     function cekOkRk(){
 		$idrk = $_POST['idrk'];
 

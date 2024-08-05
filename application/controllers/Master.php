@@ -2440,9 +2440,15 @@ class Master extends CI_Controller
 		$otorisasi = $_POST['otorisasi'];
 		$html ='';
 
+		// GROUP PER JENIS, GSM, UKURAN
 		$getKer = $this->db->query("SELECT id_rk,nm_ker,g_label,width,COUNT(width) AS jml FROM m_timbangan
 		WHERE id_rk='$id_rk'
 		GROUP BY nm_ker,g_label,width");
+
+		// CEK JIKA SUDAH OK
+		$cekOk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' AND qc_rk='proses' GROUP BY id_rk");
+		$getRk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' AND qc_rk='ok' GROUP BY id_rk");
+		$celPL = $this->db->query("SELECT*FROM pl WHERE id_rk='$id_rk' AND qc='proses' GROUP BY id_rk");
 
 		if($getKer->num_rows() == 0){
 			$html .='';
@@ -2452,12 +2458,12 @@ class Master extends CI_Controller
 			if($plh == 'pl'){
 				$wket = '25%';
 				$waksi = '10%';
-				$cols = '13';
+				$cols = ($otorisasi == 'all') ? '9' : '13';
 				$ktd = '<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:10%">ID PL</td>';
 			}else{
 				$wket = '25%';
 				$waksi = '20%';
-				$cols = '12';
+				$cols = ($otorisasi == 'all') ? '9' : '12';
 				$ktd = '';
 			}
 			$html .='<tr>
@@ -2477,10 +2483,12 @@ class Master extends CI_Controller
 			</tr>';
 			$totRoll = 0;
 			$totBerat = 0;
+			$zZz = 0;
 			foreach($getKer->result() as $ker){
-				if(($ker->nm_ker == 'MH' || $ker->nm_ker == 'MN') && $ker->g_label == 110){
+				$zZz++;
+				if(($ker->nm_ker == 'MH' || $ker->nm_ker == 'MN') && ($ker->g_label == 105 || $ker->g_label == 110)){
 					$bgtrt = 'list-p-biru';
-				}else if(($ker->nm_ker == 'MH') && ($ker->g_label == 120 || $ker->g_label == 125)){
+				}else if(($ker->nm_ker == 'MH' || $ker->nm_ker == 'MN') && ($ker->g_label == 120 || $ker->g_label == 125)){
 					$bgtrt = 'list-p-kuning';
 				}else if(($ker->nm_ker == 'MH' || $ker->nm_ker == 'MN') && $ker->g_label == 150){
 					$bgtrt = 'list-p-merah';
@@ -2490,12 +2498,33 @@ class Master extends CI_Controller
 					$bgtrt = 'list-p-putih';
 				}
 
+				// EDIT GSM
+				($otorisasi == 'all' && $plh == 'pl') ? $eGg = 'colspan="2"' : $eGg = '';
+				if($celPL->num_rows() > 0){
+					if($otorisasi == 'all'){
+						$htmlGsm = '<td style="padding:5px;position:relative">
+							<input type="text" id="egsm-'.$zZz.'" value="'.$ker->g_label.'" class="inp-abs" maxlength="3" autocomplete="off" onkeypress="return hanyaAngka(event)">
+						</td>
+						<td style="padding:5px">
+							<button style="background:none;border:0" onclick="editGSMPengiriman('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$zZz."'".')">e</button>
+						</td>
+						<td style="padding:5px" '.$eGg.'></td>';
+					}else{
+						$htmlGsm = '';
+					}
+				}else{
+					$htmlGsm = '<td style="padding:5px" colspan="2"></td>
+					<td style="padding:5px" '.$eGg.'></td>';
+				}
+				
+
 				// GET UKURAN
 				$getWidth = $this->db->query("SELECT * FROM m_timbangan
 				WHERE id_rk='$ker->id_rk' AND nm_ker='$ker->nm_ker' AND g_label='$ker->g_label' AND width='$ker->width'
 				ORDER BY roll");
 				$html .='<tr class="'.$bgtrt.'">
 					<td style="padding:5px;font-weight:bold;text-align:left" colspan="'.$cols.'">'.$ker->nm_ker.''.$ker->g_label.' - '.round($ker->width,2).'</td>
+					'.$htmlGsm.'
 				</tr>';
 
 				$i = 0;
@@ -2532,9 +2561,6 @@ class Master extends CI_Controller
 					}else{
 						$ketSeset = $w->ket;
 					}
-
-					// CEK JIKA SUDAH OK
-					$cekOk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' AND qc_rk='proses' GROUP BY id_rk");
 
 					// REQ PRINT LABEL
 					if($w->lbl_rk == 'req'){
@@ -2646,7 +2672,6 @@ class Master extends CI_Controller
 						// ID PL MASIH KOSONG
 						if($w->id_pl == 0){
 							// CEK RENCANA KIRIM BELUM OK
-							$getRk = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' AND qc_rk='ok' GROUP BY id_rk");
 							if($getRk->num_rows() == 0){
 								$html .= 'CEK DULU!';
 							}else{
@@ -2683,8 +2708,7 @@ class Master extends CI_Controller
 
 				// TOMBOL ALL IN
 				if($plh == 'pl'){
-					$getRkA = $this->db->query("SELECT*FROM m_rencana_kirim WHERE id_rk='$id_rk' AND qc_rk='ok' GROUP BY id_rk");
-					if($getRkA->num_rows() == 0){
+					if($getRk->num_rows() == 0){
 						$html .='';
 					}else{
 						$getPl = $this->db->query("SELECT pl.* FROM pl pl
@@ -2865,6 +2889,12 @@ class Master extends CI_Controller
 				}
 			}
 		}
+	}
+
+	function editGSMPengiriman()
+	{
+		$result = $this->m_master->editGSMPengiriman();
+		echo json_encode($result);
 	}
 
 	function reqLabelRk(){
@@ -3111,7 +3141,7 @@ class Master extends CI_Controller
 					foreach($getJKnGSM->result() as $jkGsm){
 						if(($jkGsm->nm_ker == 'MH' || $jkGsm->nm_ker == 'MN') && ($jkGsm->g_label == 105 || $jkGsm->g_label == 110)){
 							$bgkk = 'list-p-biru';
-						}else if($jkGsm->nm_ker == 'MH' && ($jkGsm->g_label == 120 || $jkGsm->g_label == 125)){
+						}else if(($jkGsm->nm_ker == 'MH' || $jkGsm->nm_ker == 'MN') && ($jkGsm->g_label == 120 || $jkGsm->g_label == 125)){
 							$bgkk = 'list-p-kuning';
 						}else if(($jkGsm->nm_ker == 'MH' || $jkGsm->nm_ker == 'MN') && $jkGsm->g_label == 150){
 							$bgkk = 'list-p-merah';
@@ -3313,7 +3343,7 @@ class Master extends CI_Controller
 			foreach($getUkRencKirim->result() as $ukRenc){
 				if(($ukRenc->nm_ker == 'MH' || $ukRenc->nm_ker == 'MN') && ($ukRenc->g_label == 105 || $ukRenc->g_label == 110)){
 					$bgtr = 'list-p-biru';
-				}else if($ukRenc->nm_ker == 'MH' && ($ukRenc->g_label == 120 || $ukRenc->g_label == 125)){
+				}else if(($ukRenc->nm_ker == 'MH' || $ukRenc->nm_ker == 'MN') && ($ukRenc->g_label == 120 || $ukRenc->g_label == 125)){
 					$bgtr = 'list-p-kuning';
 				}else if(($ukRenc->nm_ker == 'MH' || $ukRenc->nm_ker == 'MN') && $ukRenc->g_label == 150){
 					$bgtr = 'list-p-merah';
@@ -3342,15 +3372,15 @@ class Master extends CI_Controller
 						$aksi = $uk->jml_roll;
 					}
 
-					if($uk->g_label == 65 || $uk->g_label == 68 || $uk->g_label == 70){
-						$ukRGLabel = "AND (g_label='65' OR g_label='68' OR g_label='70')";
-					}else if($uk->g_label == 120 || $uk->g_label == 125){
-						$ukRGLabel = "AND (g_label='120' OR g_label='125')";
-					}else{
-						$ukRGLabel = "AND g_label='$uk->g_label'";
-					}
+					// if($uk->g_label == 65 || $uk->g_label == 68 || $uk->g_label == 70){
+					// 	$ukRGLabel = "AND (g_label='65' OR g_label='68' OR g_label='70')";
+					// }else if($uk->g_label == 120 || $uk->g_label == 125){
+					// 	$ukRGLabel = "AND (g_label='120' OR g_label='125')";
+					// }else{
+					// 	$ukRGLabel = "AND g_label='$uk->g_label'";
+					// }
 					// GET ROLL
-					$getRoll = $this->db->query("SELECT COUNT(roll) AS jmlRoll FROM m_timbangan WHERE id_rk='$uk->id_rk' AND nm_ker='$uk->nm_ker' $ukRGLabel AND width='$uk->width'");
+					$getRoll = $this->db->query("SELECT COUNT(roll) AS jmlRoll FROM m_timbangan WHERE id_rk='$uk->id_rk' AND nm_ker='$uk->nm_ker' AND g_label='$uk->g_label' AND width='$uk->width'");
 					if($getRoll->row()->jmlRoll == '' || $getRoll->row()->jmlRoll == 0){
 						$jmlRoll = 0;
 					}else{
