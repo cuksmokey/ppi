@@ -1109,6 +1109,7 @@ class M_master extends CI_Model{
 		$z = $_POST["z"];
 
 		$this->db->set('g_label', $egsm);
+		$this->db->set('lbl_rk', 'req');
 		$this->db->where('nm_ker', $nm_ker);
 		$this->db->where('g_label', $g_label);
 		$this->db->where('width', $width);

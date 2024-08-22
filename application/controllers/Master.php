@@ -2458,12 +2458,12 @@ class Master extends CI_Controller
 			if($plh == 'pl'){
 				$wket = '25%';
 				$waksi = '10%';
-				$cols = ($otorisasi == 'all') ? '9' : '13';
+				$cols = ($otorisasi == 'all') ? '10' : '13';
 				$ktd = '<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:10%">ID PL</td>';
 			}else{
 				$wket = '25%';
 				$waksi = '20%';
-				$cols = ($otorisasi == 'all') ? '9' : '12';
+				$cols = ($otorisasi == 'all') ? '10' : '13';
 				$ktd = '';
 			}
 			$html .='<tr>
@@ -2472,10 +2472,11 @@ class Master extends CI_Controller
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BW</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">RCT</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BI</td>
+				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">MOI</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">D(CM)</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BERAT</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">JNT</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:'.$wket.'">KET</td>
+				<td style="background:#e9e9e9;padding:5px 50px;font-weight:bold;width:'.$wket.'">KET</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">SESET</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">LABEL</td>
 				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:'.$waksi.'">AKSI</td>
@@ -2513,8 +2514,12 @@ class Master extends CI_Controller
 						$htmlGsm = '';
 					}
 				}else{
-					$htmlGsm = '<td style="padding:5px" colspan="2"></td>
-					<td style="padding:5px" '.$eGg.'></td>';
+					if($otorisasi == 'all'){
+						$htmlGsm = '<td style="padding:5px" colspan="2"></td>
+						<td style="padding:5px" '.$eGg.'></td>';
+					}else{
+						$htmlGsm = '';
+					}
 				}
 				
 
@@ -2622,26 +2627,29 @@ class Master extends CI_Controller
 					}else{
 						$btnEdit = 'style="color:#00f"';
 					}
-
 					// G AC
-					if($w->g_ac == 0 || $w->g_ac == ''){
+					if($w->g_ac == 0 || $w->g_ac == '' || $w->g_ac == null){
 						$txtGac = 0;
 					}else{
 						$txtGac = $w->g_ac;
 					}
-
 					// RCT
-					if($w->rct == 0 || $w->rct == ''){
+					if($w->rct == 0 || $w->rct == '' || $w->rct == null){
 						$txtRct = 0;
 					}else{
 						$txtRct = $w->rct;
 					}
-
 					// BI
-					if($w->bi == 0 || $w->bi == ''){
+					if($w->bi == 0 || $w->bi == '' || $w->bi == null){
 						$txtBi = 0;
 					}else{
 						$txtBi = $w->bi;
+					}
+					// MOISTURE
+					if($w->moisture == 0 || $w->moisture == '' || $w->moisture == null){
+						$txtMoi = 0;
+					}else{
+						$txtMoi = $w->moisture;
 					}
 
 					$html .='<tr class="'.$bgtr.'">
@@ -2652,6 +2660,7 @@ class Master extends CI_Controller
 						<td style="padding:5px;'.$bgbw.'">'.$txtGac.'</td>
 						<td style="padding:5px;'.$bgrct.'">'.$txtRct.'</td>
 						<td style="padding:5px;'.$bgbi.'">'.$txtBi.'</td>
+						<td style="padding:5px">'.$txtMoi.'</td>
 						<td style="position:relative">
 							<input type="text" id="his-diameter-'.$w->id.'" value="'.$w->diameter.'" class="inp-abs" maxlength="3" onkeypress="return hanyaAngka(event)">
 						</td>
@@ -2841,7 +2850,7 @@ class Master extends CI_Controller
 			}
 			$html .='<tr style="background:#e9e9e9">
 				<td style="padding:5px;font-weight:bold">'.number_format($totRoll).'</td>
-				<td style="padding:5px;font-weight:bold" colspan="5">TOTAL</td>
+				<td style="padding:5px;font-weight:bold" colspan="6">TOTAL</td>
 				<td style="padding:5px;font-weight:bold">'.number_format($totBerat).'</td>
 				<td style="padding:5px;font-weight:bold" colspan="'.$cls.'">'.$pLabelReq.' '.$btnCekOk.'</td>
 			</tr>';
