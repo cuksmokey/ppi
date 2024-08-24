@@ -2735,11 +2735,11 @@ class Master extends CI_Controller
 							// $getPl->row()->id_perusahaan
 							if($getPl->num_rows() == 1){
 								$html .='<tr>
-									<td style="padding:5px;font-weight:bold;text-align:right" colspan="13"><button onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$getPl->row()->id."'".','."'".$plh."'".','."'".$getPl->row()->id_perusahaan."'".')">'.$getPl->row()->id.'</button></td>
+									<td style="padding:5px;font-weight:bold;text-align:right" colspan="14"><button onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$getPl->row()->id."'".','."'".$plh."'".','."'".$getPl->row()->id_perusahaan."'".')">'.$getPl->row()->id.'</button></td>
 								</tr>';
 							}else{
 								// ALL IN ID PL TERTENTU
-								$html .='<tr><td style="padding:5px;font-weight:bold;text-align:right" colspan="13">';
+								$html .='<tr><td style="padding:5px;font-weight:bold;text-align:right" colspan="14">';
 								foreach($getPl->result() as $idpl){
 									$html .='<button style="margin-left:5px" onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$idpl->id."'".','."'".$plh."'".','."'".$idpl->id_perusahaan."'".')">'.$idpl->id.'</button>';
 								}
@@ -2771,7 +2771,7 @@ class Master extends CI_Controller
 							INNER JOIN po_master po ON pl.no_po=po.no_po AND pl.nm_ker=po.nm_ker AND pl.g_label=po.g_label
 							WHERE pl.id_rk='$id_rk'
 							GROUP BY pl.id,pl.no_po,pl.nm_ker,pl.g_label");
-							$html .='<tr style="background:#144272"><td style="padding:5px;font-weight:bold;text-align:right" colspan="13">';
+							$html .='<tr style="background:#144272"><td style="padding:5px;font-weight:bold;text-align:right" colspan="14">';
 							foreach($idPlSakti->result() as $idpls){
 								$html .='<button style="margin-left:5px" onclick="entryPlAllIn('."'".$id_rk."'".','."'".$idpls->nm_ker."'".','."'".$idpls->g_label."'".',0,'."'".$idpls->id."'".','."'".$plh."'".','."'".$idpls->id_perusahaan."'".')">'.$idpls->nm_ker.''.$idpls->g_label.' - '.$idpls->id.'</button>';
 							}
