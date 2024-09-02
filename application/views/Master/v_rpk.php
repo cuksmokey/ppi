@@ -214,6 +214,7 @@
 											<option value="65">65</option>
 											<option value="68">68</option>
 											<option value="70">70</option>
+											<option value="85">85</option>
 											<option value="105">105</option>
 											<option value="110">110</option>
 											<option value="115">115</option>
