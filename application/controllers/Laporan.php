@@ -5681,7 +5681,8 @@ class Laporan extends CI_Controller {
 		}else if($stat == 'stok'){
 			$statusIdPl = "AND status='0' AND id_pl='0'";
 		}else if($stat == 'ppi'){
-			$statusIdPl = "AND (status='2' OR status='4' OR status='5' OR status='6') AND id_pl='0'";
+			$statusIdPl = "AND status='2' AND id_pl='0'";
+			// $statusIdPl = "AND (status='2' OR status='4' OR status='5' OR status='6') AND id_pl='0'";
 			// 2 - PPI, 4 - PPI SIZING, 5 - PPI CALENDER, 6 - PPI WARNA
 		}else{
 			$statusIdPl = "";
@@ -6074,7 +6075,8 @@ class Laporan extends CI_Controller {
 			}else if($stat == 'buffer'){
 				$where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND status='3' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
 			}else if($stat == 'ppi'){
-				$where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND (status='2' OR status='4' OR status='5' OR status='6') AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
+				// $where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND (status='2' OR status='4' OR status='5' OR status='6') AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
+				$where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND status='2' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
 			}else{
 				// PRODUKSI
                 if($pm == 1){
