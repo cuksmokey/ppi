@@ -65,6 +65,13 @@
 		background-color: #edd;
 	}
 
+	.status-ppi {
+		background-color: #e8f1ff;
+	}
+	.status-ppi:hover {
+		background-color: #d8e1f0;
+	}
+
 	.status-retur {
 		background-color: #fe9;
 	}
@@ -133,6 +140,16 @@
 		background: #cfc;
 		padding:5px 8px;
 		border: 3px solid #7a7;
+		border-width: 0 0 0 4px;
+		font-weight: bold;
+		font-size: 12px;
+		color: #000;
+	}
+
+	.btn-op-ppi {
+		background: #eee;
+		padding:5px 8px;
+		border: 3px solid #666;
 		border-width: 0 0 0 4px;
 		font-weight: bold;
 		font-size: 12px;

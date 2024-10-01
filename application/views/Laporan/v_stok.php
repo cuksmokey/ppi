@@ -146,6 +146,22 @@
 		background: #000;
 	}
 
+	.tmbl-ppi {
+		display: inline-block;
+		margin-bottom: 3px;
+		background: #fff;
+		padding: 5px 7px;
+		color: #333;
+		font-weight: bold;
+		border: 0;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+
+	.tmbl-ppi:hover {
+		background: #ddd;
+	}
+
 	.inpt-txt-kosong {
 		background:none;margin:0 0 0 10px;padding:0;border:0;font-weight:bold
 	}
@@ -272,6 +288,10 @@
 							<button class="tmbl-buffer" onclick="load_data('rwp','buffer')">W P</button>
 							<button class="tmbl-buffer" onclick="load_data('rmhc','buffer')">MH COLOR</button>
 							<!-- <button class="tmbl-buffer" onclick="load_data('rall','buffer')">SEMUA</button> -->
+							<div class="clear"></div>
+
+							<button style="font-weight:bold" disabled>PPI : </button>
+							<button class="tmbl-ppi" onclick="load_data('pwp','ppi')">W P</button>
 						</div>
 
 						<?php if($otorisasi == 'all' || $otorisasi == 'admin' || $otorisasi == 'office' || $otorisasi == 'cor') {?>
@@ -492,6 +512,8 @@
 			Njenis = 'MH COLOR';
 		}else if(jenis == 'rall'){
 			Njenis = 'SEMUA BUFFER';
+		}else if(jenis == 'pwp'){
+			Njenis = 'WP PPI';
 		}else{
 			Njenis = '';
 		}
@@ -515,6 +537,7 @@
 		$(".tmbl-plh").prop("disabled", true);
 		$(".tmbl-stok").prop("disabled", true).attr('style', 'background:#ccc');
 		$(".tmbl-buffer").prop("disabled", true).attr('style', 'background:#ccc');
+		$(".tmbl-ppi").prop("disabled", true).attr('style', 'background:#ccc;color:#fff');
 		$(".box-data").show().html(`Memuat data ROLL ${tJns}. Tunggu Sebentar . . .`);
 		$.ajax({
 			url: '<?php echo base_url('Laporan/NewStokGudang'); ?>',
@@ -532,6 +555,7 @@
 				$(".tmbl-plh").prop("disabled", false);
 				$(".tmbl-stok").prop("disabled", false).removeAttr( "style");
 				$(".tmbl-buffer").prop("disabled", false).removeAttr( "style");
+				$(".tmbl-ppi").prop("disabled", false).removeAttr( "style");
 				$(".box-data").show().html(response);
 				$("#stat").val(stat);
 			}

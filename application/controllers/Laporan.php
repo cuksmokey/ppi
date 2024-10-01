@@ -507,7 +507,6 @@ class Laporan extends CI_Controller {
         </table>';
 
         // KONDISI KOP PADA SURAT JALAN > PPN ATAU NON-PPN
-        // $nosj = '543/ROLL/XII/22/A/BK';
         $nosj = explode("/", trim($data_kop->no_surat));
         if($nosj[4] == 'A' || $nosj[4] == 'B'){
             if($nosj[4] == 'A'){
@@ -1216,7 +1215,8 @@ class Laporan extends CI_Controller {
                 $html .= '</table>';
 
 				// MENGHILANGKAN HALAMAN KOSONG DI HALAMAN TERAKHIR PACKING LIST
-				$cekLimitAkhir = $this->db->query("SELECT*FROM pl WHERE no_pkb='$jenis' ORDER BY no_po ASC,g_label ASC LIMIT 1");
+				// $cekLimitAkhir = $this->db->query("SELECT*FROM pl WHERE no_pkb='$jenis' ORDER BY no_po ASC,g_label ASC LIMIT 1");
+				$cekLimitAkhir = $this->db->query("SELECT*FROM pl WHERE no_pkb='$jenis' ORDER BY id ASC LIMIT 1");
 				if($data_header->num_rows() == 1){
 					$html .= '';
 				}else{
@@ -5668,7 +5668,7 @@ class Laporan extends CI_Controller {
             $where = "AND nm_ker!='WP' AND nm_ker!='MN' AND nm_ker!='MH COLOR' $pm";
         }else if($jenis == 'nonspek' || $jenis == 'rnonspek' || $vjenis == 'nonspek'){
             $where = "AND nm_ker='MN' $pm";
-        }else if($jenis == 'wp' || $jenis == 'rwp' || $vjenis == 'wp'){
+        }else if($jenis == 'wp' || $jenis == 'rwp' || $jenis == 'pwp' || $vjenis == 'wp'){
             $where = "AND (nm_ker='WP' OR nm_ker='WS') $pm";
         }else if($jenis == 'rmhc'){
             $where = "AND nm_ker='MH COLOR' $pm";
@@ -5680,6 +5680,9 @@ class Laporan extends CI_Controller {
 			$statusIdPl = "AND status='3' AND id_pl='0'";
 		}else if($stat == 'stok'){
 			$statusIdPl = "AND status='0' AND id_pl='0'";
+		}else if($stat == 'ppi'){
+			$statusIdPl = "AND (status='2' OR status='4' OR status='5' OR status='6') AND id_pl='0'";
+			// 2 - PPI, 4 - PPI SIZING, 5 - PPI CALENDER, 6 - PPI WARNA
 		}else{
 			$statusIdPl = "";
 		}
@@ -5693,6 +5696,8 @@ class Laporan extends CI_Controller {
 		// KHUSUS CORR
 		if($stat == 'buffer'){
 			$statStatCor = 3;
+		}else if($stat == 'ppi'){
+			$statStatCor = 2;
 		}else{
 			$statStatCor = 0;
 		}
@@ -5936,6 +5941,8 @@ class Laporan extends CI_Controller {
 			// BUFFER
 			if($statcor == 0){
 				$txtStat = 'STOK';
+			}else if($statcor == 2){
+				$txtStat = 'STOK PPI';
 			}else{
 				$txtStat = 'BUFFER';
 			}
@@ -6066,6 +6073,8 @@ class Laporan extends CI_Controller {
 				$where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND status='0' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
 			}else if($stat == 'buffer'){
 				$where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND status='3' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
+			}else if($stat == 'ppi'){
+				$where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND (status='2' OR status='4' OR status='5' OR status='6') AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
 			}else{
 				// PRODUKSI
                 if($pm == 1){

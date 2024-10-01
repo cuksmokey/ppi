@@ -2539,6 +2539,8 @@ class Master extends CI_Controller
 						$bgtr = 'status-retur';
 					}else if($w->status == '3'){
 						$bgtr = 'status-buffer';
+					}else if($w->status == '2'){
+						$bgtr = 'status-ppi';
 					}else{
 						$bgtr = 'status-stok';
 					}
@@ -3185,6 +3187,8 @@ class Master extends CI_Controller
 									$bg = 'status-retur';
 								}else if($roll->statusroll == '3'){
 									$bg = 'status-buffer';
+								}else if($roll->statusroll == '2'){
+									$bg = 'status-ppi';
 								}else{
 									$bg = 'status-stok';
 								}
@@ -3525,6 +3529,7 @@ class Master extends CI_Controller
 		<div style="padding-top:5px">
 			<button class="btn-op-stok" onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".',0,'."'".$key."'".')">STOK</button>
 			<button class="btn-op-buff" onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".',3,'."'".$key."'".')">BUFFER</button>
+			<button class="btn-op-ppi" onclick="cariRoll('."'".$i."'".','."'".$nm_ker."'".','."'".$g_label."'".','."'".$width."'".','."'".$roll."'".',2,'."'".$key."'".')">PPI</button>
 		</div>
 		';
 		
@@ -3542,6 +3547,9 @@ class Master extends CI_Controller
 		}else if($opbuf == 3){
 			$ketOpbuff = "status='3'";
 			$zonkKetOpBuff = 'BUFFER';
+		}else if($opbuf == 2){
+			$ketOpbuff = "(status='2' OR status='4' OR status='5' OR status='6')";
+			$zonkKetOpBuff = 'DATA PPI';
 		}else{
 			$ketOpbuff = "(status='0' OR status='3')";
 			$zonkKetOpBuff = 'DATA STOK/BUFFER';
@@ -3553,6 +3561,8 @@ class Master extends CI_Controller
 		ORDER BY YEAR(tgl),pm,roll");
 		if($getRoll->num_rows() == 0){
 			$html .='<div style="font-weight:bold" class="notfon">'.$zonkKetOpBuff.' TIDAK DITEMUKAN</div>';
+		}else if($getRoll->num_rows() > 100){
+			$html .='<div style="font-weight:bold" class="notfon">ADA '.number_format($getRoll->num_rows()).' DATA, TERLALU BANYAK DATA UNTUK DITAMPILKAN!<br>MASUKKAN NO. ROLL DI KOLOM PENCARIAN UNTUK MENCARI NO. ROLL!</div>';
 		}else{
 			$ii = 0;
 			$html .='<div style="padding-top:10px"><table class="list-table" style="text-align:center;width:100%" border="1">
@@ -3577,6 +3587,8 @@ class Master extends CI_Controller
 					$bgtr = 'status-retur';
 				}else if($r->status == 3){
 					$bgtr = 'status-buffer';
+				}else if($r->status == 2){
+					$bgtr = 'status-ppi';
 				}else{
 					$bgtr = 'status-stok';
 				}
