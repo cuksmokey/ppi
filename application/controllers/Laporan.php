@@ -418,7 +418,7 @@ class Laporan extends CI_Controller {
         $this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',999);
     }
 
-    function print_surat_jalan(){ //
+    function print_surat_jalan(){
         $jenis = $_GET['jenis'];
         $jarak = $_GET['jarak'];
         $ctk = $_GET['ctk'];
@@ -1215,8 +1215,8 @@ class Laporan extends CI_Controller {
                 $html .= '</table>';
 
 				// MENGHILANGKAN HALAMAN KOSONG DI HALAMAN TERAKHIR PACKING LIST
-				// $cekLimitAkhir = $this->db->query("SELECT*FROM pl WHERE no_pkb='$jenis' ORDER BY no_po ASC,g_label ASC LIMIT 1");
-				$cekLimitAkhir = $this->db->query("SELECT*FROM pl WHERE no_pkb='$jenis' ORDER BY id ASC LIMIT 1");
+				$cekLimitAkhir = $this->db->query("SELECT*FROM pl WHERE no_pkb='$jenis' ORDER BY no_po ASC,g_label ASC LIMIT 1");
+				// $cekLimitAkhir = $this->db->query("SELECT*FROM pl WHERE no_pkb='$jenis' ORDER BY id ASC LIMIT 1");
 				if($data_header->num_rows() == 1){
 					$html .= '';
 				}else{
