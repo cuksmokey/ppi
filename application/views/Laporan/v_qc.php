@@ -264,6 +264,7 @@
 											<option value="PPI">PPI</option>
 											<option value="PPISIZING">PPI SIZING</option>
 											<option value="PPICALENDER">PPI CALENDER</option>
+											<option value="PPIBAROKAHNUSANTARA">PPI BAROKAH / NUSANTARA</option>
 										</select>
 									</td>
 								</tr>

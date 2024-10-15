@@ -3551,8 +3551,7 @@ class Master extends CI_Controller
 			$ketOpbuff = "status='3'";
 			$zonkKetOpBuff = 'BUFFER';
 		}else if($opbuf == 2){
-			// $ketOpbuff = "(status='2' OR status='4' OR status='5' OR status='6')";
-			$ketOpbuff = "status='2'";
+			$ketOpbuff = "(status='2' OR status='7')";
 			$zonkKetOpBuff = 'DATA PPI';
 		}else{
 			$ketOpbuff = "(status='0' OR status='3')";
