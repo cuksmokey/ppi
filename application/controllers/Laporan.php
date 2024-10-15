@@ -223,6 +223,8 @@ class Laporan extends CI_Controller {
 								$stat = 'PPI CALENDER';
 							}else if($r->status == 6){
 								$stat = 'PPI WARNA';
+							}else if($r->status == 7){
+								$stat = 'PPI BAROKAH / NUSANTARA';
 							}else{
 								if($r->id_rtr != null){
 									$stat = 'RETUR';
@@ -5682,7 +5684,7 @@ class Laporan extends CI_Controller {
 		}else if($stat == 'stok'){
 			$statusIdPl = "AND status='0' AND id_pl='0'";
 		}else if($stat == 'ppi'){
-			$statusIdPl = "AND status='2' AND id_pl='0'";
+			$statusIdPl = "AND (status='2' OR status='7') AND id_pl='0'";
 			// $statusIdPl = "AND (status='2' OR status='4' OR status='5' OR status='6') AND id_pl='0'";
 			// 2 - PPI, 4 - PPI SIZING, 5 - PPI CALENDER, 6 - PPI WARNA
 		}else{
@@ -6314,6 +6316,9 @@ class Laporan extends CI_Controller {
                         }else if($roll->status == 6 && $roll->id_pl == 0){
                             $oStt = 6;
                             $pStt = 'PPI WARNA';
+                        }else if($roll->status == 7 && $roll->id_pl == 0){
+                            $oStt = 6;
+                            $pStt = 'PPI BAROKAH / NUSANTARA';
                         }else if($roll->status == 3 && $roll->id_pl == 0){
                             $oStt = 3;
                             $pStt = 'BUFFER';
@@ -6327,9 +6332,7 @@ class Laporan extends CI_Controller {
                             <option value="0">STOK</option>
                             <option value="3">BUFFER</option>
                             <option value="2">PPI</option>
-                            <option value="4">PPI SIZING</option>
-                            <option value="5">PPI CALENDER</option>
-                            <option value="6">PPI WARNA</option>
+                            <option value="7">PPI BAROKAH / NUSANTARA</option>
                         </select>';
                         $html .='<td style="border:1px solid #999;text-align:center">'.$opt.'</td>';
                         

@@ -1428,6 +1428,9 @@ class Master extends CI_Controller
 		}else if($data->status == 6){
 			$ket = 'PPI WARNA';
 			$sty = '';
+		}else if($data->status == 7){
+			$ket = 'PPI BAROKAH / NUSANTARA';
+			$sty = ';font-weight:bold;font-size:28px';
 		}else{
 			if($data->ket == ''){
 				$sty = '';
