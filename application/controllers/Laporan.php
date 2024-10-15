@@ -6078,8 +6078,7 @@ class Laporan extends CI_Controller {
 			}else if($stat == 'buffer'){
 				$where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND status='3' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
 			}else if($stat == 'ppi'){
-				// $where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND (status='2' OR status='4' OR status='5' OR status='6') AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
-				$where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND status='2' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
+				$where = "nm_ker='$jnsroll' AND $wGLabel AND width='$ukroll' AND (status='2' OR status='7') AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'";
 			}else{
 				// PRODUKSI
                 if($pm == 1){
@@ -6107,6 +6106,8 @@ class Laporan extends CI_Controller {
 				$plhStat = "AND status='5'";
 			}else if($plh_status == "PPIWARNA"){
 				$plhStat = "AND status='6'";
+			}else if($plh_status == "PPIBAROKAHNUSANTARA"){
+				$plhStat = "AND status='7'";
 			}else{
 				$plhStat = "";
 			}
@@ -6317,7 +6318,7 @@ class Laporan extends CI_Controller {
                             $oStt = 6;
                             $pStt = 'PPI WARNA';
                         }else if($roll->status == 7 && $roll->id_pl == 0){
-                            $oStt = 6;
+                            $oStt = 7;
                             $pStt = 'PPI BAROKAH / NUSANTARA';
                         }else if($roll->status == 3 && $roll->id_pl == 0){
                             $oStt = 3;
