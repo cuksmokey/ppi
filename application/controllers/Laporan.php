@@ -6267,12 +6267,15 @@ class Laporan extends CI_Controller {
                         <option value="">-</option>
                         <option value="MH">MH</option>
                         <option value="MN">MN</option>
+						<option value="MF">MF</option>
+						<option value="ML">ML</option>
                         <option value="MS">MS</option>
                         <option value="MS-A">MS-A</option>
                         <option value="MS-B">MS-B</option>
                         <option value="MS-C">MS-C</option>
                         <option value="BK">BK</option>
                         <option value="BL">BL</option>
+                        <option value="TL">TL</option>
                         <option value="WP">WP</option>
                         <option value="WS">WS</option>
                         <option value="MH COLOR">MH COLOR</option>
@@ -6333,6 +6336,7 @@ class Laporan extends CI_Controller {
                             <option value="0">STOK</option>
                             <option value="3">BUFFER</option>
                             <option value="2">PPI</option>
+                            <option value="5">PPI CALENDER</option>
                             <option value="7">PPI BAROKAH / NUSANTARA</option>
                         </select>';
                         $html .='<td style="border:1px solid #999;text-align:center">'.$opt.'</td>';
