@@ -3590,7 +3590,7 @@ class Master extends CI_Controller
 					$bgtr = 'status-retur';
 				}else if($r->status == 3){
 					$bgtr = 'status-buffer';
-				}else if($r->status == 2){
+				}else if($r->status == 2 || $r->status == 4 || $r->status == 5 || $r->status == 6 || $r->status == 7){
 					$bgtr = 'status-ppi';
 				}else{
 					$bgtr = 'status-stok';
