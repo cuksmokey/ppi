@@ -2496,7 +2496,7 @@ class Master extends CI_Controller
 					$bgtrt = 'list-p-kuning';
 				}else if(($ker->nm_ker == 'MH' || $ker->nm_ker == 'MN') && $ker->g_label == 150){
 					$bgtrt = 'list-p-merah';
-				}else if($ker->nm_ker == 'WP'){
+				}else if($ker->nm_ker == 'WP' || $ker->nm_ker == 'WS'){
 					$bgtrt = 'list-p-hijau';
 				}else{
 					$bgtrt = 'list-p-putih';
@@ -2542,7 +2542,7 @@ class Master extends CI_Controller
 						$bgtr = 'status-retur';
 					}else if($w->status == '3'){
 						$bgtr = 'status-buffer';
-					}else if($w->status == '2'){
+					}else if($w->status == '2' || $w->status == '4' || $w->status == '5' || $w->status == '6' || $w->status == '7'){
 						$bgtr = 'status-ppi';
 					}else{
 						$bgtr = 'status-stok';
@@ -2556,7 +2556,7 @@ class Master extends CI_Controller
 						$bgbw = '';
 						$bgrct = 'background:#eee';
 						$bgbi = '';
-					}else if($w->nm_ker == 'WP'){
+					}else if($w->nm_ker == 'WP' || $w->nm_ker == 'WS'){
 						$bgbw = '';
 						$bgrct = 'background:#eee';
 						$bgbi = 'background:#eee';
@@ -3159,7 +3159,7 @@ class Master extends CI_Controller
 							$bgkk = 'list-p-kuning';
 						}else if(($jkGsm->nm_ker == 'MH' || $jkGsm->nm_ker == 'MN') && $jkGsm->g_label == 150){
 							$bgkk = 'list-p-merah';
-						}else if($jkGsm->nm_ker == 'WP'){
+						}else if($jkGsm->nm_ker == 'WP' || $jkGsm->nm_ker == 'WS'){
 							$bgkk = 'list-p-hijau';
 						}else{
 							$bgkk = 'list-p-putih';
@@ -3190,7 +3190,7 @@ class Master extends CI_Controller
 									$bg = 'status-retur';
 								}else if($roll->statusroll == '3'){
 									$bg = 'status-buffer';
-								}else if($roll->statusroll == '2'){
+								}else if($roll->statusroll == '2' || $roll->statusroll == '4' || $roll->statusroll == '5' || $roll->statusroll == '6' || $roll->statusroll == '7'){
 									$bg = 'status-ppi';
 								}else{
 									$bg = 'status-stok';
@@ -3363,7 +3363,7 @@ class Master extends CI_Controller
 					$bgtr = 'list-p-kuning';
 				}else if(($ukRenc->nm_ker == 'MH' || $ukRenc->nm_ker == 'MN') && $ukRenc->g_label == 150){
 					$bgtr = 'list-p-merah';
-				}else if($ukRenc->nm_ker == 'WP'){
+				}else if($ukRenc->nm_ker == 'WP' || $ukRenc->nm_ker == 'WS'){
 					$bgtr = 'list-p-hijau';
 				}else{
 					$bgtr = 'list-p-putih';
