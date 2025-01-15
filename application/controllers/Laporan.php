@@ -2104,6 +2104,8 @@ class Laporan extends CI_Controller {
                 // $dw = $r->width;
 				if($status == 0){
 					$jStat = 'STOK';
+				}else if($status == 2){
+					$jStat = 'STOK PPI';
 				}else if($status == 3){
 					$jStat = 'BUFFER';
 				}else{
