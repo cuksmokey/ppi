@@ -2080,15 +2080,23 @@ class Laporan extends CI_Controller {
                 $where = "nm_ker='MN'";
             }else if($jenis_ker == 'WP'){
                 $where = "nm_ker='WP'";
+            }else if($jenis_ker == 'WS'){
+                $where = "nm_ker='WS'";
             }else if($jenis_ker == 'MHCOLOR'){
 				$where = "nm_ker='MH COLOR'";
             }else{
                 $where = "";
             }
 
+            if($jenis_ker == 'WP' || $jenis_ker == 'WS'){
+                $sts = "AND (status='2' OR status='7')";
+            }else{
+                $sts = "AND status='$status'";
+            }
+
             // cetak semuanya pdf
             $q_uk = $this->db->query("SELECT nm_ker,g_label,width FROM m_timbangan
-            WHERE $where AND status='$status' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
+            WHERE $where $sts AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
             AND g_label='$g_label'
             GROUP BY width ORDER BY width ASC");
 
@@ -2152,7 +2160,7 @@ class Laporan extends CI_Controller {
 
                 // ambil data
                 $data_detail_all = $this->db->query("SELECT*FROM m_timbangan
-				WHERE g_label='$r->g_label' AND width='$r->width' AND $where AND status='$status' AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
+				WHERE g_label='$r->g_label' AND width='$r->width' AND $where $sts AND id_pl='0' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
 				ORDER BY tgl ASC,nm_ker,g_label,width,pm,roll");
 
                 $no = 1;
@@ -6048,7 +6056,7 @@ class Laporan extends CI_Controller {
         echo $html;
 	}
 
-    function QCCariRoll(){
+    function QCCariRoll(){ //
         $jnsroll = $_POST['jnsroll'];
         $gsmroll = $_POST['gsmroll'];
         $ukroll = $_POST['ukroll'];
