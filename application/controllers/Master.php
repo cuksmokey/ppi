@@ -6851,7 +6851,7 @@ class Master extends CI_Controller
 				$qSet =  $this->db->query("SELECT * FROM m_timbangan t WHERE id_rpk='$isi->id'");
 				if($qSet->num_rows() == 0){
 					$set = 0;
-					$btnSet = 0;
+					$btnSet = '';
 				}else{
 					if($isi->item1 != 0 && $isi->item2 == 0 && $isi->item3 == 0 && $isi->item4 == 0 && $isi->item5 == 0){
 						$set = ceil($qSet->num_rows() / 1);
@@ -6876,7 +6876,7 @@ class Master extends CI_Controller
 					$btnGood = '<button class="btn-gg" onclick="CekListGdNg('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".',0)">'.$good.'</button>';
 				}else{
 					$good = 0;
-					$btnGood = 0;
+					$btnGood = '';
 				}
 				$html .='<td class="tdllgg td-gdng-'.$isi->id.'-0" style="border:1px solid #000;padding:5px">'.$btnGood.'</td>';
 
@@ -6887,7 +6887,7 @@ class Master extends CI_Controller
 					$btnNotGood = '<button class="btn-gg" onclick="CekListGdNg('."'".$i."'".','."'".$isi->id."'".','."'".$id_rpk."'".',3)">'.$notGood.'</button>';
 				}else{
 					$notGood = 0;
-					$btnNotGood = 0;
+					$btnNotGood = '';
 				}
 				$html .='<td class="tdllgg td-gdng-'.$isi->id.'-3" style="border:1px solid #000;padding:5px">'.$btnNotGood.'</td>';
 				$html .='<td style="border:1px solid #000;padding:5px">'.$trimW.'</td>';
@@ -6970,12 +6970,15 @@ class Master extends CI_Controller
 			// TOTAL
 			$clsTot = $kopBrICls + 1;
 			// <button onclick="cekPRPK('."'".$id_rpk."'".')">CEK</button>
+			($yy == 0) ? $yyT = '' : $yyT = $yy;
+			($sumGood == 0) ? $sumGoodT = '' : $sumGoodT = $sumGood;
+			($sumNotGood == 0) ? $sumNotGoodT = '' : $sumNotGoodT = $sumNotGood;
 			$html .='<tr '.$kopBgTr.'>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold" colspan="'.$clsTot.'"></td>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$x.'</td>
-				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$yy.'</td>
-				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$sumGood.'</td>
-				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$sumNotGood.'</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$yyT.'</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$sumGoodT.'</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.$sumNotGoodT.'</td>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold"></td>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.number_format($t).'</td>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold"></td>
