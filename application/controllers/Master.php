@@ -5090,6 +5090,11 @@ class Master extends CI_Controller
 	}
 
 	function loadDataOFGNew(){ //
+		ini_set("memory_limit", "-1");
+        ini_set("MAX_EXECUTION_TIME","-1");
+		ini_set("pcre.backtrack_limit", "5000000");
+		set_time_limit(0);
+
 		$jenis = $_POST['jenis'];
 		$otfg = $_POST['otfg'];
 		$otorisasi = $_POST['otorisasi'];
