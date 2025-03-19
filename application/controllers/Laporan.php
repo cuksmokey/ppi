@@ -755,19 +755,17 @@ class Laporan extends CI_Controller {
         }else{
             $html .= '<table cellspacing="0" style="font-size:11px !important;color:#000;border-collapse:collapse;text-align:center;width:100%;font-family:Arial !important">
             <tr>
-                <th style="width:14% !important;height:'.$px_ttd.'"></th>
-                <th style="width:14% !important;height:'.$px_ttd.'"></th>
-                <th style="width:14% !important;height:'.$px_ttd.'"></th>
-                <th style="width:15% !important;height:'.$px_ttd.'"></th>
-                <th style="width:15% !important;height:'.$px_ttd.'"></th>
-                <th style="width:14% !important;height:'.$px_ttd.'"></th>
-                <th style="width:14% !important;height:'.$px_ttd.'"></th>
+                <th style="width:16% !important;height:'.$px_ttd.'"></th>
+                <th style="width:17% !important;height:'.$px_ttd.'"></th>
+                <th style="width:17% !important;height:'.$px_ttd.'"></th>
+                <th style="width:17% !important;height:'.$px_ttd.'"></th>
+                <th style="width:16% !important;height:'.$px_ttd.'"></th>
+                <th style="width:17% !important;height:'.$px_ttd.'"></th>
             </tr>
             <tr>
                 <td style="border:1px solid #000;padding:5px 0">DIBUAT</td>
                 <td style="border:1px solid #000;padding:5px 0" colspan="2">DIKELUARKAN OLEH</td>
                 <td style="border:1px solid #000;padding:5px 0">DI KETAHUI</td>
-                <td style="border:1px solid #000;padding:5px 0">DI SETUJUI</td>
                 <td style="border:1px solid #000;padding:5px 0">SOPIR</td>
                 <td style="border:1px solid #000;padding:5px 0">DITERIMA</td>
             </tr>
@@ -778,14 +776,12 @@ class Laporan extends CI_Controller {
                 <td style="border:1px solid #000;height:80px"></td>
                 <td style="border:1px solid #000;height:80px"></td>
                 <td style="border:1px solid #000;height:80px"></td>
-                <td style="border:1px solid #000;height:80px"></td>
             </tr>
             <tr>
                 <td style="border:1px solid #000;padding:5px 0">ADMIN</td>
                 <td style="border:1px solid #000;padding:5px 0">BP. DAMIRI <br>LAB./QC</td>
-                <td style="border:1px solid #000;padding:5px 0">TITUT <br>SPV GUDANG</td>
-                <td style="border:1px solid #000;padding:5px 0">BP. RIDWAN <br>MGR GUDANG</td>
-                <td style="border:1px solid #000;padding:5px 0">BP. WEINARTO <br>GM</td>
+                <td style="border:1px solid #000;padding:5px 0">TITUT <br>GUDANG</td>
+                <td style="border:1px solid #000;padding:5px 0">BU. ELYZABETH <br>FINANCE</td>
                 <td style="border:1px solid #000">'.$supir.'</td>
                 <td style="border:1px solid #000"></td>
             </tr>
