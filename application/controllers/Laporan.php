@@ -5862,10 +5862,16 @@ class Laporan extends CI_Controller {
 		}else{
 			$gLabel1 = "g_label='$g_label'";
 		}
+
+		if($this->session->userdata('level') == "SuperAdmin"){
+			$tglPO = "AND a.tgl BETWEEN '2024-12-01' AND '9999-01-01'";
+		}else{
+			$tglPO = '';
+		}
+
 		$getMasPO = $this->db->query("SELECT a.*,b.nm_perusahaan FROM po_master a
 		INNER JOIN m_perusahaan b ON a.id_perusahaan=b.id
-		WHERE a.tgl BETWEEN '2024-11-01' AND '9999-01-01' AND nm_ker='$nm_ker' AND $gLabel1 AND width='$width' AND status='open'
-		AND status_roll='$statcor' AND (a.jml_roll!='0' OR ket LIKE '%PENDING%')
+		WHERE nm_ker='$nm_ker' AND $gLabel1 AND width='$width' AND status='open' AND status_roll='$statcor' AND (a.jml_roll!='0' OR ket LIKE '%PENDING%') $tglPO
 		GROUP BY nm_ker,g_label,width,b.nm_perusahaan,tgl,no_po,a.status");		
 		if($getMasPO->num_rows() == 0){
 			$html .='<tr>
