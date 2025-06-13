@@ -5083,9 +5083,7 @@ class Master extends CI_Controller
 
 					($getPO->num_rows() != 0) ? $txtU = ';text-decoration:underline' : $txtU = 0;
 					$html .= '<td style="padding:5px;background:'.$gbLbl.'">
-						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0'.$txtU.'" onclick="cek2('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">
-						'.$tuanOrTidak.'.S:'.$vWidth.'.P:'.$jmlRoll.'
-						</button>
+						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0'.$txtU.'" onclick="cek2('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$tuanOrTidak.'</button>
 					</td>';
 				}
 				$html .='</tr>';
