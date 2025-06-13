@@ -5873,6 +5873,7 @@ class Laporan extends CI_Controller {
 		$getMasPO = $this->db->query("SELECT a.*,b.nm_perusahaan FROM po_master a
 		INNER JOIN m_perusahaan b ON a.id_perusahaan=b.id
 		WHERE nm_ker='$nm_ker' AND $gLabel1 AND width='$width' AND status='open' AND status_roll='$statcor' AND (a.jml_roll!='0' OR ket LIKE '%PENDING%') AND a.tgl BETWEEN '2024-06-01' AND '9999-01-01'
+		AND a.id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
 		GROUP BY nm_ker,g_label,width,b.nm_perusahaan,tgl,no_po,a.status");		
 		if($getMasPO->num_rows() == 0){
 			$html .='<tr>
