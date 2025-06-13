@@ -5000,7 +5000,8 @@ class Master extends CI_Controller
 
 					// GET PO
 					$getPO = $this->db->query("SELECT*FROM po_master
-					WHERE tgl BETWEEN '2024-06-01' AND '9999-01-01' AND status='open' AND nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width' AND status_roll='0' AND jml_roll!='0'
+					WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width' AND status='open' AND status_roll='0' AND (jml_roll!='0' OR ket LIKE '%PENDING%')   AND tgl BETWEEN '2024-06-01' AND '9999-01-01'
+					-- WHERE nm_ker='$nm_ker'      AND $gLabel1  AND width='$width'     AND status='open' AND status_roll=''  AND (a.jml_roll!='0' OR ket LIKE '%PENDING%') AND a.tgl BETWEEN '2024-06-01' AND '9999-01-01'
 					AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
 					GROUP BY no_po");
 					$jmlRoll = 0;
