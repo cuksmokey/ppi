@@ -5864,7 +5864,8 @@ class Laporan extends CI_Controller {
 		}
 
 		if($this->session->userdata('level') == "SuperAdmin"){
-			$tglPO = "AND a.tgl BETWEEN '2024-12-01' AND '9999-01-01'";
+			// $tglPO = "AND a.tgl BETWEEN '2024-12-01' AND '9999-01-01'";
+			$tglPO = "AND a.tgl BETWEEN '2024-06-01' AND '9999-01-01'";
 		}else{
 			$tglPO = '';
 		}
@@ -5942,7 +5943,8 @@ class Laporan extends CI_Controller {
 			}
 
 			$getStokGudang = $this->db->query("SELECT COUNT(roll) AS jml_roll FROM m_timbangan
-			WHERE nm_ker='$nm_ker' AND $gLabel1 AND width='$width' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
+			-- WHERE nm_ker='$nm_ker' AND $gLabel1 AND width='$width' AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
+			WHERE nm_ker='$nm_ker' AND $gLabel1 AND width='$width' AND tgl BETWEEN '2024-12-01' AND '9999-01-01'
 			AND status='$statcor' AND id_pl='0'
 			-- GROUP BY nm_ker,g_label,width
 			");
