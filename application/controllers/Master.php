@@ -4999,9 +4999,8 @@ class Master extends CI_Controller
 					}
 
 					// GET PO
-					// WHERE nm_ker='$nm_ker'      AND $gLabel1  AND width='$width'     AND status='open' AND status_roll=''  AND (a.jml_roll!='0' OR ket LIKE '%PENDING%') AND a.tgl BETWEEN '2024-06-01' AND '9999-01-01'
 					$getPO = $this->db->query("SELECT*FROM po_master
-					WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width' AND status='open' AND status_roll='0' AND (jml_roll!='0' OR ket LIKE '%PENDING%')   AND tgl BETWEEN '2024-06-01' AND '9999-01-01'
+					WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width' AND status='open' AND status_roll='0' AND jml_roll!='0' AND tgl BETWEEN '2024-06-01' AND '9999-01-01'
 					AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
 					GROUP BY no_po");
 					$jmlRoll = 0;
@@ -5012,8 +5011,7 @@ class Master extends CI_Controller
 						$getKiriman = $this->db->query("SELECT COUNT(t.roll) AS kroll FROM m_timbangan t
 						INNER JOIN pl p ON t.id_pl=p.id
 						WHERE no_po='$nopo->no_po' AND t.nm_ker='$nopo->nm_ker' AND t.g_label='$nopo->g_label' AND width='$nopo->width'
-						-- AND t.tgl BETWEEN '2020-04-01' AND '9999-01-01'
-						AND t.tgl BETWEEN '2024-12-01' AND '9999-01-01'
+						AND t.tgl BETWEEN '2020-04-01' AND '9999-01-01'
 						GROUP BY no_po,t.nm_ker,t.g_label,width");
 						if($getKiriman->num_rows() == 0){
 							$jmlroll = $nopo->jml_roll;
