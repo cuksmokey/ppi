@@ -4939,8 +4939,8 @@ class Master extends CI_Controller
 		$html .='<table style="font-size:12px;color:#000;text-align:center" border="1">';
 		// INTI DATA
 		$getNmKer = $this->db->query("SELECT nm_ker FROM po_master
-		WHERE tgl BETWEEN '2024-06-01' AND '9999-01-01' AND status='open' $nmKer AND status_roll='0' AND jml_roll!='0'
-		AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
+		WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' AND status='open' $nmKer AND status_roll='0' AND jml_roll!='0'
+		-- AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
 		GROUP BY nm_ker");
 		if($getNmKer->num_rows() == 0){
 			$html .='<td style="padding:5px">TIDAK ADA DATA</td>';
@@ -4952,8 +4952,8 @@ class Master extends CI_Controller
 			// TAMPIL JENIS KERTAS
 			foreach($getNmKer->result() as $ker){
 				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM po_master
-				WHERE tgl BETWEEN '2024-06-01' AND '9999-01-01' AND status='open' AND nm_ker='$ker->nm_ker' AND status_roll='0' AND jml_roll!='0'
-				AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
+				WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' AND status='open' AND nm_ker='$ker->nm_ker' AND status_roll='0' AND jml_roll!='0'
+				-- AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
 				AND g_label!='120'
 				GROUP BY nm_ker,g_label");
 				$html .='<td style="padding:5px" colspan="'.$getgLabel->num_rows().'">'.$ker->nm_ker.'</td>';
@@ -4964,8 +4964,8 @@ class Master extends CI_Controller
 			$html .='<tr>';
 			foreach($getNmKer->result() as $ker){
 				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM po_master
-				WHERE tgl BETWEEN '2024-06-01' AND '9999-01-01' AND status='open' AND nm_ker='$ker->nm_ker' AND status_roll='0' AND jml_roll!='0'
-				AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
+				WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' AND status='open' AND nm_ker='$ker->nm_ker' AND status_roll='0' AND jml_roll!='0'
+				-- AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
 				AND g_label!='120'
 				GROUP BY nm_ker,g_label");
 				foreach($getgLabel->result() as $glabel){
@@ -4977,8 +4977,8 @@ class Master extends CI_Controller
 			// TAMPIL UKURANNYA
 			$html .='<tr>';
 			$getUkuran = $this->db->query("SELECT width FROM po_master
-			WHERE tgl BETWEEN '2024-06-01' AND '9999-01-01' AND status='open' $nmKer AND status_roll='0' AND jml_roll!='0'
-			AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
+			WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' AND status='open' $nmKer AND status_roll='0' AND jml_roll!='0'
+			-- AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
 			-- AND width between '160' AND '170'
 			GROUP BY width;");
 			$i = 0;
@@ -4987,12 +4987,12 @@ class Master extends CI_Controller
 				$html .='<td style="padding:5px">'.$i.'</td><td style="padding:5px">'.round($uk->width,2).'</td>';
 
 				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM po_master
-				WHERE tgl BETWEEN '2024-06-01' AND '9999-01-01' AND status='open' $nmKer AND status_roll='0' AND jml_roll!='0'
-				AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
+				WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' AND status='open' $nmKer AND status_roll='0' AND jml_roll!='0'
+				-- AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
 				AND g_label!='120'
 				GROUP BY nm_ker,g_label");
 				foreach($getgLabel->result() as $lbl){
-					if($lbl->g_label == 125 || $lbl->g_label == "125" || $lbl->g_label == 120 || $lbl->g_label == "120"){
+					if($lbl->g_label == 125 || $lbl->g_label == "125"){
 						$wGLabel1 = "(g_label='120' OR g_label='125')";
 					}else{
 						$wGLabel1 = "g_label='$lbl->g_label'";
@@ -5000,8 +5000,8 @@ class Master extends CI_Controller
 
 					// GET PO
 					$getPO = $this->db->query("SELECT*FROM po_master
-					WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width' AND status='open' AND status_roll='0' AND jml_roll!='0' AND tgl BETWEEN '2024-06-01' AND '9999-01-01'
-					AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
+					WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width' AND status='open' AND status_roll='0' AND jml_roll!='0' AND tgl BETWEEN '2024-12-01' AND '9999-01-01'
+					-- AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
 					GROUP BY no_po");
 					$jmlRoll = 0;
 					// PILIHAN SISA OS / BERTUAN / TIDAK BERTUAN
@@ -5031,8 +5031,8 @@ class Master extends CI_Controller
 					if($otfg == 'ofgtuan' || $otfg == 'ofgtuanf' || $otfg == 'ofgtdktuan'){
 						$getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
 						WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width'
-						-- AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
-						AND tgl BETWEEN '2024-12-01' AND '9999-01-01'
+						AND tgl BETWEEN '2020-04-01' AND '9999-01-01'
+						-- AND tgl BETWEEN '2024-12-01' AND '9999-01-01'
 						AND status='0' AND id_pl='0'
 						-- GROUP BY nm_ker,g_label,width
 						");
