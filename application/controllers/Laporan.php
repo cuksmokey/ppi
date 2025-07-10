@@ -469,7 +469,6 @@ class Laporan extends CI_Controller {
             $heh = '<th style="height:150px"></th>';
         }
 
-        // http://localhost/SI_timbangan/assets/images/logo_ppi_1.png
         $kop_pakai = '<table cellspacing="0" style="font-size:11px;color:#000;border-collapse:collapse;vertical-align:top;width:100%;text-align:center;font-weight:bold;font-family:Arial !important">
             <tr>
                 <th style="width:25% !important;'.$bKop.'height:'.$px.'"></th>
@@ -535,8 +534,19 @@ class Laporan extends CI_Controller {
         $data_pl = $this->db->query("SELECT DISTINCT * FROM pl WHERE no_pkb='$jenis'
         GROUP BY no_pkb")->row();
 
-        $html .= '<table cellspacing="0" style="font-size:11px !important;color:#000;border-collapse:collapse;vertical-align:top;width:100%;font-family:Arial !important">
-            <tr>
+        $html .= '<table cellspacing="0" style="font-size:11px !important;color:#000;border-collapse:collapse;vertical-align:top;width:100%;font-family:Arial !important">';
+		// PURA
+		if($data_pl->id_perusahaan == 236){
+			$html .='<tr>
+                <th style="width:22% !important;height:'.$pxsj.'"></th>
+                <th style="width:1% !important;height:'.$pxsj.'"></th>
+                <th style="width:21% !important;height:'.$pxsj.'"></th>
+                <th style="width:20% !important;height:'.$pxsj.'"></th>
+                <th style="width:1% !important;height:'.$pxsj.'"></th>
+                <th style="width:35% !important;height:'.$pxsj.'"></th>
+            </tr>';
+		}else{
+			$html .='<tr>
                 <th style="width:15% !important;height:'.$pxsj.'"></th>
                 <th style="width:1% !important;height:'.$pxsj.'"></th>
                 <th style="width:28% !important;height:'.$pxsj.'"></th>
@@ -544,6 +554,7 @@ class Laporan extends CI_Controller {
                 <th style="width:1% !important;height:'.$pxsj.'"></th>
                 <th style="width:40% !important;height:'.$pxsj.'"></th>
             </tr>';
+		}
 
         if($data_pl->no_po == "SAMPLE"){
             $kett = "SAMPLE";
@@ -612,6 +623,31 @@ class Laporan extends CI_Controller {
             <td style="padding:5px 0">'.$kett.'</td>
         </tr>';
 
+		// PURA
+		if($data_pl->id_perusahaan == 236){
+			$html .= '<tr>
+				<td style="padding:5px 0">DOCUMENTARY CREDIT NO</td>
+				<td style="text-align:center;padding:5px 0">:</td>
+				<td style="padding:5px 0">'.$data_pl->no_skbdn.'</td>
+				<td style="padding:5px 0">PLACE OF RECEIPT</td>
+				<td style="text-align:center;padding:5px 0">:</td>
+				<td style="padding:5px 0">WONOGIRI</td>
+			</tr>
+			<tr>
+				<td style="padding:5px 0">DATE OF ISSUE</td>
+				<td style="text-align:center;padding:5px 0">:</td>
+				<td style="padding:5px 0">'.$this->m_fungsi->tanggal_format_indonesia($data_pl->tgl_skbdn).'</td>
+				<td style="padding:5px 0">PLACE OF DELIVERY</td>
+				<td style="text-align:center;padding:5px 0">:</td>
+				<td style="padding:5px 0">KUDUS</td>
+			</tr>
+			<tr>
+				<td style="padding:5px 0">MARKETING ORDER NO</td>
+				<td style="text-align:center;padding:5px 0">:</td>
+				<td style="padding:5px 0" colspan="3">'.$data_pl->mkt_order_no.'</td>
+			</tr>';
+		}
+
         $html .= '</table>';
 
 		# # # # # # # # # I S I # # # # # # # # # #
@@ -656,25 +692,29 @@ class Laporan extends CI_Controller {
                 <td style="border:1px solid #000;padding:5px 0">'.$data->g_label.' GSM</td>';
             
             // PILIH JENIS KERTAS
-            if(($data->ker == 'MH' || $data->ker == 'MI') && $data->item_desc == 'MF'){ // MEDIUM FLUTING
-                $html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM FLUTING ROLL, LB '.round($data->width,2).'</td>';
-            }else if($data->ker == 'MH' || $data->ker == 'MI'){
-                $html .= '<td style="border:1px solid #000;padding:5px 0">KERTAS MEDIUM ROLL, LB '.round($data->width,2).'</td>';
-            }else if($data->ker == 'WP'){
-                $html .= '<td style="border:1px solid #000;padding:5px 0">KERTAS COKLAT ROLL, LB '.round($data->width,2).'</td>';
-            }else if($data->ker == 'BK' || $data->ker == 'BL'){
-                $html .= '<td style="border:1px solid #000;padding:5px 0">KERTAS B-KRAFT ROLL, LB '.round($data->width,2).'</td>';
-            }else if($data->ker == 'MH COLOR'){
-                $html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM COLOR ROLL, LB '.round($data->width,2).'</td>';
-            }else if($data->ker == 'MEDIUM LINER'){
-                $html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM LINER ROLL, LB '.round($data->width,2).'</td>';
-            }else if($data->ker == 'MN' && $data->item_desc == 'ML'){ // RSA, AGJ-SURYA BUANA MEDIUM NON SPEK
-                $html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM LINER ROLL, LB '.round($data->width,2).'</td>';
-            }else if($data->ker == 'MN'){
-                $html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM NON SPEK ROLL, LB '.round($data->width,2).'</td>';
-            }else{
-                $html .= '<td style="border:1px solid #000;padding:5px 0">LB '.round($data->width,2).'</td>';
-            }
+			if(($data->ker == 'MH' || $data->ker == 'MI') && $data->item_desc == 'MF'){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM FLUTING ROLL, LB '.round($data->width,2).'</td>';
+			}else if(($data->ker == 'MH' || $data->ker == 'MI') && $data->item_desc == 'ML'){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM LINER ROLL, LB '.round($data->width,2).'</td>';
+			}else if($data->ker == 'MH' || $data->ker == 'MI'){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">KERTAS MEDIUM ROLL, LB '.round($data->width,2).'</td>';
+			}else if($data->ker == 'WP'){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">KERTAS COKLAT ROLL, LB '.round($data->width,2).'</td>';
+			}else if(($data->ker == 'BK' || $data->ker == 'BL') && $data->item_desc == 'TL'){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">TEST LINER ROLL, LB '.round($data->width,2).'</td>';
+			}else if($data->ker == 'BK' || $data->ker == 'BL'){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">KERTAS B-KRAFT ROLL, LB '.round($data->width,2).'</td>';
+			}else if($data->ker == 'MH COLOR'){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM COLOR ROLL, LB '.round($data->width,2).'</td>';
+			}else if($data->ker == 'MEDIUM LINER'){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM LINER ROLL, LB '.round($data->width,2).'</td>';
+			}else if($data->ker == 'MN' && $data->item_desc == 'ML'){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM LINER ROLL, LB '.round($data->width,2).'</td>';
+			}else if($data->ker == 'MN'){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM NON SPEK ROLL, LB '.round($data->width,2).'</td>';
+			}else{
+				$html .= '<td style="border:1px solid #000;padding:5px 0">LB '.round($data->width,2).'</td>';
+			}
 
             // SESET
             if($data->seset == 0 || $data->seset == null){
