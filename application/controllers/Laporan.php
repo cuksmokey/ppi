@@ -642,7 +642,7 @@ class Laporan extends CI_Controller {
 				<td style="padding:5px 0">KUDUS</td>
 			</tr>
 			<tr>
-				<td style="padding:5px 0">MARKETING ORDER NO</td>
+				<td style="padding:5px 0">PROFORMA INVOICE NO</td>
 				<td style="text-align:center;padding:5px 0">:</td>
 				<td style="padding:5px 0" colspan="3">'.$data_pl->mkt_order_no.'</td>
 			</tr>';
