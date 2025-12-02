@@ -5118,7 +5118,7 @@ class Master extends CI_Controller
 		}else if($jenis == 'mhbk'){
 			$nmKer = "AND (nm_ker='MH' OR nm_ker='BK')";
 			$nmKer2 = "AND (nm_ker='MH' OR nm_ker='BK') AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
-			$nmKer3 = "AND (nm_ker='MH) AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
+			$nmKer3 = "AND (nm_ker='MH' OR nm_ker='BK') AND status='open' AND status_roll='0' AND jml_roll!='0'";
 		}else if($jenis == 'nonspek'){
 			$nmKer = "AND nm_ker='MN'";
 			$nmKer2 = "AND nm_ker='MN' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
