@@ -5110,21 +5110,27 @@ class Master extends CI_Controller
 		if($jenis == 'mh'){
 			$nmKer = "AND nm_ker='MH'";
 			$nmKer2 = "AND nm_ker='MH' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
+			$nmKer3 = "AND nm_ker='MH' AND status='open' AND status_roll='0' AND jml_roll!='0'";
 		}else if($jenis == 'bk'){
 			$nmKer = "AND nm_ker='BK'";
 			$nmKer2 = "AND nm_ker='BK' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
+			$nmKer3 = "AND nm_ker='BK' AND status='open' AND status_roll='0' AND jml_roll!='0'";
 		}else if($jenis == 'mhbk'){
 			$nmKer = "AND (nm_ker='MH' OR nm_ker='BK')";
 			$nmKer2 = "AND (nm_ker='MH' OR nm_ker='BK') AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
+			$nmKer3 = "AND (nm_ker='MH) AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
 		}else if($jenis == 'nonspek'){
 			$nmKer = "AND nm_ker='MN'";
 			$nmKer2 = "AND nm_ker='MN' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
+			$nmKer3 = "AND nm_ker='MN' AND status='open' AND status_roll='0' AND jml_roll!='0'";
 		}else if($jenis == 'wp'){
 			$nmKer = "AND nm_ker='WP'";
 			$nmKer2 = "AND nm_ker='WP' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'";
+			$nmKer3 = "AND nm_ker='WP' AND status='open' AND status_roll='0' AND jml_roll!='0'";
 		}else{
 			$nmKer = "";
 			$nmKer2 = "";
+			$nmKer3 = "";
 		}
 
 		$html .='<table style="font-size:12px;color:#000;text-align:center" border="1">';
@@ -5182,7 +5188,7 @@ class Master extends CI_Controller
 				WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' $nmKer
 				UNION ALL
 				SELECT width FROM po_master
-				WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' $nmKer2
+				WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' $nmKer3
 			) AS m_timbangan
 			-- WHERE width BETWEEN '90' AND '120'
 			GROUP BY width");
