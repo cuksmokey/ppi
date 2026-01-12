@@ -5243,7 +5243,7 @@ class Master extends CI_Controller
 					$vWidth = 0;
 					if($otfg == 'ofgtuan' || $otfg == 'ofgtuanf' || $otfg == 'ofgtdktuan'){
 						$getWidth = $this->db->query("SELECT nm_ker,g_label,width,COUNT(width) as jml FROM m_timbangan
-						WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width' AND tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0'");
+						WHERE nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width' AND tgl BETWEEN '2025-01-01' AND '9999-01-01' AND status='0' AND id_pl='0'");
 						if($getWidth->num_rows() == 0){
 							$vW = 0;
 						}else{
