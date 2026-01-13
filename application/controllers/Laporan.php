@@ -883,7 +883,7 @@ class Laporan extends CI_Controller {
 
         if ($ctk == '0' || $ctk == 99) {
 			if($data_pl->id_perusahaan == 236){
-				$this->m_fungsi->_mpdf('', $html, 5, 5, 999, 'P');
+				$this->m_fungsi->_mpdf('', $html, '', '', 'PURA', 'P');
 			}else{
 				$this->m_fungsi->_mpdf('', $html, 10, 10, $akeh, 'P');
 			}

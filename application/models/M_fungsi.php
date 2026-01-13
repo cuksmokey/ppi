@@ -249,6 +249,8 @@ class M_fungsi extends CI_Model {
 			$this->mpdf->AddPage($orientasi,'','','','',$lMargin,$rMargin,1,1);
         }else if($font == 999){
 			$this->mpdf->AddPage($orientasi,'','','','',5,5,10,10);
+        }else if($font == 'PURA'){
+			$this->mpdf->AddPage($orientasi,'','','','',10,10,5,5);
         }else{
 			$this->mpdf->AddPage($orientasi,'','','','',$lMargin,$rMargin);
         }
