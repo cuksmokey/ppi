@@ -668,8 +668,8 @@ class Laporan extends CI_Controller {
             <th style="width:5% !important;height:'.$pxlist.'"></th>';
 			if($data_pl->id_perusahaan == 236){ // PURA
 				$html .= '
-					<th style="width:60% !important;height:'.$pxlist.'"></th>
-					<th style="width:15% !important;height:'.$pxlist.'"></th>
+					<th style="width:65% !important;height:'.$pxlist.'"></th>
+					<th style="width:10% !important;height:'.$pxlist.'"></th>
 				';
 			}else{
 				$html .= '
