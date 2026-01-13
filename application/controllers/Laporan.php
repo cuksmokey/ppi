@@ -800,7 +800,7 @@ class Laporan extends CI_Controller {
             $px_ttd = '15px';
             $px_note = '20px';
             $akeh = 1;
-        }else if($count_kop >= '12'){
+        }else if($count_kop >= '12' || $data_pl->id_perusahaan == 236){ //pura
             $px_ttd = '20px';
             $px_note = '20px';
             $akeh = '';
