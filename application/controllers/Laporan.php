@@ -781,7 +781,7 @@ class Laporan extends CI_Controller {
         }
         
         // TOTAL
-		($data_pl->id_perusahaan == 236) ? $tC = 3 : $tC = 3;
+		($data_pl->id_perusahaan == 236) ? $tC = 3 : $tC = 4;
         $html .= '<tr>
             <td style="border:1px solid #000;padding:5px 0" colspan="'.$tC.'">TOTAL</td>
             <td style="border:1px solid #000;padding:5px 0">'.number_format($tot_qty).' ROLL</td>
