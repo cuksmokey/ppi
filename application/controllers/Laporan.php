@@ -655,10 +655,10 @@ class Laporan extends CI_Controller {
 			<tr>
 				<td style="padding:5px 0">SALES CONTRACT NO.</td>
 				<td style="text-align:center;padding:5px 0">:</td>
-				<td style="padding:5px 0" colspan="3">'.$data_pl->mkt_order_no.'</td>
+				<td style="padding:5px 0">'.$data_pl->mkt_order_no.'</td>
 				<td style="padding:5px 0">DATE OF SALES CONTRACT</td>
 				<td style="text-align:center;padding:5px 0">:</td>
-				<td style="padding:5px 0" colspan="3">'.$this->m_fungsi->tanggal_format_indonesia($data_pl->tgl_sc).'</td>
+				<td style="padding:5px 0">'.$this->m_fungsi->tanggal_format_indonesia($data_pl->tgl_sc).'</td>
 			</tr>';
 		}
 
