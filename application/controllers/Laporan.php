@@ -655,18 +655,30 @@ class Laporan extends CI_Controller {
         $html .= '<table cellspacing="0" style="font-size:11px !important;color:#000;border-collapse:collapse;text-align:center;width:100%;font-family:Arial !important">
         <tr>
             <th style="width:5% !important;height:'.$pxlist.'"></th>
-            <th style="width:30% !important;height:'.$pxlist.'"></th>
-            <th style="width:15% !important;height:'.$pxlist.'"></th>
-            <th style="width:30% !important;height:'.$pxlist.'"></th>
-            <th style="width:10% !important;height:'.$pxlist.'"></th>
+            <th style="width:30% !important;height:'.$pxlist.'"></th>';
+			if($data_pl->id_perusahaan == 236){ // PURA
+				$html .= '<th style="width:45% !important;height:'.$pxlist.'"></th>';
+			}else{
+				$html .= '
+					<th style="width:15% !important;height:'.$pxlist.'"></th>
+					<th style="width:30% !important;height:'.$pxlist.'"></th>
+				';
+			}
+            $html .= '<th style="width:10% !important;height:'.$pxlist.'"></th>
             <th style="width:10% !important;height:'.$pxlist.'"></th>
         </tr>
         <tr>
             <td style="border:1px solid #000;padding:5px 0">NO</td>
-            <td style="border:1px solid #000;padding:5px 0">NO. PO</td>
-            <td style="border:1px solid #000;padding:5px 0">SIZE</td>
-            <td style="border:1px solid #000;padding:5px 0">ITEM DESCRIPTION</td>
-            <td style="border:1px solid #000;padding:5px 0">QTY</td>
+            <td style="border:1px solid #000;padding:5px 0">NO. PO</td>';
+			if($data_pl->id_perusahaan == 236){ // PURA
+				$html .= '<td style="border:1px solid #000;padding:5px 0">ITEM DESCRIPTION</td>';
+			}else{
+				$html .= '
+					<td style="border:1px solid #000;padding:5px 0">SIZE</td>
+					<td style="border:1px solid #000;padding:5px 0">ITEM DESCRIPTION</td>
+				';
+			}
+			$html .= ' <td style="border:1px solid #000;padding:5px 0">QTY</td>
             <td style="border:1px solid #000;padding:5px 0">BERAT</td>
         </tr>';
 
@@ -688,11 +700,22 @@ class Laporan extends CI_Controller {
 
             $html .= '<tr>
                 <td style="border:1px solid #000;padding:5px 0">'.$no.'</td>
-                <td style="border:1px solid #000;padding:5px 0">'.$data->po.'</td>
-                <td style="border:1px solid #000;padding:5px 0">'.$data->g_label.' GSM</td>';
+                <td style="border:1px solid #000;padding:5px 0">'.$data->po.'</td>';
+			
+			// PURA
+			if($data_pl->id_perusahaan != 236){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">'.$data->g_label.' GSM</td>';
+			}
             
             // PILIH JENIS KERTAS
-			if(($data->ker == 'MH' || $data->ker == 'MI') && $data->item_desc == 'MF'){
+			// PURA
+			if($data->ker == 'MH' && $data_pl->id_perusahaan == 236){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">CORRUGATED MEDIUM '.$data->g_label.' GSM EX. PRIMA PAPER, LB '.round($data->width,2).'</td>';
+			}else if($data->ker == 'BK' && $data_pl->id_perusahaan == 236){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">TEST LINER '.$data->g_label.' GSM EX. PRIMA PAPER, LB '.round($data->width,2).'</td>';
+			}else if($data->ker == 'MN' && $data_pl->id_perusahaan == 236){
+				$html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM LINER '.$data->g_label.'GSM EX. PM 7/8, LB '.round($data->width,2).'</td>';
+			}else if(($data->ker == 'MH' || $data->ker == 'MI') && $data->item_desc == 'MF'){
 				$html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM FLUTING ROLL, LB '.round($data->width,2).'</td>';
 			}else if(($data->ker == 'MH' || $data->ker == 'MI') && $data->item_desc == 'ML'){
 				$html .= '<td style="border:1px solid #000;padding:5px 0">MEDIUM LINER ROLL, LB '.round($data->width,2).'</td>';
