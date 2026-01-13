@@ -541,9 +541,9 @@ class Laporan extends CI_Controller {
                 <th style="width:22% !important;height:'.$pxsj.'"></th>
                 <th style="width:1% !important;height:'.$pxsj.'"></th>
                 <th style="width:21% !important;height:'.$pxsj.'"></th>
-                <th style="width:25% !important;height:'.$pxsj.'"></th>
+                <th style="width:20% !important;height:'.$pxsj.'"></th>
                 <th style="width:1% !important;height:'.$pxsj.'"></th>
-                <th style="width:30% !important;height:'.$pxsj.'"></th>
+                <th style="width:25% !important;height:'.$pxsj.'"></th>
             </tr>';
 		}else{
 			$html .='<tr>
