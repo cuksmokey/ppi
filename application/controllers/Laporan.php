@@ -636,6 +636,11 @@ class Laporan extends CI_Controller {
 
 		// PURA
 		if($data_pl->id_perusahaan == 236){
+			if($data_pl->no_po == '029118/PBX/R/11-25'){
+				$ss = 'PROFORMA INVOICE';
+			}else{
+				$ss = 'SALES CONTRACT';
+			}
 			$html .= '<tr>
 				<td style="padding:5px 0">DOCUMENTARY CREDIT NO</td>
 				<td style="text-align:center;padding:5px 0">:</td>
@@ -653,10 +658,10 @@ class Laporan extends CI_Controller {
 				<td style="padding:5px 0">KUDUS</td>
 			</tr>
 			<tr>
-				<td style="padding:5px 0">SALES CONTRACT NO.</td>
+				<td style="padding:5px 0">'.$ss.' NO.</td>
 				<td style="text-align:center;padding:5px 0">:</td>
 				<td style="padding:5px 0">'.$data_pl->mkt_order_no.'</td>
-				<td style="padding:5px 0">DATE OF SALES CONTRACT</td>
+				<td style="padding:5px 0">DATE OF '.$ss.'</td>
 				<td style="text-align:center;padding:5px 0">:</td>
 				<td style="padding:5px 0">'.$this->m_fungsi->tanggal_format_indonesia($data_pl->tgl_sc).'</td>
 			</tr>';
