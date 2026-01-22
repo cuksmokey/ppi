@@ -803,8 +803,11 @@ class Laporan extends CI_Controller {
         
         if($count <= 5) {
             for($i = 0; $i < $xx; $i++){
+				// PURA
+				if($data_pl->id_perusahaan != 236){
+					$html .= '<td style="border:1px solid #000;padding:11px 0"></td>';
+				}
                 $html .= '<tr>
-                    <td style="border:1px solid #000;padding:11px 0"></td>
                     <td style="border:1px solid #000;padding:11px 0"></td>
                     <td style="border:1px solid #000;padding:11px 0"></td>
                     <td style="border:1px solid #000;padding:11px 0"></td>
