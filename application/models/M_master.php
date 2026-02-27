@@ -1312,13 +1312,17 @@ class M_master extends CI_Model{
         if($_POST['pl'] == 'edit'){
             $eCekOpl = $this->db->query("SELECT*FROM pl WHERE tgl_pl='$tgl_pl' AND opl='$vopl' GROUP BY opl");
             $opl = $eCekOpl->row()->opl;
+			$plat = $eCekOpl->row()->id_expedisi;
+			$qc = $eCekOpl->row()->qc;
         }else{
-            $cekOpls = $this->db->query("SELECT*FROM pl WHERE tgl_pl='$tgl_pl' GROUP BY opl");
+            $cekOpls = $this->db->query("SELECT*FROM pl WHERE tgl_pl='$tgl_pl' ORDER BY opl DESC LIMIT 1");
             if($cekOpls->num_rows() == 0){
                 $opl = 1;
             }else{
-                $opl = $cekOpls->num_rows() + 1;
+                $opl = $cekOpls->row()->opl + 1;
             }
+			$plat = null;
+			$qc = 'proses';
         }
 
         foreach($this->cart->contents() as $data){
@@ -1357,8 +1361,9 @@ class M_master extends CI_Model{
 				'alamat_perusahaan' => $data['options']['alamat_perusahaan'],
 				'nama' => $data['options']['nama'],
 				'no_telp' => $data['options']['no_telp'],
-                'qc' => 'proses',
+                'qc' => $qc,
                 'opl' => $opl,
+                'id_expedisi' => $plat,
 				'no_po' => $data['options']['no_po'],
 				'nm_ker' => $data['options']['nm_ker'],
 				'g_label' => $data['options']['g_label'],
