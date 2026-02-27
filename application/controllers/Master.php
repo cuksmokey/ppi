@@ -1932,6 +1932,33 @@ class Master extends CI_Controller
 		echo $html;
 	}
 
+	function editTglPL()
+	{
+		$idpt = $_POST["idpt"];
+		$tglpl = $_POST["tglpl"];
+		$opl = $_POST["opl"];
+		$i = $_POST["i"];
+
+		$html = '';
+		$html .= '<td style="padding:5px;font-weight:bold">EDIT TANGGAL KIRIM</td>
+		<td style="padding:5px;text-align:center">:</td>
+		<td style="padding:5px">
+			<input type="date" id="editgl'.$i.'" class="form-control">
+		</td>
+		<td style="padding:5px">
+			<button onclick="btnTglPl('."'".$idpt."'".','."'".$tglpl."'".','."'".$opl."'".','."'".$i."'".')">EDIT</button>
+		</td>';
+
+		echo json_encode([
+			'html' => $html,
+		]);
+	}
+
+	function btnTglPl(){
+		$result = $this->m_master->btnTglPl();
+		echo json_encode($result);
+	}
+
 	function showEditPlHapus(){
 		$idpt = $_POST['idpt'];
 		$id_rk = $_POST['id_rk'];

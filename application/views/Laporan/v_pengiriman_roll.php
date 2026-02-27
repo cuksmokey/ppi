@@ -343,6 +343,7 @@
 												<input type="date" id="ftgl" class="form-control">
 											</td>
 										</tr>
+										<tr class="edit-tgl"></tr>
 										<tr>
 											<td style="padding:5px;font-weight:bold">PAJAK</td>
 											<td style="padding:5px;text-align:center">:</td>
@@ -1158,6 +1159,7 @@
 				$("#ftglrk").val(data.ftglrk).prop("disabled", true).attr('style', 'background:#e9e9e9');
 				$("#ftgl").val(data.ftgl).prop("disabled", true).attr('style', 'background:#e9e9e9');
 				
+				editTglPL(idpt,tglpl,opl,i)
 				getThnBlnRoll(data.ftgl);
 				load_po(data.cust);
 
@@ -1177,6 +1179,42 @@
 				$("#txtnopol").val(data.fidexpd);
 			}
 		})
+	}
+
+	function editTglPL(idpt,tglpl,opl,i)
+	{
+		$(".edit-tgl").html('')
+		$.ajax({
+			url: '<?php echo base_url('Master/editTglPL')?>',
+			type: "POST",
+			data: ({ idpt,tglpl,opl,i }),
+			success: function(res){
+				data = JSON.parse(res)
+				console.log(data)
+				$(".edit-tgl").html(data.html)
+			}
+		});
+	}
+
+	function btnTglPl(idpt,tglpl,opl,i)
+	{
+		console.log("idpt : ", idpt)
+		console.log("tglpl : ", tglpl)
+		console.log("opl : ", opl)
+		console.log("i : ", i)
+		let editTgl = $("#editgl"+i).val()
+		console.log("editTgl : ", editTgl)
+
+		$.ajax({
+			url: '<?php echo base_url('Master/btnTglPl')?>',
+			type: "POST",
+			data: ({ idpt,tglpl,opl,i,editTgl }),
+			success: function(res){
+				data = JSON.parse(res)
+				console.log(data)
+				$(".edit-tgl").html(data.html)
+			}
+		});
 	}
 
 	function hapusPL(idpt,idrk,tglpl,opl,i){

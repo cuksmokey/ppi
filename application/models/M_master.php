@@ -1190,6 +1190,9 @@ class M_master extends CI_Model{
 		$order_pl = $expuk[0];
         $idpt = $expuk[6];
 
+		$qcRK = $this->db->query("SELECT*FROM m_rencana_kirim WHERE tgl='$tgl' AND order_pl='$order_pl' GROUP BY tgl,order_pl");
+		($qcRK->num_rows() != 0) ? $qc_RK = $qcRK->row()->qc_rk : $qc_RK = 'proses';
+
         foreach($this->cart->contents() as $data){
 			$exp = explode("-", $data['options']['tgl']);
 			$idrk = 'RK.'.$idpt.'.'.substr($exp[0],2,2).$exp[1].$exp[2].'.'.$data['options']['order_pl'];
@@ -1205,7 +1208,7 @@ class M_master extends CI_Model{
 				$jmlroll = $data['options']['jml_roll'];
 				$data = array(
 					'id_rk' => $idrk,
-					'qc_rk' => 'proses',
+					'qc_rk' => $qc_RK,
 					'tgl' => $data['options']['tgl'],
 					'nm_ker' => $data['options']['nm_ker'],
 					'g_label' => $data['options']['g_label'],
@@ -1386,6 +1389,18 @@ class M_master extends CI_Model{
 
         return $result;
     }
+
+	function btnTglPl()
+	{
+		$idpt = $_POST['idpt'];
+        $tglpl = $_POST['tglpl'];
+        $opl = $_POST['opl'];
+        $i = $_POST['i'];
+
+		return [
+
+		];
+	}
 
     function showEditPlHapus(){
         $idpt = $_POST['idpt'];
