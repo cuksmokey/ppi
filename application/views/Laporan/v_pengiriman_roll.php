@@ -978,7 +978,7 @@
 
 	//
 
-	function kosong(){ // reset id_pl
+	function kosong(){
 		$(".box-data-pl").show();
 		$(".box-form-pl").hide();
 		$("#v-id-pt").val('');
@@ -1018,6 +1018,7 @@
 		
 		$(".cek_no_sj").html('');
 		$(".show-edit-cart-pl").html('');
+		$(".edit-tgl").html('');
 		pl = 'simpan';
 		vopl = '';
 
@@ -1159,7 +1160,7 @@
 				$("#ftglrk").val(data.ftglrk).prop("disabled", true).attr('style', 'background:#e9e9e9');
 				$("#ftgl").val(data.ftgl).prop("disabled", true).attr('style', 'background:#e9e9e9');
 				
-				editTglPL(idpt,tglpl,opl,i)
+				editTglPL(idpt,data.ftgl,opl,i)
 				getThnBlnRoll(data.ftgl);
 				load_po(data.cust);
 
@@ -1190,7 +1191,6 @@
 			data: ({ idpt,tglpl,opl,i }),
 			success: function(res){
 				data = JSON.parse(res)
-				console.log(data)
 				$(".edit-tgl").html(data.html)
 			}
 		});
@@ -1198,21 +1198,18 @@
 
 	function btnTglPl(idpt,tglpl,opl,i)
 	{
-		console.log("idpt : ", idpt)
-		console.log("tglpl : ", tglpl)
-		console.log("opl : ", opl)
-		console.log("i : ", i)
 		let editTgl = $("#editgl"+i).val()
-		console.log("editTgl : ", editTgl)
-
 		$.ajax({
 			url: '<?php echo base_url('Master/btnTglPl')?>',
 			type: "POST",
 			data: ({ idpt,tglpl,opl,i,editTgl }),
 			success: function(res){
 				data = JSON.parse(res)
-				console.log(data)
-				$(".edit-tgl").html(data.html)
+				if(data.data){
+					swal(data.msg, "", "success");
+				}else{
+					swal(data.msg, "", "error");
+				}
 			}
 		});
 	}

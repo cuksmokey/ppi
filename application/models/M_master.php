@@ -1396,9 +1396,30 @@ class M_master extends CI_Model{
         $tglpl = $_POST['tglpl'];
         $opl = $_POST['opl'];
         $i = $_POST['i'];
+        $editTgl = $_POST['editTgl'];
 
+		if($editTgl == ''){
+			$data = false;
+			$msg = 'PILIH TANGGAL!';
+		}else{
+			$pl = $this->db->query("SELECT*FROM pl b WHERE b.id_perusahaan='$idpt' AND b.tgl='$tglpl' AND b.opl='$opl'");
+			if($pl->num_rows() != 0){
+				foreach($pl->result() as $r){
+					$this->db->set('tgl', $editTgl);
+					$this->db->where('id', $r->id);
+					$data = $this->db->update('pl');
+				}
+				$msg = 'BERHASIL!';
+			}else{
+				$data = false;
+				$msg = 'ERROR!';
+			}
+		}
+
+				
 		return [
-
+			'data' => $data,
+			'msg' => $msg,
 		];
 	}
 
