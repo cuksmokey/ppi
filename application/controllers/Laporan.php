@@ -881,9 +881,9 @@ class Laporan extends CI_Controller {
             </tr>
             <tr>
                 <td style="border:1px solid #000;padding:5px 0">ADMIN</td>
-                <td style="border:1px solid #000;padding:5px 0">BP. DAMIRI <br>LAB./QC</td>
-                <td style="border:1px solid #000;padding:5px 0">TITUT <br>GUDANG</td>
-                <td style="border:1px solid #000;padding:5px 0">BU. ELYZABETH <br>FINANCE</td>
+                <td style="border:1px solid #000;padding:5px 0">DAMIRI<br>LAB./QC</td>
+                <td style="border:1px solid #000;padding:5px 0">TITUT<br>GUDANG</td>
+                <td style="border:1px solid #000;padding:5px 0">JULI<br>FINANCE</td>
                 <td style="border:1px solid #000">'.$supir.'</td>
                 <td style="border:1px solid #000"></td>
             </tr>
