@@ -6162,7 +6162,7 @@ class Laporan extends CI_Controller {
         echo $html;
 	}
 
-    function QCCariRoll(){ //
+    function QCCariRoll(){
         $jnsroll = $_POST['jnsroll'];
         $gsmroll = $_POST['gsmroll'];
         $ukroll = $_POST['ukroll'];
@@ -6381,6 +6381,7 @@ class Laporan extends CI_Controller {
                         <option value="">-</option>
                         <option value="MH">MH</option>
                         <option value="MN">MN</option>
+                        <option value="MS">MS</option>
 						<option value="MF">MF</option>
 						<option value="MF-B">MF-B</option>
 						<option value="ML">ML</option>

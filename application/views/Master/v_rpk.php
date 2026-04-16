@@ -195,6 +195,7 @@
 											<option value="BK">BK</option>
 											<option value="BL">BL</option>
 											<option value="MH">MH</option>
+											<option value="MS">MS</option>
 											<option value="MF">MF</option>
 											<option value="MF-B">MF-B</option>
 											<option value="ML">ML</option>
