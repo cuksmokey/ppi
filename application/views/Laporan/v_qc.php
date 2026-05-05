@@ -445,6 +445,7 @@
 		bi = $("#ebi-"+i).val();
 		cobb = $("#ecobb-"+i).val();
 		moisture = $("#emoisture-"+i).val();
+		roughness = $("#eroughness-"+i).val();
 		rm = $("#erm-"+i).val();
 		nm_ker = $("#enm_ker-"+i).val().toUpperCase();
 		g_label = $("#eg_label-"+i).val();
@@ -485,6 +486,7 @@
 				bi : bi,
 				cobb : cobb,
 				moisture : moisture,
+				roughness : roughness,
 				rm : rm,
 				nm_ker : nm_ker,
 				g_label : g_label,
@@ -519,6 +521,7 @@
 				$("#ebi-"+i).val(json.bi).animateCss('fadeInRight');
 				$("#ecobb-"+i).val(json.cobb).animateCss('fadeInRight');
 				$("#emoisture-"+i).val(json.moisture).animateCss('fadeInRight');
+				$("#eroughness-"+i).val(json.roughness).animateCss('fadeInRight');
 				$("#erm-"+i).val(json.rm).animateCss('fadeInRight');
 				$("#enm_ker-"+i).val(json.nm_ker).animateCss('fadeInRight');
 				$("#eg_label-"+i).val(json.g_label).animateCss('fadeInRight');

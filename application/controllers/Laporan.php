@@ -6258,6 +6258,7 @@ class Laporan extends CI_Controller {
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">BI</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">COBB</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">MOIST</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">ROUGH</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">R. M.</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">JENIS</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">GSM</th>
@@ -6368,6 +6369,7 @@ class Laporan extends CI_Controller {
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ebi-'.$i.'" value="'.$roll->bi.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ecobb-'.$i.'" value="'.$roll->cobb.'" '.$diss.' maxlength="7" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="emoisture-'.$i.'" value="'.$roll->moisture.'" '.$diss.' onkeypress="return aK(event)" maxlength="6" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
+					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eroughness-'.$i.'" value="'.$roll->roughness.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="erm-'.$i.'" value="'.$roll->rm.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
 					';
                 

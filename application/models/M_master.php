@@ -226,6 +226,7 @@ class M_master extends CI_Model{
 			'bi' => $_POST['bi'],
 			'cobb' => $_POST['cobb'],
 			'moisture' => $_POST['moisture'],
+			'roughness' => 0,
 			'rm' => $_POST['rm'],
 			'status' => $_POST['cstatus'],
 			'ket' => strtoupper($_POST['ket']),
@@ -993,6 +994,7 @@ class M_master extends CI_Model{
             $this->db->set('bi', $_POST['bi']);
             $this->db->set('cobb', $_POST['cobb']);
             $this->db->set('moisture', $_POST['moisture']);
+            $this->db->set('roughness', $_POST['roughness']);
             $this->db->set('rm', $_POST['rm']);
             $this->db->set('nm_ker', $_POST['nm_ker']);
             $this->db->set('g_label', $_POST['g_label']);

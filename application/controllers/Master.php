@@ -1395,6 +1395,7 @@ class Master extends CI_Controller
 					'bi' => $idNewRoll->bi,
 					'cobb' => $idNewRoll->cobb,
 					'moisture' => $idNewRoll->moisture,
+					'roughness' => $idNewRoll->roughness,
 					'rm' => $idNewRoll->rm,
 					'nm_ker' => $idNewRoll->nm_ker,
 					'g_label' => $idNewRoll->g_label,
