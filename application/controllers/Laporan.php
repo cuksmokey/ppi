@@ -2213,11 +2213,11 @@ class Laporan extends CI_Controller {
 				}else{
 					$jStat = '-';
 				}
-                $html .= '<table style="margin:0;padding:0;font-size:14px;font-weight:bold;color:#000;width:100%;border-collapse:collapse">
-                    <tr>
-                        <td colspan="7" style="border:0">'.$jStat.' : '.$r->nm_ker.''.$r->g_label.' - UKURAN '.round($r->width, 2).'</td>
-                    </tr>
-                </table>';
+                // $html .= '<table style="margin:0;padding:0;font-size:14px;font-weight:bold;color:#000;width:100%;border-collapse:collapse">
+                //     <tr>
+                //         <td colspan="7" style="border:0">'.$jStat.' : '.$r->nm_ker.''.$r->g_label.' - UKURAN '.round($r->width, 2).'</td>
+                //     </tr>
+                // </table>';
 
 				if($r->nm_ker == 'MH'){
 					$rctorbi = '<td style="font-weight:bold;border:1px solid #000">RCT</td>';
@@ -2234,33 +2234,39 @@ class Laporan extends CI_Controller {
 				}
 
                 $html .= '<table cellspacing="0" cellpadding="5" style="font-size:11px;width:100%;color:#000;text-align:center;border-collapse:collapse" >
-				<tr>
-					<th style="border:0;padding:2px 0;width:5%"></th>
-					<th style="border:0;padding:2px 0;width:15%"></th>
-					<th style="border:0;padding:2px 0;width:7%"></th>
-					'.$wkop.'
-					<th style="border:0;padding:2px 0;width:7%"></th>
-					<th style="border:0;padding:2px 0;width:7%"></th>
-					<th style="border:0;padding:2px 0;width:7%"></th>
-					<th style="border:0;padding:2px 0;width:7%"></th>
-					<th style="border:0;padding:2px 0;width:7%"></th>
-					<th style="border:0;padding:2px 0;width:5%"></th>
-					<th style="border:0;padding:2px 0;width:'.$wket.'"></th>
-				</tr>';
+				<thead>
+					<tr>
+						<td colspan="19" style="border:0;padding:5px 0;font-size:14px;text-align:left;font-weight:bold;color:#000">'.$jStat.' : '.$r->nm_ker.''.$r->g_label.' - UKURAN '.round($r->width, 2).'</td>
+					</tr>
+					<tr>
+						<th style="border:0;padding:2px 0;width:5%"></th>
+						<th style="border:0;padding:2px 0;width:15%"></th>
+						<th style="border:0;padding:2px 0;width:7%"></th>
+						'.$wkop.'
+						<th style="border:0;padding:2px 0;width:7%"></th>
+						<th style="border:0;padding:2px 0;width:7%"></th>
+						<th style="border:0;padding:2px 0;width:7%"></th>
+						<th style="border:0;padding:2px 0;width:7%"></th>
+						<th style="border:0;padding:2px 0;width:7%"></th>
+						<th style="border:0;padding:2px 0;width:5%"></th>
+						<th style="border:0;padding:2px 0;width:'.$wket.'"></th>
+					</tr>';
 
-                $html .= '<tr>
-					<td style="font-weight:bold;border:1px solid #000">No</td>
-					<td style="font-weight:bold;border:1px solid #000">ROLL</td>
-					<td style="font-weight:bold;border:1px solid #000">BW</td>
-					'.$rctorbi.'
-					<td style="font-weight:bold;border:1px solid #000">JENIS</td>
-					<td style="font-weight:bold;border:1px solid #000">GSM</td>
-					<td style="font-weight:bold;border:1px solid #000">D.CM</td>
-					<td style="font-weight:bold;border:1px solid #000">UK</td>
-					<td style="font-weight:bold;border:1px solid #000">BRT</td>
-					<td style="font-weight:bold;border:1px solid #000">J</td>
-					<td style="font-weight:bold;border:1px solid #000">KET</td>
-				</tr>';
+					$html .= '<tr>
+						<td style="font-weight:bold;border:1px solid #000">No</td>
+						<td style="font-weight:bold;border:1px solid #000">ROLL</td>
+						<td style="font-weight:bold;border:1px solid #000">BW</td>
+						'.$rctorbi.'
+						<td style="font-weight:bold;border:1px solid #000">JENIS</td>
+						<td style="font-weight:bold;border:1px solid #000">GSM</td>
+						<td style="font-weight:bold;border:1px solid #000">D.CM</td>
+						<td style="font-weight:bold;border:1px solid #000">UK</td>
+						<td style="font-weight:bold;border:1px solid #000">BRT</td>
+						<td style="font-weight:bold;border:1px solid #000">J</td>
+						<td style="font-weight:bold;border:1px solid #000">KET</td>
+					</tr>
+				</thead>
+				<tbody>';
 
                 // ambil data
                 $data_detail_all = $this->db->query("SELECT*FROM m_timbangan
@@ -2314,7 +2320,7 @@ class Laporan extends CI_Controller {
                     $no++;
                 }
 
-                $html .= '</table>';
+                $html .= '</tbody></table>';
                 $html .= '<div style="page-break-after:always"></div>';
             }
 
