@@ -2191,7 +2191,7 @@ class Laporan extends CI_Controller {
             }
 
             if($jenis_ker == 'WP' || $jenis_ker == 'WS'){
-                $sts = "AND (status='2' OR status='7')";
+                $sts = "AND (status='2' OR status='3' OR status='4' OR status='5' OR status='7')";
             }else{
                 $sts = "AND status='$status'";
             }
