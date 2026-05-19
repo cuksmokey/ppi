@@ -222,6 +222,7 @@
 											<option value="115">115</option>
 											<option value="120">120</option>
 											<option value="125">125</option>
+											<option value="135">135</option>
 											<option value="140">140</option>
 											<option value="150">150</option>
 											<option value="190">190</option>
