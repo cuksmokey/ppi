@@ -224,8 +224,10 @@
 											<option value="125">125</option>
 											<option value="135">135</option>
 											<option value="140">140</option>
+											<option value="145">145</option>
 											<option value="150">150</option>
 											<option value="190">190</option>
+											<option value="195">195</option>
 											<option value="200">200</option>
 										</select>
 									</td>
