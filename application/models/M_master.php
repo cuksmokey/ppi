@@ -1397,14 +1397,18 @@ class M_master extends CI_Model{
 		$idpt = $_POST['idpt'];
         $tglpl = $_POST['tglpl'];
         $opl = $_POST['opl'];
-        $i = $_POST['i'];
         $editTgl = $_POST['editTgl'];
+
+		$plpl = $this->db->query("SELECT * FROM pl
+		WHERE (qc='proses' OR qc='ok') AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
+		GROUP BY id_perusahaan,tgl_pl,id_rk,opl")->row();
+		($plpl->id_rk == null) ? $idrk = null : $idrk = $plpl->id_rk;
 
 		if($editTgl == ''){
 			$data = false;
 			$msg = 'PILIH TANGGAL!';
 		}else{
-			$pl = $this->db->query("SELECT*FROM pl b WHERE b.id_perusahaan='$idpt' AND b.tgl='$tglpl' AND b.opl='$opl'");
+			$pl = $this->db->query("SELECT*FROM pl b WHERE b.id_perusahaan='$idpt' AND b.tgl_pl='$tglpl' AND b.id_rk='$idrk' AND b.opl='$opl'");
 			if($pl->num_rows() != 0){
 				foreach($pl->result() as $r){
 					$this->db->set('tgl', $editTgl);
@@ -1418,7 +1422,6 @@ class M_master extends CI_Model{
 			}
 		}
 
-				
 		return [
 			'data' => $data,
 			'msg' => $msg,

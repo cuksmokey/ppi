@@ -1160,7 +1160,7 @@
 				$("#ftglrk").val(data.ftglrk).prop("disabled", true).attr('style', 'background:#e9e9e9');
 				$("#ftgl").val(data.ftgl).prop("disabled", true).attr('style', 'background:#e9e9e9');
 				
-				editTglPL(idpt,data.ftgl,opl,i)
+				editTglPL(idpt,data.ftglrk,opl,i)
 				getThnBlnRoll(data.ftgl);
 				load_po(data.cust);
 
@@ -1202,7 +1202,7 @@
 		$.ajax({
 			url: '<?php echo base_url('Master/btnTglPl')?>',
 			type: "POST",
-			data: ({ idpt,tglpl,opl,i,editTgl }),
+			data: ({ idpt,tglpl,opl,editTgl }),
 			success: function(res){
 				data = JSON.parse(res)
 				if(data.data){
