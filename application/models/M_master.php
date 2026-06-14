@@ -1402,7 +1402,7 @@ class M_master extends CI_Model{
 		$plpl = $this->db->query("SELECT * FROM pl
 		WHERE (qc='proses' OR qc='ok') AND tgl_pl='$tglpl' AND id_perusahaan='$idpt' AND opl='$opl'
 		GROUP BY id_perusahaan,tgl_pl,id_rk,opl")->row();
-		($plpl->id_rk == null) ? $wIDRK = "AND b.id_rk IS NULL" : $wIDRK = "AND b.id_rk='$idrk'";
+		($plpl->id_rk == null) ? $wIDRK = "AND b.id_rk IS NULL" : $wIDRK = "AND b.id_rk='$plpl->id_rk'";
 
 		if($editTgl == ''){
 			$data = false;
