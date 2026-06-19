@@ -5766,7 +5766,7 @@ class Laporan extends CI_Controller {
 		$html = "";
 		$html .='<style>#i{mso-number-format:\@}</style>';
 		$html .='<div style="overflow:auto;white-space:nowrap;">
-			<table style="margin:0;padding:0;font-size:12px;color:#000;text-align:center;vertical-align:middle;border-collapse:collapse" border="1">';
+			<table style="margin:0;padding:0;font-size:12px;color:#000;text-align:center;vertical-align:middle;border-collapse:collapse">';
 
         if($stat == 'produksi'){
             if($vpm == 1){
@@ -5847,13 +5847,13 @@ class Laporan extends CI_Controller {
 
 			// GET SEMUA KOP JENIS
             $html .='<tr style="background:#e9e9e9">
-            <td style="padding:5px;font-weight:bold" rowspan="2">NO.</td>
-            <td style="padding:5px;font-weight:bold" rowspan="2">UKURAN</td>';
+            <td style="border:1px solid #000;padding:5px;font-weight:bold" rowspan="2">NO.</td>
+            <td style="border:1px solid #000;padding:5px;font-weight:bold" rowspan="2">UKURAN</td>';
             foreach($getLabel->result() as $lbl){
                 $getGsm = $this->db->query("SELECT nm_ker,g_label FROM m_timbangan
                 WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl $no120
                 GROUP BY nm_ker,g_label");
-                $html .='<td style="padding:5px;font-weight:bold" colspan="'.$getGsm->num_rows().'">'.$lbl->nm_ker.'</td>';
+                $html .='<td style="border:1px solid #000;padding:5px;font-weight:bold" colspan="'.$getGsm->num_rows().'">'.$lbl->nm_ker.'</td>';
             }
             $html .='</tr>';
             
@@ -5864,7 +5864,7 @@ class Laporan extends CI_Controller {
                 WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl $no120
                 GROUP BY nm_ker,g_label");
                 foreach($getGsm->result() as $gsm){
-                    $html .='<td style="padding:5px;background:#e9e9e9;font-weight:bold">'.$gsm->g_label.'</td>';
+                    $html .='<td style="border:1px solid #000;padding:5px;background:#e9e9e9;font-weight:bold">'.$gsm->g_label.'</td>';
                 }
             }
             $html .='</tr>';
@@ -5872,12 +5872,14 @@ class Laporan extends CI_Controller {
 			// TAMPIL SEMUA DATA UKURAN
             $getWidth = $this->db->query("SELECT width FROM m_timbangan
             WHERE $Btgl $statusIdPl $where
-            -- AND width BETWEEN '165' AND '170' # TESTING
+            -- AND width BETWEEN '150' AND '170' # TESTING
             GROUP BY width");
             $i = 0;
             foreach($getWidth->result() as $width){
                 $i++;
-                $html .='<tr class="new-stok-gg"><td style="font-weight:bold">'.$i.'</td><td style="font-weight:bold">'.round($width->width,2).'</td>';
+                $html .='<tr class="new-stok-gg">
+					<td style="border:1px solid #000;font-weight:bold">'.$i.'</td>
+					<td style="border:1px solid #000;font-weight:bold">'.round($width->width,2).'</td>';
 
                 $getLabel = $this->db->query("SELECT nm_ker FROM m_timbangan
                 WHERE $Btgl $statusIdPl $where $no120
@@ -5911,12 +5913,12 @@ class Laporan extends CI_Controller {
                             $gbGsm = '#fff';
                         }
                         if($getWidth->num_rows() == 0){
-                            $html .='<td style="padding:5px;background:'.$gbGsm.'">
+                            $html .='<td style="border:1px solid #000;padding:5px;background:'.$gbGsm.'">
                                 <button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".','."'".$statStatCor."'".')">0</button>
                             </td>';
 							// $statStatCor
                         }else{
-                            $html .='<td style="padding:5px">
+                            $html .='<td style="border:1px solid #000;padding:5px">
                                 <button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0" onclick="cek('."'".$gsm->nm_ker."'".','."'".$gsm->g_label."'".','."'".$width->width."'".','."'".$otorisasi."'".','."'".$statStatCor."'".')">'.$getWidth->row()->jml.'</button>
                             </td>';
                         }
@@ -5927,7 +5929,7 @@ class Laporan extends CI_Controller {
 
 			// TOTAL SEMUANYA PER GRAMATURE
 			$html .='<tr style="background:#e9e9e9">
-				<td style="padding:5px;font-weight:bold" colspan="2">TOTAL</td>';
+				<td style="border:1px solid #000;padding:5px;font-weight:bold" colspan="2">TOTAL</td>';
 				foreach($getLabel->result() as $lbl){
 					$getGsm = $this->db->query("SELECT nm_ker,g_label,COUNT(width) AS totjmlroll FROM m_timbangan
 					WHERE $Btgl AND nm_ker='$lbl->nm_ker' $statusIdPl $no120
@@ -5948,7 +5950,7 @@ class Laporan extends CI_Controller {
 						}else{
 							$totot = $getWidth->row()->jml;
 						}
-						$html .='<td style="padding:5px;font-weight:bold">'.number_format($totot).'</td>';
+						$html .='<td style="border:1px solid #000;padding:5px;font-weight:bold">'.number_format($totot).'</td>';
 					}
 				}
 			$html .='</tr>';

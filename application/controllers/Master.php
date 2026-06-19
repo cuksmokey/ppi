@@ -5161,7 +5161,7 @@ class Master extends CI_Controller
 			$nmKer3 = "";
 		}
 
-		$html .='<table style="font-size:12px;color:#000;text-align:center" border="1">';
+		$html .='<table style="font-size:12px;color:#000;text-align:center;border-collapse:collapse">';
 		// INTI DATA
 		$getNmKer = $this->db->query("SELECT nm_ker FROM (
 			SELECT nm_ker FROM m_timbangan
@@ -5172,11 +5172,11 @@ class Master extends CI_Controller
 		) AS m_timbangan
 		GROUP BY nm_ker");
 		if($getNmKer->num_rows() == 0){
-			$html .='<td style="padding:5px">TIDAK ADA DATA</td>';
+			$html .='<td style="border:1px solid #000;padding:5px">TIDAK ADA DATA</td>';
 		}else{
 			$html .='<tr style="background:#e9e9e9;font-weight:bold">
-			<td style="padding:5px" rowspan="2">NO</td>
-			<td style="padding:5px" rowspan="2">Ukuran</td>';
+			<td style="border:1px solid #000;padding:5px" rowspan="2">NO</td>
+			<td style="border:1px solid #000;padding:5px" rowspan="2">Ukuran</td>';
 
 			// TAMPIL JENIS KERTAS
 			foreach($getNmKer->result() as $ker){
@@ -5188,7 +5188,7 @@ class Master extends CI_Controller
 					WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' AND nm_ker='$ker->nm_ker' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'
 				) AS m_timbangan
 				GROUP BY nm_ker,g_label");
-				$html .='<td style="padding:5px" colspan="'.$getgLabel->num_rows().'">'.$ker->nm_ker.'</td>';
+				$html .='<td style="border:1px solid #000;padding:5px" colspan="'.$getgLabel->num_rows().'">'.$ker->nm_ker.'</td>';
 			}
 			$html .='</tr>';
 			
@@ -5204,7 +5204,7 @@ class Master extends CI_Controller
 				) AS m_timbangan
 				GROUP BY nm_ker,g_label");
 				foreach($getgLabel->result() as $glabel){
-					$html .='<td style="padding:5px">'.$glabel->g_label.'</td>';
+					$html .='<td style="border:1px solid #000;padding:5px">'.$glabel->g_label.'</td>';
 				}
 			}
 			$html .='</tr>';
@@ -5223,7 +5223,8 @@ class Master extends CI_Controller
 			$i = 0;
 			foreach($getUkuran->result() as $uk){
 				$i++;
-				$html .='<td style="padding:5px">'.$i.'</td><td style="padding:5px">'.round($uk->width,2).'</td>';
+				$html .='<td style="border:1px solid #000;padding:5px">'.$i.'</td>
+				<td style="border:1px solid #000;padding:5px">'.round($uk->width,2).'</td>';
 
 				$getgLabel = $this->db->query("SELECT nm_ker,g_label FROM (
 					SELECT nm_ker,g_label FROM m_timbangan
@@ -5333,7 +5334,7 @@ class Master extends CI_Controller
 					}
 
 					($getPO->num_rows() != 0 || $getRPK->num_rows() != 0) ? $txtU = ';text-decoration:underline' : $txtU = 0;
-					$html .= '<td style="padding:5px;background:'.$gbLbl.'">
+					$html .= '<td style="border:1px solid #000;padding:5px;background:'.$gbLbl.'">
 						<button style="background:transparent;font-weight:bold;margin:0;padding:0;border:0'.$txtU.'" onclick="cek2('."'".$lbl->nm_ker."'".','."'".$lbl->g_label."'".','."'".$uk->width."'".','."'".$otorisasi."'".',0)">'.$tuanOrTidak.'</button>
 					</td>';
 				}
