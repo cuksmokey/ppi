@@ -5375,7 +5375,7 @@ class Master extends CI_Controller
 			INNER JOIN pl p ON t.id_pl=p.id
 			INNER JOIN m_expedisi ex ON p.id_expedisi=ex.id
 			WHERE p.tgl='$tgl->tgl' AND p.nm_perusahaan!='LAMINASI PPI' AND p.nm_perusahaan!='CORRUGATED PPI' AND p.qc='ok'
-			GROUP BY p.tgl,p.nama,p.nm_perusahaan,p.id_expedisi,p.id_perusahaan");
+			GROUP BY p.tgl,p.id_expedisi,p.nama,p.nm_perusahaan,p.id_perusahaan");
 			$i = 0;
 			$sumKiriman = 0;
 			$sumRoll = 0;
