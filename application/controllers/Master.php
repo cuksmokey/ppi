@@ -1891,30 +1891,30 @@ class Master extends CI_Controller
 			$pt = $getData->row()->nm_perusahaan;
 		}
 		$html .='<div style="margin-top:15px;font-weight:bold;color:#000">'.$nama.$pt.'</div>';
-		$html .='<table style="font-size:12px;color:#000;text-align:center;margin-top:15px" border="1">';
+		$html .='<table style="font-size:12px;color:#000;text-align:center;margin-top:15px;border-collapse:collapse">';
 		$html .='<tr>
-			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO.</td>
-			<td style="padding:5px;font-weight:bold;background:#e9e9e9">TANGGAL</td>
-			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO. SURAT</td>
-			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO. SO</td>
-			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO. PKB</td>
-			<td style="padding:5px;font-weight:bold;background:#e9e9e9">NO. PO</td>
-			<td style="padding:5px;font-weight:bold;background:#e9e9e9">JENIS</td>
-			<td style="padding:5px;font-weight:bold;background:#e9e9e9">GSM</td>
-			<td style="padding:5px;font-weight:bold;background:#e9e9e9">AKSI</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold;background:#e9e9e9">NO.</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold;background:#e9e9e9">TANGGAL</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold;background:#e9e9e9">NO. SURAT</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold;background:#e9e9e9">NO. SO</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold;background:#e9e9e9">NO. PKB</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold;background:#e9e9e9">NO. PO</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold;background:#e9e9e9">JENIS</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold;background:#e9e9e9">GSM</td>
+			<td style="border:1px solid #000;padding:5px;font-weight:bold;background:#e9e9e9">AKSI</td>
 		</tr>';
 		$ii = 0;
 		foreach($getData->result() as $r){
 			$ii++;
 			$html .='<tr>
-				<td style="padding:5px">'.$ii.'</td>
-				<td style="padding:5px">'.$r->tgl.'</td>
-				<td style="padding:5px">'.trim($r->no_surat).'</td>
-				<td style="padding:5px">'.$r->no_so.'</td>
-				<td style="padding:5px">'.$r->no_pkb.'</td>
-				<td style="padding:5px">'.$r->no_po.'</td>
-				<td style="padding:5px">'.$r->nm_ker.'</td>
-				<td style="padding:5px">'.$r->g_label.'</td>';
+				<td style="border:1px solid #000;padding:5px">'.$ii.'</td>
+				<td style="border:1px solid #000;padding:5px">'.$r->tgl.'</td>
+				<td style="border:1px solid #000;padding:5px">'.trim($r->no_surat).'</td>
+				<td style="border:1px solid #000;padding:5px">'.$r->no_so.'</td>
+				<td style="border:1px solid #000;padding:5px">'.$r->no_pkb.'</td>
+				<td style="border:1px solid #000;padding:5px">'.$r->no_po.'</td>
+				<td style="border:1px solid #000;padding:5px">'.$r->nm_ker.'</td>
+				<td style="border:1px solid #000;padding:5px">'.$r->g_label.'</td>';
 			// JIKA CUMA ADA 1 PL GAK BISA HAPUS
 			if($getData->num_rows() == 1){
 				$aksi = '-';
@@ -1926,7 +1926,7 @@ class Master extends CI_Controller
 					$aksi = '<button onclick="showEditPlHapus('."'".$idpt."'".','."'".$tglpl."'".','."'".$opl."'".','."'".$i."'".','."'".$r->id_rk."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->id."'".')">Hapus</button>';
 				}
 			}
-			$html .='<td style="padding:5px">'.$aksi.'</td></tr>';
+			$html .='<td style="border:1px solid #000;padding:5px">'.$aksi.'</td></tr>';
 		}
 		$html .='</table>';
 
@@ -2042,9 +2042,9 @@ class Master extends CI_Controller
 		if($_POST['tgl'] == '' || $_POST['id'] == '' || $_POST['pjk'] == '' || $getData->num_rows() == 0){
 			$html .= '';
 		}else{
-			$html .='<table style="color:#000;font-size:12px;text-align:center;margin-top:15px" border="1">';
+			$html .='<table style="color:#000;font-size:12px;text-align:center;margin-top:15px;border-collapse:collapse">';
 			$html .='<tr>
-				<td style="padding:5px;font-weight:bold;background:#e9e9e9" colspan="4">10 KIRIMAN TERAKHIR</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold;background:#e9e9e9" colspan="4">10 KIRIMAN TERAKHIR</td>
 			</tr>';
 			$i = 0;
 			foreach($getData->result() as $r){
@@ -2061,10 +2061,10 @@ class Master extends CI_Controller
 				}
 
 				$html .= '<tr>
-					<td style="padding:5px">'.$i.'</td>
-					<td style="padding:5px">'.$r->tgl.'</td>
-					<td style="padding:5px">'.trim($r->no_surat).'</td>
-					<td style="padding:5px;text-align:left">'.$nama.$nmpt.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$i.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$r->tgl.'</td>
+					<td style="border:1px solid #000;padding:5px">'.trim($r->no_surat).'</td>
+					<td style="border:1px solid #000;padding:5px;text-align:left">'.$nama.$nmpt.'</td>
 				</tr>';
 			}
 			$html .='</table>';
@@ -2484,7 +2484,8 @@ class Master extends CI_Controller
 		if($getKer->num_rows() == 0){
 			$html .='';
 		}else{
-			$html .='<div style="overflow:auto;white-space:nowrap;"><table class="list-table" style="width:100%;text-align:center;margin:15px 0">';
+			$html .='<div style="overflow:auto;white-space:nowrap;">
+			<table class="list-table" style="width:100%;text-align:center;margin:15px 0;border-collapse:collapse">';
 			// PL
 			if($plh == 'pl'){
 				$wket = '25%';
@@ -3035,14 +3036,14 @@ class Master extends CI_Controller
 		$getData = $this->db->query("SELECT*FROM m_rencana_kirim
 		WHERE id_rk='$idrk'
 		ORDER BY nm_ker,g_label,width");
-		$html .='<table style="font-size:12px;color:#000;text-align:center" border="1">';
+		$html .='<table style="font-size:12px;color:#000;text-align:center;border-collapse:collapse">';
 		$html .='<tr>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold">NO</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold">JENIS</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold">GSM</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold">UKURAN</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold">JML ROLL</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold">AKSI</td>
+			<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold">NO</td>
+			<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold">JENIS</td>
+			<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold">GSM</td>
+			<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold">UKURAN</td>
+			<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold">JML ROLL</td>
+			<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold">AKSI</td>
 		</tr>';
 		$i = 0;
 		$sumJmlRoll = 0;
@@ -3058,23 +3059,23 @@ class Master extends CI_Controller
 			}
 
 			$html.='<tr>
-				<td style="padding:5px">'.$i.'</td>
-				<td style="padding:5px">'.$r->nm_ker.'</td>
-				<td style="padding:5px">'.$r->g_label.'</td>
-				<td style="padding:5px">'.round($r->width, 2).'</td>
-				<td style="position:relative">
+				<td style="border:1px solid #000;padding:5px">'.$i.'</td>
+				<td style="border:1px solid #000;padding:5px">'.$r->nm_ker.'</td>
+				<td style="border:1px solid #000;padding:5px">'.$r->g_label.'</td>
+				<td style="border:1px solid #000;padding:5px">'.round($r->width, 2).'</td>
+				<td style="border:1px solid #000;position:relative">
 					<input class="inp-abs" type="text" value="'.$r->jml_roll.'" id="elrkroll-'.$i.'" maxlength="3" onkeypress="return hanyaAngka(event)">
 				</td>
-				<td style="padding:5px">
+				<td style="border:1px solid #000;padding:5px">
 					<button onclick="editListRk('."'".$r->id."'".','."'".$r->nm_ker."'".','."'".$r->g_label."'".','."'".$r->width."'".','."'".$idrk."'".','."'".$opl."'".','."'".$tgl_pl."'".','."'".$li."'".','."'".$i."'".','."'".$r->jml_roll."'".')">edit</button>'.$aksi.'
 				</td>
 			</tr>';
 			$sumJmlRoll += $r->jml_roll;
 		}
 		$html .='<tr>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold" colspan="4">TOTAL</td>
-			<td style="background:#e9e9e9;padding:5px;font-weight:bold">'.number_format($sumJmlRoll).'</td>
-			<td style="background:#e9e9e9"></td>
+			<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold" colspan="4">TOTAL</td>
+			<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold">'.number_format($sumJmlRoll).'</td>
+			<td style="background:#e9e9e9;border:1px solid #000"></td>
 		</tr>';
 		$html .='</table>';
 
@@ -3116,7 +3117,7 @@ class Master extends CI_Controller
 			$html .= '';
 		}else{
 			$html .='<div style="overflow:auto;white-space:nowrap;">';
-			$html .='<table style="margin:15px 0;font-size:12px;color:#000">';
+			$html .='<table style="margin:15px 0;font-size:12px;color:#000;border-collapse:collapse">';
 			$html .='<tr>
 				<td style="border:1px solid #000;padding:5px" colspan="7">'.$idrk.'</td>
 			</tr>
@@ -3153,7 +3154,7 @@ class Master extends CI_Controller
 			$html .='';
 		}else{
 			$html .='<div style="overflow:auto;white-space:nowrap;">';
-			$html .='<table style="margin:15px 0;font-size:12px;color:#000;text-align:center">';
+			$html .='<table style="margin:15px 0;font-size:12px;color:#000;text-align:center;border-collapse:collapse">';
 			$html .='<tr style="background:#e9e9e9">
 				<td style="border:1px solid #000;padding:5px;font-weight:bold">NO. SURAT JALAN</td>
 				<td style="border:1px solid #000;padding:5px;font-weight:bold">NO. PO</td>
@@ -3375,7 +3376,7 @@ class Master extends CI_Controller
 		if($getUkRencKirim->num_rows() == 0){
 			$html .= '<div style="notfon">BELUM ADA RENCANA KIRIMAN</div>';
 		}else{
-			$html .='<table class="list-table" style="font-weight:bold;text-align:center">
+			$html .='<table class="list-table" style="font-weight:bold;text-align:center;border-collapse:collapse">
 				<tr style="background:#e9e9e9">
 					<td style="border:1px solid #000;padding:5px">JENIS</td>
 					<td style="border:1px solid #000;padding:5px">UKURAN</td>
@@ -5352,18 +5353,18 @@ class Master extends CI_Controller
 		$tgl2 = $_POST['tgl2'];
 		$html = '';
 
-		$html .='<table style="text-align:center" border="1">';
+		$html .='<table style="text-align:center;border-collapse:collapse">';
 		$html .='<tr style="background:#e9e9e9;font-weight:bold">
-			<td style="padding:5px">NO</td>
-			<td style="padding:5px">HARI / TANGGAL</td>
-			<td style="padding:5px">CUSTOMER</td>
-			<td style="padding:5px">TONASE</td>
-			<td style="padding:5px">GSM</td>
-			<td style="padding:5px">UKURAN ROLL</td>
-			<td style="padding:5px">JML ROLL</td>
-			<td style="padding:5px">EKSPEDISI</td>
-			<td style="padding:5px">NOPOL</td>
-			<td style="padding:5px">DRIVER</td>
+			<td style="border:1px solid #000;padding:5px">NO</td>
+			<td style="border:1px solid #000;padding:5px">HARI / TANGGAL</td>
+			<td style="border:1px solid #000;padding:5px">CUSTOMER</td>
+			<td style="border:1px solid #000;padding:5px">TONASE</td>
+			<td style="border:1px solid #000;padding:5px">GSM</td>
+			<td style="border:1px solid #000;padding:5px">UKURAN ROLL</td>
+			<td style="border:1px solid #000;padding:5px">JML ROLL</td>
+			<td style="border:1px solid #000;padding:5px">EKSPEDISI</td>
+			<td style="border:1px solid #000;padding:5px">NOPOL</td>
+			<td style="border:1px solid #000;padding:5px">DRIVER</td>
 		</tr>';
 		$getTgl = $this->db->query("SELECT tgl FROM pl
 		WHERE qc='ok' AND tgl BETWEEN '$tgl1' AND '$tgl2'
@@ -5402,16 +5403,16 @@ class Master extends CI_Controller
 				$bo = '<button class="tmbl-cek-roll" onclick="cekLapKiriman('."'".$r->tgl."'".','."'".$r->id_perusahaan."'".','."'".$r->id_expedisi."'".')">'; // 
 				$bc = '</button>';
 				$html .='<tr class="list-p-putih" style="vertical-align:top">
-					<td style="padding:5px">'.$bo.$i.$bc.'</td>
-					<td style="padding:5px">'.$bo.strtoupper($this->m_fungsi->getHariIni($r->tgl)).', '.$expTgl[2].'/'.$expTgl[1].'/'.$expTgl[0].$bc.'</td>
-					<td style="padding:5px">'.$bo.$nmpt.$bc.'</td>
-					<td style="padding:5px">'.$bo.number_format($r->kiriman).$bc.'</td>';
+					<td style="border:1px solid #000;padding:5px">'.$bo.$i.$bc.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$bo.strtoupper($this->m_fungsi->getHariIni($r->tgl)).', '.$expTgl[2].'/'.$expTgl[1].'/'.$expTgl[0].$bc.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$bo.$nmpt.$bc.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$bo.number_format($r->kiriman).$bc.'</td>';
 					
 				$getGsm = $this->db->query("SELECT t.nm_ker,t.g_label FROM m_timbangan t
 				INNER JOIN pl p ON t.id_pl=p.id
 				WHERE p.tgl='$r->tgl' AND p.id_perusahaan='$r->id_perusahaan' AND p.id_expedisi='$r->id_expedisi'
 				GROUP BY t.nm_ker,t.g_label");
-				$html .='<td style="padding:5px">'.$bo;
+				$html .='<td style="border:1px solid #000;padding:5px">'.$bo;
 				foreach($getGsm->result() as $gsmL){
 					$html .= $gsmL->nm_ker.$gsmL->g_label.'/';
 				}
@@ -5421,15 +5422,15 @@ class Master extends CI_Controller
 				INNER JOIN pl p ON t.id_pl=p.id
 				WHERE p.tgl='$r->tgl' AND p.id_perusahaan='$r->id_perusahaan' AND p.id_expedisi='$r->id_expedisi'
 				GROUP BY t.width");
-				$html .='<td style="padding:5px">'.$bo;
+				$html .='<td style="border:1px solid #000;padding:5px">'.$bo;
 				foreach($getUk->result() as $uk){
 					$html .= round($uk->width,2).'/';
 				}
 				$html .= $bc.'</td>';
-				$html .='<td style="padding:5px">'.$bo.number_format($r->roll).$bc.'</td>
-					<td style="padding:5px">'.$bo.$r->pt.$bc.'</td>
-					<td style="padding:5px">'.$bo.$r->plat.$bc.'</td>
-					<td style="padding:5px">'.$bo.$r->supir.$bc.'</td>
+				$html .='<td style="border:1px solid #000;padding:5px">'.$bo.number_format($r->roll).$bc.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$bo.$r->pt.$bc.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$bo.$r->plat.$bc.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$bo.$r->supir.$bc.'</td>
 				</tr>';
 			
 				$sumKiriman += $r->kiriman;
@@ -5438,11 +5439,11 @@ class Master extends CI_Controller
 			// $sumI += $i;
 			// TOTAL
 			$html .='<tr style="background:#e9e9e9;font-weight:bold">
-				<td style="padding:5px" colspan="3">TOTAL</td>
-				<td style="padding:5px">'.number_format($sumKiriman).'</td>
-				<td style="padding:5px" colspan="2"></td>
-				<td style="padding:5px">'.number_format($sumRoll).'</td>
-				<td style="padding:5px" colspan="3"></td>
+				<td style="border:1px solid #000;padding:5px" colspan="3">TOTAL</td>
+				<td style="border:1px solid #000;padding:5px">'.number_format($sumKiriman).'</td>
+				<td style="border:1px solid #000;padding:5px" colspan="2"></td>
+				<td style="border:1px solid #000;padding:5px">'.number_format($sumRoll).'</td>
+				<td style="border:1px solid #000;padding:5px" colspan="3"></td>
 			</tr>';
 		}
 
