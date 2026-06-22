@@ -2484,13 +2484,13 @@ class Master extends CI_Controller
 		if($getKer->num_rows() == 0){
 			$html .='';
 		}else{
-			$html .='<div style="overflow:auto;white-space:nowrap;"><table class="list-table" style="width:100%;text-align:center;margin:15px 0" border="1">';
+			$html .='<div style="overflow:auto;white-space:nowrap;"><table class="list-table" style="width:100%;text-align:center;margin:15px 0">';
 			// PL
 			if($plh == 'pl'){
 				$wket = '25%';
 				$waksi = '10%';
 				$cols = ($otorisasi == 'all') ? '10' : '13';
-				$ktd = '<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:10%">ID PL</td>';
+				$ktd = '<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:10%">ID PL</td>';
 			}else{
 				$wket = '25%';
 				$waksi = '20%';
@@ -2498,19 +2498,19 @@ class Master extends CI_Controller
 				$ktd = '';
 			}
 			$html .='<tr>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:4%">NO.</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:11%">NO. ROLL</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BW</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">RCT</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BI</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">MOI</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">D(CM)</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">BERAT</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">JNT</td>
-				<td style="background:#e9e9e9;padding:5px 50px;font-weight:bold;width:'.$wket.'">KET</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">SESET</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:5%">LABEL</td>
-				<td style="background:#e9e9e9;padding:5px;font-weight:bold;width:'.$waksi.'">AKSI</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:4%">NO.</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:11%">NO. ROLL</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:5%">BW</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:5%">RCT</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:5%">BI</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:5%">MOI</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:5%">D(CM)</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:5%">BERAT</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:5%">JNT</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px 50px;font-weight:bold;width:'.$wket.'">KET</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:5%">SESET</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:5%">LABEL</td>
+				<td style="background:#e9e9e9;border:1px solid #000;padding:5px;font-weight:bold;width:'.$waksi.'">AKSI</td>
 				'.$ktd.'
 			</tr>';
 			$totRoll = 0;
@@ -2534,20 +2534,20 @@ class Master extends CI_Controller
 				($otorisasi == 'all' && $plh == 'pl') ? $eGg = 'colspan="2"' : $eGg = '';
 				if($celPL->num_rows() > 0){
 					if($otorisasi == 'all'){
-						$htmlGsm = '<td style="padding:5px;position:relative">
+						$htmlGsm = '<td style="border:1px solid #000;padding:5px;position:relative">
 							<input type="text" id="egsm-'.$zZz.'" value="'.$ker->g_label.'" class="inp-abs" maxlength="3" autocomplete="off" onkeypress="return hanyaAngka(event)">
 						</td>
-						<td style="padding:5px">
+						<td style="border:1px solid #000;padding:5px">
 							<button style="background:none;border:0" onclick="editGSMPengiriman('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$zZz."'".')">e</button>
 						</td>
-						<td style="padding:5px" '.$eGg.'></td>';
+						<td style="border:1px solid #000;padding:5px" '.$eGg.'></td>';
 					}else{
 						$htmlGsm = '';
 					}
 				}else{
 					if($otorisasi == 'all'){
-						$htmlGsm = '<td style="padding:5px" colspan="2"></td>
-						<td style="padding:5px" '.$eGg.'></td>';
+						$htmlGsm = '<td style="border:1px solid #000;padding:5px" colspan="2"></td>
+						<td style="border:1px solid #000;padding:5px" '.$eGg.'></td>';
 					}else{
 						$htmlGsm = '';
 					}
@@ -2559,7 +2559,7 @@ class Master extends CI_Controller
 				WHERE id_rk='$ker->id_rk' AND nm_ker='$ker->nm_ker' AND g_label='$ker->g_label' AND width='$ker->width'
 				ORDER BY roll");
 				$html .='<tr class="'.$bgtrt.'">
-					<td style="padding:5px;font-weight:bold;text-align:left" colspan="'.$cols.'">'.$ker->nm_ker.''.$ker->g_label.' - '.round($ker->width,2).'</td>
+					<td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:left" colspan="'.$cols.'">'.$ker->nm_ker.''.$ker->g_label.' - '.round($ker->width,2).'</td>
 					'.$htmlGsm.'
 				</tr>';
 
@@ -2686,31 +2686,31 @@ class Master extends CI_Controller
 					}
 
 					$html .='<tr class="'.$bgtr.'">
-						<td style="padding:5px">'.$i.'</td>
-						<td style="padding:5px">
+						<td style="border:1px solid #000;padding:5px">'.$i.'</td>
+						<td style="border:1px solid #000;padding:5px">
 							<button class="tmbl-cek-roll" '.$btnEdit.' onclick="cekRollEdit('."'".$w->id."'".','."'".$w->roll."'".')">'.$w->roll.'</button>
 						</td>
-						<td style="padding:5px;'.$bgbw.'">'.$txtGac.'</td>
-						<td style="padding:5px;'.$bgrct.'">'.$txtRct.'</td>
-						<td style="padding:5px;'.$bgbi.'">'.$txtBi.'</td>
-						<td style="padding:5px">'.$txtMoi.'</td>
-						<td style="position:relative">
+						<td style="border:1px solid #000;padding:5px;'.$bgbw.'">'.$txtGac.'</td>
+						<td style="border:1px solid #000;padding:5px;'.$bgrct.'">'.$txtRct.'</td>
+						<td style="border:1px solid #000;padding:5px;'.$bgbi.'">'.$txtBi.'</td>
+						<td style="border:1px solid #000;padding:5px">'.$txtMoi.'</td>
+						<td style="border:1px solid #000;position:relative">
 							<input type="text" id="his-diameter-'.$w->id.'" value="'.$w->diameter.'" class="inp-abs" maxlength="3" onkeypress="return hanyaAngka(event)">
 						</td>
-						<td style="padding:5px">'.number_format($w->weight - $w->seset).'</td>
-						<td style="padding:5px">'.$w->joint.'</td>
-						<td style="position:relative">
+						<td style="border:1px solid #000;padding:5px">'.number_format($w->weight - $w->seset).'</td>
+						<td style="border:1px solid #000;padding:5px">'.$w->joint.'</td>
+						<td style="border:1px solid #000;position:relative">
 							<textarea disabled class="txt-area-new">'.$ketSeset.'</textarea>
 						</td>
-						<td style="position:relative">
+						<td style="border:1px solid #000;position:relative">
 							<input type="text" id="his-seset-'.$w->id.'" value="'.number_format($w->seset).'" class="inp-abs" maxlength="4" onkeypress="return hanyaAngka(event)">
 						</td>
-						<td style="padding:5px">'.$btnLabel.'</td>
-						<td style="padding:5px">'.$aksi.'</td>';
+						<td style="border:1px solid #000;padding:5px">'.$btnLabel.'</td>
+						<td style="border:1px solid #000;padding:5px">'.$aksi.'</td>';
 
 					// PL
 					if($plh == 'pl'){
-						$html .='<td style="padding:5px">';
+						$html .='<td style="border:1px solid #000;padding:5px">';
 						// ID PL MASIH KOSONG
 						if($w->id_pl == 0){
 							// CEK RENCANA KIRIM BELUM OK
@@ -2768,11 +2768,11 @@ class Master extends CI_Controller
 							// $getPl->row()->id_perusahaan
 							if($getPl->num_rows() == 1){
 								$html .='<tr>
-									<td style="padding:5px;font-weight:bold;text-align:right" colspan="14"><button onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$getPl->row()->id."'".','."'".$plh."'".','."'".$getPl->row()->id_perusahaan."'".')">'.$getPl->row()->id.'</button></td>
+									<td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:right" colspan="14"><button onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$getPl->row()->id."'".','."'".$plh."'".','."'".$getPl->row()->id_perusahaan."'".')">'.$getPl->row()->id.'</button></td>
 								</tr>';
 							}else{
 								// ALL IN ID PL TERTENTU
-								$html .='<tr><td style="padding:5px;font-weight:bold;text-align:right" colspan="14">';
+								$html .='<tr><td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:right" colspan="14">';
 								foreach($getPl->result() as $idpl){
 									$html .='<button style="margin-left:5px" onclick="entryPlAllIn('."'".$id_rk."'".','."'".$ker->nm_ker."'".','."'".$ker->g_label."'".','."'".$ker->width."'".','."'".$idpl->id."'".','."'".$plh."'".','."'".$idpl->id_perusahaan."'".')">'.$idpl->id.'</button>';
 								}
@@ -2804,7 +2804,7 @@ class Master extends CI_Controller
 							INNER JOIN po_master po ON pl.no_po=po.no_po AND pl.nm_ker=po.nm_ker AND pl.g_label=po.g_label
 							WHERE pl.id_rk='$id_rk'
 							GROUP BY pl.id,pl.no_po,pl.nm_ker,pl.g_label");
-							$html .='<tr style="background:#144272"><td style="padding:5px;font-weight:bold;text-align:right" colspan="14">';
+							$html .='<tr style="background:#144272"><td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:right" colspan="14">';
 							foreach($idPlSakti->result() as $idpls){
 								$html .='<button style="margin-left:5px" onclick="entryPlAllIn('."'".$id_rk."'".','."'".$idpls->nm_ker."'".','."'".$idpls->g_label."'".',0,'."'".$idpls->id."'".','."'".$plh."'".','."'".$idpls->id_perusahaan."'".')">'.$idpls->nm_ker.''.$idpls->g_label.' - '.$idpls->id.'</button>';
 							}
@@ -2882,10 +2882,10 @@ class Master extends CI_Controller
 				$cls = 5;
 			}
 			$html .='<tr style="background:#e9e9e9">
-				<td style="padding:5px;font-weight:bold">'.number_format($totRoll).'</td>
-				<td style="padding:5px;font-weight:bold" colspan="6">TOTAL</td>
-				<td style="padding:5px;font-weight:bold">'.number_format($totBerat).'</td>
-				<td style="padding:5px;font-weight:bold" colspan="'.$cls.'">'.$pLabelReq.' '.$btnCekOk.'</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.number_format($totRoll).'</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold" colspan="6">TOTAL</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.number_format($totBerat).'</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold" colspan="'.$cls.'">'.$pLabelReq.' '.$btnCekOk.'</td>
 			</tr>';
 			$html .='</table></div>';
 		}
@@ -3116,29 +3116,29 @@ class Master extends CI_Controller
 			$html .= '';
 		}else{
 			$html .='<div style="overflow:auto;white-space:nowrap;">';
-			$html .='<table style="margin:15px 0;font-size:12px;color:#000" border="1">';
+			$html .='<table style="margin:15px 0;font-size:12px;color:#000">';
 			$html .='<tr>
-				<td style="padding:5px" colspan="7">'.$idrk.'</td>
+				<td style="border:1px solid #000;padding:5px" colspan="7">'.$idrk.'</td>
 			</tr>
 			<tr style="background:#e9e9e9;text-align:center">
-				<td style="padding:5px;font-weight:bold">ID PL</td>
-				<td style="padding:5px;font-weight:bold">NO. SURAT</td>
-				<td style="padding:5px;font-weight:bold">NO. SO</td>
-				<td style="padding:5px;font-weight:bold">NO. PKB</td>
-				<td style="padding:5px;font-weight:bold">NO. PO</td>
-				<td style="padding:5px;font-weight:bold">JENIS</td>
-				<td style="padding:5px;font-weight:bold">GSM</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">ID PL</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">NO. SURAT</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">NO. SO</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">NO. PKB</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">NO. PO</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">JENIS</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">GSM</td>
 			</tr>';
 
 			foreach($qgetPL->result() as $qpl){
 				$html .='<tr class="list-p-putih">
-					<td style="padding:5px;font-weight:bold;text-align:center">'.$qpl->id.'</td>
-					<td style="padding:5px">'.$qpl->no_surat.'</td>
-					<td style="padding:5px">'.$qpl->no_so.'</td>
-					<td style="padding:5px">'.$qpl->no_pkb.'</td>
-					<td style="padding:5px">'.$qpl->no_po.'</td>
-					<td style="padding:5px">'.$qpl->nm_ker.'</td>
-					<td style="padding:5px">'.$qpl->g_label.'</td>
+					<td style="border:1px solid #000;padding:5px;font-weight:bold;text-align:center">'.$qpl->id.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$qpl->no_surat.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$qpl->no_so.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$qpl->no_pkb.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$qpl->no_po.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$qpl->nm_ker.'</td>
+					<td style="border:1px solid #000;padding:5px">'.$qpl->g_label.'</td>
 				</tr>';
 			}
 			$html .='</table>';
@@ -3153,29 +3153,29 @@ class Master extends CI_Controller
 			$html .='';
 		}else{
 			$html .='<div style="overflow:auto;white-space:nowrap;">';
-			$html .='<table style="margin:15px 0;font-size:12px;color:#000;text-align:center" border="1">';
+			$html .='<table style="margin:15px 0;font-size:12px;color:#000;text-align:center">';
 			$html .='<tr style="background:#e9e9e9">
-				<td style="padding:5px;font-weight:bold">NO. SURAT JALAN</td>
-				<td style="padding:5px;font-weight:bold">NO. PO</td>
-				<td style="padding:5px;font-weight:bold" colspan="2">JENIS KERTAS</td>
-				<td style="padding:5px;font-weight:bold">NO. ROLL</td>
-				<td style="padding:5px;font-weight:bold">D(CM)</td>
-				<td style="padding:5px;font-weight:bold">BERAT</td>
-				<td style="padding:5px;font-weight:bold">JNT</td>
-				<td style="padding:5px 35px;font-weight:bold">KETERANGAN</td>
-				<td style="padding:5px;font-weight:bold">SESET</td>
-				<td style="padding:5px;font-weight:bold">AKSI</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">NO. SURAT JALAN</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">NO. PO</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold" colspan="2">JENIS KERTAS</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">NO. ROLL</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">D(CM)</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">BERAT</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">JNT</td>
+				<td style="border:1px solid #000;padding:5px 35px;font-weight:bold">KETERANGAN</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">SESET</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">AKSI</td>
 			</tr>';
 			foreach($getSj->result() as $sj){
 				$html .='<tr>
-					<td style="padding:5px;font-weight:bold" class="list-p-putih" rowspan="'.$sj->croll.'">'.trim($sj->no_surat).'</td>';
+					<td style="border:1px solid #000;padding:5px;font-weight:bold" class="list-p-putih" rowspan="'.$sj->croll.'">'.trim($sj->no_surat).'</td>';
 				// GET NO PO
 				$getNoPO = $this->db->query("SELECT COUNT(m.roll) AS jnopo,p.* FROM pl p
 				INNER JOIN m_timbangan m ON p.id=m.id_pl
 				WHERE p.id_rk='$sj->id_rk' AND p.nm_ker='$sj->nm_ker' AND p.no_pkb='$sj->no_pkb'
 				GROUP BY p.id_rk,p.nm_ker,p.no_po");
 				foreach($getNoPO->result() as $nopo){
-					$html .='<td style="padding:5px;font-weight:bold" class="list-p-putih" rowspan="'.$nopo->jnopo.'">'.$nopo->no_po.'</td>';
+					$html .='<td style="border:1px solid #000;padding:5px;font-weight:bold" class="list-p-putih" rowspan="'.$nopo->jnopo.'">'.$nopo->no_po.'</td>';
 					// GET JENIS KERTAS DAN GSM
 					$getJKnGSM = $this->db->query("SELECT COUNT(m.roll) AS jkroll,p.* FROM pl p INNER JOIN m_timbangan m ON p.id=m.id_pl
 					WHERE p.id_rk='$nopo->id_rk' AND p.nm_ker='$nopo->nm_ker' AND p.no_pkb='$nopo->no_pkb' AND p.no_po='$nopo->no_po'
@@ -3192,13 +3192,13 @@ class Master extends CI_Controller
 						}else{
 							$bgkk = 'list-p-putih';
 						}
-						$html .='<td style="padding:5px;font-weight:bold" class="'.$bgkk.'" rowspan="'.$jkGsm->jkroll.'">'.$jkGsm->nm_ker.''.$jkGsm->g_label.'<br/>('.$jkGsm->id.')</td>';
+						$html .='<td style="border:1px solid #000;padding:5px;font-weight:bold" class="'.$bgkk.'" rowspan="'.$jkGsm->jkroll.'">'.$jkGsm->nm_ker.''.$jkGsm->g_label.'<br/>('.$jkGsm->id.')</td>';
 						// GET UKURAN
 						$getWidth = $this->db->query("SELECT COUNT(m.roll) AS ukroll,m.width,p.* FROM pl p INNER JOIN m_timbangan m ON p.id=m.id_pl
 						WHERE p.id_rk='$jkGsm->id_rk' AND p.nm_ker='$jkGsm->nm_ker' AND p.g_label='$jkGsm->g_label' AND p.no_po='$jkGsm->no_po'
 						GROUP BY p.id_rk,p.nm_ker,p.g_label,m.width");
 						foreach($getWidth->result() as $uk){
-							$html .='<td style="padding:5px;font-weight:bold" class="'.$bgkk.'" rowspan="'.$uk->ukroll.'">'.round($uk->width,2).' ('.$uk->ukroll.')</td>';
+							$html .='<td style="border:1px solid #000;padding:5px;font-weight:bold" class="'.$bgkk.'" rowspan="'.$uk->ukroll.'">'.round($uk->width,2).' ('.$uk->ukroll.')</td>';
 							// GET NOMER ROLLNYA
 							$getRoll = $this->db->query("SELECT m.id AS idroll,m.roll AS roll,m.diameter,m.weight,m.joint,m.ket,m.seset,m.status AS statusroll,m.id_rtr,p.* FROM pl p
 							INNER JOIN m_timbangan m ON p.id=m.id_pl
@@ -3237,15 +3237,15 @@ class Master extends CI_Controller
 								}else{
 									$aksi = '-';
 								}
-								$html .='<td style="padding:5px;text-align:left" class="'.$bg.'">'.$roll->roll.'</td>
-									<td style="padding:5px" class="'.$bg.'">'.$roll->diameter.'</td>
-									<td style="padding:5px" class="'.$bg.'">'.number_format($berat).'</td>
-									<td style="padding:5px" class="'.$bg.'">'.$roll->joint.'</td>
-									<td style="position:relative" class="'.$bg.'">
+								$html .='<td style="border:1px solid #000;padding:5px;text-align:left" class="'.$bg.'">'.$roll->roll.'</td>
+									<td style="border:1px solid #000;padding:5px" class="'.$bg.'">'.$roll->diameter.'</td>
+									<td style="border:1px solid #000;padding:5px" class="'.$bg.'">'.number_format($berat).'</td>
+									<td style="border:1px solid #000;padding:5px" class="'.$bg.'">'.$roll->joint.'</td>
+									<td style="border:1px solid #000;position:relative" class="'.$bg.'">
 										<textarea disabled class="txt-area-new">'.$ket.'</textarea>
 									</td>
-									<td style="padding:5px" class="'.$bg.'">'.$roll->seset.'</td>
-									<td style="padding:5px" class="'.$bg.'">'.$aksi.'</td>';
+									<td style="border:1px solid #000;padding:5px" class="'.$bg.'">'.$roll->seset.'</td>
+									<td style="border:1px solid #000;padding:5px" class="'.$bg.'">'.$aksi.'</td>';
 								$html .='</tr>';
 							}
 							$html .='</tr>';
@@ -3282,16 +3282,16 @@ class Master extends CI_Controller
 				// FIX BERAT DIKURANGI SESET
 				$totBerat = $sj->zberat - $sj->zseset;
 				$html .='<tr style="background:#e9e9e9;font-weight:bold">
-					<td style="padding:5px;text-align:center" colspan="3">'.$tmplNopolSiu.'</td>
-					<td style="padding:5px">'.number_format($sj->croll).'</td>
-					<td style="padding:5px" colspan="2">TOTAL</td>
-					<td style="padding:5px">'.number_format($totBerat).'</td>
-					<td style="padding:5px" colspan="4">'.$btnSJ.'</td>
+					<td style="border:1px solid #000;padding:5px;text-align:center" colspan="3">'.$tmplNopolSiu.'</td>
+					<td style="border:1px solid #000;padding:5px">'.number_format($sj->croll).'</td>
+					<td style="border:1px solid #000;padding:5px" colspan="2">TOTAL</td>
+					<td style="border:1px solid #000;padding:5px">'.number_format($totBerat).'</td>
+					<td style="border:1px solid #000;padding:5px" colspan="4">'.$btnSJ.'</td>
 				</tr>';
 				
 				// KOTAK KOSONG
 				$html .='<tr>
-					<td style="padding:10px;border:0" colspan="11"></td>
+					<td style="border:1px solid #000;padding:10px;border:0" colspan="11"></td>
 				</tr>';
 			}
 			// TOMBOL CEK / BATAL PACKING LIST
@@ -3301,7 +3301,7 @@ class Master extends CI_Controller
 				$btnSJok = '<button onclick="pLsJokeY('."'".$idrk."'".','."'".$tglpl."'".','."'".$opl."'".','."'".$brencana."'".','."'ok'".')">OK BRO?</button>';
 			}
 			$html .='<tr style="font-weight:bold;text-align:center">
-				<td style="padding:5px;border:0" colspan="11">'.$btnSJok.'</td>
+				<td style="border:1px solid #000;padding:5px;border:0" colspan="11">'.$btnSJok.'</td>
 			</tr>';
 			$html .='</table>';
 			$html .='</div>';
@@ -3375,12 +3375,12 @@ class Master extends CI_Controller
 		if($getUkRencKirim->num_rows() == 0){
 			$html .= '<div style="notfon">BELUM ADA RENCANA KIRIMAN</div>';
 		}else{
-			$html .='<table class="list-table" style="font-weight:bold;text-align:center" border="1">
+			$html .='<table class="list-table" style="font-weight:bold;text-align:center">
 				<tr style="background:#e9e9e9">
-					<td style="padding:5px">JENIS</td>
-					<td style="padding:5px">UKURAN</td>
-					<td style="padding:5px">JUMLAH</td>
-					<td style="padding:5px">INPUT</td>
+					<td style="border:1px solid #000;padding:5px">JENIS</td>
+					<td style="border:1px solid #000;padding:5px">UKURAN</td>
+					<td style="border:1px solid #000;padding:5px">JUMLAH</td>
+					<td style="border:1px solid #000;padding:5px">INPUT</td>
 				</tr>';
 			$sumjrll = 0;
 			$sumjIrll = 0;
@@ -3401,7 +3401,7 @@ class Master extends CI_Controller
 				GROUP BY nm_ker,g_label,width,order_pl");
 				$rowsp = $getUk->num_rows() + 1;
 				$html .='<tr class="'.$bgtr.'">
-					<td style="padding:5px" rowspan="'.$rowsp.'">'.$ukRenc->nm_ker.' '.$ukRenc->g_label.'</td></tr>';
+					<td style="border:1px solid #000;padding:5px" rowspan="'.$rowsp.'">'.$ukRenc->nm_ker.' '.$ukRenc->g_label.'</td></tr>';
 
 				$totjmlroll = 0;
 				$totIjmlroll = 0;
@@ -3431,9 +3431,9 @@ class Master extends CI_Controller
 						$jmlRoll = $getRoll->row()->jmlRoll;
 					}
 					$html .='<tr class="'.$bgtr.'">
-						<td style="padding:5px">'.round($uk->width,2).'</td>
-						<td >'.$aksi.'</td>
-						<td style="background:#fff;padding:5px">'.$jmlRoll.'</td>
+						<td style="border:1px solid #000;padding:5px">'.round($uk->width,2).'</td>
+						<td style="border:1px solid #000">'.$aksi.'</td>
+						<td style="background:#fff;border:1px solid #000;padding:5px">'.$jmlRoll.'</td>
 					</tr>';
 
 					$totjmlroll += $uk->jml_roll;
@@ -3447,9 +3447,9 @@ class Master extends CI_Controller
 			// CEK PO
 			($this->session->userdata('level') == "SuperAdmin") ? $btnCPo = '<button onclick="btnPCekPO('."'".$idrk."'".')">CEK</button> - ' : $btnCPo = '';
 			$html .='<tr style="background:#e9e9e9">
-				<td style="padding:5px;font-weight:bold" colspan="2">'.$btnCPo.'TOTAL</td>
-				<td style="padding:5px;font-weight:bold">'.number_format($sumjrll).'</td>
-				<td style="padding:5px;font-weight:bold">'.number_format($sumjIrll).'</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold" colspan="2">'.$btnCPo.'TOTAL</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.number_format($sumjrll).'</td>
+				<td style="border:1px solid #000;padding:5px;font-weight:bold">'.number_format($sumjIrll).'</td>
 			</tr>';
 			$html .='</table>';
 		}
