@@ -1414,28 +1414,33 @@ class Master extends CI_Controller
 	function print_timbangan() {
 		$id = $_GET['id'];
 		$data = $this->db->query("SELECT * FROM m_timbangan WHERE roll = '$id'")->row();
-		if($data->status == 0){
+		if($data->status == 0 && ($data->nm_ker == 'MH' || $data->nm_ker == 'MN' || $data->nm_ker == 'BK' || $data->nm_ker == 'WP')){
+			$sty = '';
 			$ket = 0;
+		}else if($data->ket == '' && $data->status == 3 && ($data->nm_ker == 'MH' || $data->nm_ker == 'MN' || $data->nm_ker == 'BK' || $data->nm_ker == 'WP')){
 			$sty = '';
-		}else if($data->status == 2){
-			$ket = 'PPI';
-			$sty = '';
-		}else if($data->status == 4){
-			$ket = 'PPI SIZING';
-			$sty = '';
-		}else if($data->status == 5){
-			$ket = 'PPI CALENDER';
-			$sty = '';
-		}else if($data->status == 6){
-			$ket = 'PPI WARNA';
-			$sty = '';
-		}else if($data->status == 7){
-			$ket = 'PPI BAROKAH / NUSANTARA';
-			$sty = ';font-weight:bold;font-size:28px';
-		}else{
-			if($data->ket == ''){
+			$ket = 'BUFFER';
+		}
+		// else if($data->status == 2){
+		// 	$ket = 'PPI';
+		// 	$sty = '';
+		// }else if($data->status == 4){
+		// 	$ket = 'PPI SIZING';
+		// 	$sty = '';
+		// }else if($data->status == 5){
+		// 	$ket = 'PPI CALENDER';
+		// 	$sty = '';
+		// }else if($data->status == 6){
+		// 	$ket = 'PPI WARNA';
+		// 	$sty = '';
+		// }else if($data->status == 7){
+		// 	$ket = 'PPI BAROKAH / NUSANTARA';
+		// 	$sty = ';font-weight:bold;font-size:28px';
+		// }
+		else{
+			if($data->ket == '' && ($data->status == 2 || $data->status == 4 || $data->status == 5 || $data->status == 6)){
 				$sty = '';
-				$ket = 'BUFFER';
+				$ket = 'PPI';
 			}else{
 				if(strlen($data->ket) <= 50){
 					$sz = 30;
@@ -4678,11 +4683,12 @@ class Master extends CI_Controller
 					<th style="border:0;padding:0;width:10%"></th>
 					<th style="border:0;padding:0;width:10%"></th>
 					<th style="border:0;padding:0;width:10%"></th>
+					<th style="border:0;padding:0;width:6%"></th>
 					<th style="border:0;padding:0;width:10%"></th>
 					<th style="border:0;padding:0;width:10%"></th>
-					<th style="border:0;padding:0;width:27%"></th>
+					<th style="border:0;padding:0;width:21%"></th>
 				</tr>';
-				$cs = '4'; $cs2 = '9'; $cs22 = '7';
+				$cs = '5'; $cs2 = '10'; $cs22 = '10';
 			}else if($expIdRk[1] == 210 || $expIdRk[1] == '210'){
 				$html .= '<tr>
 					<th style="border:0;padding:2px 0;width:5%"></th>
@@ -4692,11 +4698,12 @@ class Master extends CI_Controller
 					<th style="border:0;padding:2px 0;width:8%"></th>
 					<th style="border:0;padding:2px 0;width:8%"></th>
 					<th style="border:0;padding:2px 0;width:8%"></th>
+					<th style="border:0;padding:2px 0;width:6%"></th>
 					<th style="border:0;padding:2px 0;width:8%"></th>
 					<th style="border:0;padding:2px 0;width:8%"></th>
-					<th style="border:0;padding:2px 0;width:26%"></th>
+					<th style="border:0;padding:2px 0;width:20%"></th>
 				</tr>';
-				$cs = '3'; $cs2 = ''; $cs22 = '';
+				$cs = '4'; $cs2 = ''; $cs22 = '';
 			}else{
 				$html .= '<tr>
 					<th style="border:0;padding:0;width:5%"></th>
@@ -4706,11 +4713,12 @@ class Master extends CI_Controller
 					<th style="border:0;padding:0;width:9%"></th>
 					<th style="border:0;padding:0;width:9%"></th>
 					<th style="border:0;padding:0;width:9%"></th>
+					<th style="border:0;padding:0;width:6%"></th>
 					<th style="border:0;padding:0;width:9%"></th>
 					<th style="border:0;padding:0;width:6%"></th>
 					<th style="border:0;padding:0;width:28%"></th>
 				</tr>';
-				$cs = '5'; $cs2 = '10'; $cs22 = '8';
+				$cs = '6'; $cs2 = '11'; $cs22 = '9';
 			}
 			//
 			if($expIdRk[1] != 210 || $expIdRk[1] != '210'){
@@ -4785,6 +4793,7 @@ class Master extends CI_Controller
 				'.$dkop.'
 				<td style="border:1px solid #000;font-weight:bold">GSM</td>
 				<td style="border:1px solid #000;font-weight:bold">WIDTH</td>
+				<td style="border:1px solid #000;font-weight:bold">Ø</td>
 				<td style="border:1px solid #000;font-weight:bold">BERAT</td>
 				<td style="border:1px solid #000;font-weight:bold">'.$joint.'</td>
 				'.$ketCor.'
@@ -4860,7 +4869,7 @@ class Master extends CI_Controller
 					$ketIsiCor = '<td style="border:1px solid #000"></td>
 						<td style="border:1px solid #000"></td>
 						<td style="border:1px solid #000"></td>';
-					$colspanTotCor = 4;
+					$colspanTotCor = 5;
 				}else{
 					$ketIsiCor = '<td style="border:1px solid #000;text-align:left;font-size:10px">'.$sesetKet.''.strtoupper($r->ket).''.$pKet.'</td>';
 					$colspanTotCor = 2;
@@ -4872,6 +4881,7 @@ class Master extends CI_Controller
 					'.$cek.'
 					<td style="border:1px solid #000;background-color:'.$bgCrGsm.'">'.$r->g_label.'</td>
 					<td style="border:1px solid #000">'.round($r->width,2).'</td>
+					<td style="border:1px solid #000">'.$r->diameter.'</td>
 					<td style="border:1px solid #000">'.$tBerat.'</td>
 					<td style="border:1px solid #000">'.$r->joint.'</td>
 					'.$ketIsiCor.'
@@ -4892,7 +4902,7 @@ class Master extends CI_Controller
 		$html .='<tr>
 			<td style="padding:0;border:1px solid #000;font-weight:bold">'.$totalRoll.'</td>
 			<td style="border:1px solid #000;font-weight:bold" colspan="'.$cs.'">-</td>
-			<td style="border:1px solid #000;font-weight:bold">TOTAL</td>
+			<td style="border:1px solid #000;padding:5px 0;font-weight:bold">TOTAL</td>
 			<td style="border:1px solid #000;font-weight:bold">'.number_format($totalBerat).'</td>
 			<td style="border:1px solid #000" colspan="'.$colspanTotCor.'"></td>
 		</tr>';
@@ -4940,7 +4950,7 @@ class Master extends CI_Controller
 			$html .='</table>';
 		}
 
-		$this->m_fungsi->_mpdf2('',$html,10,10,10,'P','PL',3);
+		$this->m_fungsi->_mpdf2('',$html,5,5,10,'P','PL',3);
 		// echo $html;
 	}
 
