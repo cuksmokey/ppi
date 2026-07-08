@@ -1003,6 +1003,7 @@ class M_master extends CI_Model{
             $this->db->set('weight', $_POST['weight']);
             $this->db->set('joint', $_POST['joint']);
             $this->db->set('ket', strtoupper($_POST['ket']));
+            $this->db->set('ket2', strtoupper($_POST['ket2']));
             $this->db->set('status', $_POST['status']);
         }
         

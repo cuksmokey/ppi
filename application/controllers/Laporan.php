@@ -6177,6 +6177,7 @@ class Laporan extends CI_Controller {
         $plh_status = $_POST['plh_status'];
         $roll = $_POST['roll'];
         $keterangan = $_POST['keterangan'];
+        $keterangan2 = $_POST['keterangan2'];
         $tgl1 = $_POST['tgl1'];
         $tgl2 = $_POST['tgl2'];
         $opsi = $_POST['opsi'];
@@ -6240,9 +6241,15 @@ class Laporan extends CI_Controller {
 				$ket = "AND ket LIKE '%$keterangan%'";
 			}
 
+			if($keterangan2 == ''){
+				$ket2 = '';
+			}else{
+				$ket2 = "AND ket2 LIKE '%$keterangan2%'";
+			}
+
 			// OPSI PER ROLL / PER TANGGAL
 			if($opsi == 'rroll'){
-				$where = "nm_ker LIKE '%$jnsroll%' AND g_label LIKE '%$gsmroll%' AND width LIKE '%$ukroll%' AND roll LIKE '%$roll%' $plhStat $ket";
+				$where = "nm_ker LIKE '%$jnsroll%' AND g_label LIKE '%$gsmroll%' AND width LIKE '%$ukroll%' AND roll LIKE '%$roll%' $plhStat $ket $ket2";
 			}else{
 				$where = "tgl BETWEEN '$tgl1' AND '$tgl2' $plhStat";
 			}
@@ -6275,6 +6282,7 @@ class Laporan extends CI_Controller {
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">BERAT</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">J</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">KETERANGAN</th>
+				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">BOX</th>
 				<th style="padding:6px;border:1px solid #999;font-weight:bold;text-align:center">STATUS</th>
 			</tr>';
 			foreach($getRoll->result() as $roll){
@@ -6365,6 +6373,7 @@ class Laporan extends CI_Controller {
                 <input type="hidden" id="ldiameter-'.$i.'" value="'.$roll->diameter.'">
                 <input type="hidden" id="ljoint-'.$i.'" value="'.$roll->joint.'">
                 <input type="hidden" id="lket-'.$i.'" value="'.$roll->ket.'">
+                <input type="hidden" id="lket2-'.$i.'" value="'.$roll->ket2.'">
                 <input type="hidden" id="lstatus-'.$i.'" value="'.$roll->status.'">
                 ';
 				// ROLL
@@ -6417,7 +6426,8 @@ class Laporan extends CI_Controller {
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ediameter-'.$i.'" value="'.$roll->diameter.'" '.$diss.' onkeypress="return aK(event)" maxlength="3" maxlength="3" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="eweight-'.$i.'" value="'.$roll->weight.'" '.$diss.' onkeypress="return aK(event)" maxlength="4" onkeypress="return hanyaAngka(event)" maxlength="5" style="width:50px;text-align:center" autocomplete="off">'.$cBtn.'</td>
 					<td style="border:1px solid #999">'.$oBtn.'<input class="ipt-txt" type="text" id="ejoint-'.$i.'" value="'.$roll->joint.'" '.$diss.' onkeypress="return aK(event)" maxlength="2" onkeypress="return hanyaAngka(event)" maxlength="3" style="width:30px;text-align:center" autocomplete="off">'.$cBtn.'</td>
-					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>';
+					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<textarea class="ipt-txt" id="eket-'.$i.'" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket.'</textarea>'.$cBtn.'</td>
+					<td style="padding:0 3px;border:1px solid #999">'.$oBtn.'<textarea class="ipt-txt" id="eket2-'.$i.'" style="resize:none;width:180px;height:30px" '.$diss.'>'.$roll->ket2.'</textarea>'.$cBtn.'</td>';
 
                     // PILIH STATUS
 					$opsRoll = substr($roll->id_rk,0,6);
@@ -6478,7 +6488,6 @@ class Laporan extends CI_Controller {
 							}else{
 								$aksii = '';
 							}
-
 							if($otori == 'all' || $otori == 'qc' || ($otori == 'fg' && $roll->nm_ker == 'WP')){
 								$html .='<td class="edit-roll" style="padding:3px"><button id="btnn-edit-roll-'.$i.'" style="background:#fff;border:0;padding:3px 5px" onclick="editRoll('."'".$i."'".')">EDIT</button> '.$aksii.'</td>';
 							}else{

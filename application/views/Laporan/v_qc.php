@@ -203,6 +203,13 @@
 									</td>
 								</tr>
 								<tr>
+									<td style="padding:5px 0;font-weight:bold">BOX</td>
+									<td style="padding:5px 3px;text-align:center">:</td>
+									<td style="padding:5px 0">
+										<input type="text" name="keterangan2" id="keterangan2" class="form-control" autocomplete="off" placeholder="BOX">
+									</td>
+								</tr>
+								<tr>
 									<td style="padding:5px 0;font-weight:bold">STATUS</td>
 									<td style="padding:5px 3px;text-align:center">:</td>
 									<td style="padding:5px 0">
@@ -312,6 +319,7 @@
 		
 		$("#proll").val("");
 		$("#keterangan").val("");
+		$("#keterangan2").val("");
 		$("#tgl1").val("");
 		$("#tgl2").val("");
 		$("#plh_status_tgl").val("ALL");
@@ -372,6 +380,7 @@
 
 		roll = $("#proll").val();
 		keterangan = $("#keterangan").val();
+		keterangan2 = $("#keterangan2").val();
 		tgl1 = $("#tgl1").val();
 		tgl2 = $("#tgl2").val();
 		// alert(jnsroll+' '+gsmroll+' '+ukroll+' '+roll+' '+tgl1+' '+tgl2+' '+opsi);
@@ -386,6 +395,7 @@
 				plh_status: plh_status,
 				roll: roll,
 				keterangan: keterangan,
+				keterangan2: keterangan2,
 				tgl1: tgl1,
 				tgl2: tgl2,
 				opsi: opsi, // ROLL, TGL
@@ -437,7 +447,7 @@
 		});
 	}
 
-	function editRoll(i){ //
+	function editRoll(i){
 		otorisasi = $("#otorisasi").val();
 		tgl = $("#etgl-"+i).val();
 		g_ac = $("#eg_ac-"+i).val();
@@ -454,8 +464,8 @@
 		weight = $("#eweight-"+i).val();
 		joint = $("#ejoint-"+i).val();
 		ket = $("#eket-"+i).val().toUpperCase();
+		ket2 = $("#eket2-"+i).val().toUpperCase();
 		status = $("#opt_status-"+i).val();
-		// alert(tgl+' - '+g_ac+' - '+rct+' - '+bi+' - '+nm_ker+' - '+g_label+' - '+width+' - '+diameter+' - '+weight+' - '+joint+' - '+ket+' - '+status);
 
 		// MENAMPUNG DATA LAMA
 		lroll = $("#lroll-"+i).val();
@@ -466,14 +476,13 @@
 		ldiameter = $("#ldiameter-"+i).val();
 		ljoint = $("#ljoint-"+i).val();
 		lket = $("#lket-"+i).val();
+		lket2 = $("#lket2-"+i).val();
 		lstatus = $("#lstatus-"+i).val();
-		// console.log(lroll,lnm_ker,lg_label,lwidth,lweight,ldiameter,ljoint,lket,lstatus);
 
 		if (tgl == '' || nm_ker == '' || g_label == '' || width == '' || diameter == '' || weight == '' || joint == '') {
 			showNotification("alert-danger", "DATA TANGGAL, JENIS, GSM, UKURAN, DIAMETER, BERAT, JOINT, TIDAK BOLEH KOSONG!!!", "bottom", "center", "", "");
 			return;
 		}
-		// $(".edit-roll").prop("disabled", true);
 		$("#btnn-edit-roll-"+i).prop("disabled", true);
 		$.ajax({
 			url: '<?php echo base_url('Master/editQCRoll') ?>',
@@ -495,6 +504,7 @@
 				weight : weight,
 				joint : joint,
 				ket : ket,
+				ket2 : ket2,
 				status : status,
 				lroll: lroll, // menampung data lama
 				lnm_ker: lnm_ker,
@@ -504,6 +514,7 @@
 				ldiameter: ldiameter,
 				ljoint: ljoint,
 				lket: lket,
+				lket2: lket2,
 				lstatus: lstatus,
 				edit: 'LapQC',
 			}),
@@ -530,6 +541,7 @@
 				$("#eweight-"+i).val(json.weight).animateCss('fadeInRight');
 				$("#ejoint-"+i).val(json.joint).animateCss('fadeInRight');
 				$("#eket-"+i).val(json.ket).animateCss('fadeInRight');
+				$("#eket2-"+i).val(json.ket2).animateCss('fadeInRight');
 				$("#opt_status-"+i).val(json.status).animateCss('fadeInRight');
 
 				// MENAMPUNG DATA LAMA
@@ -541,6 +553,7 @@
 				$("#ldiameter-"+i).val(json.diameter);
 				$("#ljoint-"+i).val(json.joint);
 				$("#lket-"+i).val(json.ket);
+				$("#lket2-"+i).val(json.ket2);
 				$("#lstatus-"+i).val(json.status);
 
 				$("#btnn-edit-roll-"+i).prop("disabled", false);

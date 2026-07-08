@@ -1367,17 +1367,17 @@ class Master extends CI_Controller
 
 		$idOldRoll = $this->m_master->get_data_one("m_timbangan", "id", $id)->row();
 		$data = array(
-			'data' => false, 'msg' => 'DATA SUDAH MASUK RENCANA KIRIM!', 'id_roll' => $idOldRoll->id, 'roll' => $idOldRoll->roll, 'tgl' => $idOldRoll->tgl, 'g_ac' => $idOldRoll->g_ac, 'rct' => $idOldRoll->rct, 'bi' => $idOldRoll->bi, 'cobb' => $idOldRoll->cobb, 'moisture' => $idOldRoll->moisture, 'rm' => $idOldRoll->rm, 'nm_ker' => $idOldRoll->nm_ker, 'g_label' => $idOldRoll->g_label, 'width' => $idOldRoll->width, 'diameter' => $idOldRoll->diameter, 'weight' => $idOldRoll->weight, 'joint' => $idOldRoll->joint, 'ket' => $idOldRoll->ket, 'status' => $idOldRoll->status,
+			'data' => false, 'msg' => 'DATA SUDAH MASUK RENCANA KIRIM!', 'id_roll' => $idOldRoll->id, 'roll' => $idOldRoll->roll, 'tgl' => $idOldRoll->tgl, 'g_ac' => $idOldRoll->g_ac, 'rct' => $idOldRoll->rct, 'bi' => $idOldRoll->bi, 'cobb' => $idOldRoll->cobb, 'moisture' => $idOldRoll->moisture, 'rm' => $idOldRoll->rm, 'nm_ker' => $idOldRoll->nm_ker, 'g_label' => $idOldRoll->g_label, 'width' => $idOldRoll->width, 'diameter' => $idOldRoll->diameter, 'weight' => $idOldRoll->weight, 'joint' => $idOldRoll->joint, 'ket' => $idOldRoll->ket, 'ket2' => $idOldRoll->ket2, 'status' => $idOldRoll->status,
 		);
 		$data2 = array(
-			'data' => false, 'msg' => 'TIDAK SESUAI FORMAT COBB!', 'id_roll' => $idOldRoll->id, 'roll' => $idOldRoll->roll, 'tgl' => $idOldRoll->tgl, 'g_ac' => $idOldRoll->g_ac, 'rct' => $idOldRoll->rct, 'bi' => $idOldRoll->bi, 'cobb' => $idOldRoll->cobb, 'moisture' => $idOldRoll->moisture, 'rm' => $idOldRoll->rm, 'nm_ker' => $idOldRoll->nm_ker, 'g_label' => $idOldRoll->g_label, 'width' => $idOldRoll->width, 'diameter' => $idOldRoll->diameter, 'weight' => $idOldRoll->weight, 'joint' => $idOldRoll->joint, 'ket' => $idOldRoll->ket, 'status' => $idOldRoll->status,
+			'data' => false, 'msg' => 'TIDAK SESUAI FORMAT COBB!', 'id_roll' => $idOldRoll->id, 'roll' => $idOldRoll->roll, 'tgl' => $idOldRoll->tgl, 'g_ac' => $idOldRoll->g_ac, 'rct' => $idOldRoll->rct, 'bi' => $idOldRoll->bi, 'cobb' => $idOldRoll->cobb, 'moisture' => $idOldRoll->moisture, 'rm' => $idOldRoll->rm, 'nm_ker' => $idOldRoll->nm_ker, 'g_label' => $idOldRoll->g_label, 'width' => $idOldRoll->width, 'diameter' => $idOldRoll->diameter, 'weight' => $idOldRoll->weight, 'joint' => $idOldRoll->joint, 'ket' => $idOldRoll->ket, 'ket2' => $idOldRoll->ket2, 'status' => $idOldRoll->status,
 		);
 
 		// CEK JIKA SUDAH MASUK RENCANA KIRIM
 		$cek_rk = $this->db->query("SELECT*FROM m_timbangan WHERE id='$id' AND (id_rk='' OR id_rk IS NULL)");
 		if($_POST['edit'] == 'ListStokGudang' && $cek_rk->num_rows() == 0){
 			echo json_encode($data);
-		}else if((($_POST['lnm_ker'] != $_POST['nm_ker']) || ($_POST['lg_label'] != $_POST['g_label']) || ($_POST['lwidth'] != $_POST['width']) || ($_POST['lweight'] != $_POST['weight']) || ($_POST['ldiameter'] != $_POST['diameter']) || ($_POST['ljoint'] != $_POST['joint']) || ($_POST['lket'] != $_POST['ket']) || ($_POST['lstatus'] != $_POST['status'])) && $_POST['edit'] == 'LapQC' && $cek_rk->num_rows() == 0){
+		}else if((($_POST['lnm_ker'] != $_POST['nm_ker']) || ($_POST['lg_label'] != $_POST['g_label']) || ($_POST['lwidth'] != $_POST['width']) || ($_POST['lweight'] != $_POST['weight']) || ($_POST['ldiameter'] != $_POST['diameter']) || ($_POST['ljoint'] != $_POST['joint']) || ($_POST['lket'] != $_POST['ket']) || ($_POST['lket2'] != $_POST['ket2']) || ($_POST['lstatus'] != $_POST['status'])) && $_POST['edit'] == 'LapQC' && $cek_rk->num_rows() == 0){
 			echo json_encode($data);
 		}else if((!preg_match("/^[0-9\/\/]*$/", $_POST["cobb"])) && $_POST['edit'] == 'LapQC'){
 			echo json_encode($data2);
@@ -1404,6 +1404,7 @@ class Master extends CI_Controller
 					'weight' => $idNewRoll->weight,
 					'joint' => $idNewRoll->joint,
 					'ket' => $idNewRoll->ket,
+					'ket2' => $idNewRoll->ket2,
 					'status' => $idNewRoll->status,
 					'msg' => 'BERHASIL!!!',
 				)
@@ -1442,14 +1443,39 @@ class Master extends CI_Controller
 				$sty = '';
 				$ket = 'PPI';
 			}else{
-				if(strlen($data->ket) <= 50){
-					$sz = 30;
+				if(strlen($data->ket) <= 18){
+					$sz = 42;
+				}else if(strlen($data->ket) <= 80){
+					$sz = 21;
 				}else{
-					$sz = 18;
+					$sz = 14;
 				}
 				$sty = ';font-weight:bold;font-size:'.$sz.'';
 				$ket = $data->ket;
 			}
+		}
+
+		if(($data->status == 0 || $data->status == 3) && ($data->nm_ker == 'MH' || $data->nm_ker == 'MN' || $data->nm_ker == 'BK' || $data->nm_ker == 'WP')){
+			$trTH = '';
+		}else{
+			if($data->ket2 == ''){
+				$sty2 = '';
+				$ket2 = '-';
+			}else{
+				if(strlen($data->ket2) <= 18){
+					$sz2 = 42;
+				}else if(strlen($data->ket2) <= 80){
+					$sz2 = 21;
+				}else{
+					$sz2 = 14;
+				}
+				$sty2 = ';font-weight:bold;font-size:'.$sz2.'';
+				$ket2 = $data->ket2;
+			}
+			$trTH = '<tr>
+				<td>BOX</td>
+				<td style="text-align:center'.$sty2.'">'.$ket2.'</td>
+			</tr>';
 		}
 
 		$data_perusahaan = $this->db->query("SELECT * FROM perusahaan limit 1")->row();
@@ -1489,13 +1515,22 @@ class Master extends CI_Controller
 					<td>LOC</td>
 					<td style="text-align:center'.$sty.'">'.$ket.'</td>
 				</tr>
+				'.$trTH.'
 			</table>';
 		
 		$this->db->query("UPDATE m_timbangan SET ctk='1' WHERE roll='$id'");
 		if($data->ctk == 0){
-			$this->m_fungsi->newMpdf($html, 15, 15, 5, 15, 'L', 'F4');
-		}else if($this->session->userdata('level') == "SuperAdmin" || $this->session->userdata('level') == "Admin" || $this->session->userdata('level') == "QC"){
-			$this->m_fungsi->newMpdf($html, 15, 15, 5, 15, 'L', 'F4');
+			if(($data->status == 0 || $data->status == 3) && ($data->nm_ker == 'MH' || $data->nm_ker == 'MN' || $data->nm_ker == 'BK' || $data->nm_ker == 'WP')){
+				$this->m_fungsi->newMpdf($html, 15, 15, 5, 15, 'L', 'F4');
+			}else{
+				$this->m_fungsi->newMpdf($html, 3, 15, 3, 15, 'L', 'F4');
+			}
+		}else if(in_array($this->session->userdata('level'), ['SuperAdmin', 'Admin', 'QC'])){
+			if(($data->status == 0 || $data->status == 3) && ($data->nm_ker == 'MH' || $data->nm_ker == 'MN' || $data->nm_ker == 'BK' || $data->nm_ker == 'WP')){
+				$this->m_fungsi->newMpdf($html, 15, 15, 5, 15, 'L', 'F4');
+			}else{
+				$this->m_fungsi->newMpdf($html, 3, 15, 3, 15, 'L', 'F4');
+			}
 		}else{
 			redirect(base_url("Master"));
 		}
