@@ -4993,6 +4993,8 @@ class Master extends CI_Controller
 		$jenis = $_POST['jenis'];
 		$otfg = $_POST['otfg'];
 		$otorisasi = $_POST['otorisasi'];
+		$uk1 = $_POST['uk1'];
+		$uk2 = $_POST['uk2'];
 		$html = '';
 
 		// mh bk mhbk nonspek wp all
@@ -5048,12 +5050,17 @@ class Master extends CI_Controller
 			}
 			$html .='</tr>';
 			
+			if($uk1 != '' && $uk2 != ''){
+				$wUK = "WHERE width BETWEEN '$uk1' AND '$uk2'";
+			}else{
+				$wUK = '';
+			}
 			// TAMPIL UKURANNYA
 			$html .='<tr>';
 			$getUkuran = $this->db->query("SELECT width FROM po_master
 			WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' AND status='open' $nmKer AND status_roll='0' AND jml_roll!='0'
 			-- AND id_perusahaan NOT IN('170', '203', '46', '6', '44', '131', '232', '236')
-			-- AND width between '160' AND '170'
+			$wUK
 			GROUP BY width;");
 			$i = 0;
 			foreach($getUkuran->result() as $uk){
@@ -5178,6 +5185,8 @@ class Master extends CI_Controller
 		$jenis = $_POST['jenis'];
 		$otfg = $_POST['otfg'];
 		$otorisasi = $_POST['otorisasi'];
+		$uk1 = $_POST['uk1'];
+		$uk2 = $_POST['uk2'];
 		$html = '';
 
 		// mh bk mhbk nonspek wp all
@@ -5214,7 +5223,7 @@ class Master extends CI_Controller
 			WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' $nmKer AND g_label!='120'
 			UNION ALL
 			SELECT nm_ker FROM po_master
-			WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' $nmKer2
+			WHERE tgl BETWEEN '2026-01-01' AND '9999-01-01' $nmKer2
 		) AS m_timbangan
 		GROUP BY nm_ker");
 		if($getNmKer->num_rows() == 0){
@@ -5231,7 +5240,7 @@ class Master extends CI_Controller
 					WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' AND nm_ker='$ker->nm_ker' AND g_label!='120'
 					UNION ALL
 					SELECT nm_ker,g_label FROM po_master
-					WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' AND nm_ker='$ker->nm_ker' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'
+					WHERE tgl BETWEEN '2026-01-01' AND '9999-01-01' AND nm_ker='$ker->nm_ker' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'
 				) AS m_timbangan
 				GROUP BY nm_ker,g_label");
 				$html .='<td style="border:1px solid #000;padding:5px" colspan="'.$getgLabel->num_rows().'">'.$ker->nm_ker.'</td>';
@@ -5246,7 +5255,7 @@ class Master extends CI_Controller
 					WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' AND nm_ker='$ker->nm_ker' AND g_label!='120'
 					UNION ALL
 					SELECT nm_ker,g_label FROM po_master
-					WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' AND nm_ker='$ker->nm_ker' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'
+					WHERE tgl BETWEEN '2026-01-01' AND '9999-01-01' AND nm_ker='$ker->nm_ker' AND g_label!='120' AND status='open' AND status_roll='0' AND jml_roll!='0'
 				) AS m_timbangan
 				GROUP BY nm_ker,g_label");
 				foreach($getgLabel->result() as $glabel){
@@ -5255,6 +5264,12 @@ class Master extends CI_Controller
 			}
 			$html .='</tr>';
 			
+			if($uk1 != '' && $uk2 != ''){
+				$wUK = "WHERE width BETWEEN '$uk1' AND '$uk2'";
+			}else{
+				$wUK = '';
+			}
+
 			// TAMPIL UKURANNYA
 			$html .='<tr>';
 			$getUkuran = $this->db->query("SELECT width FROM (
@@ -5262,9 +5277,9 @@ class Master extends CI_Controller
 				WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' $nmKer
 				UNION ALL
 				SELECT width FROM po_master
-				WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' $nmKer3
+				WHERE tgl BETWEEN '2026-01-01' AND '9999-01-01' $nmKer3
 			) AS m_timbangan
-			-- WHERE width BETWEEN '90' AND '120'
+			$wUK
 			GROUP BY width");
 			$i = 0;
 			foreach($getUkuran->result() as $uk){
@@ -5277,7 +5292,7 @@ class Master extends CI_Controller
 					WHERE tgl BETWEEN '2020-04-01' AND '9999-01-01' AND status='0' AND id_pl='0' $nmKer AND g_label!='120'
 					UNION ALL
 					SELECT nm_ker,g_label FROM po_master
-					WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' $nmKer2
+					WHERE tgl BETWEEN '2026-01-01' AND '9999-01-01' $nmKer2
 				) AS m_timbangan
 				GROUP BY nm_ker,g_label");
 				foreach($getgLabel->result() as $lbl){
@@ -5289,7 +5304,7 @@ class Master extends CI_Controller
 
 					// GET PO
 					$getPO = $this->db->query("SELECT*FROM po_master
-					WHERE tgl BETWEEN '2024-12-01' AND '9999-01-01' AND status='open' AND nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width' AND status_roll='0' AND jml_roll!='0'
+					WHERE tgl BETWEEN '2026-01-01' AND '9999-01-01' AND status='open' AND nm_ker='$lbl->nm_ker' AND $wGLabel1 AND width='$uk->width' AND status_roll='0' AND jml_roll!='0'
 					GROUP BY no_po");
 					$jmlRoll = 0;
 					// PILIHAN SISA OS / BERTUAN / TIDAK BERTUAN

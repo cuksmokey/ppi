@@ -302,6 +302,8 @@
 								<!-- <button class="tmbl-stok" onclick="loadDataOFG('mhbk')">MEDIUM - B-KRAFT</button> -->
 								<button class="tmbl-stok" onclick="loadDataOFG('nonspek')">MEDIUM NON SPEK</button>
 								<button class="tmbl-stok" onclick="loadDataOFG('wp')">W P</button>
+								<input type="number" id="uk1" style="width:50px" placeholder="uk1" autocomplete="off">
+								<input type="number" id="uk2" style="width:50px" placeholder="uk2" autocomplete="off">
 								<!-- <button class="tmbl-stok" onclick="loadDataOFG('all')">SEMUA</button> -->
 								<div class="clear"></div>
 							</div>
@@ -565,6 +567,8 @@
 	function loadDataOFG(jenis){
 		otorisasi = $("#otorisasi").val();
 		otfg = $("#otfg").val();
+		uk1 = $("#uk1").val();
+		uk2 = $("#uk2").val();
 		// stok ofg ofgtuanf ofgtdktuan
 		// alert(jenis+' - '+otorisasi+' - '+otfg);
 		$(".tmbl-plh").prop("disabled", true);
@@ -577,7 +581,7 @@
 			url: '<?php echo base_url('Master/')?>'+load,
 			type: "POST",
 			data: ({
-				jenis,otfg,otorisasi
+				jenis,otfg,otorisasi,uk1,uk2
 			}),
 			success: function(res){
 				$(".tmbl-plh").prop("disabled", false);
