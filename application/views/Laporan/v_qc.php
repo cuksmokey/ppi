@@ -219,6 +219,8 @@
 											<option value="BUFFER">BUFFER</option>
 											<option value="RETUR">RETUR</option>
 											<option value="PPI">PPI</option>
+											<option value="PPIATAS">PPI ATAS</option>
+											<option value="PPIBAWAH">PPI BAWAH</option>
 											<option value="PPISIZING">PPI SIZING</option>
 											<option value="PPICALENDER">PPI CALENDER</option>
 											<option value="PPIWARNA">PPI WARNA</option>
@@ -269,6 +271,8 @@
 											<option value="BUFFER">BUFFER</option>
 											<option value="RETUR">RETUR</option>
 											<option value="PPI">PPI</option>
+											<option value="PPIATAS">PPI ATAS</option>
+											<option value="PPIBAWAH">PPI BAWAH</option>
 											<option value="PPISIZING">PPI SIZING</option>
 											<option value="PPICALENDER">PPI CALENDER</option>
 											<option value="PPIBAROKAHNUSANTARA">PPI BAROKAH / NUSANTARA</option>

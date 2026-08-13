@@ -196,6 +196,7 @@ class Laporan extends CI_Controller {
                         }
                         $html .= '
 							<td align="center">Keterangan</td>
+							<td align="center">Box</td>
 							<td align="center">Created</td>
 						</tr>';
                     $no = 1;
@@ -225,6 +226,10 @@ class Laporan extends CI_Controller {
 								$stat = 'PPI WARNA';
 							}else if($r->status == 7){
 								$stat = 'PPI BAROKAH / NUSANTARA';
+							}else if($r->status == 8){
+								$stat = 'PPI ATAS';
+							}else if($r->status == 9){
+								$stat = 'PPI BAWAH';
 							}else{
 								if($r->id_rtr != null){
 									$stat = 'RETUR';
@@ -259,6 +264,7 @@ class Laporan extends CI_Controller {
 								}
 								$html .= '
 								<td align="center">'.$r->ket.'</td>
+								<td align="center">'.$r->ket2.'</td>
 								<td align="center">'.$r->created_by.'</td>
 							</tr>';
 						$no++;
@@ -270,7 +276,7 @@ class Laporan extends CI_Controller {
 						$html .= '<tr bgcolor="#CCCCCC">
 							<td align="center" colspan="7">TOTAL BERAT</td>
 							<td align="center">'.number_format($tot_weight).'</td>
-							<td colspan="9"></td>
+							<td colspan="10"></td>
 						</tr>';
                     }
 
@@ -6231,6 +6237,10 @@ class Laporan extends CI_Controller {
 				$plhStat = "AND status='6'";
 			}else if($plh_status == "PPIBAROKAHNUSANTARA"){
 				$plhStat = "AND status='7'";
+			}else if($plh_status == "PPIATAS"){
+				$plhStat = "AND status='8'";
+			}else if($plh_status == "PPIBAWAH"){
+				$plhStat = "AND status='9'";
 			}else{
 				$plhStat = "";
 			}
@@ -6456,6 +6466,12 @@ class Laporan extends CI_Controller {
                         }else if($roll->status == 7 && $roll->id_pl == 0){
                             $oStt = 7;
                             $pStt = 'PPI BAROKAH / NUSANTARA';
+                        }else if($roll->status == 8 && $roll->id_pl == 0){
+                            $oStt = 8;
+                            $pStt = 'PPI ATAS';
+                        }else if($roll->status == 9 && $roll->id_pl == 0){
+                            $oStt = 9;
+                            $pStt = 'PPI BAWAH';
                         }else if($roll->status == 3 && $roll->id_pl == 0){
                             $oStt = 3;
                             $pStt = 'BUFFER';
@@ -6463,14 +6479,16 @@ class Laporan extends CI_Controller {
                             $oStt = 1;
                             $pStt = '-';
                         }
+						//  <option value="5">PPI CALENDER</option>
+						// <option value="7">PPI BAROKAH / NUSANTARA</option>
                         $opt = '<select name="" id="opt_status-'.$i.'" class="opt_status" '.$fgdiss.'>
                             <option value="'.$oStt.'">'.$pStt.'</option>
                             <option value="1">-</option>
                             <option value="0">STOK</option>
                             <option value="3">BUFFER</option>
                             <option value="2">PPI</option>
-                            <option value="5">PPI CALENDER</option>
-                            <option value="7">PPI BAROKAH / NUSANTARA</option>
+                            <option value="8">PPI ATAS</option>
+                            <option value="9">PPI BAWAH</option>
                         </select>';
                         $html .='<td style="border:1px solid #999;text-align:center">'.$opt.'</td>';
                         
