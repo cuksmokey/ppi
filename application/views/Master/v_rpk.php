@@ -197,10 +197,12 @@
 											<option value="MH">MH</option>
 											<option value="MS">MS</option>
 											<option value="MF">MF</option>
+											<option value="MF-A">MF-A</option>
 											<option value="MF-B">MF-B</option>
 											<option value="ML">ML</option>
 											<option value="MN">MN</option>
 											<option value="TL">TL</option>
+											<option value="TL-A">TL-A</option>
 											<option value="TL-B">TL-B</option>
 											<option value="WP">WP</option>
 											<option value="WS">WS</option>
